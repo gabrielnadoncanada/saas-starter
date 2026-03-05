@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+enum ActivityType {
+  SIGN_UP
+  SIGN_IN
+  SIGN_OUT
+  UPDATE_PASSWORD
+  DELETE_ACCOUNT
+  UPDATE_ACCOUNT
+  CREATE_TEAM
+  REMOVE_TEAM_MEMBER
+  INVITE_TEAM_MEMBER
+  ACCEPT_INVITATION
+}
+
+model User {
+  id              Int          @id @default(autoincrement())
+  name            String?      @db.VarChar(100)
+  email           String       @unique @db.VarChar(255)
+  passwordHash    String
+  role            String       @default("member") @db.VarChar(20)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+  teamMembers     TeamMember[]
+  invitationsSent Invitation[] @relation("InvitationSender")
+  activityLogs    ActivityLog[]
+}
+
+model Team {
+  id                   Int           @id @default(autoincrement())
+  name                 String        @db.VarChar(100)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  stripeCustomerId     String?       @unique
+  stripeSubscriptionId String?       @unique
+  stripeProductId      String?
+  planName             String?       @db.VarChar(50)
+  subscriptionStatus   String?       @db.VarChar(20)
+  teamMembers          TeamMember[]
+  activityLogs         ActivityLog[]
+  invitations          Invitation[]
+}
+
+model TeamMember {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  teamId   Int
+  role     String   @db.VarChar(50)
+  joinedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  team     Team     @relation(fields: [teamId], references: [id])
+}
+
+model ActivityLog {
+  id        Int          @id @default(autoincrement())
+  teamId    Int
+  userId    Int?
+  action    ActivityType
+  timestamp DateTime     @default(now())
+  ipAddress String?      @db.VarChar(45)
+  team      Team         @relation(fields: [teamId], references: [id])
+  user      User?        @relation(fields: [userId], references: [id])
+}
+
+model Invitation {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  email     String   @db.VarChar(255)
+  role      String   @db.VarChar(50)
+  invitedBy Int
+  invitedAt DateTime @default(now())
+  status    String   @default("pending") @db.VarChar(20)
+  team      Team     @relation(fields: [teamId], references: [id])
+  inviter   User     @relation("InvitationSender", fields: [invitedBy], references: [id])
+}
