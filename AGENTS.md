@@ -7,3 +7,8 @@
 - Never choose a workaround if it introduces regression risk or leaves the real fault in place.
 - Prefer durable fixes that keep behavior correct across the full flow, not just the failing surface case.
 - If a true root-cause fix is blocked by environment or tooling, state the blocker explicitly instead of silently patching around it.
+
+## File Size Limit
+
+- Never create or keep a file with more than 250 lines.
+- When a file approaches 250 lines, refactor or split it before adding more code.

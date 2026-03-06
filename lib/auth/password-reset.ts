@@ -1,5 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { db } from '@/lib/db/prisma';
+import { getAppBaseUrl } from '@/lib/email/config';
+import { sendPasswordResetEmail as deliverPasswordResetEmail } from '@/lib/email/senders';
 
 const PASSWORD_RESET_TTL_MINUTES = 60;
 
@@ -7,9 +9,11 @@ function hashToken(token: string) {
   return createHash('sha256').update(token).digest('hex');
 }
 
-function getBaseUrl() {
-  return process.env.BASE_URL || process.env.AUTH_URL || 'http://localhost:3000';
-}
+export type PasswordResetRequestResult = {
+  success:
+    'If an account exists for this email, a password reset link has been sent.';
+  email: '';
+};
 
 export async function createPasswordResetToken(email: string) {
   const user = await db.user.findFirst({
@@ -51,7 +55,7 @@ export async function createPasswordResetToken(email: string) {
     email: user.email,
     token: rawToken,
     expiresAt,
-    resetUrl: `${getBaseUrl()}/reset-password?token=${rawToken}`
+    resetUrl: `${getAppBaseUrl()}/reset-password?token=${rawToken}`
   };
 }
 
@@ -115,5 +119,38 @@ export async function consumePasswordResetToken(rawToken: string, passwordHash: 
 }
 
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
-  console.info(`Password reset requested for ${email}: ${resetUrl}`);
+  await deliverPasswordResetEmail(email, resetUrl);
 }
+
+export function createRequestPasswordResetHandler(dependencies = {
+  createPasswordResetToken,
+  sendPasswordResetEmail
+}) {
+  return async function requestPasswordResetForEmail(
+    email: string
+  ): Promise<PasswordResetRequestResult> {
+    const passwordReset = await dependencies.createPasswordResetToken(email);
+
+    if (passwordReset) {
+      try {
+        await dependencies.sendPasswordResetEmail(
+          passwordReset.email,
+          passwordReset.resetUrl
+        );
+      } catch (error) {
+        console.error('[auth:password-reset.email-failed]', {
+          email: passwordReset.email,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+
+    return {
+      success:
+        'If an account exists for this email, a password reset link has been sent.',
+      email: ''
+    };
+  };
+}
+
+export const requestPasswordResetForEmail = createRequestPasswordResetHandler();

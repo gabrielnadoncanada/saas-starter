@@ -1,0 +1,3 @@
+interface:
+  display_name: "Next.js SaaS Structure"
+  short_description: "Pragmatic folder structure guidance for Next.js App Router SaaS starters"

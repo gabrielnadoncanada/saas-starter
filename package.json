@@ -4,6 +4,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "test": "tsx --test test/**/*.test.ts",
     "db:setup": "pnpm exec tsx lib/db/setup.ts",
     "db:seed": "pnpm exec tsx lib/db/seed.ts",
     "db:generate": "pnpm exec prisma generate",
