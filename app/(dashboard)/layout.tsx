@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { signOut } from '@/app/(login)/actions';
+import { signOutAction } from '@/features/auth/actions/sign-out.action';
 import { useRouter } from 'next/navigation';
 import { User } from '@/lib/db/types';
 import useSWR, { mutate } from 'swr';
@@ -24,7 +24,7 @@ function UserMenu() {
   const router = useRouter();
 
   async function handleSignOut() {
-    await signOut();
+    await signOutAction();
     mutate('/api/user');
     router.push('/');
   }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createRequestPasswordResetHandler } from '@/lib/auth/password-reset';
+import { createRequestPasswordResetHandler } from '@/features/auth/lib/password-reset';
 
 test('requestPasswordResetForEmail does not send when account does not exist', async () => {
   let sendCalled = false;

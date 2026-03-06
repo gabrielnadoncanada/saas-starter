@@ -1,7 +1,7 @@
-import { stripe } from '../payments/stripe';
 import { db } from './prisma';
-import { ensureCredentialsAuthAccount } from '@/lib/auth/auth-accounts';
 import { hashPassword } from '@/lib/auth/session';
+import { ensureCredentialsAuthAccount } from '@/features/auth/lib/auth-account';
+import { stripe } from '@/lib/stripe/client';
 
 async function createStripeProducts() {
   console.log('Creating Stripe products and prices...');

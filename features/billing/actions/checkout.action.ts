@@ -1,0 +1,9 @@
+'use server';
+
+import { createCheckoutSession } from '@/features/billing/lib/stripe-billing';
+import { withTeam } from '@/lib/auth/middleware';
+
+export const checkoutAction = withTeam(async (formData, team) => {
+  const priceId = formData.get('priceId') as string;
+  await createCheckoutSession({ team, priceId });
+});

@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { getValidPasswordResetToken } from '@/lib/auth/password-reset';
-import { ResetPasswordForm } from './reset-password-form';
+import { ResetPasswordForm } from '@/features/auth/components/ResetPasswordForm';
+import { getValidPasswordResetToken } from '@/features/auth/lib/password-reset';
 
 type ResetPasswordPageProps = {
   searchParams: Promise<{

@@ -1,8 +1,9 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
-import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
+import { getCurrentUser } from '@/features/auth/lib/current-user';
+import { getCurrentTeam } from '@/features/team/lib/current-team';
 
 export const metadata: Metadata = {
   title: 'Next.js SaaS Starter',
@@ -31,8 +32,8 @@ export default function RootLayout({
             fallback: {
               // We do NOT await here
               // Only components that read this data will suspend
-              '/api/user': getUser(),
-              '/api/team': getTeamForUser()
+              '/api/user': getCurrentUser(),
+              '/api/team': getCurrentTeam()
             }
           }}
         >

@@ -1,6 +1,6 @@
 import { authorizeWithCredentials } from '@/lib/auth/credentials';
-import { logUserSignIn } from '@/lib/auth/activity';
-import { linkOAuthAccountToUser } from '@/lib/auth/linked-accounts';
+import { logUserSignIn } from '@/features/auth/lib/auth-activity';
+import { linkOAuthAccountToUser } from '@/features/auth/lib/linked-accounts';
 import { resolveOAuthUser } from '@/lib/auth/oauth';
 import { getAuthProviders } from '@/lib/auth/providers';
 import { db } from '@/lib/db/prisma';

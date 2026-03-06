@@ -1,6 +1,6 @@
 import { db } from '@/lib/db/prisma';
-import { ensureCredentialsAuthAccount } from '@/lib/auth/auth-accounts';
 import { comparePasswords } from '@/lib/auth/session';
+import { ensureCredentialsAuthAccount } from '@/features/auth/lib/auth-account';
 
 export async function authorizeWithCredentials(credentials?: Record<string, string>) {
   const email = credentials?.email?.trim();

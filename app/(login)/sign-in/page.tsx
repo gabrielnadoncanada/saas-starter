@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Login } from '../login';
+import { LoginForm } from '@/features/auth/components/LoginForm';
 import { getEnabledOAuthProviderIds } from '@/lib/auth/providers';
 
 export default function SignInPage() {
@@ -7,7 +7,7 @@ export default function SignInPage() {
 
   return (
     <Suspense>
-      <Login mode="signin" oauthProviders={oauthProviders} />
+      <LoginForm mode="signin" oauthProviders={oauthProviders} />
     </Suspense>
   );
 }

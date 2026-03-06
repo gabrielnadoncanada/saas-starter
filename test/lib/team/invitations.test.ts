@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createInviteTeamMemberHandler } from '@/lib/team/invitations';
+import { createInviteTeamMemberHandler } from '@/features/team/lib/team-invitations';
 
 function createDbDouble(overrides: Partial<Record<string, unknown>> = {}) {
   const invitationCreateCalls: unknown[] = [];
@@ -99,7 +99,7 @@ test('inviteTeamMemberToTeam creates invitation and sends email', async () => {
   const sentPayloads: unknown[] = [];
   const handler = createInviteTeamMemberHandler({
     db: db as never,
-    sendTeamInvitationEmail: async (payload) => {
+    sendTeamInvitationEmail: async (payload: unknown) => {
       sentPayloads.push(payload);
     }
   });
