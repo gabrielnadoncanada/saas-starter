@@ -4,7 +4,9 @@ import { z } from 'zod';
 import { db } from '@/lib/db/prisma';
 import { ActivityType, type NewUser, type User } from '@/lib/db/types';
 import { comparePasswords, hashPassword } from '@/lib/auth/session';
+import { ensureCredentialsAuthAccount } from '@/lib/auth/auth-accounts';
 import { redirect } from 'next/navigation';
+import { refresh } from 'next/cache';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
 import { getUser, getUserWithTeam } from '@/lib/db/queries';
@@ -13,6 +15,13 @@ import {
   validatedAction,
   validatedActionWithUser
 } from '@/lib/auth/middleware';
+import {
+  consumePasswordResetToken,
+  createPasswordResetToken,
+  sendPasswordResetEmail
+} from '@/lib/auth/password-reset';
+import { unlinkOAuthAccountForUser } from '@/lib/auth/linked-accounts';
+import { OAUTH_PROVIDER_LABELS } from '@/lib/auth/providers';
 
 const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 
@@ -120,6 +129,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
   }
 
   await Promise.all([
+    ensureCredentialsAuthAccount(foundUser.id, foundUser.email),
     establishAuthSession(foundUser),
     logActivity(foundTeam?.id, foundUser.id, ActivityType.SIGN_IN)
   ]);
@@ -248,7 +258,10 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       return { createdUser, createdTeam };
     });
 
-    await establishAuthSession(result.createdUser);
+    await Promise.all([
+      ensureCredentialsAuthAccount(result.createdUser.id, result.createdUser.email),
+      establishAuthSession(result.createdUser)
+    ]);
 
     const redirectTo = formData.get('redirect') as string | null;
     if (redirectTo === 'checkout') {
@@ -273,6 +286,27 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   }
 });
 
+const requestPasswordResetSchema = z.object({
+  email: z.string().email().min(3).max(255)
+});
+
+export const requestPasswordReset = validatedAction(
+  requestPasswordResetSchema,
+  async ({ email }) => {
+    const passwordReset = await createPasswordResetToken(email);
+
+    if (passwordReset) {
+      await sendPasswordResetEmail(passwordReset.email, passwordReset.resetUrl);
+    }
+
+    return {
+      success:
+        'If an account exists for this email, a password reset link has been sent.',
+      email: ''
+    };
+  }
+);
+
 export async function signOut() {
   const user = (await getUser()) as User | null;
   if (!user) {
@@ -283,6 +317,41 @@ export async function signOut() {
   await logActivity(userWithTeam?.teamId, user.id, ActivityType.SIGN_OUT);
   await clearAuthSession();
 }
+
+const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, 'Invalid or expired reset link.'),
+    password: z.string().min(8).max(100),
+    confirmPassword: z.string().min(8).max(100)
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'New password and confirmation password do not match.',
+    path: ['confirmPassword']
+  });
+
+export const resetPassword = validatedAction(
+  resetPasswordSchema,
+  async ({ token, password }) => {
+    const passwordHash = await hashPassword(password);
+    const user = await consumePasswordResetToken(token, passwordHash);
+
+    if (!user || user.deletedAt) {
+      return {
+        error: 'Invalid or expired reset link.'
+      };
+    }
+
+    const userWithTeam = await getUserWithTeam(user.id);
+
+    await Promise.all([
+      ensureCredentialsAuthAccount(user.id, user.email),
+      establishAuthSession(user),
+      logActivity(userWithTeam?.teamId, user.id, ActivityType.UPDATE_PASSWORD)
+    ]);
+
+    redirect('/dashboard');
+  }
+);
 
 const updatePasswordSchema = z.object({
   currentPassword: z.string().min(8).max(100),
@@ -418,6 +487,41 @@ export const updateAccount = validatedActionWithUser(
     ]);
 
     return { name, success: 'Account updated successfully.' };
+  }
+);
+
+const unlinkAuthProviderSchema = z.object({
+  provider: z.enum(['google', 'github'])
+});
+
+export const unlinkAuthProvider = validatedActionWithUser(
+  unlinkAuthProviderSchema,
+  async ({ provider }, _, user) => {
+    const result = await unlinkOAuthAccountForUser({
+      userId: user.id,
+      provider
+    });
+
+    if (result.status === 'not-found') {
+      return {
+        provider,
+        error: `${OAUTH_PROVIDER_LABELS[provider]} is not linked to this account.`
+      };
+    }
+
+    if (result.status === 'last-method') {
+      return {
+        provider,
+        error: 'You cannot unlink your last remaining sign-in method.'
+      };
+    }
+
+    refresh();
+
+    return {
+      provider,
+      success: `${OAUTH_PROVIDER_LABELS[provider]} unlinked successfully.`
+    };
   }
 );
 

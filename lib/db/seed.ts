@@ -1,5 +1,6 @@
 import { stripe } from '../payments/stripe';
 import { db } from './prisma';
+import { ensureCredentialsAuthAccount } from '@/lib/auth/auth-accounts';
 import { hashPassword } from '@/lib/auth/session';
 
 async function createStripeProducts() {
@@ -55,6 +56,8 @@ async function seed() {
       role: 'owner'
     }
   });
+
+  await ensureCredentialsAuthAccount(user.id, user.email);
 
   console.log('Initial user ready.');
 

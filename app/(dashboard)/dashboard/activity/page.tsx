@@ -9,22 +9,25 @@ import {
   UserMinus,
   Mail,
   CheckCircle,
+  Link2,
+  Unlink2,
   type LucideIcon,
 } from 'lucide-react';
-import { ActivityType } from '@/lib/db/types';
 import { getActivityLogs } from '@/lib/db/queries';
 
-const iconMap: Record<ActivityType, LucideIcon> = {
-  [ActivityType.SIGN_UP]: UserPlus,
-  [ActivityType.SIGN_IN]: UserCog,
-  [ActivityType.SIGN_OUT]: LogOut,
-  [ActivityType.UPDATE_PASSWORD]: Lock,
-  [ActivityType.DELETE_ACCOUNT]: UserMinus,
-  [ActivityType.UPDATE_ACCOUNT]: Settings,
-  [ActivityType.CREATE_TEAM]: UserPlus,
-  [ActivityType.REMOVE_TEAM_MEMBER]: UserMinus,
-  [ActivityType.INVITE_TEAM_MEMBER]: Mail,
-  [ActivityType.ACCEPT_INVITATION]: CheckCircle,
+const iconMap: Record<string, LucideIcon> = {
+  SIGN_UP: UserPlus,
+  SIGN_IN: UserCog,
+  SIGN_OUT: LogOut,
+  UPDATE_PASSWORD: Lock,
+  DELETE_ACCOUNT: UserMinus,
+  UPDATE_ACCOUNT: Settings,
+  CREATE_TEAM: UserPlus,
+  REMOVE_TEAM_MEMBER: UserMinus,
+  INVITE_TEAM_MEMBER: Mail,
+  ACCEPT_INVITATION: CheckCircle,
+  LINK_AUTH_PROVIDER: Link2,
+  UNLINK_AUTH_PROVIDER: Unlink2,
 };
 
 function getRelativeTime(date: Date) {
@@ -41,28 +44,32 @@ function getRelativeTime(date: Date) {
   return date.toLocaleDateString();
 }
 
-function formatAction(action: ActivityType): string {
+function formatAction(action: string): string {
   switch (action) {
-    case ActivityType.SIGN_UP:
+    case 'SIGN_UP':
       return 'You signed up';
-    case ActivityType.SIGN_IN:
+    case 'SIGN_IN':
       return 'You signed in';
-    case ActivityType.SIGN_OUT:
+    case 'SIGN_OUT':
       return 'You signed out';
-    case ActivityType.UPDATE_PASSWORD:
+    case 'UPDATE_PASSWORD':
       return 'You changed your password';
-    case ActivityType.DELETE_ACCOUNT:
+    case 'DELETE_ACCOUNT':
       return 'You deleted your account';
-    case ActivityType.UPDATE_ACCOUNT:
+    case 'UPDATE_ACCOUNT':
       return 'You updated your account';
-    case ActivityType.CREATE_TEAM:
+    case 'CREATE_TEAM':
       return 'You created a new team';
-    case ActivityType.REMOVE_TEAM_MEMBER:
+    case 'REMOVE_TEAM_MEMBER':
       return 'You removed a team member';
-    case ActivityType.INVITE_TEAM_MEMBER:
+    case 'INVITE_TEAM_MEMBER':
       return 'You invited a team member';
-    case ActivityType.ACCEPT_INVITATION:
+    case 'ACCEPT_INVITATION':
       return 'You accepted an invitation';
+    case 'LINK_AUTH_PROVIDER':
+      return 'You linked a sign-in provider';
+    case 'UNLINK_AUTH_PROVIDER':
+      return 'You unlinked a sign-in provider';
     default:
       return 'Unknown action occurred';
   }
@@ -84,10 +91,8 @@ export default async function ActivityPage() {
           {logs.length > 0 ? (
             <ul className="space-y-4">
               {logs.map((log) => {
-                const Icon = iconMap[log.action as ActivityType] || Settings;
-                const formattedAction = formatAction(
-                  log.action as ActivityType
-                );
+                const Icon = iconMap[log.action] || Settings;
+                const formattedAction = formatAction(log.action);
 
                 return (
                   <li key={log.id} className="flex items-center space-x-4">

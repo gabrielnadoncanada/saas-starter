@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useActionState } from 'react';
+import { signIn as signInWithProvider } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,12 +10,33 @@ import { Label } from '@/components/ui/label';
 import { CircleIcon, Loader2 } from 'lucide-react';
 import { signIn, signUp } from './actions';
 import { ActionState } from '@/lib/auth/middleware';
+import type { OAuthProviderId } from '@/lib/auth/providers';
 
-export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
+const OAUTH_PROVIDER_LABELS: Record<OAuthProviderId, string> = {
+  google: 'Continue with Google',
+  github: 'Continue with GitHub'
+};
+
+const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  OAuthAccountNotLinked:
+    'This email is already used by another sign-in method. Sign in with the original method first.',
+  OAuthSignin: 'Unable to complete the social sign-in flow. Please try again.'
+};
+
+export function Login({
+  mode = 'signin',
+  oauthProviders = []
+}: {
+  mode?: 'signin' | 'signup';
+  oauthProviders?: OAuthProviderId[];
+}) {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
   const priceId = searchParams.get('priceId');
   const inviteId = searchParams.get('inviteId');
+  const error = searchParams.get('error');
+  const showOAuthProviders =
+    oauthProviders.length > 0 && !inviteId && redirect !== 'checkout';
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
     mode === 'signin' ? signIn : signUp,
     { error: '' }
@@ -61,12 +83,22 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           </div>
 
           <div>
-            <Label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </Label>
+              {mode === 'signin' ? (
+                <Link
+                  href="/forgot-password"
+                  className="text-sm font-medium text-orange-600 hover:text-orange-700"
+                >
+                  Forgot your password?
+                </Link>
+              ) : null}
+            </div>
             <div className="mt-1">
               <Input
                 id="password"
@@ -88,6 +120,9 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           {state?.error && (
             <div className="text-red-500 text-sm">{state.error}</div>
           )}
+          {!state.error && error && OAUTH_ERROR_MESSAGES[error] ? (
+            <div className="text-red-500 text-sm">{OAUTH_ERROR_MESSAGES[error]}</div>
+          ) : null}
 
           <div>
             <Button
@@ -108,6 +143,33 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             </Button>
           </div>
         </form>
+
+        {showOAuthProviders ? (
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3">
+              {oauthProviders.map((provider) => (
+                <Button
+                  key={provider}
+                  type="button"
+                  variant="outline"
+                  className="w-full rounded-full"
+                  onClick={() => signInWithProvider(provider, { callbackUrl: '/dashboard' })}
+                >
+                  {OAUTH_PROVIDER_LABELS[provider]}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-6">
           <div className="relative">
