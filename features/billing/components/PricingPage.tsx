@@ -26,17 +26,17 @@ function PricingCard({
 }: PricingCardProps) {
   return (
     <div className="pt-6">
-      <h2 className="mb-2 text-2xl font-medium text-gray-900">{name}</h2>
-      <p className="mb-4 text-sm text-gray-600">with {trialDays} day free trial</p>
-      <p className="mb-6 text-4xl font-medium text-gray-900">
+      <h2 className="mb-2 text-2xl font-medium text-foreground">{name}</h2>
+      <p className="mb-4 text-sm text-muted-foreground">with {trialDays} day free trial</p>
+      <p className="mb-6 text-4xl font-medium text-foreground">
         ${price / 100}{' '}
-        <span className="text-xl font-normal text-gray-600">per user / {interval}</span>
+        <span className="text-xl font-normal text-muted-foreground">per user / {interval}</span>
       </p>
       <ul className="mb-8 space-y-4">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start">
             <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
-            <span className="text-gray-700">{feature}</span>
+            <span className="text-muted-foreground">{feature}</span>
           </li>
         ))}
       </ul>

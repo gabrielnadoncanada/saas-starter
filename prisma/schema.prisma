@@ -27,6 +27,7 @@ model User {
   name            String?      @db.VarChar(100)
   email           String       @unique @db.VarChar(255)
   passwordHash    String
+  emailVerifiedAt DateTime?
   role            String       @default("member") @db.VarChar(20)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
@@ -36,6 +37,7 @@ model User {
   activityLogs    ActivityLog[]
   authAccounts    AuthAccount[]
   passwordResetTokens PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
 }
 
 model Team {
@@ -101,6 +103,18 @@ model AuthAccount {
 }
 
 model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model EmailVerificationToken {
   id        Int      @id @default(autoincrement())
   userId    Int
   tokenHash String   @unique

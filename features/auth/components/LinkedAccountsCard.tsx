@@ -62,10 +62,10 @@ export function LinkedAccountsCard({
         <CardTitle>Linked Accounts</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center justify-between rounded-lg border border-border p-4">
           <div>
-            <p className="font-medium text-gray-900">Password</p>
-            <p className="text-sm text-gray-500">
+            <p className="font-medium text-foreground">Password</p>
+            <p className="text-sm text-muted-foreground">
               {hasPassword
                 ? 'Available as a sign-in method.'
                 : 'Not available as a sign-in method.'}
@@ -89,13 +89,13 @@ export function LinkedAccountsCard({
         {providers.map((provider) => (
           <div
             key={provider.provider}
-            className="flex flex-col gap-4 rounded-lg border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-4 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-foreground">
                 {OAUTH_PROVIDER_LABELS[provider.provider]}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {provider.isLinked && provider.linkedAtLabel
                   ? `Linked on ${provider.linkedAtLabel}`
                   : 'Not linked'}
@@ -104,7 +104,7 @@ export function LinkedAccountsCard({
             <div className="flex items-center gap-3">
               <span
                 className={`text-sm font-medium ${
-                  provider.isLinked ? 'text-green-700' : 'text-gray-500'
+                  provider.isLinked ? 'text-green-700' : 'text-muted-foreground'
                 }`}
               >
                 {provider.isLinked ? 'Linked' : 'Not linked'}
@@ -164,7 +164,7 @@ export function LinkedAccountsCard({
             {statusMessage}
           </p>
         ) : null}
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           You cannot unlink your last remaining sign-in method.
         </p>
       </CardContent>

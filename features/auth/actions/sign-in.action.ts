@@ -14,8 +14,12 @@ import { signInSchema } from '@/features/auth/schemas/auth.schema';
 
 export const signInAction = validatedAction(signInSchema, async (data, formData) => {
   const { email, password } = data;
+  const redirectTo = formData.get('redirect') as string | null;
   const foundUser = await db.user.findFirst({
-    where: { email },
+    where: {
+      email,
+      deletedAt: null
+    },
     include: {
       teamMembers: {
         take: 1,
@@ -45,13 +49,29 @@ export const signInAction = validatedAction(signInSchema, async (data, formData)
     };
   }
 
+  if (!foundUser.emailVerifiedAt) {
+    const params = new URLSearchParams({
+      email
+    });
+
+    if (redirectTo === 'checkout') {
+      params.set('redirect', redirectTo);
+    }
+
+    const priceId = formData.get('priceId') as string | null;
+    if (priceId) {
+      params.set('priceId', priceId);
+    }
+
+    redirect(`/verify-email?${params.toString()}`);
+  }
+
   await Promise.all([
     ensureCredentialsAuthAccount(foundUser.id, foundUser.email),
     establishAuthSession(foundUser),
     logAuthActivity(foundTeam?.id, foundUser.id, ActivityType.SIGN_IN)
   ]);
 
-  const redirectTo = formData.get('redirect') as string | null;
   if (redirectTo === 'checkout') {
     const priceId = formData.get('priceId') as string;
     return createCheckoutSession({ team: foundTeam, priceId });

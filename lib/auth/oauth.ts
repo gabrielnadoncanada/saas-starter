@@ -62,6 +62,7 @@ async function linkOAuthAccount(params: {
 
 async function createUserFromOAuth(email: string, name: string | null) {
   const passwordHash = await hashPassword(randomBytes(32).toString('hex'));
+  const emailVerifiedAt = new Date();
 
   return db.$transaction(async (tx) => {
     const createdUser = await tx.user.create({
@@ -69,6 +70,7 @@ async function createUserFromOAuth(email: string, name: string | null) {
         email,
         name,
         passwordHash,
+        emailVerifiedAt,
         role: 'owner'
       }
     });
@@ -136,6 +138,18 @@ export async function resolveOAuthUser(params: {
   if (existingUser) {
     if (existingUser.deletedAt || !trustedEmail) {
       return null;
+    }
+
+    if (!existingUser.emailVerifiedAt) {
+      await db.user.update({
+        where: {
+          id: existingUser.id
+        },
+        data: {
+          emailVerifiedAt: new Date()
+        }
+      });
+      existingUser.emailVerifiedAt = new Date();
     }
 
     await linkOAuthAccount({

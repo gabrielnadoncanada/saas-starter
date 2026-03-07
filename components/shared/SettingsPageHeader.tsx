@@ -4,7 +4,7 @@ type SettingsPageHeaderProps = {
 
 export function SettingsPageHeader({ title }: SettingsPageHeaderProps) {
   return (
-    <h1 className="mb-6 text-lg font-medium text-gray-900 lg:text-2xl">
+    <h1 className="mb-6 text-lg font-medium text-foreground lg:text-2xl">
       {title}
     </h1>
   );

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { use, useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { CircleIcon, Home, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
@@ -34,7 +35,7 @@ function UserMenu() {
       <>
         <Link
           href="/pricing"
-          className="text-sm font-medium text-gray-700 hover:text-gray-900"
+          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           Pricing
         </Link>
@@ -80,13 +81,14 @@ function UserMenu() {
 
 function Header() {
   return (
-    <header className="border-b border-gray-200">
+    <header className="border-b border-border bg-background/95 backdrop-blur">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <CircleIcon className="h-6 w-6 text-orange-500" />
-          <span className="ml-2 text-xl font-semibold text-gray-900">ACME</span>
+          <span className="ml-2 text-xl font-semibold text-foreground">ACME</span>
         </Link>
         <div className="flex items-center space-x-4">
+          <ThemeToggle />
           <Suspense fallback={<div className="h-9" />}>
             <UserMenu />
           </Suspense>

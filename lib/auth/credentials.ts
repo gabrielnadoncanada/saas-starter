@@ -13,7 +13,10 @@ export async function authorizeWithCredentials(credentials?: Record<string, stri
   const user = await db.user.findFirst({
     where: {
       email,
-      deletedAt: null
+      deletedAt: null,
+      emailVerifiedAt: {
+        not: null
+      }
     }
   });
 

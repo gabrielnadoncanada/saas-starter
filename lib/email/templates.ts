@@ -40,6 +40,31 @@ export function buildPasswordResetEmail(input: {
   };
 }
 
+export function buildEmailVerificationEmail(input: {
+  email: string;
+  verificationUrl: string;
+}): EmailPayload {
+  const verificationUrl = input.verificationUrl;
+
+  return {
+    to: [input.email],
+    subject: 'Verify your email address',
+    text: [
+      'Confirm your email address to finish setting up your account.',
+      '',
+      `Verify your email: ${verificationUrl}`,
+      '',
+      'If you did not create this account, you can ignore this email.'
+    ].join('\n'),
+    html: [
+      '<p>Confirm your email address to finish setting up your account.</p>',
+      `<p><a href="${escapeHtml(verificationUrl)}">Verify your email</a></p>`,
+      '<p>If you did not create this account, you can ignore this email.</p>'
+    ].join(''),
+    tags: [{ name: 'email_type', value: 'email_verification' }]
+  };
+}
+
 export function buildTeamInvitationEmail(input: {
   email: string;
   role: string;

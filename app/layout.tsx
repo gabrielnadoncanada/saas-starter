@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 import { SWRConfig } from 'swr';
+import { ThemeProvider } from '@/components/shared/ThemeProvider';
 import { getCurrentUser } from '@/features/auth/lib/current-user';
 import { getCurrentTeam } from '@/features/team/lib/current-team';
 
@@ -24,21 +25,24 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className}`}
+      suppressHydrationWarning
+      className={manrope.className}
     >
-      <body className="min-h-[100dvh] bg-gray-50">
-        <SWRConfig
-          value={{
-            fallback: {
-              // We do NOT await here
-              // Only components that read this data will suspend
-              '/api/user': getCurrentUser(),
-              '/api/team': getCurrentTeam()
-            }
-          }}
-        >
-          {children}
-        </SWRConfig>
+      <body className="min-h-[100dvh] bg-background text-foreground antialiased">
+        <ThemeProvider>
+          <SWRConfig
+            value={{
+              fallback: {
+                // We do NOT await here
+                // Only components that read this data will suspend
+                '/api/user': getCurrentUser(),
+                '/api/team': getCurrentTeam()
+              }
+            }}
+          >
+            {children}
+          </SWRConfig>
+        </ThemeProvider>
       </body>
     </html>
   );

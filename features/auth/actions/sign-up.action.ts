@@ -6,22 +6,53 @@ import { validatedAction } from '@/lib/auth/middleware';
 import { hashPassword } from '@/lib/auth/session';
 import { ActivityType } from '@/lib/db/types';
 import { db } from '@/lib/db/prisma';
-import { createCheckoutSession } from '@/features/billing/lib/stripe-billing';
 import { ensureCredentialsAuthAccount } from '@/features/auth/lib/auth-account';
-import { establishAuthSession } from '@/features/auth/lib/auth-session';
+import {
+  createEmailVerificationTokenForNewUser,
+  sendEmailVerificationEmail
+} from '@/features/auth/lib/email-verification';
 import { signUpSchema } from '@/features/auth/schemas/auth.schema';
 
 export const signUpAction = validatedAction(signUpSchema, async (data, formData) => {
-  const { email, password, inviteId } = data;
+  const { email, password, inviteId, priceId, redirect: redirectTo } = data;
   const existingUser = await db.user.findFirst({
-    where: { email }
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      emailVerifiedAt: true,
+      deletedAt: true
+    }
   });
 
   if (existingUser) {
+    if (!existingUser.deletedAt && !existingUser.emailVerifiedAt) {
+      const verification = await createEmailVerificationTokenForNewUser(existingUser.id, {
+        redirect: redirectTo,
+        priceId
+      });
+
+      if (verification) {
+        try {
+          await sendEmailVerificationEmail(email, verification.verificationUrl);
+        } catch (error) {
+          console.error('[auth:sign-up.email-verification-failed]', {
+            email,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+          redirect(
+            `/verify-email?email=${encodeURIComponent(email)}&sent=0`
+          );
+        }
+
+        redirect(`/verify-email?email=${encodeURIComponent(email)}`);
+      }
+    }
+
     return {
-      error: 'Failed to create user. Please try again.',
+      error: 'An account already exists for this email. Please sign in instead.',
       email,
-      password
+      password: ''
     };
   }
 
@@ -33,6 +64,7 @@ export const signUpAction = validatedAction(signUpSchema, async (data, formData)
         data: {
           email,
           passwordHash,
+          emailVerifiedAt: null,
           role: 'owner',
           name: null,
           deletedAt: null
@@ -117,27 +149,48 @@ export const signUpAction = validatedAction(signUpSchema, async (data, formData)
       return { createdUser, createdTeam };
     });
 
-    await Promise.all([
-      ensureCredentialsAuthAccount(result.createdUser.id, result.createdUser.email),
-      establishAuthSession(result.createdUser)
-    ]);
+    await ensureCredentialsAuthAccount(result.createdUser.id, result.createdUser.email);
 
-    const redirectTo = formData.get('redirect') as string | null;
+    const verification = await createEmailVerificationTokenForNewUser(result.createdUser.id, {
+      redirect: redirectTo,
+      priceId
+    });
+
+    let redirectUrl = `/verify-email?email=${encodeURIComponent(result.createdUser.email)}`;
+
     if (redirectTo === 'checkout') {
-      const priceId = formData.get('priceId') as string;
-      return createCheckoutSession({ team: result.createdTeam, priceId });
+      redirectUrl += `&redirect=${redirectTo}`;
     }
 
-    redirect('/dashboard');
+    if (priceId) {
+      redirectUrl += `&priceId=${encodeURIComponent(priceId)}`;
+    }
+
+    if (verification) {
+      try {
+        await sendEmailVerificationEmail(
+          result.createdUser.email,
+          verification.verificationUrl
+        );
+      } catch (error) {
+        console.error('[auth:sign-up.email-verification-failed]', {
+          email: result.createdUser.email,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+        redirect(`${redirectUrl}&sent=0`);
+      }
+    }
+
+    redirect(redirectUrl);
   } catch (error) {
     if (error instanceof Error && error.message === 'INVALID_OR_EXPIRED_INVITATION') {
-      return { error: 'Invalid or expired invitation.', email, password };
+      return { error: 'Invalid or expired invitation.', email, password: '' };
     }
 
     return {
       error: 'Failed to create user. Please try again.',
       email,
-      password
+      password: ''
     };
   }
 });

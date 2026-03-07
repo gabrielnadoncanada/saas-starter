@@ -1,5 +1,6 @@
 import { sendEmail } from '@/lib/email/client';
 import {
+  buildEmailVerificationEmail,
   buildPasswordResetEmail,
   buildTeamInvitationEmail
 } from '@/lib/email/templates';
@@ -26,6 +27,30 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
     });
   } catch (error) {
     logEmailError('password-reset.failed', {
+      email,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+    throw error;
+  }
+}
+
+export async function sendEmailVerificationEmail(
+  email: string,
+  verificationUrl: string
+) {
+  const payload = buildEmailVerificationEmail({ email, verificationUrl });
+
+  try {
+    const result = await sendEmail(payload, {
+      idempotencyKey: `email-verification/${email}`
+    });
+
+    logEmailResult('email-verification.sent', {
+      email,
+      resendEmailId: result.id
+    });
+  } catch (error) {
+    logEmailError('email-verification.failed', {
       email,
       error: error instanceof Error ? error.message : 'Unknown error'
     });

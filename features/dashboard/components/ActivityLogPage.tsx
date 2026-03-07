@@ -31,11 +31,11 @@ export async function ActivityLogPage() {
                       <Icon className="h-5 w-5 text-orange-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-foreground">
                         {formatActivityAction(log.action)}
                         {log.ipAddress && ` from IP ${log.ipAddress}`}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         {formatRelativeTime(new Date(log.timestamp))}
                       </p>
                     </div>
@@ -46,8 +46,8 @@ export async function ActivityLogPage() {
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <EmptyActivityIcon className="mb-4 h-12 w-12 text-orange-500" />
-              <h3 className="mb-2 text-lg font-semibold text-gray-900">No activity yet</h3>
-              <p className="max-w-sm text-sm text-gray-500">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">No activity yet</h3>
+              <p className="max-w-sm text-sm text-muted-foreground">
                 When you perform actions like signing in or updating your account,
                 they&apos;ll appear here.
               </p>
