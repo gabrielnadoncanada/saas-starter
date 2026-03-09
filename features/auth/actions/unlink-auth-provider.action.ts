@@ -22,13 +22,6 @@ export const unlinkAuthProviderAction = validatedActionWithUser(
       };
     }
 
-    if (result.status === 'last-method') {
-      return {
-        provider,
-        error: 'You cannot unlink your last remaining sign-in method.'
-      };
-    }
-
     refresh();
 
     return {

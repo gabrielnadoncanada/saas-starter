@@ -1,3 +1,4 @@
+import ResendProvider from 'next-auth/providers/resend';
 import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 
@@ -7,6 +8,10 @@ export const OAUTH_PROVIDER_LABELS = {
 } as const;
 
 export type OAuthProviderId = keyof typeof OAUTH_PROVIDER_LABELS;
+
+export function hasMagicLinkProvider() {
+  return Boolean(process.env.AUTH_RESEND_KEY && process.env.AUTH_RESEND_FROM);
+}
 
 export function getEnabledOAuthProviderIds(): OAuthProviderId[] {
   const enabledProviders: OAuthProviderId[] = [];
@@ -25,11 +30,21 @@ export function getEnabledOAuthProviderIds(): OAuthProviderId[] {
 export function getAuthProviders() {
   const providers = [];
 
+  if (hasMagicLinkProvider()) {
+    providers.push(
+      ResendProvider({
+        apiKey: process.env.AUTH_RESEND_KEY,
+        from: process.env.AUTH_RESEND_FROM
+      })
+    );
+  }
+
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     providers.push(
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true
       })
     );
   }
@@ -38,7 +53,8 @@ export function getAuthProviders() {
     providers.push(
       GitHubProvider({
         clientId: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true
       })
     );
   }

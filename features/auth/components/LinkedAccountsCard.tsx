@@ -6,7 +6,7 @@ import {
   CheckCircle2,
   Link2,
   Loader2,
-  ShieldAlert,
+  Mail,
   Unlink2
 } from 'lucide-react';
 
@@ -30,7 +30,6 @@ export type LinkedProvider = {
 };
 
 type LinkedAccountsCardProps = {
-  hasPassword: boolean;
   providers: LinkedProvider[];
   feedback?: {
     error?: string;
@@ -38,11 +37,7 @@ type LinkedAccountsCardProps = {
   };
 };
 
-export function LinkedAccountsCard({
-  hasPassword,
-  providers,
-  feedback
-}: LinkedAccountsCardProps) {
+export function LinkedAccountsCard({ providers, feedback }: LinkedAccountsCardProps) {
   const [linkedAccountsState, unlinkAction, isUnlinkPending] = useActionState<
     LinkedAccountsState,
     FormData
@@ -64,25 +59,12 @@ export function LinkedAccountsCard({
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between rounded-lg border border-border p-4">
           <div>
-            <p className="font-medium text-foreground">Password</p>
-            <p className="text-sm text-muted-foreground">
-              {hasPassword
-                ? 'Available as a sign-in method.'
-                : 'Not available as a sign-in method.'}
-            </p>
+            <p className="font-medium text-foreground">Magic Link</p>
+            <p className="text-sm text-muted-foreground">Always available for your email.</p>
           </div>
-          <div className="flex items-center gap-2 text-sm font-medium">
-            {hasPassword ? (
-              <>
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                Active
-              </>
-            ) : (
-              <>
-                <ShieldAlert className="h-4 w-4 text-amber-600" />
-                Not linked
-              </>
-            )}
+          <div className="flex items-center gap-2 text-sm font-medium text-green-700">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            Active
           </div>
         </div>
 
@@ -110,24 +92,9 @@ export function LinkedAccountsCard({
                 {provider.isLinked ? 'Linked' : 'Not linked'}
               </span>
               {provider.isLinked ? (
-                <form
-                  action={unlinkAction}
-                  onSubmit={(event) => {
-                    if (
-                      !window.confirm(
-                        `Unlink ${OAUTH_PROVIDER_LABELS[provider.provider]} from your account?`
-                      )
-                    ) {
-                      event.preventDefault();
-                    }
-                  }}
-                >
+                <form action={unlinkAction}>
                   <input type="hidden" name="provider" value={provider.provider} />
-                  <Button
-                    type="submit"
-                    variant="outline"
-                    disabled={isUnlinkPending || !provider.canUnlink}
-                  >
+                  <Button type="submit" variant="outline" disabled={isUnlinkPending}>
                     {isUnlinkPending && linkedAccountsState.provider === provider.provider ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -147,7 +114,7 @@ export function LinkedAccountsCard({
                   variant="outline"
                   onClick={() =>
                     signInWithProvider(provider.provider, {
-                      callbackUrl: `/dashboard/security?success=linked&provider=${provider.provider}`
+                      redirectTo: `/dashboard/security?success=linked&provider=${provider.provider}`
                     })
                   }
                 >
@@ -164,8 +131,9 @@ export function LinkedAccountsCard({
             {statusMessage}
           </p>
         ) : null}
-        <p className="text-sm text-muted-foreground">
-          You cannot unlink your last remaining sign-in method.
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Mail className="h-4 w-4" />
+          You can always sign in with a magic link, even after unlinking OAuth providers.
         </p>
       </CardContent>
     </Card>

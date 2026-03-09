@@ -1,117 +1,65 @@
-import { authorizeWithCredentials } from '@/lib/auth/credentials';
-import { logUserSignIn } from '@/features/auth/lib/auth-activity';
-import { linkOAuthAccountToUser } from '@/features/auth/lib/linked-accounts';
-import { resolveOAuthUser } from '@/lib/auth/oauth';
-import { getAuthProviders } from '@/lib/auth/providers';
-import { db } from '@/lib/db/prisma';
-import type { NextAuthOptions } from 'next-auth';
-import { getServerSession } from 'next-auth/next';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import NextAuth from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 
-export const authOptions: NextAuthOptions = {
+import { ActivityType } from '@/lib/db/types';
+import { db } from '@/lib/db/prisma';
+import { getAuthProviders } from '@/lib/auth/providers';
+import { getUserTeamId, logAuthActivity, logUserSignIn } from '@/features/auth/lib/auth-activity';
+
+export const authConfig = {
+  adapter: PrismaAdapter(db),
   session: {
     strategy: 'jwt'
   },
   pages: {
     signIn: '/sign-in'
   },
-  providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials) {
-        return authorizeWithCredentials(credentials as Record<string, string> | undefined);
-      }
-    }),
-    ...getAuthProviders()
-  ],
+  providers: getAuthProviders(),
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (!account) {
+    async signIn({ user }) {
+      const userId = Number(user.id);
+
+      if (!Number.isInteger(userId) || userId <= 0) {
+        return true;
+      }
+
+      const existingUser = await db.user.findUnique({
+        where: { id: userId },
+        select: { deletedAt: true }
+      });
+
+      if (existingUser?.deletedAt) {
         return false;
       }
 
-      if (account.provider === 'credentials') {
-        if (!user.id) {
-          return false;
-        }
-
-        await logUserSignIn(Number(user.id));
-        return true;
-      }
-
-      const email = user.email?.trim();
-
-      if (!email || !account.providerAccountId) {
-        return '/sign-in?error=OAuthSignin';
-      }
-
-      const currentSession = await auth();
-      const currentUserId = Number(currentSession?.user?.id);
-
-      if (Number.isInteger(currentUserId) && currentUserId > 0) {
-        const currentUser = await db.user.findUnique({
-          where: {
-            id: currentUserId
-          }
-        });
-
-        if (!currentUser || currentUser.deletedAt) {
-          return '/sign-in?error=OAuthSignin';
-        }
-
-        const linkResult = await linkOAuthAccountToUser({
-          userId: currentUser.id,
-          provider: account.provider as 'google' | 'github',
-          providerAccountId: account.providerAccountId,
-          accountType: account.type
-        });
-
-        if (linkResult.status === 'conflict') {
-          return `/dashboard/security?error=ProviderAlreadyLinked&provider=${account.provider}`;
-        }
-
-        if (linkResult.status === 'provider-already-linked') {
-          return `/dashboard/security?error=ProviderAlreadyOnAccount&provider=${account.provider}`;
-        }
-
-        user.id = String(currentUser.id);
-        user.email = currentUser.email;
-        user.name = currentUser.name;
-        user.role = currentUser.role;
-
-        return true;
-      }
-
-      const linkedUser = await resolveOAuthUser({
-        provider: account.provider,
-        providerAccountId: account.providerAccountId,
-        accountType: account.type,
-        email,
-        name: user.name ?? null,
-        profile: (profile ?? null) as Record<string, unknown> | null
-      });
-
-      if (!linkedUser) {
-        return '/sign-in?error=OAuthAccountNotLinked';
-      }
-
-      user.id = String(linkedUser.id);
-      user.email = linkedUser.email;
-      user.name = linkedUser.name;
-      user.role = linkedUser.role;
-
-      await logUserSignIn(linkedUser.id);
       return true;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
+        token.sub = String(user.id);
+        token.id = String(user.id);
+        token.role = typeof user.role === 'string' ? user.role : undefined;
       }
+
+      if (!token.sub) {
+        return token;
+      }
+
+      const currentUser = await db.user.findUnique({
+        where: { id: Number(token.sub) },
+        select: {
+          deletedAt: true,
+          role: true
+        }
+      });
+
+      if (!currentUser || currentUser.deletedAt) {
+        return null;
+      }
+
+      token.id = token.sub;
+      token.role = currentUser.role;
 
       return token;
     },
@@ -123,9 +71,32 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     }
-  }
-};
+  },
+  events: {
+    async signIn({ user }) {
+      const userId = Number(user.id);
 
-export async function auth() {
-  return getServerSession(authOptions);
-}
+      if (!Number.isInteger(userId) || userId <= 0) {
+        return;
+      }
+
+      await logUserSignIn(userId);
+    },
+    async linkAccount({ user, account }) {
+      if (account.provider === 'resend') {
+        return;
+      }
+
+      const userId = Number(user.id);
+
+      if (!Number.isInteger(userId) || userId <= 0) {
+        return;
+      }
+
+      const teamId = await getUserTeamId(userId);
+      await logAuthActivity(teamId, userId, ActivityType.LINK_AUTH_PROVIDER);
+    }
+  }
+} satisfies NextAuthConfig;
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);

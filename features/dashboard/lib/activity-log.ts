@@ -2,8 +2,6 @@ import {
   AlertCircle,
   CheckCircle,
   Link2,
-  Lock,
-  LogOut,
   Mail,
   Settings,
   Unlink2,
@@ -19,8 +17,6 @@ import { getCurrentUser } from '@/features/auth/lib/current-user';
 export const activityIconMap: Record<string, LucideIcon> = {
   SIGN_UP: UserPlus,
   SIGN_IN: UserCog,
-  SIGN_OUT: LogOut,
-  UPDATE_PASSWORD: Lock,
   DELETE_ACCOUNT: UserMinus,
   UPDATE_ACCOUNT: Settings,
   CREATE_TEAM: UserPlus,
@@ -77,10 +73,6 @@ export function formatActivityAction(action: string) {
       return 'You signed up';
     case 'SIGN_IN':
       return 'You signed in';
-    case 'SIGN_OUT':
-      return 'You signed out';
-    case 'UPDATE_PASSWORD':
-      return 'You changed your password';
     case 'DELETE_ACCOUNT':
       return 'You deleted your account';
     case 'UPDATE_ACCOUNT':

@@ -1,6 +1,4 @@
 import { db } from './prisma';
-import { hashPassword } from '@/lib/auth/session';
-import { ensureCredentialsAuthAccount } from '@/features/auth/lib/auth-account';
 import { stripe } from '@/lib/stripe/client';
 
 async function createStripeProducts() {
@@ -41,23 +39,17 @@ async function createStripeProducts() {
 
 async function seed() {
   const email = 'test@test.com';
-  const password = 'admin123';
-  const passwordHash = await hashPassword(password);
 
-  const user = await db.user.upsert({
+  await db.user.upsert({
     where: { email },
     update: {
-      passwordHash,
       role: 'owner'
     },
     create: {
       email,
-      passwordHash,
       role: 'owner'
     }
   });
-
-  await ensureCredentialsAuthAccount(user.id, user.email);
 
   console.log('Initial user ready.');
 
@@ -71,6 +63,14 @@ async function seed() {
         name: 'Test Team'
       }
     });
+  }
+
+  const user = await db.user.findUnique({
+    where: { email }
+  });
+
+  if (!user) {
+    throw new Error('Seed user not found');
   }
 
   const existingTeamMember = await db.teamMember.findFirst({

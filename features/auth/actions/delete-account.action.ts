@@ -1,26 +1,14 @@
 'use server';
 
-import { redirect } from 'next/navigation';
-
 import { validatedActionWithUser } from '@/lib/auth/middleware';
-import { comparePasswords } from '@/lib/auth/session';
 import { ActivityType } from '@/lib/db/types';
 import { db } from '@/lib/db/prisma';
-import { clearAuthSession } from '@/features/auth/lib/auth-session';
 import { getUserWithTeam } from '@/features/auth/lib/current-user';
 import { deleteAccountSchema } from '@/features/auth/schemas/account.schema';
 
 export const deleteAccountAction = validatedActionWithUser(
   deleteAccountSchema,
-  async ({ password }, _, user) => {
-    const isPasswordValid = await comparePasswords(password, user.passwordHash);
-    if (!isPasswordValid) {
-      return {
-        password,
-        error: 'Incorrect password. Account deletion failed.'
-      };
-    }
-
+  async (_, __, user) => {
     const userWithTeam = await getUserWithTeam(user.id);
 
     await db.$transaction(async (tx) => {
@@ -39,8 +27,21 @@ export const deleteAccountAction = validatedActionWithUser(
         where: { id: user.id },
         data: {
           deletedAt: new Date(),
-          email: `${user.email}-${user.id}-deleted`
+          email: `${user.email}-${user.id}-deleted`,
+          image: null
         }
+      });
+
+      await tx.account.deleteMany({
+        where: { userId: user.id }
+      });
+
+      await tx.session.deleteMany({
+        where: { userId: user.id }
+      });
+
+      await tx.verificationToken.deleteMany({
+        where: { identifier: user.email }
       });
 
       if (userWithTeam?.teamId) {
@@ -53,7 +54,8 @@ export const deleteAccountAction = validatedActionWithUser(
       }
     });
 
-    await clearAuthSession();
-    redirect('/sign-in');
+    return {
+      success: 'Account deleted successfully.'
+    };
   }
 );

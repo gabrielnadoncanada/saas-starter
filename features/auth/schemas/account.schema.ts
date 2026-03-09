@@ -1,13 +1,11 @@
 import { z } from 'zod';
 
-export const updatePasswordSchema = z.object({
-  currentPassword: z.string().min(8).max(100),
-  newPassword: z.string().min(8).max(100),
-  confirmPassword: z.string().min(8).max(100)
-});
+export const DELETE_CONFIRMATION_WORD = 'DELETE';
 
 export const deleteAccountSchema = z.object({
-  password: z.string().min(8).max(100)
+  confirmation: z
+    .string()
+    .refine((val) => val === DELETE_CONFIRMATION_WORD, 'Type DELETE to confirm.')
 });
 
 export const updateAccountSchema = z.object({

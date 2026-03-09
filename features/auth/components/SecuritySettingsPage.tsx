@@ -25,22 +25,14 @@ export async function SecuritySettingsPage({
   const oauthProviders = getEnabledOAuthProviderIds();
   const linkedAccounts = await getLinkedAccountsOverview(user.id, oauthProviders);
   const success = getSingleSearchParam(params.success);
-  const error = getSingleSearchParam(params.error);
   const provider = getSingleSearchParam(params.provider);
   const providerLabel =
     provider && provider in OAUTH_PROVIDER_LABELS
       ? OAUTH_PROVIDER_LABELS[provider as keyof typeof OAUTH_PROVIDER_LABELS]
       : 'Provider';
-  const errorMessage =
-    error === 'ProviderAlreadyLinked'
-      ? `${providerLabel} is already linked to another account.`
-      : error === 'ProviderAlreadyOnAccount'
-        ? `This account already has a linked ${providerLabel} sign-in.`
-        : undefined;
 
   return (
     <SecuritySettingsClient
-      hasPassword={linkedAccounts.hasPassword}
       providers={linkedAccounts.providers.map((linkedProvider) => ({
         ...linkedProvider,
         linkedAt: linkedProvider.linkedAt?.toISOString() ?? null,
@@ -49,8 +41,7 @@ export async function SecuritySettingsPage({
           : null
       }))}
       feedback={{
-        success: success === 'linked' ? `${providerLabel} linked successfully.` : undefined,
-        error: errorMessage
+        success: success === 'linked' ? `${providerLabel} linked successfully.` : undefined
       }}
     />
   );
