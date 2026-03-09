@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react';
 import { Loader2, Mail } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { getPostSignInCallbackUrl } from '@/features/auth/lib/post-sign-in';
+import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
 
 type MagicLinkFormProps = {
   email: string;
@@ -27,6 +27,7 @@ export function MagicLinkForm({ email, redirect, priceId, inviteId }: MagicLinkF
     }
 
     setError('');
+
     startTransition(async () => {
       const result = await signIn('resend', {
         email,
@@ -65,6 +66,7 @@ export function MagicLinkForm({ email, redirect, priceId, inviteId }: MagicLinkF
           </>
         )}
       </Button>
+
       {error ? <p className="text-sm text-red-500">{error}</p> : null}
     </div>
   );

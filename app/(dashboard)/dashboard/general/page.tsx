@@ -1,5 +1,5 @@
-import { GeneralSettingsPage } from '@/features/auth/components/GeneralSettingsPage';
+import { GeneralSettingsSection } from '@/features/auth/components/settings/GeneralSettingsSection';
 
-export default function GeneralPage() {
-  return <GeneralSettingsPage />;
+export default function SettingsPage() {
+  return <GeneralSettingsSection />;
 }

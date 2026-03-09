@@ -3,8 +3,8 @@
 import { validatedActionWithUser } from '@/lib/auth/middleware';
 import { ActivityType } from '@/lib/db/types';
 import { db } from '@/lib/db/prisma';
-import { logAuthActivity } from '@/features/auth/lib/auth-activity';
-import { getUserWithTeam } from '@/features/auth/lib/current-user';
+import { logAuthActivity } from '@/features/auth/server/auth-activity';
+import { getUserWithTeam } from '@/features/auth/server/current-user';
 import { removeTeamMemberSchema } from '@/features/team/schemas/team.schema';
 
 export const removeTeamMemberAction = validatedActionWithUser(

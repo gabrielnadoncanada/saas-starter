@@ -1,4 +1,4 @@
-import { getCurrentUser } from '@/features/auth/lib/current-user';
+import { getCurrentUser } from '@/features/auth/server/current-user';
 
 export async function GET() {
   const user = await getCurrentUser();

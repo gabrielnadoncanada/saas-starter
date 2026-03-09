@@ -5,7 +5,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { ActivityType } from '@/lib/db/types';
 import { db } from '@/lib/db/prisma';
 import { getAuthProviders } from '@/lib/auth/providers';
-import { getUserTeamId, logAuthActivity, logUserSignIn } from '@/features/auth/lib/auth-activity';
+import { getUserTeamId, logAuthActivity, logUserSignIn } from '@/features/auth/server/auth-activity';
 
 export const authConfig = {
   adapter: PrismaAdapter(db),

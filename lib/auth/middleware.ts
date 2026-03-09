@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { TeamDataWithMembers, User } from '@/lib/db/types';
 import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/features/auth/lib/current-user';
+import { getCurrentUser } from '@/features/auth/server/current-user';
 import { getCurrentTeam } from '@/features/team/lib/current-team';
 
 export type ActionState = {

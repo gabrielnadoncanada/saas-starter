@@ -2,7 +2,7 @@
 
 import { validatedActionWithUser } from '@/lib/auth/middleware';
 import { db } from '@/lib/db/prisma';
-import { getUserWithTeam } from '@/features/auth/lib/current-user';
+import { getUserWithTeam } from '@/features/auth/server/current-user';
 import { inviteTeamMemberToTeam } from '@/features/team/lib/team-invitations';
 import { inviteTeamMemberSchema } from '@/features/team/schemas/team.schema';
 

@@ -1,215 +1,159 @@
 # Naming
 
-Use these naming rules to keep the codebase consistent.
+## Core rule
 
-## Goal
+Use names that describe responsibility clearly.
 
-Naming should make file responsibility obvious at a glance.
+Optimize for:
+- fast scanning
+- low ambiguity
+- predictable imports
+- consistency across the codebase
 
-Prefer consistent responsibility-based suffixes over random naming styles.
+---
 
-## 1) Components
+## Route files
 
-Use PascalCase and match the exported component name.
+Reserve these names for the `app/` directory only:
+- `page.tsx`
+- `layout.tsx`
+- `loading.tsx`
+- `error.tsx`
+- `route.ts`
 
-Examples:
-
-- `InvoiceForm.tsx`
-- `LoginForm.tsx`
-- `Sidebar.tsx`
-- `InvoiceTable.tsx`
-
-Rules:
-
-- one main component per file
-- file name should match the component export
-- avoid vague names like `Component.tsx` or `Section.tsx`
-
-## 2) Hooks
-
-Use `use` + PascalCase.
-
-Examples:
-
-- `useInvoiceDialog.ts`
-- `useInvoiceFilters.ts`
-- `useDebounce.ts`
-- `useMediaQuery.ts`
-
-Rules:
-
-- only use hook naming for real React hooks
-- do not name pure helper functions as hooks
-- if it does not use React behavior, do not prefix it with `use`
-
-Bad example:
-
-```ts
-export function useCalculateInvoiceTotal() {}
-```
-
-Better:
-
-```ts
-export function calculateInvoiceTotal() {}
-```
-
-## 3) Schemas
-
-Use `domain.schema.ts`.
-
-Examples:
-
-- `invoice.schema.ts`
-- `login.schema.ts`
-- `customer.schema.ts`
-
-Use schema files for:
-
-- zod validation
-- input contracts
-- parsing rules
-- structured validation logic
-
-## 4) Types
-
-Use `domain.types.ts`.
-
-Examples:
-
-- `invoice.types.ts`
-- `customer.types.ts`
-- `auth.types.ts`
-
-Use for:
-
-- interfaces
-- type aliases
-- domain type contracts
-
-## 5) Mappers
-
-Use `domain.mapper.ts`.
-
-Examples:
-
-- `invoice.mapper.ts`
-- `customer.mapper.ts`
-
-Use mapper files for:
-
-- data transformations
-- db-to-ui mapping
-- form-to-payload mapping
-- transport normalization
-
-Do not mix naming styles like:
-
-- `invoice.schema.ts`
-- `invoice-mapper.ts`
+Do not use `XxxPage.tsx` inside feature folders unless the file is truly a route file in `app/`.
 
 Prefer:
+- `GeneralSettingsSection.tsx`
+- `SecuritySettingsPanel.tsx`
+- `GeneralSettingsForm.tsx`
+- `DeleteAccountCard.tsx`
 
-- `invoice.schema.ts`
-- `invoice.mapper.ts`
+Avoid:
+- `GeneralSettingsPage.tsx`
+- `SecuritySettingsPage.tsx`
 
-## 6) Constants
+---
 
-Use `domain.constants.ts`.
+## Components
 
-Examples:
+Use `PascalCase.tsx`.
 
-- `invoice.constants.ts`
-- `billing.constants.ts`
-
-Use for:
-
-- domain-specific defaults
-- reusable labels
-- stable config values
-
-Do not create constants files unless there is more than one meaningful constant.
-
-## 7) Actions
-
-Use one consistent naming style across the repo.
-
-Recommended default:
-
-- `create-invoice.action.ts`
-- `update-customer.action.ts`
-- `sign-in.action.ts`
-
-Use action files for:
-
-- server actions
-- user-triggered mutations
-- action-based domain operations
-
-Do not invent several styles in the same repository.
-
-## 8) Pure helpers
-
-Use descriptive responsibility-based names.
-
-Examples:
-
-- `invoice-total.ts`
-- `currency-format.ts`
-- `date-range.ts`
-
-If the file has a clear role, name it after that role.
-
-Avoid broad names like:
-
-- `helpers.ts`
-- `utils.ts`
-- `common.ts`
-
-unless the scope is very small and local.
-
-## 9) Folder naming
-
-Use lowercase folder names.
-
-Examples:
-
-- `features/invoices/`
-- `features/customers/`
-- `components/shared/`
-
-Keep folder names short, explicit, and domain-based.
-
-## 10) Consistency rules
-
-Once a style is chosen, keep it consistent.
-
-Preferred style:
-
-- components -> `PascalCase.tsx`
-- hooks -> `useXxx.ts`
-- schemas/types/mappers/constants -> `domain.suffix.ts`
-- actions -> `kebab-case.action.ts`
-
-Examples of a good set:
-
+Prefer names that communicate UI role:
 - `InvoiceForm.tsx`
-- `useInvoiceDialog.ts`
-- `invoice.schema.ts`
-- `invoice.types.ts`
-- `invoice.mapper.ts`
+- `BillingSection.tsx`
+- `CustomerCard.tsx`
+- `UsagePanel.tsx`
+
+Helpful suffixes:
+- `Form`
+- `Section`
+- `Panel`
+- `Card`
+- `Dialog`
+- `Table`
+- `List`
+
+Do not use vague names like:
+- `Data.tsx`
+- `Info.tsx`
+- `Main.tsx`
+- `UtilsCard.tsx`
+
+---
+
+## Actions
+
+Use kebab-case with `.action.ts`.
+
+Examples:
 - `create-invoice.action.ts`
+- `delete-account.action.ts`
+- `update-account.action.ts`
 
-## 11) Default recommendation
+This makes server actions easy to recognize.
 
-Use this naming model by default:
+---
 
-- `ComponentName.tsx`
-- `useThing.ts`
-- `thing.schema.ts`
-- `thing.types.ts`
-- `thing.mapper.ts`
-- `thing.constants.ts`
-- `do-something.action.ts`
+## Schemas
 
-This should be the default answer unless the user already has an existing repo convention.
+Use singular domain names with `.schema.ts`.
+
+Examples:
+- `invoice.schema.ts`
+- `account.schema.ts`
+- `billing.schema.ts`
+
+Keep runtime validation here.
+
+---
+
+## Types
+
+Use `.types.ts` for shared contracts.
+
+Examples:
+- `auth.types.ts`
+- `billing.types.ts`
+- `invoice.types.ts`
+
+Do not create many tiny type files if a feature only has a few shared contracts.
+
+---
+
+## Hooks
+
+Use `useXxx.ts`.
+
+Examples:
+- `useBillingFilters.ts`
+- `useInvoiceSelection.ts`
+
+Do not create a hook when:
+- a plain function is enough
+- the logic belongs in a server component
+- the hook is only wrapping another function without adding real value
+
+---
+
+## Server files
+
+There is no mandatory suffix, but names should describe the server responsibility directly.
+
+Good examples:
+- `billing-usage.ts`
+- `complete-post-sign-in.ts`
+- `create-invoice.ts`
+- `current-user.ts`
+- `linked-accounts.ts`
+
+Keep names concrete and feature-scoped.
+
+---
+
+## Utils files
+
+Use descriptive names based on the helper purpose.
+
+Examples:
+- `format-customer-label.ts`
+- `invoice-totals.ts`
+- `post-sign-in.ts`
+
+Avoid vague names like:
+- `common.ts`
+- `helpers.ts`
+- `misc.ts`
+
+---
+
+## Naming consistency
+
+Do not mix styles in the same codebase.
+
+Pick one consistent style and keep it:
+- components -> PascalCase
+- non-component files -> kebab-case
+- route files -> Next.js reserved names
+
+Consistency matters more than inventing new naming patterns per feature.

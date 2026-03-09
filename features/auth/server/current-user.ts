@@ -1,5 +1,5 @@
-import { auth } from '@/auth';
-import { db } from '@/lib/db/prisma';
+import { auth } from "@/auth";
+import { db } from "@/lib/db/prisma";
 
 export async function getCurrentUser() {
   const session = await auth();
@@ -12,8 +12,8 @@ export async function getCurrentUser() {
   return db.user.findFirst({
     where: {
       id: userId,
-      deletedAt: null
-    }
+      deletedAt: null,
+    },
   });
 }
 
@@ -23,9 +23,9 @@ export async function getUserWithTeam(userId: number) {
     include: {
       teamMembers: {
         take: 1,
-        select: { teamId: true }
-      }
-    }
+        select: { teamId: true },
+      },
+    },
   });
 
   if (!user) {
@@ -34,6 +34,6 @@ export async function getUserWithTeam(userId: number) {
 
   return {
     user,
-    teamId: user.teamMembers[0]?.teamId ?? null
+    teamId: user.teamMembers[0]?.teamId ?? null,
   };
 }

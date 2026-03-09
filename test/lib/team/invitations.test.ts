@@ -1,6 +1,3 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-
 import { createInviteTeamMemberHandler } from '@/features/team/lib/team-invitations';
 
 function createDbDouble(overrides: Partial<Record<string, unknown>> = {}) {
@@ -46,7 +43,7 @@ function createDbDouble(overrides: Partial<Record<string, unknown>> = {}) {
   };
 }
 
-test('inviteTeamMemberToTeam rejects existing members', async () => {
+it('inviteTeamMemberToTeam rejects existing members', async () => {
   const { db } = createDbDouble({
     teamMember: {
       findFirst: async () => ({ id: 1 })
@@ -66,10 +63,10 @@ test('inviteTeamMemberToTeam rejects existing members', async () => {
     role: 'member'
   });
 
-  assert.deepEqual(result, { error: 'User is already a member of this team' });
+  expect(result).toEqual({ error: 'User is already a member of this team' });
 });
 
-test('inviteTeamMemberToTeam rejects duplicate pending invitations', async () => {
+it('inviteTeamMemberToTeam rejects duplicate pending invitations', async () => {
   const { db } = createDbDouble({
     invitation: {
       findFirst: async () => ({ id: 4 })
@@ -89,12 +86,12 @@ test('inviteTeamMemberToTeam rejects duplicate pending invitations', async () =>
     role: 'member'
   });
 
-  assert.deepEqual(result, {
+  expect(result).toEqual({
     error: 'An invitation has already been sent to this email'
   });
 });
 
-test('inviteTeamMemberToTeam creates invitation and sends email', async () => {
+it('inviteTeamMemberToTeam creates invitation and sends email', async () => {
   const { db, invitationCreateCalls, activityLogCalls } = createDbDouble();
   const sentPayloads: unknown[] = [];
   const handler = createInviteTeamMemberHandler({
@@ -112,10 +109,10 @@ test('inviteTeamMemberToTeam creates invitation and sends email', async () => {
     role: 'owner'
   });
 
-  assert.deepEqual(result, { success: 'Invitation sent successfully' });
-  assert.equal(invitationCreateCalls.length, 1);
-  assert.equal(activityLogCalls.length, 1);
-  assert.deepEqual(sentPayloads, [
+  expect(result).toEqual({ success: 'Invitation sent successfully' });
+  expect(invitationCreateCalls).toHaveLength(1);
+  expect(activityLogCalls).toHaveLength(1);
+  expect(sentPayloads).toEqual([
     {
       email: 'member@example.com',
       role: 'owner',
@@ -126,7 +123,7 @@ test('inviteTeamMemberToTeam creates invitation and sends email', async () => {
   ]);
 });
 
-test('inviteTeamMemberToTeam logs email failures and keeps invitation created', async () => {
+it('inviteTeamMemberToTeam logs email failures and keeps invitation created', async () => {
   const { db } = createDbDouble();
   const errors: unknown[] = [];
   const originalConsoleError = console.error;
@@ -150,10 +147,10 @@ test('inviteTeamMemberToTeam logs email failures and keeps invitation created', 
       role: 'member'
     });
 
-    assert.deepEqual(result, {
+    expect(result).toEqual({
       success: 'Invitation created successfully. Email delivery could not be confirmed.'
     });
-    assert.equal(errors.length, 1);
+    expect(errors).toHaveLength(1);
   } finally {
     console.error = originalConsoleError;
   }

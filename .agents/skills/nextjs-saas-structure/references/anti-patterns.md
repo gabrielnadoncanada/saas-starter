@@ -1,214 +1,244 @@
 # Anti-patterns
 
-Use this file to identify common structural mistakes in Next.js App Router SaaS codebases.
+## 1. Heavy logic in `app/`
 
-## 1) Putting too much in `app/`
+Bad:
 
-Bad pattern:
+```txt
+app/
+  dashboard/
+    invoices/
+      create-invoice.ts
+      invoice-utils.ts
+      page.tsx
+      validation.ts
+```
 
-- business logic inside route files
-- validation logic inside `page.tsx`
-- large data transformation inside layout files
-- feature orchestration inside `app/`
+Problem:
+- route composition and business logic are mixed
+- route folders become hard to scan
+- feature boundaries disappear
 
-Why it is bad:
+Prefer:
+- keep route files in `app/`
+- move business logic to `features/<feature>/`
 
-- route files become heavy
-- logic becomes hard to reuse
-- routing concerns and business concerns get mixed
+---
 
-Better:
+## 2. Feature-local `lib/` as a catch-all
 
-- keep `app/` for routing and composition
-- move business logic into `features/`
+Bad:
 
-## 2) Using global folders for everything
+```txt
+features/
+  auth/
+    lib/
+      auth-activity.ts
+      current-user.ts
+      linked-accounts.ts
+      post-sign-in.ts
+```
 
-Bad pattern:
+Problem:
+- `lib/` says almost nothing
+- pure helpers and server-only logic get mixed together
+- imports become harder to reason about
+
+Prefer:
+- `server/` for server-only logic
+- `utils/` for pure helpers
+
+---
+
+## 3. Fake page components inside features
+
+Bad:
+
+```txt
+features/
+  auth/
+    components/
+      GeneralSettingsPage.tsx
+      SecuritySettingsPage.tsx
+```
+
+Problem:
+- `Page` strongly implies a route file
+- conflicts with Next.js mental model
+- confuses future maintainers
+
+Prefer:
+- `GeneralSettingsSection.tsx`
+- `SecuritySettingsPanel.tsx`
+- `GeneralSettingsForm.tsx`
+
+Reserve actual `page.tsx` for `app/`.
+
+---
+
+## 4. Too many folders too early
+
+Bad:
+
+```txt
+features/
+  invoices/
+    actions/
+    dto/
+    mappers/
+    policies/
+    presenters/
+    repositories/
+    services/
+    use-cases/
+```
+
+Problem:
+- high cognitive overhead
+- slow onboarding
+- too much ceremony for small SaaS starters
+- template becomes harder to sell and adopt
+
+Prefer:
+- start with `actions/`, `components/`, `server/`, `schemas/`, `utils/`, `types/`
+- only add layers when real complexity appears
+
+---
+
+## 5. Client fetch for simple initial form data
+
+Bad:
+- a settings form mounts
+- calls SWR or fetches `/api/user`
+- only to populate initial fields already available on the server
+
+Problem:
+- unnecessary client complexity
+- worse App Router usage
+- slower and noisier code
+
+Prefer:
+- fetch initial data in a server component
+- pass it as props to the client form
+
+---
+
+## 6. Custom hooks for everything
+
+Bad:
+- `useAccountData`
+- `useCurrentUserForm`
+- `useInvoiceActions`
+- each only wraps one fetch or one function
+
+Problem:
+- hides simple logic
+- spreads behavior across too many files
+- increases indirection without real value
+
+Prefer:
+- plain functions when logic is not React-specific
+- server components when data can be loaded on the server
+- hooks only for real reusable client-side behavior
+
+---
+
+## 7. Shared components folder absorbing feature UI
+
+Bad:
 
 ```txt
 components/
-hooks/
-services/
-utils/
-schemas/
+  shared/
+    BillingPlanCard.tsx
+    DeleteAccountCard.tsx
+    InvoiceFilters.tsx
 ```
 
-Why it is bad:
+Problem:
+- feature boundaries disappear
+- shared folder becomes a dumping ground
+- reusability is assumed too early
 
-- feature code gets scattered
-- business logic becomes harder to trace
-- scaling increases cognitive load
+Prefer:
+- keep feature UI inside the feature
+- move to `components/shared/` only when reuse is proven
 
-Better:
+---
 
-- group business logic inside `features/<feature>/`
+## 8. Redundant `types/`
 
-## 3) Treating `lib/` as a junk drawer
+Bad:
+- every local prop type moved to `types/`
+- Prisma model aliases copied with no added meaning
+- Zod-inferred types duplicated without reason
 
-Bad pattern:
+Problem:
+- more files, less clarity
+- false sense of structure
+- maintenance overhead
 
-- random business functions inside global `lib/`
-- feature-specific mappers in root `lib/`
-- mixed technical and domain helpers in one place
+Prefer:
+- keep local types local
+- use feature `types/` only for shared contracts
+- keep the folder small
 
-Why it is bad:
+---
 
-- unclear ownership
-- poor discoverability
-- weak boundaries
+## 9. Global `lib/` holding feature business logic
 
-Better:
-
-- global technical code -> `lib/`
-- feature-specific pure helpers -> `features/<feature>/lib/`
-
-## 4) Putting feature logic in shared UI
-
-Bad pattern:
-
-- shared components importing invoice-specific logic
-- business conditions embedded in generic table wrappers
-- domain rules inside `components/shared/`
-
-Why it is bad:
-
-- shared UI stops being reusable
-- feature coupling increases
-- maintenance gets harder
-
-Better:
-
-- keep shared UI generic
-- keep domain logic inside features
-
-## 5) Creating hooks for non-hook logic
-
-Bad pattern:
-
-```ts
-export function useCalculateTax() {}
-```
-
-Why it is bad:
-
-- misleading naming
-- confusion about React behavior
-- logic is harder to classify correctly
-
-Better:
-
-- hooks only for reusable React behavior
-- pure functions go in `lib/`
-
-## 6) Mixing naming styles
-
-Bad pattern:
-
-- `invoice.schema.ts`
-- `invoice-mapper.ts`
-- `InvoiceTypes.ts`
-- `useinvoicefilters.ts`
-
-Why it is bad:
-
-- naming becomes inconsistent
-- responsibility is harder to read quickly
-- codebase feels fragmented
-
-Better:
-
-- one naming style per responsibility
-- consistent suffixes
-
-## 7) Over-architecting too early
-
-Bad pattern:
+Bad:
 
 ```txt
-domain/
-application/
-infrastructure/
-repositories/
-use-cases/
+lib/
+  auth-onboarding.ts
+  customer-import.ts
+  invoice-summary.ts
 ```
 
-Why it is bad:
+Problem:
+- cross-feature and feature-specific code are mixed
+- the app becomes organized around technical leftovers instead of domains
 
-- heavy upfront complexity
-- slower iteration
-- more ceremony than value for most SaaS starters
+Prefer:
+- domain logic inside `features/<feature>/`
+- global `lib/` only for app-wide technical infrastructure
 
-Better:
+---
 
-- start with `app/`, `features/`, `components/`, `lib/`
-- add complexity only after repeated need
+## 10. Prisma inside server actions
 
-## 8) Too many top-level folders
+Bad:
+- a server action parses input
+- runs several Prisma queries and transactions
+- contains business rules and response mapping
+- also calls `revalidatePath` or `redirect`
 
-Bad pattern:
+Problem:
+- hard to test
+- tightly coupled to Next.js
+- reusable domain logic gets trapped at the framework boundary
 
-```txt
-actions/
-schemas/
-mappers/
-services/
-constants/
-repositories/
-ui/
-hooks/
-helpers/
-```
+Prefer:
+- keep the action thin
+- move Prisma queries, transactions, and feature server logic into `server/`
+- let the action handle only the boundary concerns
 
-Why it is bad:
+---
 
-- weak domain grouping
-- poor discoverability
-- difficult navigation
+## 11. Architecture purity over usability
 
-Better:
+Bad mindset:
+- optimize for theoretical cleanliness first
+- add layers before complexity exists
+- force every feature into the same advanced pattern
 
-- keep most business logic inside feature folders
-- use top-level folders only for truly shared concerns
-
-## 9) Feature folders with no clear internal rules
-
-Bad pattern:
-
-```txt
-features/
-  invoices/
-    random-file.ts
-    helper.ts
-    invoiceThing.ts
-    test2.ts
-```
-
-Why it is bad:
-
-- no predictable structure
+Problem:
 - harder onboarding
-- harder refactoring
+- slower delivery
+- worse DX
+- poorer template usability for indies
 
-Better:
-
-```txt
-features/
-  invoices/
-    components/
-    actions/
-    schemas/
-    lib/
-    types/
-    hooks/
-```
-
-## 10) Default recommendation
-
-When reviewing a structure, fix these problems first:
-
-1. move business logic out of `app/`
-2. regroup scattered business code inside `features/`
-3. clean naming inconsistencies
-4. move feature-specific code out of shared folders
-5. remove unnecessary architectural layers
+Prefer:
+- optimize for clarity, speed, and maintainability
+- let abstraction follow actual complexity

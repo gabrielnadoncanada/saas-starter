@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
 import { createCheckoutSession } from '@/features/billing/lib/stripe-billing';
-import { getCurrentUser } from '@/features/auth/lib/current-user';
-import { completePostSignIn } from '@/features/auth/lib/complete-post-sign-in';
+import { getCurrentUser } from '@/features/auth/server/current-user';
+import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
 import { db } from '@/lib/db/prisma';
 
 type PostSignInPageProps = {

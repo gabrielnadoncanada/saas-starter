@@ -1,310 +1,301 @@
 # Examples
 
-Use these examples as default structure references when the user asks how to organize a Next.js App Router SaaS project.
+## 1. Default app structure
 
-## 1) Small SaaS starter
-
-Use this for:
-
-- MVPs
-- solo projects
-- early-stage products
-- limited domain complexity
+Use this as the default starting point for a Next.js App Router SaaS project:
 
 ```txt
 app/
-  (marketing)/
-    page.tsx
-    pricing/
-      page.tsx
-  (dashboard)/
-    dashboard/
-      page.tsx
-  api/
-    stripe/
-      webhook/
-        route.ts
-  layout.tsx
-  page.tsx
-
 features/
-  auth/
-    components/
-    actions/
-    schemas/
-    types/
-  invoices/
-    components/
-    actions/
-    schemas/
-    lib/
-    types/
-
 components/
   ui/
   shared/
-
 lib/
-  auth/
-  stripe/
-  supabase/
-  utils/
-
 hooks/
 types/
 constants/
 ```
 
-### Why this structure works
+Notes:
 
-- `app/` stays focused on routing
-- `features/` contains business logic
-- shared UI stays outside features
-- technical infrastructure stays in `lib/`
-- enough structure without enterprise overhead
+- `app/` is for route composition only
+- `features/` holds domain code
+- `components/ui/` is base UI
+- `components/shared/` is app-level reusable UI
+- `lib/` is shared technical infrastructure
+- `hooks/`, `types/`, `constants/` are optional
 
-## 2) Medium SaaS app
+---
 
-Use this for:
+## 2. Default feature structure
 
-- several business domains
-- multiple dashboards or sections
-- more shared internal logic
-- growing team collaboration
+For most business features, start here:
+
+```txt
+features/
+  invoices/
+    actions/
+    components/
+    server/
+    schemas/
+    utils/
+    types/
+```
+
+Meaning:
+
+- `actions/` -> server actions
+- `components/` -> feature UI
+- `server/` -> server-only data and feature logic
+- `schemas/` -> zod validation
+- `utils/` -> pure feature helpers
+- `types/` -> shared feature contracts
+
+Only add folders when needed.
+
+---
+
+## 3. Auth feature example
+
+```txt
+features/
+  auth/
+    actions/
+      delete-account.action.ts
+      unlink-auth-provider.action.ts
+      update-account.action.ts
+
+    components/
+      login/
+        LoginForm.tsx
+        MagicLinkForm.tsx
+      settings/
+        DeleteAccountCard.tsx
+        GeneralSettingsForm.tsx
+        GeneralSettingsSection.tsx
+        LinkedAccountsCard.tsx
+        SecuritySettingsPanel.tsx
+        SecuritySettingsSection.tsx
+
+    schemas/
+      account.schema.ts
+
+    server/
+      auth-activity.ts
+      complete-post-sign-in.ts
+      current-user.ts
+      linked-accounts.ts
+      onboarding.ts
+
+    types/
+      auth.types.ts
+
+    utils/
+      post-sign-in.ts
+```
+
+Why this is good:
+
+- auth UI is grouped by sub-area
+- server-only code is easy to spot
+- schemas stay separate from types
+- the feature has no ambiguous local `lib/`
+- route-level naming stays out of the feature
+
+---
+
+## 4. Billing feature example
+
+```txt
+features/
+  billing/
+    actions/
+      create-checkout-session.action.ts
+      open-customer-portal.action.ts
+
+    components/
+      BillingPlanCard.tsx
+      BillingSection.tsx
+      UsageCard.tsx
+
+    server/
+      billing-usage.ts
+      current-subscription.ts
+      create-checkout-session.ts
+      open-customer-portal.ts
+
+    schemas/
+      billing.schema.ts
+
+    types/
+      billing.types.ts
+```
+
+Keep it compact.
+Do not create extra folders unless the feature is actually growing.
+
+---
+
+## 5. Feature with no `types/` and no `utils/`
+
+Many features do not need all folders.
+
+```txt
+features/
+  feedback/
+    actions/
+      submit-feedback.action.ts
+    components/
+      FeedbackForm.tsx
+    schemas/
+      feedback.schema.ts
+    server/
+      submit-feedback.ts
+```
+
+This is perfectly acceptable.
+Do not create `types/`, `hooks/`, or `utils/` just to complete a pattern.
+
+---
+
+## 6. Good route-to-feature composition
 
 ```txt
 app/
-  (marketing)/
-    page.tsx
-    pricing/
-      page.tsx
   (dashboard)/
-    dashboard/
-      page.tsx
-    invoices/
-      page.tsx
-    customers/
-      page.tsx
     settings/
       page.tsx
-  api/
-    stripe/
-      webhook/
-        route.ts
-    ai/
-      generate/
-        route.ts
-  layout.tsx
-  page.tsx
+    security/
+      page.tsx
 
 features/
   auth/
     components/
-    actions/
-    schemas/
-    hooks/
-    types/
-
-  invoices/
-    components/
-    actions/
-    schemas/
-    lib/
-    hooks/
-    types/
-
-  customers/
-    components/
-    actions/
-    schemas/
-    lib/
-    hooks/
-    types/
-
-  billing/
-    components/
-    actions/
-    lib/
-    types/
-
-  dashboard/
-    components/
-    lib/
-
-components/
-  ui/
-  shared/
-    page-header/
-    data-table/
-    empty-state/
-
-lib/
-  auth/
-  db/
-  stripe/
-  supabase/
-  ai/
-  utils/
-
-hooks/
-  useDebounce.ts
-  useMediaQuery.ts
-
-types/
-constants/
+      settings/
+        GeneralSettingsSection.tsx
+        SecuritySettingsSection.tsx
 ```
 
-### Why this structure works
+Example route files:
 
-- each domain has its own logic
-- shared app-level UI is separated from feature UI
-- generic hooks remain global
-- feature-specific hooks stay inside the feature
-- still simple enough to navigate quickly
+```tsx
+// app/(dashboard)/settings/page.tsx
+import { GeneralSettingsSection } from "@/features/auth/components/settings/GeneralSettingsSection";
 
-## 3) Larger SaaS app without full clean architecture
+export default function SettingsPage() {
+  return <GeneralSettingsSection />;
+}
+```
 
-Use this for:
+```tsx
+// app/(dashboard)/security/page.tsx
+import { SecuritySettingsSection } from "@/features/auth/components/settings/SecuritySettingsSection";
 
-- large feature surface
-- multiple contributors
-- many shared conventions
-- need for more internal consistency
-- still no need for enterprise layering
+export default function SecurityPage() {
+  return <SecuritySettingsSection />;
+}
+```
+
+Why this is good:
+
+- real route files stay in `app/`
+- feature components are named as sections, not pages
+- business logic stays outside route files
+
+---
+
+## 7. Good server action split
 
 ```txt
-app/
-  (marketing)/
-  (dashboard)/
-    dashboard/
-      page.tsx
-    invoices/
-      page.tsx
-    customers/
-      page.tsx
-    subscriptions/
-      page.tsx
-    analytics/
-      page.tsx
-    settings/
-      page.tsx
-  api/
-    stripe/
-      webhook/
-        route.ts
-    uploads/
-      route.ts
-    ai/
-      route.ts
-  layout.tsx
-  page.tsx
-
 features/
-  auth/
-    components/
-    actions/
-    schemas/
-    hooks/
-    lib/
-    types/
-
   invoices/
-    components/
     actions/
+      create-invoice.action.ts
+    server/
+      create-invoice.ts
     schemas/
-    hooks/
-    lib/
-    types/
-    constants/
-
-  customers/
-    components/
-    actions/
-    schemas/
-    hooks/
-    lib/
-    types/
-
-  billing/
-    components/
-    actions/
-    hooks/
-    lib/
-    types/
-
-  analytics/
-    components/
-    actions/
-    hooks/
-    lib/
-    types/
-
-  settings/
-    components/
-    actions/
-    schemas/
-    lib/
-    types/
-
-components/
-  ui/
-  shared/
-    data-table/
-    dialogs/
-    layout/
-    feedback/
-    navigation/
-
-lib/
-  auth/
-  db/
-  stripe/
-  supabase/
-  ai/
-  telemetry/
-  permissions/
-  utils/
-
-hooks/
-  useDebounce.ts
-  useMediaQuery.ts
-  useLocalStorage.ts
-
-types/
-constants/
+      invoice.schema.ts
 ```
 
-### Why this structure works
+Example responsibility split:
 
-- business domains remain isolated
-- shared infrastructure is centralized
-- no artificial layering is introduced
-- each feature can scale internally without polluting the whole app
+- `actions/create-invoice.action.ts`
+  - validate input
+  - get current user if needed
+  - call server logic
+  - revalidate or redirect
+  - return small serializable result
 
-## Structure selection rule
+- `server/create-invoice.ts`
+  - query db
+  - run feature-specific server logic
+  - stay framework-light when possible
 
-Use this rule:
+This is usually enough for an indie-friendly starter.
 
-- small project -> keep the structure minimal
-- medium project -> expand inside `features/`
-- larger project -> add clarity inside each feature, not more top-level architecture
+---
 
-Do not add new root folders unless there is a repeated need.
-
-## Default recommendation
-
-When unsure, recommend this:
+## 8. Good use of `components/shared/`
 
 ```txt
-app/
-features/
 components/
-  ui/
   shared/
-lib/
-hooks/
-types/
-constants/
+    DataTableToolbar.tsx
+    EmptyState.tsx
+    PageHeader.tsx
 ```
 
-Then adapt only if the user has a concrete reason.
+Use this for reusable app-level UI.
+Do not move feature-specific cards or forms here too early.
+
+---
+
+## 9. Good use of `lib/`
+
+```txt
+lib/
+  auth/
+    auth.ts
+    providers.ts
+  db/
+    prisma.ts
+  payments/
+    stripe.ts
+  utils/
+    format-date.ts
+```
+
+Use global `lib/` for infrastructure and generic cross-feature helpers.
+
+Do not put feature-specific files such as:
+
+- `invoice-summary.ts`
+- `auth-onboarding.ts`
+- `customer-import.ts`
+
+Those belong in their features.
+
+---
+
+## 10. Good use of `utils/`
+
+```txt
+features/
+  auth/
+    utils/
+      post-sign-in.ts
+```
+
+Good candidates:
+
+- URL builders
+- formatting helpers scoped to one feature
+- small pure mappers
+- feature-local helper functions with no DB or framework coupling
+
+Bad candidates:
+
+- prisma queries
+- auth session logic
+- server-only data fetching
+- React hooks

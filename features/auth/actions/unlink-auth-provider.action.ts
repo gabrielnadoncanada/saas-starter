@@ -1,24 +1,24 @@
-'use server';
+"use server";
 
-import { refresh } from 'next/cache';
+import { refresh } from "next/cache";
 
-import { validatedActionWithUser } from '@/lib/auth/middleware';
-import { OAUTH_PROVIDER_LABELS } from '@/lib/auth/providers';
-import { unlinkOAuthAccountForUser } from '@/features/auth/lib/linked-accounts';
-import { unlinkAuthProviderSchema } from '@/features/auth/schemas/account.schema';
+import { validatedActionWithUser } from "@/lib/auth/middleware";
+import { OAUTH_PROVIDER_LABELS } from "@/lib/auth/providers";
+import { unlinkOAuthAccountForUser } from "@/features/auth/server/linked-accounts";
+import { unlinkAuthProviderSchema } from "@/features/auth/schemas/account.schema";
 
 export const unlinkAuthProviderAction = validatedActionWithUser(
   unlinkAuthProviderSchema,
   async ({ provider }, _, user) => {
     const result = await unlinkOAuthAccountForUser({
       userId: user.id,
-      provider
+      provider,
     });
 
-    if (result.status === 'not-found') {
+    if (result.status === "not-found") {
       return {
         provider,
-        error: `${OAUTH_PROVIDER_LABELS[provider]} is not linked to this account.`
+        error: `${OAUTH_PROVIDER_LABELS[provider]} is not linked to this account.`,
       };
     }
 
@@ -26,7 +26,7 @@ export const unlinkAuthProviderAction = validatedActionWithUser(
 
     return {
       provider,
-      success: `${OAUTH_PROVIDER_LABELS[provider]} unlinked successfully.`
+      success: `${OAUTH_PROVIDER_LABELS[provider]} unlinked successfully.`,
     };
-  }
+  },
 );

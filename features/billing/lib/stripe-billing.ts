@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 
 import type { Team } from '@/lib/db/types';
 import { stripe } from '@/lib/stripe/client';
-import { getCurrentUser } from '@/features/auth/lib/current-user';
+import { getCurrentUser } from '@/features/auth/server/current-user';
 import { getTeamByStripeCustomerId, updateTeamSubscription } from '@/features/billing/lib/billing-query';
 
 export async function createCheckoutSession({
@@ -31,6 +31,7 @@ export async function createCheckoutSession({
     success_url: `${process.env.BASE_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.BASE_URL}/pricing`,
     customer: team.stripeCustomerId || undefined,
+    customer_email: team.stripeCustomerId ? undefined : user.email,
     client_reference_id: user.id.toString(),
     allow_promotion_codes: true,
     subscription_data: {

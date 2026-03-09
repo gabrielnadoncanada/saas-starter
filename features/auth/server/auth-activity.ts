@@ -1,11 +1,11 @@
-import { ActivityType } from '@/lib/db/types';
-import { db } from '@/lib/db/prisma';
+import { ActivityType } from "@/lib/db/types";
+import { db } from "@/lib/db/prisma";
 
 export async function getUserTeamId(userId: number) {
   const teamMember = await db.teamMember.findFirst({
     where: { userId },
     select: { teamId: true },
-    orderBy: { id: 'asc' }
+    orderBy: { id: "asc" },
   });
 
   return teamMember?.teamId ?? null;
@@ -15,7 +15,7 @@ export async function logAuthActivity(
   teamId: number | null | undefined,
   userId: number,
   action: ActivityType,
-  ipAddress?: string
+  ipAddress?: string,
 ) {
   if (teamId === null || teamId === undefined) {
     return;
@@ -26,8 +26,8 @@ export async function logAuthActivity(
       teamId,
       userId,
       action,
-      ipAddress: ipAddress || ''
-    }
+      ipAddress: ipAddress || "",
+    },
   });
 }
 
@@ -42,8 +42,8 @@ export async function logUserSignIn(userId: number) {
     data: {
       teamId,
       userId,
-      action: 'SIGN_IN',
-      ipAddress: ''
-    }
+      action: ActivityType.SIGN_IN,
+      ipAddress: "",
+    },
   });
 }

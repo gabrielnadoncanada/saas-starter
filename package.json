@@ -4,7 +4,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "test": "tsx --test test/**/*.test.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:setup": "pnpm exec tsx lib/db/setup.ts",
     "db:seed": "pnpm exec tsx lib/db/seed.ts",
     "db:generate": "pnpm exec prisma generate",
@@ -40,5 +41,8 @@
     "tw-animate-css": "^1.3.0",
     "typescript": "^5.8.3",
     "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.18"
   }
 }

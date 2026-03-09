@@ -7,19 +7,20 @@ type PostSignInParams = {
 export function getPostSignInCallbackUrl({
   redirect,
   priceId,
-  inviteId
+  inviteId,
 }: PostSignInParams) {
   const params = new URLSearchParams();
 
-  if (redirect === 'checkout' && priceId) {
-    params.set('redirect', redirect);
-    params.set('priceId', priceId);
+  if (redirect === "checkout" && priceId) {
+    params.set("redirect", redirect);
+    params.set("priceId", priceId);
   }
 
   if (inviteId) {
-    params.set('inviteId', inviteId);
+    params.set("inviteId", inviteId);
   }
 
   const query = params.toString();
-  return query ? `/post-sign-in?${query}` : '/post-sign-in';
+
+  return query ? `/post-sign-in?${query}` : "/post-sign-in";
 }

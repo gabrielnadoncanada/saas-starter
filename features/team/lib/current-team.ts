@@ -1,6 +1,6 @@
 import { db } from '@/lib/db/prisma';
 
-import { getCurrentUser } from '@/features/auth/lib/current-user';
+import { getCurrentUser } from '@/features/auth/server/current-user';
 
 export async function getCurrentTeam() {
   const user = await getCurrentUser();

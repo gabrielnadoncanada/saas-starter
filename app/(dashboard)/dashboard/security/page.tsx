@@ -1,9 +1,9 @@
-import { SecuritySettingsPage } from '@/features/auth/components/SecuritySettingsPage';
+import { SecuritySettingsSection } from '@/features/auth/components/settings/SecuritySettingsSection';
 
-export default async function SecurityPage({
-  searchParams
-}: {
+type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  return <SecuritySettingsPage searchParams={searchParams} />;
+};
+
+export default async function SecurityPage({ searchParams }: PageProps) {
+  return <SecuritySettingsSection searchParams={await searchParams} />;
 }

@@ -5,29 +5,29 @@ import { signOut } from 'next-auth/react';
 import { Loader2, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { deleteAccountAction } from '@/features/auth/actions/delete-account.action';
 import { DELETE_CONFIRMATION_WORD } from '@/features/auth/schemas/account.schema';
-
-type DeleteState = {
-  error?: string;
-  success?: string;
-};
+import type { DeleteAccountActionState } from '@/features/auth/types/auth.types';
 
 export function DeleteAccountCard() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmation, setConfirmation] = useState('');
-  const [deleteState, deleteAction, isDeletePending] = useActionState<DeleteState, FormData>(
-    deleteAccountAction,
-    {}
-  );
+
+  const [deleteState, deleteAction, isDeletePending] = useActionState<
+    DeleteAccountActionState,
+    FormData
+  >(deleteAccountAction, {});
 
   const isConfirmed = confirmation === DELETE_CONFIRMATION_WORD;
 
   useEffect(() => {
-    if (!deleteState.success) return;
+    if (!deleteState.success) {
+      return;
+    }
+
     void signOut({ redirectTo: '/sign-in' });
   }, [deleteState.success]);
 
@@ -37,10 +37,12 @@ export function DeleteAccountCard() {
         <CardHeader>
           <CardTitle>Delete Account</CardTitle>
         </CardHeader>
+
         <CardContent>
           <p className="mb-4 text-sm text-gray-500">
             Account deletion is permanent and cannot be undone.
           </p>
+
           <Button
             type="button"
             variant="destructive"
@@ -60,26 +62,31 @@ export function DeleteAccountCard() {
       <CardHeader>
         <CardTitle className="text-red-600">Confirm Account Deletion</CardTitle>
       </CardHeader>
+
       <CardContent>
         <form action={deleteAction} className="space-y-4">
           <p className="text-sm text-gray-500">
             This will permanently delete your account, data, and team memberships.
           </p>
+
           <div>
             <Label htmlFor="confirmation" className="text-sm font-medium text-gray-700">
               Type <span className="font-mono font-bold">{DELETE_CONFIRMATION_WORD}</span> to
               confirm
             </Label>
+
             <Input
               id="confirmation"
               name="confirmation"
               className="mt-2"
               value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
+              onChange={(event) => setConfirmation(event.target.value)}
               autoComplete="off"
             />
           </div>
+
           {deleteState.error ? <p className="text-sm text-red-500">{deleteState.error}</p> : null}
+
           <div className="flex gap-3">
             <Button
               type="button"
@@ -91,6 +98,7 @@ export function DeleteAccountCard() {
             >
               Cancel
             </Button>
+
             <Button
               type="submit"
               variant="destructive"
