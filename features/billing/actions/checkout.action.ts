@@ -1,9 +1,28 @@
 'use server';
 
-import { createCheckoutSession } from '@/features/billing/lib/stripe-billing';
-import { withTeam } from '@/lib/auth/middleware';
+import { redirect } from 'next/navigation';
 
-export const checkoutAction = withTeam(async (formData, team) => {
+import { getCurrentUser } from '@/features/auth/server/current-user';
+import { getCurrentTeam } from '@/features/team/lib/current-team';
+import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
+
+export async function checkoutAction(formData: FormData) {
+  const user = await getCurrentUser();
   const priceId = formData.get('priceId') as string;
-  await createCheckoutSession({ team, priceId });
-});
+
+  if (!user) {
+    redirect(`/sign-in?redirect=checkout&priceId=${priceId}`);
+  }
+
+  const team = await getCurrentTeam();
+  if (!team) throw new Error('Team not found');
+
+  const url = await createCheckoutSession({
+    priceId,
+    stripeCustomerId: team.stripeCustomerId,
+    userEmail: user.email,
+    userId: user.id
+  });
+
+  redirect(url);
+}

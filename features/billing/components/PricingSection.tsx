@@ -5,7 +5,7 @@ import { SubmitPricingButton } from '@/features/billing/components/SubmitPricing
 import {
   getStripePrices,
   getStripeProducts
-} from '@/features/billing/lib/stripe-billing';
+} from '@/features/billing/server/stripe-catalog';
 
 type PricingCardProps = {
   name: string;
@@ -48,7 +48,7 @@ function PricingCard({
   );
 }
 
-export async function PricingPage() {
+export async function PricingSection() {
   const [prices, products] = await Promise.all([
     getStripePrices(),
     getStripeProducts()

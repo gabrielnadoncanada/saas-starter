@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
-import { handleSubscriptionChange } from '@/features/billing/lib/stripe-billing';
+
+import { handleSubscriptionChange } from '@/features/billing/server/handle-subscription-change';
 import { stripe } from '@/lib/stripe/client';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;

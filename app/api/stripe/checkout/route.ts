@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { finalizeCheckoutSession } from '@/features/billing/lib/checkout-session';
+
+import { finalizeCheckoutSession } from '@/features/billing/server/finalize-checkout';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import { createCheckoutSession } from '@/features/billing/lib/stripe-billing';
+import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
 import { getCurrentUser } from '@/features/auth/server/current-user';
 import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
 import { db } from '@/lib/db/prisma';
@@ -35,7 +35,14 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
       throw new Error('Team not found after sign-in provisioning.');
     }
 
-    await createCheckoutSession({ team, priceId: params.priceId });
+    const url = await createCheckoutSession({
+      priceId: params.priceId,
+      stripeCustomerId: team.stripeCustomerId,
+      userEmail: user.email,
+      userId: user.id
+    });
+
+    redirect(url);
   }
 
   redirect('/dashboard');

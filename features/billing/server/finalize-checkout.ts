@@ -1,10 +1,13 @@
 import Stripe from 'stripe';
 
-import { db } from '@/lib/db/prisma';
-import { stripe } from '@/lib/stripe/client';
+import { db as defaultDb } from '@/lib/db/prisma';
+import { stripe as defaultStripe } from '@/lib/stripe/client';
 
-export async function finalizeCheckoutSession(sessionId: string) {
-  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+export async function finalizeCheckoutSession(
+  sessionId: string,
+  deps = { db: defaultDb, stripe: defaultStripe }
+) {
+  const session = await deps.stripe.checkout.sessions.retrieve(sessionId, {
     expand: ['customer', 'subscription']
   });
 
@@ -22,9 +25,10 @@ export async function finalizeCheckoutSession(sessionId: string) {
     throw new Error('No subscription found for this session.');
   }
 
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-    expand: ['items.data.price.product']
-  });
+  const subscription = await deps.stripe.subscriptions.retrieve(
+    subscriptionId,
+    { expand: ['items.data.price.product'] }
+  );
 
   const plan = subscription.items.data[0]?.price;
   if (!plan) {
@@ -41,7 +45,7 @@ export async function finalizeCheckoutSession(sessionId: string) {
     throw new Error("No user ID found in session's client_reference_id.");
   }
 
-  const user = await db.user.findUnique({
+  const user = await deps.db.user.findUnique({
     where: { id: Number(userId) }
   });
 
@@ -49,7 +53,7 @@ export async function finalizeCheckoutSession(sessionId: string) {
     throw new Error('User not found in database.');
   }
 
-  const userTeam = await db.teamMember.findFirst({
+  const userTeam = await deps.db.teamMember.findFirst({
     where: { userId: user.id },
     select: { teamId: true }
   });
@@ -58,7 +62,7 @@ export async function finalizeCheckoutSession(sessionId: string) {
     throw new Error('User is not associated with any team.');
   }
 
-  await db.team.update({
+  await deps.db.team.update({
     where: { id: userTeam.teamId },
     data: {
       stripeCustomerId: customerId,
