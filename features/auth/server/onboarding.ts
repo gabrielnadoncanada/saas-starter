@@ -2,7 +2,7 @@ import { ActivityType } from "@/lib/db/types";
 import { db } from "@/lib/db/prisma";
 
 type OnboardingDeps = {
-  db: Pick<typeof db, "teamMember" | "$transaction">;
+  db: Pick<typeof db, "teamMember" | "user" | "$transaction">;
 };
 
 const defaultDeps: OnboardingDeps = { db };
@@ -34,6 +34,11 @@ export async function ensureUserWorkspace(
         teamId: team.id,
         role: "owner",
       },
+    });
+
+    await tx.user.update({
+      where: { id: userId },
+      data: { role: "owner" },
     });
 
     await tx.activityLog.createMany({

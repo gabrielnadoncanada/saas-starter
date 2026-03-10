@@ -8,3 +8,7 @@ export const inviteTeamMemberSchema = z.object({
   email: z.string().email('Invalid email address'),
   role: z.enum(['member', 'owner'])
 });
+
+export const invitationIdSchema = z.object({
+  invitationId: z.coerce.number()
+});

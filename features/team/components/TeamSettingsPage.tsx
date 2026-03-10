@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { customerPortalAction } from '@/features/billing/actions/customer-portal.action';
 import { inviteTeamMemberAction } from '@/features/team/actions/invite-team-member.action';
 import { removeTeamMemberAction } from '@/features/team/actions/remove-team-member.action';
+import { PendingInvitationsPanel } from '@/features/team/components/PendingInvitationsPanel';
 import { TeamDataWithMembers, User } from '@/lib/db/types';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -228,6 +229,7 @@ export function TeamSettingsPage() {
       <Suspense fallback={<PanelSkeleton title="Team Members" className="mb-8 h-[140px]" />}>
         <TeamMembersPanel />
       </Suspense>
+      <PendingInvitationsPanel />
       <Suspense fallback={<PanelSkeleton title="Invite Team Member" className="h-[260px]" />}>
         <InviteTeamMemberPanel />
       </Suspense>

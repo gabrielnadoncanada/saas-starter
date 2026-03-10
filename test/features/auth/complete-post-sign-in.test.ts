@@ -36,6 +36,9 @@ function createDeps(overrides: {
               teamMemberCreateCalls.push(args);
             }
           },
+          user: {
+            update: async () => undefined
+          },
           invitation: {
             update: async (args: unknown) => {
               invitationUpdateCalls.push(args);

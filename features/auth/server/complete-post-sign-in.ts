@@ -57,6 +57,11 @@ export async function completePostSignIn(
           role: invitation.role,
         },
       });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { role: invitation.role },
+      });
     }
 
     await tx.invitation.update({

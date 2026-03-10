@@ -21,6 +21,9 @@ function createDbDouble() {
             teamMemberCreateCalls.push(args);
           }
         },
+        user: {
+          update: async () => undefined
+        },
         activityLog: {
           createMany: async (args: unknown) => {
             activityLogCalls.push(args);
