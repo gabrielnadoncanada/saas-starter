@@ -17,7 +17,8 @@ export async function GeneralSettingsSection() {
       <GeneralSettingsForm
         initialValues={{
           name: user.name ?? '',
-          email: user.email ?? ''
+          email: user.email ?? '',
+          image: user.image ?? null
         }}
       />
     </section>

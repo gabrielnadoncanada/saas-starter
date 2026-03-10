@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { updateAccountAction } from '@/features/auth/actions/update-account.action';
 import type {
   GeneralSettingsInitialValues,
@@ -30,6 +31,19 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
       </CardHeader>
 
       <CardContent>
+        <div className="mb-6 flex items-center gap-4">
+          <Avatar className="size-16">
+            <AvatarImage src={initialValues.image ?? undefined} alt={initialValues.name} />
+            <AvatarFallback className="text-lg justify-center">
+              {(initialValues.name || '?')[0].toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="text-sm font-medium">{initialValues.name}</p>
+            <p className="text-xs text-muted-foreground">{initialValues.email}</p>
+          </div>
+        </div>
+
         <form className="space-y-4" action={formAction}>
           <div>
             <Label htmlFor="name" className="mb-2">

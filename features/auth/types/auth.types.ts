@@ -32,4 +32,5 @@ export type SecuritySettingsFeedback = ActionFeedback;
 export type GeneralSettingsInitialValues = {
   name: string;
   email: string;
+  image: string | null;
 };
