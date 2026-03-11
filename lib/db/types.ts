@@ -1,4 +1,4 @@
-import { ActivityType } from '@prisma/client';
+import { ActivityType } from '@/lib/db/generated/client/client';
 import type {
   ActivityLog,
   Invitation,
@@ -7,7 +7,7 @@ import type {
   Team,
   TeamMember,
   User
-} from '@prisma/client';
+} from '@/lib/db/generated/client/client';
 
 export type { ActivityLog, Invitation, Team, TeamMember, TeamRole, User };
 export { ActivityType };

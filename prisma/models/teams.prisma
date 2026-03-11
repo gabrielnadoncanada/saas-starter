@@ -1,0 +1,94 @@
+enum ActivityType {
+  SIGN_UP
+  SIGN_IN
+  DELETE_ACCOUNT
+  UPDATE_ACCOUNT
+  CREATE_TEAM
+  REMOVE_TEAM_MEMBER
+  INVITE_TEAM_MEMBER
+  ACCEPT_INVITATION
+  LINK_AUTH_PROVIDER
+  UNLINK_AUTH_PROVIDER
+  SUPER_ADMIN_SIGN_IN
+  IMPERSONATE_USER
+  STOP_IMPERSONATION
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELED
+}
+
+model Team {
+  id                   Int      @id @default(autoincrement())
+  name                 String   @db.VarChar(100)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  stripeCustomerId     String?  @unique
+  stripeSubscriptionId String?  @unique
+  stripeProductId      String?
+  planName             String?  @db.VarChar(50)
+  subscriptionStatus   String?  @db.VarChar(20)
+
+  teamMembers  TeamMember[]
+  activityLogs ActivityLog[]
+  invitations  Invitation[]
+  tasks        Task[]
+}
+
+model TeamMember {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  teamId   Int
+  role     TeamRole
+  joinedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+}
+
+model ActivityLog {
+  id        Int          @id @default(autoincrement())
+  teamId    Int?
+  userId    Int?
+  action    ActivityType
+  timestamp DateTime     @default(now())
+  ipAddress String?      @db.VarChar(45)
+
+  team Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([teamId])
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+}
+
+model Invitation {
+  id        Int              @id @default(autoincrement())
+  teamId    Int
+  email     String           @db.VarChar(255)
+  role      TeamRole
+  invitedBy Int
+  invitedAt DateTime         @default(now())
+  status    InvitationStatus @default(PENDING)
+
+  team    Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inviter User @relation("InvitationSender", fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([email])
+  @@index([status])
+}

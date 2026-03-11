@@ -1,4 +1,4 @@
-import { ActivityType } from "@prisma/client";
+import { ActivityType } from "@/lib/db/generated/client/client";
 
 import { db } from "@/lib/db/prisma";
 import type { OAuthProviderId } from "@/lib/auth/providers";
