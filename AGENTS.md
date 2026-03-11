@@ -51,3 +51,20 @@ Output standard:
 - No temporary migration layer.
 - No defensive support for hypothetical old usage.
 - Keep the solution simple, explicit, and maintainable.
+
+## Buyer Fit
+
+- Always optimize for ShipFast-style indies and small technical teams.
+- Assume the buyer wants to ship fast, understand the code fast, and modify features without learning an internal framework first.
+- Prefer decisions that reduce time-to-understand, time-to-modify, and time-to-ship.
+- Do not introduce abstractions whose main value is invisible to the buyer.
+- Treat enterprise-style patterns as suspicious unless the complexity clearly justifies them.
+- A solution can be technically valid and still be the wrong fit for the product.
+
+## Abstraction Budget
+
+- Do not add a new abstraction unless it clearly reduces repetition, cognitive load, or future change cost for this specific codebase.
+- Prefer one obvious function over a service, one direct import over dependency scaffolding, and one local helper over a reusable framework pattern.
+- Do not introduce dependency injection, repositories, use-cases, command handlers, or factory layers by default.
+- Extra structure is allowed only when the underlying workflow is genuinely complex, high-risk, or highly reusable.
+- If an abstraction needs explanation before it feels useful, it is probably too expensive.
