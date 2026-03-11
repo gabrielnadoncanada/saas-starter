@@ -21,13 +21,20 @@ import { customerPortalAction } from '@/features/billing/actions/customer-portal
 import { inviteTeamMemberAction } from '@/features/team/actions/invite-team-member.action';
 import { removeTeamMemberAction } from '@/features/team/actions/remove-team-member.action';
 import { PendingInvitationsPanel } from '@/features/team/components/PendingInvitationsPanel';
-import { TeamDataWithMembers, User } from '@/lib/db/types';
+import { User, Team, TeamMember } from '@prisma/client';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 type ActionState = {
   error?: string;
   success?: string;
+};
+
+
+type TeamDataWithMembers = Team & {
+  teamMembers: (TeamMember & {
+    user: Pick<User, 'id' | 'name' | 'email'>;
+  })[];
 };
 
 function SubscriptionPanel() {

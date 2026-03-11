@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 import { db } from '@/lib/db/prisma';
-import { getCurrentUser } from '@/features/auth/server/current-user';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 
 export const activityIconMap: Record<string, LucideIcon> = {
   SIGN_UP: UserPlus,

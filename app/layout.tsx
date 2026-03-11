@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 import { SWRConfig } from 'swr';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
-import { getCurrentUser } from '@/features/auth/server/current-user';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 import { getCurrentTeam } from '@/features/team/server/current-team';
 
 export const metadata: Metadata = {

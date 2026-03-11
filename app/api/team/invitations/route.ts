@@ -1,6 +1,6 @@
 import { db } from '@/lib/db/prisma';
-import { getCurrentUser } from '@/features/auth/server/current-user';
-import { getUserWithTeam } from '@/features/auth/server/current-user';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
+import { getUserTeamMembership } from '@/features/team/server/team-membership';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -8,7 +8,7 @@ export async function GET() {
     return Response.json([], { status: 401 });
   }
 
-  const userWithTeam = await getUserWithTeam(user.id);
+  const userWithTeam = await getUserTeamMembership(user.id);
   if (!userWithTeam?.teamId) {
     return Response.json([]);
   }

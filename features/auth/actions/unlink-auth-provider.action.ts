@@ -2,7 +2,7 @@
 
 import { refresh } from "next/cache";
 
-import { validatedActionWithUser } from "@/lib/auth/middleware";
+import { validatedActionWithUser } from "@/lib/auth/validated-action-with-user";
 import { OAUTH_PROVIDER_LABELS } from "@/lib/auth/providers";
 import { unlinkOAuthAccountForUser } from "@/features/auth/server/linked-accounts";
 import { unlinkAuthProviderSchema } from "@/features/auth/schemas/account.schema";

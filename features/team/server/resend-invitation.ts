@@ -1,7 +1,7 @@
-import type { User } from '@/lib/db/types';
+import type { User } from '@prisma/client';
 import { db } from '@/lib/db/prisma';
 import { sendTeamInvitationEmail } from '@/lib/email/senders';
-import { getUserWithTeam } from '@/features/auth/server/current-user';
+import { getUserTeamMembership } from '@/features/team/server/team-membership';
 
 type ResendInvitationParams = {
   invitationId: number;
@@ -12,7 +12,7 @@ export async function resendInvitation({
   invitationId,
   user,
 }: ResendInvitationParams) {
-  const userWithTeam = await getUserWithTeam(user.id);
+  const userWithTeam = await getUserTeamMembership(user.id);
 
   if (!userWithTeam?.teamId) {
     return { error: 'User is not part of a team' };

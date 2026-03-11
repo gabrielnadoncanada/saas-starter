@@ -1,4 +1,5 @@
-import { ActivityType, type TeamRole, type User } from '@/lib/db/types';
+import { ActivityType } from '@prisma/client';
+import type { TeamRole, User } from '@prisma/client';
 import { db } from '@/lib/db/prisma';
 import { sendTeamInvitationEmail } from '@/lib/email/senders';
 

@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 
-import { getCurrentUser } from '@/features/auth/server/current-user';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 import { getCurrentTeam } from '@/features/team/server/current-team';
 import { createCustomerPortalSession } from '@/features/billing/server/customer-portal';
 

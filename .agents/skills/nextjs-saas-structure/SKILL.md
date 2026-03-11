@@ -114,6 +114,79 @@ Do not use global `lib/` for feature-specific business logic.
 
 Inside a feature, prefer `server/` or `utils/` over a catch-all local `lib/`.
 
+## Global `lib/` versus `features/`
+
+This distinction is critical.
+
+Use global `lib/` for app-wide technical infrastructure that is not owned by one product feature.
+
+Use `features/` for domain-owned product logic, even when that logic:
+
+- runs on the server
+- touches the database
+- is reused across multiple screens inside the feature
+- contains validation or transactions
+
+### Put code in global `lib/` when:
+
+- it is technical infrastructure for the whole app
+- it integrates a framework or external platform
+- it would still make sense even if a specific feature disappeared
+- it is not owned by one product domain
+
+Examples:
+
+- `lib/db/prisma.ts`
+- `lib/auth/providers.ts`
+- `lib/auth/auth.ts`
+- `lib/stripe/client.ts`
+- `lib/env.ts`
+
+### Put code in `features/<feature>/` when:
+
+- it belongs to one domain or product feature
+- it would disappear if that feature disappeared
+- it expresses business rules, feature workflows, or feature-specific database logic
+
+Examples:
+
+- `features/tasks/server/create-task.ts`
+- `features/teams/server/invite-member.ts`
+- `features/auth/server/delete-account.ts`
+- `features/billing/server/create-checkout-session.ts`
+
+### Important clarification
+
+Do **not** move code to global `lib/` just because it:
+
+- is server-side
+- touches Prisma
+- is reused in more than one file
+- feels important
+
+Those are not ownership rules.
+
+The primary rule is ownership:
+
+- app-wide technical infrastructure -> `lib/`
+- feature-owned product logic -> `features/<feature>/`
+
+### Direction rule
+
+Global infrastructure may be used by features.
+
+Do not make global infrastructure depend on `features/`.
+
+Good:
+
+- `features/tasks/server/create-task.ts` imports `lib/db/prisma.ts`
+
+Bad:
+
+- `lib/auth/auth.ts` imports `features/auth/server/...`
+
+If global auth, database, Stripe, or framework code needs support logic, keep that support logic in global `lib/` too.
+
 ### `hooks/`
 
 Use hooks only for real reusable React behavior.
@@ -171,6 +244,7 @@ Do not mix naming styles in the same codebase.
 - do not over-design small SaaS starters
 - keep database access out of server actions by default
 - optimize for easy testing of server logic
+- choose between `lib/` and `features/` based on ownership, not on whether code is server-side or reused
 
 ## Review workflow
 
@@ -181,6 +255,7 @@ When reviewing a structure or suggesting a refactor:
 3. move domain logic into `features/`
 4. separate shared UI from feature UI
 5. replace ambiguous feature-local `lib/` folders with clearer folders such as `server/` or `utils/` when appropriate
+   5a. verify that global `lib/` is only holding app-wide technical infrastructure and not feature-owned business logic
 6. rename misleading files such as feature-local `XxxPage.tsx`
 7. move Prisma queries and transactions out of `actions/` and into `server/` by default
 8. keep the recommendation pragmatic and small
@@ -195,6 +270,7 @@ Consult these references when relevant:
 - common mistakes and anti-patterns -> `references/anti-patterns.md`
 - scaling guidance -> `references/scaling.md`
 - exact `actions/` versus `server/` boundary -> `references/server-actions.md`
+- exact `lib/` versus `features/` ownership -> `references/lib-vs-features.md`
 
 ## Output expectations
 

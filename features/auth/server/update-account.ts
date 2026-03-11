@@ -1,7 +1,7 @@
-import { ActivityType } from "@/lib/db/types";
+import { ActivityType } from "@prisma/client";
+import { createActivityLog } from "@/lib/activity-log";
 import { db } from "@/lib/db/prisma";
-import { logAuthActivity } from "@/features/auth/server/auth-activity";
-import { getUserWithTeam } from "@/features/auth/server/current-user";
+import { getUserTeamMembership } from "@/features/team/server/team-membership";
 
 type UpdateAccountParams = {
   userId: number;
@@ -14,18 +14,22 @@ export async function updateAccount({
   name,
   email,
 }: UpdateAccountParams) {
-  const userWithTeam = await getUserWithTeam(userId);
+  const userWithTeam = await getUserTeamMembership(userId);
 
   await Promise.all([
     db.user.update({
       where: { id: userId },
       data: { name, email },
     }),
-    logAuthActivity(
-      userWithTeam?.teamId,
-      userId,
-      ActivityType.UPDATE_ACCOUNT,
-    ),
+    ...(userWithTeam?.teamId
+      ? [
+          createActivityLog({
+            teamId: userWithTeam.teamId,
+            userId,
+            action: ActivityType.UPDATE_ACCOUNT,
+          }),
+        ]
+      : []),
   ]);
 
   return { name, success: "Account updated successfully." };

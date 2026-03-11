@@ -1,23 +1,16 @@
-import { auth } from "@/auth";
 import { db } from "@/lib/db/prisma";
 
-export async function getCurrentUser() {
-  const session = await auth();
-  const userId = Number(session?.user?.id);
-
-  if (!Number.isInteger(userId) || userId <= 0) {
-    return null;
-  }
-
-  return db.user.findFirst({
-    where: {
-      id: userId,
-      deletedAt: null,
-    },
+export async function getUserTeamId(userId: number) {
+  const membership = await db.teamMember.findFirst({
+    where: { userId },
+    select: { teamId: true },
+    orderBy: { joinedAt: "asc" },
   });
+
+  return membership?.teamId ?? null;
 }
 
-export async function getUserWithTeam(userId: number) {
+export async function getUserTeamMembership(userId: number) {
   const user = await db.user.findUnique({
     where: { id: userId },
     include: {

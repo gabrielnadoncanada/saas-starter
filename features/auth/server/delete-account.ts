@@ -1,8 +1,8 @@
-import { ActivityType } from "@/lib/db/types";
-import { db } from "@/lib/db/prisma";
-import { getUserWithTeam } from "@/features/auth/server/current-user";
+import { ActivityType } from "@prisma/client";
 
-const ACTIVE_STATUSES = ["active", "trialing"];
+import { db } from "@/lib/db/prisma";
+import { getUserTeamMembership } from "@/features/team/server/team-membership";
+import { getAccountDeletionBlocker } from "@/features/team/server/account-deletion-policy";
 
 export type DeleteAccountUser = {
   id: number;
@@ -10,35 +10,19 @@ export type DeleteAccountUser = {
 };
 
 export async function deleteAccount(user: DeleteAccountUser) {
-  const userWithTeam = await getUserWithTeam(user.id);
+  const membership = await getUserTeamMembership(user.id);
 
-  if (userWithTeam?.teamId) {
-    const team = await db.team.findUnique({
-      where: { id: userWithTeam.teamId },
-      select: {
-        subscriptionStatus: true,
-        _count: { select: { teamMembers: true } },
-      },
-    });
+  const blocker = await getAccountDeletionBlocker(membership);
 
-    if (
-      team &&
-      team._count.teamMembers <= 1 &&
-      team.subscriptionStatus &&
-      ACTIVE_STATUSES.includes(team.subscriptionStatus)
-    ) {
-      return {
-        error:
-          "You have an active subscription. Cancel it from your billing settings before deleting your account.",
-      };
-    }
+  if (blocker) {
+    return { error: blocker };
   }
 
   await db.$transaction(async (tx) => {
-    if (userWithTeam?.teamId) {
+    if (membership?.teamId) {
       await tx.activityLog.create({
         data: {
-          teamId: userWithTeam.teamId,
+          teamId: membership.teamId,
           userId: user.id,
           action: ActivityType.DELETE_ACCOUNT,
           ipAddress: "",
@@ -55,15 +39,24 @@ export async function deleteAccount(user: DeleteAccountUser) {
       },
     });
 
-    await tx.account.deleteMany({ where: { userId: user.id } });
-    await tx.session.deleteMany({ where: { userId: user.id } });
+    await tx.account.deleteMany({
+      where: { userId: user.id },
+    });
+
+    await tx.session.deleteMany({
+      where: { userId: user.id },
+    });
+
     await tx.verificationToken.deleteMany({
       where: { identifier: user.email },
     });
 
-    if (userWithTeam?.teamId) {
+    if (membership?.teamId) {
       await tx.teamMember.deleteMany({
-        where: { userId: user.id, teamId: userWithTeam.teamId },
+        where: {
+          userId: user.id,
+          teamId: membership.teamId,
+        },
       });
     }
   });

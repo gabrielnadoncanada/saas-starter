@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 
 import { SecuritySettingsPanel } from '@/features/auth/components/settings/SecuritySettingsPanel';
-import { getCurrentUser } from '@/features/auth/server/current-user';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 import { getLinkedAccountsOverview } from '@/features/auth/server/linked-accounts';
 import type { LinkedProviderOverview } from '@/features/auth/types/auth.types';
 import { getEnabledOAuthProviderIds, OAUTH_PROVIDER_LABELS } from '@/lib/auth/providers';

@@ -1,6 +1,6 @@
 "use server";
 
-import { validatedActionWithUser } from "@/lib/auth/middleware";
+import { validatedActionWithUser } from "@/lib/auth/validated-action-with-user";
 import { updateAccount } from "@/features/auth/server/update-account";
 import { updateAccountSchema } from "@/features/auth/schemas/account.schema";
 

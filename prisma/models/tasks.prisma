@@ -21,7 +21,7 @@ enum TaskPriority {
 model Task {
   id          Int          @id @default(autoincrement())
   teamId      Int
-  code        String       @unique @db.VarChar(20)
+  code        String       @db.VarChar(20)
   title       String       @db.VarChar(255)
   description String?      @db.Text
   status      TaskStatus   @default(TODO)
@@ -38,4 +38,5 @@ model Task {
   @@index([label])
   @@index([teamId, status])
   @@index([teamId, priority])
+  @@unique([teamId, code])
 }

@@ -1,4 +1,4 @@
-import { ActivityType } from "@/lib/db/types";
+import { ActivityType } from "@prisma/client";
 import { db } from "@/lib/db/prisma";
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
 

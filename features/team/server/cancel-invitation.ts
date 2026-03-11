@@ -1,5 +1,5 @@
 import { db } from '@/lib/db/prisma';
-import { getUserWithTeam } from '@/features/auth/server/current-user';
+import { getUserTeamMembership } from '@/features/team/server/team-membership';
 
 type CancelInvitationParams = {
   invitationId: number;
@@ -10,7 +10,7 @@ export async function cancelInvitation({
   invitationId,
   userId,
 }: CancelInvitationParams) {
-  const userWithTeam = await getUserWithTeam(userId);
+  const userWithTeam = await getUserTeamMembership(userId);
 
   if (!userWithTeam?.teamId) {
     return { error: 'User is not part of a team' };

@@ -1,38 +1,38 @@
-'use server';
+"use server";
 
-import { validatedActionWithUser } from '@/lib/auth/middleware';
-import { ActivityType } from '@/lib/db/types';
-import { db } from '@/lib/db/prisma';
-import { logAuthActivity } from '@/features/auth/server/auth-activity';
-import { getUserWithTeam } from '@/features/auth/server/current-user';
-import { removeTeamMemberSchema } from '@/features/team/schemas/team.schema';
+import { validatedActionWithUser } from "@/lib/auth/validated-action-with-user";
+import { createActivityLog } from "@/lib/activity-log";
+import { ActivityType } from "@prisma/client";
+import { db } from "@/lib/db/prisma";
+import { removeTeamMemberSchema } from "@/features/team/schemas/team.schema";
+import { getUserTeamMembership } from "@/features/team/server/team-membership";
 
 export const removeTeamMemberAction = validatedActionWithUser(
   removeTeamMemberSchema,
   async ({ memberId }, _, user) => {
-    const userWithTeam = await getUserWithTeam(user.id);
+    const userWithTeam = await getUserTeamMembership(user.id);
 
     if (!userWithTeam?.teamId) {
-      return { error: 'User is not part of a team' };
+      return { error: "User is not part of a team" };
     }
 
-    if (userWithTeam.teamRole !== 'OWNER') {
-      return { error: 'Only team owners can remove members' };
+    if (userWithTeam.teamRole !== "OWNER") {
+      return { error: "Only team owners can remove members" };
     }
 
     await db.teamMember.deleteMany({
       where: {
         id: memberId,
-        teamId: userWithTeam.teamId
-      }
+        teamId: userWithTeam.teamId,
+      },
     });
 
-    await logAuthActivity(
-      userWithTeam.teamId,
-      user.id,
-      ActivityType.REMOVE_TEAM_MEMBER
-    );
+    await createActivityLog({
+      teamId: userWithTeam.teamId,
+      userId: user.id,
+      action: ActivityType.REMOVE_TEAM_MEMBER,
+    });
 
-    return { success: 'Team member removed successfully' };
-  }
+    return { success: "Team member removed successfully" };
+  },
 );
