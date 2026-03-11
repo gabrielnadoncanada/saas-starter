@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 
 import { getCurrentUser } from '@/features/auth/server/current-user';
-import { getCurrentTeam } from '@/features/team/lib/current-team';
+import { getCurrentTeam } from '@/features/team/server/current-team';
 import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
 
 export async function checkoutAction(formData: FormData) {

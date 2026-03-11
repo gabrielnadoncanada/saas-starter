@@ -9,30 +9,19 @@ type UpdateAccountParams = {
   email: string;
 };
 
-type UpdateAccountDeps = {
-  getUserWithTeam: (userId: number) => Promise<{ teamId: number | null } | null>;
-  logAuthActivity: (
-    teamId: number | null | undefined,
-    userId: number,
-    action: ActivityType,
-  ) => Promise<void>;
-  db: { user: Pick<typeof db.user, "update"> };
-};
-
-const defaultDeps: UpdateAccountDeps = { getUserWithTeam, logAuthActivity, db };
-
-export async function updateAccount(
-  { userId, name, email }: UpdateAccountParams,
-  deps = defaultDeps,
-) {
-  const userWithTeam = await deps.getUserWithTeam(userId);
+export async function updateAccount({
+  userId,
+  name,
+  email,
+}: UpdateAccountParams) {
+  const userWithTeam = await getUserWithTeam(userId);
 
   await Promise.all([
-    deps.db.user.update({
+    db.user.update({
       where: { id: userId },
       data: { name, email },
     }),
-    deps.logAuthActivity(
+    logAuthActivity(
       userWithTeam?.teamId,
       userId,
       ActivityType.UPDATE_ACCOUNT,

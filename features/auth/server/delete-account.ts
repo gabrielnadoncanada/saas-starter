@@ -9,23 +9,11 @@ export type DeleteAccountUser = {
   email: string;
 };
 
-type DeleteAccountDeps = {
-  getUserWithTeam: (
-    userId: number,
-  ) => Promise<{ teamId: number | null } | null>;
-  db: Pick<typeof db, "team" | "$transaction">;
-};
-
-const defaultDeps: DeleteAccountDeps = { getUserWithTeam, db };
-
-export async function deleteAccount(
-  user: DeleteAccountUser,
-  deps = defaultDeps,
-) {
-  const userWithTeam = await deps.getUserWithTeam(user.id);
+export async function deleteAccount(user: DeleteAccountUser) {
+  const userWithTeam = await getUserWithTeam(user.id);
 
   if (userWithTeam?.teamId) {
-    const team = await deps.db.team.findUnique({
+    const team = await db.team.findUnique({
       where: { id: userWithTeam.teamId },
       select: {
         subscriptionStatus: true,
@@ -46,7 +34,7 @@ export async function deleteAccount(
     }
   }
 
-  await deps.db.$transaction(async (tx: any) => {
+  await db.$transaction(async (tx) => {
     if (userWithTeam?.teamId) {
       await tx.activityLog.create({
         data: {

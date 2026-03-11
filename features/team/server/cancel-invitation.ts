@@ -6,24 +6,17 @@ type CancelInvitationParams = {
   userId: number;
 };
 
-type CancelInvitationDeps = {
-  getUserWithTeam: typeof getUserWithTeam;
-  db: Pick<typeof db, 'invitation'>;
-};
-
-const defaultDeps: CancelInvitationDeps = { getUserWithTeam, db };
-
-export async function cancelInvitation(
-  { invitationId, userId }: CancelInvitationParams,
-  deps = defaultDeps,
-) {
-  const userWithTeam = await deps.getUserWithTeam(userId);
+export async function cancelInvitation({
+  invitationId,
+  userId,
+}: CancelInvitationParams) {
+  const userWithTeam = await getUserWithTeam(userId);
 
   if (!userWithTeam?.teamId) {
     return { error: 'User is not part of a team' };
   }
 
-  const invitation = await deps.db.invitation.findFirst({
+  const invitation = await db.invitation.findFirst({
     where: {
       id: invitationId,
       teamId: userWithTeam.teamId,
@@ -35,7 +28,7 @@ export async function cancelInvitation(
     return { error: 'Invitation not found' };
   }
 
-  await deps.db.invitation.update({
+  await db.invitation.update({
     where: { id: invitationId },
     data: { status: 'canceled' },
   });

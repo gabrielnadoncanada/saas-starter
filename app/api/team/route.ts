@@ -1,4 +1,4 @@
-import { getCurrentTeam } from '@/features/team/lib/current-team';
+import { getCurrentTeam } from '@/features/team/server/current-team';
 
 export async function GET() {
   const team = await getCurrentTeam();

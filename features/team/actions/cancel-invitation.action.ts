@@ -1,7 +1,7 @@
 'use server';
 
 import { validatedActionWithUser } from '@/lib/auth/middleware';
-import { cancelInvitation } from '@/features/team/lib/cancel-invitation';
+import { cancelInvitation } from '@/features/team/server/cancel-invitation';
 import { invitationIdSchema } from '@/features/team/schemas/team.schema';
 
 export const cancelInvitationAction = validatedActionWithUser(

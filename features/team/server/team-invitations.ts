@@ -10,24 +10,18 @@ export type InviteTeamMemberInput = {
   role: 'member' | 'owner';
 };
 
-type InviteTeamMemberDependencies = {
-  db: typeof db;
-  sendTeamInvitationEmail: typeof sendTeamInvitationEmail;
-};
-
 type InviteTeamMemberResult = { error: string } | { success: string };
 
 async function ensureNoExistingMembership(
-  dependencies: InviteTeamMemberDependencies,
-  input: InviteTeamMemberInput
+  input: InviteTeamMemberInput,
 ): Promise<InviteTeamMemberResult | null> {
-  const existingMember = await dependencies.db.teamMember.findFirst({
+  const existingMember = await db.teamMember.findFirst({
     where: {
       teamId: input.teamId,
       user: {
-        email: input.email
-      }
-    }
+        email: input.email,
+      },
+    },
   });
 
   if (existingMember) {
@@ -38,15 +32,14 @@ async function ensureNoExistingMembership(
 }
 
 async function ensureNoPendingInvitation(
-  dependencies: InviteTeamMemberDependencies,
-  input: InviteTeamMemberInput
+  input: InviteTeamMemberInput,
 ): Promise<InviteTeamMemberResult | null> {
-  const existingInvitation = await dependencies.db.invitation.findFirst({
+  const existingInvitation = await db.invitation.findFirst({
     where: {
       email: input.email,
       teamId: input.teamId,
-      status: 'pending'
-    }
+      status: 'pending',
+    },
   });
 
   if (existingInvitation) {
@@ -56,19 +49,16 @@ async function ensureNoPendingInvitation(
   return null;
 }
 
-async function createInvitationRecord(
-  dependencies: InviteTeamMemberDependencies,
-  input: InviteTeamMemberInput
-) {
-  return dependencies.db.$transaction(async (tx) => {
+async function createInvitationRecord(input: InviteTeamMemberInput) {
+  return db.$transaction(async (tx) => {
     const invitation = await tx.invitation.create({
       data: {
         teamId: input.teamId,
         email: input.email,
         role: input.role,
         invitedBy: input.inviter.id,
-        status: 'pending'
-      }
+        status: 'pending',
+      },
     });
 
     await tx.activityLog.create({
@@ -76,8 +66,8 @@ async function createInvitationRecord(
         teamId: input.teamId,
         userId: input.inviter.id,
         action: ActivityType.INVITE_TEAM_MEMBER,
-        ipAddress: ''
-      }
+        ipAddress: '',
+      },
     });
 
     return invitation;
@@ -85,62 +75,46 @@ async function createInvitationRecord(
 }
 
 async function sendInvitationEmail(
-  dependencies: InviteTeamMemberDependencies,
   input: InviteTeamMemberInput,
-  invitationId: number
+  invitationId: number,
 ): Promise<InviteTeamMemberResult> {
   try {
-    await dependencies.sendTeamInvitationEmail({
+    await sendTeamInvitationEmail({
       email: input.email,
       role: input.role,
       inviterName: input.inviter.name || input.inviter.email,
       teamName: input.teamName,
-      invitationId
+      invitationId,
     });
   } catch (error) {
     console.error('[team:invitation.email-failed]', {
       email: input.email,
       invitationId,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
 
     return {
-      success: 'Invitation created successfully. Email delivery could not be confirmed.'
+      success: 'Invitation created successfully. Email delivery could not be confirmed.',
     };
   }
 
   return { success: 'Invitation sent successfully' };
 }
 
-export function createInviteTeamMemberHandler(
-  dependencies: InviteTeamMemberDependencies = {
-    db,
-    sendTeamInvitationEmail
+export async function inviteTeamMemberToTeam(input: InviteTeamMemberInput) {
+  const membershipError = await ensureNoExistingMembership(input);
+
+  if (membershipError) {
+    return membershipError;
   }
-) {
-  return async function inviteTeamMemberToTeam(input: InviteTeamMemberInput) {
-    const membershipError = await ensureNoExistingMembership(
-      dependencies,
-      input
-    );
 
-    if (membershipError) {
-      return membershipError;
-    }
+  const invitationError = await ensureNoPendingInvitation(input);
 
-    const invitationError = await ensureNoPendingInvitation(
-      dependencies,
-      input
-    );
+  if (invitationError) {
+    return invitationError;
+  }
 
-    if (invitationError) {
-      return invitationError;
-    }
+  const invitation = await createInvitationRecord(input);
 
-    const invitation = await createInvitationRecord(dependencies, input);
-
-    return sendInvitationEmail(dependencies, input, invitation.id);
-  };
+  return sendInvitationEmail(input, invitation.id);
 }
-
-export const inviteTeamMemberToTeam = createInviteTeamMemberHandler();

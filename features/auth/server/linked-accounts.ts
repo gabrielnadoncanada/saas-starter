@@ -3,22 +3,11 @@ import { ActivityType } from "@prisma/client";
 import { db } from "@/lib/db/prisma";
 import type { OAuthProviderId } from "@/lib/auth/providers";
 
-type LinkedAccountsDeps = {
-  db: {
-    account: Pick<typeof db.account, "findMany" | "findFirst" | "delete">;
-    activityLog: Pick<typeof db.activityLog, "create">;
-    teamMember: Pick<typeof db.teamMember, "findFirst">;
-  };
-};
-
-const defaultDeps: LinkedAccountsDeps = { db };
-
 export async function getLinkedAccountsOverview(
   userId: number,
   oauthProviders: OAuthProviderId[],
-  deps = defaultDeps,
 ) {
-  const accounts = await deps.db.account.findMany({
+  const accounts = await db.account.findMany({
     where: {
       userId,
       provider: { in: oauthProviders },
@@ -52,9 +41,8 @@ export async function getLinkedAccountsOverview(
 
 export async function unlinkOAuthAccountForUser(
   params: { userId: number; provider: OAuthProviderId },
-  deps = defaultDeps,
 ) {
-  const targetAccount = await deps.db.account.findFirst({
+  const targetAccount = await db.account.findFirst({
     where: {
       userId: params.userId,
       provider: params.provider,
@@ -66,17 +54,17 @@ export async function unlinkOAuthAccountForUser(
     return { status: "not-found" as const };
   }
 
-  await deps.db.account.delete({
+  await db.account.delete({
     where: { id: targetAccount.id },
   });
 
-  const teamMember = await deps.db.teamMember.findFirst({
+  const teamMember = await db.teamMember.findFirst({
     where: { userId: params.userId },
     select: { teamId: true },
   });
 
   if (teamMember) {
-    await deps.db.activityLog.create({
+    await db.activityLog.create({
       data: {
         teamId: teamMember.teamId,
         userId: params.userId,

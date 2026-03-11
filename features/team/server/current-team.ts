@@ -4,6 +4,7 @@ import { getCurrentUser } from '@/features/auth/server/current-user';
 
 export async function getCurrentTeam() {
   const user = await getCurrentUser();
+
   if (!user) {
     return null;
   }
@@ -23,14 +24,14 @@ export async function getTeamForUser(userId: number) {
                 select: {
                   id: true,
                   name: true,
-                  email: true
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                  email: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   return result?.team ?? null;

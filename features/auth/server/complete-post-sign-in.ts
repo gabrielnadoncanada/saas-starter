@@ -8,28 +8,20 @@ type CompletePostSignInParams = {
   inviteId?: string | null;
 };
 
-type CompletePostSignInDeps = {
-  db: Pick<typeof db, "invitation" | "$transaction">;
-  ensureUserWorkspace: (userId: number, email: string) => Promise<number>;
-};
-
-const defaultDeps: CompletePostSignInDeps = { db, ensureUserWorkspace };
-
 export async function completePostSignIn(
   { userId, email, inviteId }: CompletePostSignInParams,
-  deps = defaultDeps,
 ) {
   if (!inviteId) {
-    return deps.ensureUserWorkspace(userId, email);
+    return ensureUserWorkspace(userId, email);
   }
 
   const invitationId = Number(inviteId);
 
   if (!Number.isInteger(invitationId) || invitationId <= 0) {
-    return deps.ensureUserWorkspace(userId, email);
+    return ensureUserWorkspace(userId, email);
   }
 
-  const invitation = await deps.db.invitation.findFirst({
+  const invitation = await db.invitation.findFirst({
     where: {
       id: invitationId,
       email,
@@ -38,10 +30,10 @@ export async function completePostSignIn(
   });
 
   if (!invitation) {
-    return deps.ensureUserWorkspace(userId, email);
+    return ensureUserWorkspace(userId, email);
   }
 
-  await deps.db.$transaction(async (tx) => {
+  await db.$transaction(async (tx) => {
     const existingMembership = await tx.teamMember.findFirst({
       where: {
         userId,
