@@ -18,11 +18,15 @@ export async function resendInvitation({
     return { error: 'User is not part of a team' };
   }
 
+  if (userWithTeam.teamRole !== 'OWNER') {
+    return { error: 'Only team owners can resend invitations' };
+  }
+
   const invitation = await db.invitation.findFirst({
     where: {
       id: invitationId,
       teamId: userWithTeam.teamId,
-      status: 'pending',
+      status: 'PENDING',
     },
     include: { team: { select: { name: true } } },
   });

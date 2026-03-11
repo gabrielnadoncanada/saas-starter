@@ -16,7 +16,7 @@ export async function GET() {
   const invitations = await db.invitation.findMany({
     where: {
       teamId: userWithTeam.teamId,
-      status: 'pending',
+      status: 'PENDING',
     },
     select: {
       id: true,

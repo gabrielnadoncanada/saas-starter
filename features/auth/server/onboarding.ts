@@ -25,13 +25,8 @@ export async function ensureUserWorkspace(
       data: {
         userId,
         teamId: team.id,
-        role: "owner",
+        role: "OWNER",
       },
-    });
-
-    await tx.user.update({
-      where: { id: userId },
-      data: { role: "owner" },
     });
 
     await tx.activityLog.createMany({

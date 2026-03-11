@@ -3,12 +3,13 @@ import type {
   ActivityLog,
   Invitation,
   Prisma,
+  TeamRole,
   Team,
   TeamMember,
   User
 } from '@prisma/client';
 
-export type { ActivityLog, Invitation, Team, TeamMember, User };
+export type { ActivityLog, Invitation, Team, TeamMember, TeamRole, User };
 export { ActivityType };
 
 export type NewUser = Prisma.UserCreateInput;

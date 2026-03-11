@@ -18,18 +18,40 @@ enum ActivityType {
   ACCEPT_INVITATION
   LINK_AUTH_PROVIDER
   UNLINK_AUTH_PROVIDER
+  SUPER_ADMIN_SIGN_IN
+  IMPERSONATE_USER
+  STOP_IMPERSONATION
+}
+
+enum PlatformRole {
+  USER
+  SUPER_ADMIN
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELED
 }
 
 model User {
-  id              Int           @id @default(autoincrement())
-  name            String?       @db.VarChar(100)
-  email           String        @unique @db.VarChar(255)
-  emailVerified   DateTime?
-  image           String?
-  role            String        @default("member") @db.VarChar(20)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  deletedAt       DateTime?
+  id            Int          @id @default(autoincrement())
+  name          String?      @db.VarChar(100)
+  email         String       @unique @db.VarChar(255)
+  emailVerified DateTime?
+  image         String?
+  platformRole  PlatformRole @default(USER)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
   accounts        Account[]
   sessions        Session[]
   teamMembers     TeamMember[]
@@ -38,51 +60,68 @@ model User {
 }
 
 model Team {
-  id                   Int           @id @default(autoincrement())
-  name                 String        @db.VarChar(100)
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-  stripeCustomerId     String?       @unique
-  stripeSubscriptionId String?       @unique
+  id                   Int      @id @default(autoincrement())
+  name                 String   @db.VarChar(100)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  stripeCustomerId     String?  @unique
+  stripeSubscriptionId String?  @unique
   stripeProductId      String?
-  planName             String?       @db.VarChar(50)
-  subscriptionStatus   String?       @db.VarChar(20)
-  teamMembers          TeamMember[]
-  activityLogs         ActivityLog[]
-  invitations          Invitation[]
+  planName             String?  @db.VarChar(50)
+  subscriptionStatus   String?  @db.VarChar(20)
+
+  teamMembers  TeamMember[]
+  activityLogs ActivityLog[]
+  invitations  Invitation[]
 }
 
 model TeamMember {
   id       Int      @id @default(autoincrement())
   userId   Int
   teamId   Int
-  role     String   @db.VarChar(50)
+  role     TeamRole
   joinedAt DateTime @default(now())
-  user     User     @relation(fields: [userId], references: [id])
-  team     Team     @relation(fields: [teamId], references: [id])
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
 }
 
 model ActivityLog {
   id        Int          @id @default(autoincrement())
-  teamId    Int
+  teamId    Int?
   userId    Int?
   action    ActivityType
   timestamp DateTime     @default(now())
   ipAddress String?      @db.VarChar(45)
-  team      Team         @relation(fields: [teamId], references: [id])
-  user      User?        @relation(fields: [userId], references: [id])
+
+  team Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([teamId])
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
 }
 
 model Invitation {
-  id        Int      @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   teamId    Int
-  email     String   @db.VarChar(255)
-  role      String   @db.VarChar(50)
+  email     String           @db.VarChar(255)
+  role      TeamRole
   invitedBy Int
-  invitedAt DateTime @default(now())
-  status    String   @default("pending") @db.VarChar(20)
-  team      Team     @relation(fields: [teamId], references: [id])
-  inviter   User     @relation("InvitationSender", fields: [invitedBy], references: [id])
+  invitedAt DateTime         @default(now())
+  status    InvitationStatus @default(PENDING)
+
+  team    Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inviter User @relation("InvitationSender", fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([email])
+  @@index([status])
 }
 
 model Account {
@@ -100,7 +139,8 @@ model Account {
   session_state     String?  @db.VarChar(255)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -113,7 +153,8 @@ model Session {
   expires      DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }

@@ -15,6 +15,10 @@ export const inviteTeamMemberAction = validatedActionWithUser(
       return { error: 'User is not part of a team' };
     }
 
+    if (userWithTeam.teamRole !== 'OWNER') {
+      return { error: 'Only team owners can invite members' };
+    }
+
     const team = await db.team.findUnique({
       where: { id: userWithTeam.teamId },
       select: { name: true }

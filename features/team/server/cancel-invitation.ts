@@ -16,11 +16,15 @@ export async function cancelInvitation({
     return { error: 'User is not part of a team' };
   }
 
+  if (userWithTeam.teamRole !== 'OWNER') {
+    return { error: 'Only team owners can cancel invitations' };
+  }
+
   const invitation = await db.invitation.findFirst({
     where: {
       id: invitationId,
       teamId: userWithTeam.teamId,
-      status: 'pending',
+      status: 'PENDING',
     },
   });
 
@@ -30,7 +34,7 @@ export async function cancelInvitation({
 
   await db.invitation.update({
     where: { id: invitationId },
-    data: { status: 'canceled' },
+    data: { status: 'CANCELED' },
   });
 
   return { success: 'Invitation canceled' };

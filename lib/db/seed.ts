@@ -42,12 +42,9 @@ async function seed() {
 
   await db.user.upsert({
     where: { email },
-    update: {
-      role: 'owner'
-    },
+    update: {},
     create: {
-      email,
-      role: 'owner'
+      email
     }
   });
 
@@ -85,7 +82,7 @@ async function seed() {
       data: {
         teamId: team.id,
         userId: user.id,
-        role: 'owner'
+        role: 'OWNER'
       }
     });
   }

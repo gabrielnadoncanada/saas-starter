@@ -16,6 +16,10 @@ export const removeTeamMemberAction = validatedActionWithUser(
       return { error: 'User is not part of a team' };
     }
 
+    if (userWithTeam.teamRole !== 'OWNER') {
+      return { error: 'Only team owners can remove members' };
+    }
+
     await db.teamMember.deleteMany({
       where: {
         id: memberId,

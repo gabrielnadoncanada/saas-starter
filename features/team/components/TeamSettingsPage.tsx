@@ -133,7 +133,9 @@ function TeamMembersPanel() {
 
 function InviteTeamMemberPanel() {
   const { data: user } = useSWR<User>('/api/user', fetcher);
-  const isOwner = user?.role === 'owner';
+  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
+  const currentMember = teamData?.teamMembers.find((member) => member.user.id === user?.id);
+  const isOwner = currentMember?.role === 'OWNER';
   const [inviteState, inviteAction, isInvitePending] = useActionState<
     ActionState,
     FormData
@@ -162,17 +164,17 @@ function InviteTeamMemberPanel() {
           <div>
             <Label>Role</Label>
             <RadioGroup
-              defaultValue="member"
+              defaultValue="MEMBER"
               name="role"
               className="flex space-x-4"
               disabled={!isOwner}
             >
               <div className="mt-2 flex items-center space-x-2">
-                <RadioGroupItem value="member" id="member" />
+                <RadioGroupItem value="MEMBER" id="member" />
                 <Label htmlFor="member">Member</Label>
               </div>
               <div className="mt-2 flex items-center space-x-2">
-                <RadioGroupItem value="owner" id="owner" />
+                <RadioGroupItem value="OWNER" id="owner" />
                 <Label htmlFor="owner">Owner</Label>
               </div>
             </RadioGroup>

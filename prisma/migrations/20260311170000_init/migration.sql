@@ -2,7 +2,16 @@
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateEnum
-CREATE TYPE "ActivityType" AS ENUM ('SIGN_UP', 'SIGN_IN', 'DELETE_ACCOUNT', 'UPDATE_ACCOUNT', 'CREATE_TEAM', 'REMOVE_TEAM_MEMBER', 'INVITE_TEAM_MEMBER', 'ACCEPT_INVITATION', 'LINK_AUTH_PROVIDER', 'UNLINK_AUTH_PROVIDER');
+CREATE TYPE "ActivityType" AS ENUM ('SIGN_UP', 'SIGN_IN', 'DELETE_ACCOUNT', 'UPDATE_ACCOUNT', 'CREATE_TEAM', 'REMOVE_TEAM_MEMBER', 'INVITE_TEAM_MEMBER', 'ACCEPT_INVITATION', 'LINK_AUTH_PROVIDER', 'UNLINK_AUTH_PROVIDER', 'SUPER_ADMIN_SIGN_IN', 'IMPERSONATE_USER', 'STOP_IMPERSONATION');
+
+-- CreateEnum
+CREATE TYPE "PlatformRole" AS ENUM ('USER', 'SUPER_ADMIN');
+
+-- CreateEnum
+CREATE TYPE "TeamRole" AS ENUM ('OWNER', 'ADMIN', 'MEMBER');
+
+-- CreateEnum
+CREATE TYPE "InvitationStatus" AS ENUM ('PENDING', 'ACCEPTED', 'EXPIRED', 'CANCELED');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -11,7 +20,7 @@ CREATE TABLE "User" (
     "email" VARCHAR(255) NOT NULL,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
-    "role" VARCHAR(20) NOT NULL DEFAULT 'member',
+    "platformRole" "PlatformRole" NOT NULL DEFAULT 'USER',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -39,7 +48,7 @@ CREATE TABLE "TeamMember" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "teamId" INTEGER NOT NULL,
-    "role" VARCHAR(50) NOT NULL,
+    "role" "TeamRole" NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "TeamMember_pkey" PRIMARY KEY ("id")
@@ -48,7 +57,7 @@ CREATE TABLE "TeamMember" (
 -- CreateTable
 CREATE TABLE "ActivityLog" (
     "id" SERIAL NOT NULL,
-    "teamId" INTEGER NOT NULL,
+    "teamId" INTEGER,
     "userId" INTEGER,
     "action" "ActivityType" NOT NULL,
     "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -62,10 +71,10 @@ CREATE TABLE "Invitation" (
     "id" SERIAL NOT NULL,
     "teamId" INTEGER NOT NULL,
     "email" VARCHAR(255) NOT NULL,
-    "role" VARCHAR(50) NOT NULL,
+    "role" "TeamRole" NOT NULL,
     "invitedBy" INTEGER NOT NULL,
     "invitedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "status" VARCHAR(20) NOT NULL DEFAULT 'pending',
+    "status" "InvitationStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Invitation_pkey" PRIMARY KEY ("id")
 );
@@ -119,6 +128,36 @@ CREATE UNIQUE INDEX "Team_stripeCustomerId_key" ON "Team"("stripeCustomerId");
 CREATE UNIQUE INDEX "Team_stripeSubscriptionId_key" ON "Team"("stripeSubscriptionId");
 
 -- CreateIndex
+CREATE INDEX "TeamMember_userId_idx" ON "TeamMember"("userId");
+
+-- CreateIndex
+CREATE INDEX "TeamMember_teamId_idx" ON "TeamMember"("teamId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TeamMember_userId_teamId_key" ON "TeamMember"("userId", "teamId");
+
+-- CreateIndex
+CREATE INDEX "ActivityLog_teamId_idx" ON "ActivityLog"("teamId");
+
+-- CreateIndex
+CREATE INDEX "ActivityLog_userId_idx" ON "ActivityLog"("userId");
+
+-- CreateIndex
+CREATE INDEX "ActivityLog_action_idx" ON "ActivityLog"("action");
+
+-- CreateIndex
+CREATE INDEX "ActivityLog_timestamp_idx" ON "ActivityLog"("timestamp");
+
+-- CreateIndex
+CREATE INDEX "Invitation_teamId_idx" ON "Invitation"("teamId");
+
+-- CreateIndex
+CREATE INDEX "Invitation_email_idx" ON "Invitation"("email");
+
+-- CreateIndex
+CREATE INDEX "Invitation_status_idx" ON "Invitation"("status");
+
+-- CreateIndex
 CREATE INDEX "Account_userId_idx" ON "Account"("userId");
 
 -- CreateIndex
@@ -137,26 +176,25 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
 -- AddForeignKey
-ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_invitedBy_fkey" FOREIGN KEY ("invitedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_invitedBy_fkey" FOREIGN KEY ("invitedBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-

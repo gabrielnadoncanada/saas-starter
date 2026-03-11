@@ -25,7 +25,7 @@ export async function completePostSignIn(
     where: {
       id: invitationId,
       email,
-      status: "pending",
+      status: "PENDING",
     },
   });
 
@@ -49,16 +49,11 @@ export async function completePostSignIn(
           role: invitation.role,
         },
       });
-
-      await tx.user.update({
-        where: { id: userId },
-        data: { role: invitation.role },
-      });
     }
 
     await tx.invitation.update({
       where: { id: invitation.id },
-      data: { status: "accepted" },
+      data: { status: "ACCEPTED" },
     });
 
     await tx.activityLog.create({

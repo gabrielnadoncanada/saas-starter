@@ -23,7 +23,7 @@ export async function getUserWithTeam(userId: number) {
     include: {
       teamMembers: {
         take: 1,
-        select: { teamId: true },
+        select: { teamId: true, role: true },
       },
     },
   });
@@ -35,5 +35,6 @@ export async function getUserWithTeam(userId: number) {
   return {
     user,
     teamId: user.teamMembers[0]?.teamId ?? null,
+    teamRole: user.teamMembers[0]?.role ?? null,
   };
 }

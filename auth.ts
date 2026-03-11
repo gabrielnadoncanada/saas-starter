@@ -39,7 +39,8 @@ export const authConfig = {
       if (user) {
         token.sub = String(user.id);
         token.id = String(user.id);
-        token.role = typeof user.role === 'string' ? user.role : undefined;
+        token.platformRole =
+          typeof user.platformRole === 'string' ? user.platformRole : undefined;
       }
 
       if (!token.sub) {
@@ -50,7 +51,7 @@ export const authConfig = {
         where: { id: Number(token.sub) },
         select: {
           deletedAt: true,
-          role: true
+          platformRole: true
         }
       });
 
@@ -59,14 +60,15 @@ export const authConfig = {
       }
 
       token.id = token.sub;
-      token.role = currentUser.role;
+      token.platformRole = currentUser.platformRole;
 
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = typeof token.id === 'string' ? token.id : token.sub ?? '';
-        session.user.role = typeof token.role === 'string' ? token.role : undefined;
+        session.user.platformRole =
+          typeof token.platformRole === 'string' ? token.platformRole : undefined;
       }
 
       return session;

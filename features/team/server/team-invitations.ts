@@ -1,4 +1,4 @@
-import { ActivityType, type User } from '@/lib/db/types';
+import { ActivityType, type TeamRole, type User } from '@/lib/db/types';
 import { db } from '@/lib/db/prisma';
 import { sendTeamInvitationEmail } from '@/lib/email/senders';
 
@@ -7,7 +7,7 @@ export type InviteTeamMemberInput = {
   teamName: string;
   inviter: Pick<User, 'id' | 'email' | 'name'>;
   email: string;
-  role: 'member' | 'owner';
+  role: TeamRole;
 };
 
 type InviteTeamMemberResult = { error: string } | { success: string };
@@ -38,7 +38,7 @@ async function ensureNoPendingInvitation(
     where: {
       email: input.email,
       teamId: input.teamId,
-      status: 'pending',
+      status: 'PENDING',
     },
   });
 
@@ -57,7 +57,7 @@ async function createInvitationRecord(input: InviteTeamMemberInput) {
         email: input.email,
         role: input.role,
         invitedBy: input.inviter.id,
-        status: 'pending',
+        status: 'PENDING',
       },
     });
 
