@@ -2,8 +2,9 @@
 
 import { redirect } from 'next/navigation';
 
+import { routes } from '@/constants/routes';
 import { getCurrentUser } from '@/lib/auth/get-current-user';
-import { getCurrentTeam } from '@/features/team/server/current-team';
+import { getCurrentTeam } from '@/features/teams/server/current-team';
 import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
 
 export async function checkoutAction(formData: FormData) {
@@ -11,7 +12,7 @@ export async function checkoutAction(formData: FormData) {
   const priceId = formData.get('priceId') as string;
 
   if (!user) {
-    redirect(`/sign-in?redirect=checkout&priceId=${priceId}`);
+    redirect(`${routes.auth.login}?redirect=checkout&priceId=${priceId}`);
   }
 
   const team = await getCurrentTeam();
@@ -26,3 +27,4 @@ export async function checkoutAction(formData: FormData) {
 
   redirect(url);
 }
+

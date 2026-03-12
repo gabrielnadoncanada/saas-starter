@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 
+import { routes } from '@/constants/routes';
 import { stripe as defaultStripe } from '@/lib/stripe/client';
 
 type CreatePortalParams = {
@@ -70,7 +71,7 @@ export async function createCustomerPortalSession(
 
   const session = await deps.stripe.billingPortal.sessions.create({
     customer: params.stripeCustomerId,
-    return_url: `${process.env.BASE_URL}/dashboard`,
+    return_url: `${process.env.BASE_URL}${routes.app.dashboard}`,
     configuration: configuration.id
   });
 

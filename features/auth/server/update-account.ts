@@ -1,7 +1,7 @@
 import { ActivityType } from "@prisma/client";
 import { createActivityLog } from "@/lib/activity-log";
 import { db } from "@/lib/db/prisma";
-import { getUserTeamMembership } from "@/features/team/server/team-membership";
+import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 type UpdateAccountParams = {
   userId: number;
@@ -34,3 +34,4 @@ export async function updateAccount({
 
   return { name, success: "Account updated successfully." };
 }
+

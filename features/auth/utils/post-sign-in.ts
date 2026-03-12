@@ -1,3 +1,5 @@
+import { routes } from '@/constants/routes';
+
 type PostSignInParams = {
   redirect?: string | null;
   priceId?: string | null;
@@ -22,5 +24,5 @@ export function getPostSignInCallbackUrl({
 
   const query = params.toString();
 
-  return query ? `/post-sign-in?${query}` : "/post-sign-in";
+  return query ? `${routes.auth.postSignIn}?${query}` : routes.auth.postSignIn;
 }

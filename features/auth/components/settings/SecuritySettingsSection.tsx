@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
+import { routes } from '@/constants/routes';
 import { SecuritySettingsPanel } from '@/features/auth/components/settings/SecuritySettingsPanel';
 import { getCurrentUser } from '@/lib/auth/get-current-user';
 import { getLinkedAccountsOverview } from '@/features/auth/server/linked-accounts';
@@ -41,7 +42,7 @@ export async function SecuritySettingsSection({
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect('/sign-in');
+    redirect(routes.auth.login);
   }
 
   const oauthProviders = getEnabledOAuthProviderIds();

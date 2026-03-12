@@ -1,3 +1,4 @@
+import { routes } from '@/constants/routes';
 import { stripe as defaultStripe } from '@/lib/stripe/client';
 
 type CreateCheckoutParams = {
@@ -16,7 +17,7 @@ export async function createCheckoutSession(
     line_items: [{ price: params.priceId, quantity: 1 }],
     mode: 'subscription',
     success_url: `${process.env.BASE_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.BASE_URL}/pricing`,
+    cancel_url: `${process.env.BASE_URL}${routes.marketing.pricing}`,
     customer: params.stripeCustomerId || undefined,
     customer_email: params.stripeCustomerId ? undefined : params.userEmail,
     client_reference_id: params.userId.toString(),

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
 import { SettingsPageHeader } from '@/components/shared/SettingsPageHeader';
+import { routes } from '@/constants/routes';
 import { GeneralSettingsForm } from '@/features/auth/components/settings/GeneralSettingsForm';
 import { getCurrentUser } from '@/lib/auth/get-current-user';
 
@@ -8,7 +9,7 @@ export async function GeneralSettingsSection() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect('/sign-in');
+    redirect(routes.auth.login);
   }
 
   return (

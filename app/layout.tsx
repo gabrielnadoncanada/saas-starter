@@ -26,7 +26,14 @@ export default function RootLayout({
       className={manrope.className}
     >
       <body className="min-h-[100dvh] bg-background text-foreground antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

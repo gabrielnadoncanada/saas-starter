@@ -9,6 +9,7 @@ import { CircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { routes } from '@/constants/routes';
 import { MagicLinkForm } from '@/features/auth/components/login/MagicLinkForm';
 import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
 import type { OAuthProviderId } from '@/lib/auth/providers';
@@ -36,7 +37,7 @@ function buildAlternateAuthHref(params: {
   priceId: string | null;
   inviteId: string | null;
 }) {
-  const pathname = params.mode === 'signin' ? '/sign-up' : '/sign-in';
+  const pathname = params.mode === 'signin' ? routes.auth.signup : routes.auth.login;
   const query = new URLSearchParams();
 
   if (params.redirect) {

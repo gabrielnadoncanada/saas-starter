@@ -7,7 +7,7 @@ import {
   type OAuthProviderId,
 } from "@/lib/auth/providers";
 import { createActivityLog } from "@/lib/activity-log";
-import { getUserTeamMembership } from "@/features/team/server/team-membership";
+import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 const ALL_OAUTH_PROVIDER_IDS = Object.keys(
   OAUTH_PROVIDER_LABELS,
@@ -98,3 +98,4 @@ export async function unlinkOAuthAccountForUser(
 
   return { status: "unlinked" as const };
 }
+

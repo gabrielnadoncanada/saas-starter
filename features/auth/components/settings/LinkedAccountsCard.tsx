@@ -5,6 +5,7 @@ import { signIn as signInWithProvider } from 'next-auth/react';
 import { CheckCircle2, Link2, Loader2, Mail, Unlink2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { routes } from '@/constants/routes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { unlinkAuthProviderAction } from '@/features/auth/actions/unlink-auth-provider.action';
 import type {
@@ -124,7 +125,7 @@ export function LinkedAccountsCard({
                   variant="outline"
                   onClick={() =>
                     signInWithProvider(provider.provider, {
-                      redirectTo: `/dashboard/security?success=linked&provider=${provider.provider}`
+                      redirectTo: `${routes.app.security}?success=linked&provider=${provider.provider}`
                     })
                   }
                 >

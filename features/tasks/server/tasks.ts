@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { db } from '@/lib/db/prisma';
 import { getCurrentUser } from '@/lib/auth/get-current-user';
-import { getUserTeamMembership } from '@/features/team/server/team-membership';
+import { getUserTeamMembership } from '@/features/teams/server/team-membership';
 import type {
   createTaskSchema,
   deleteTaskSchema,
@@ -146,3 +146,4 @@ export async function deleteTaskForCurrentTeam(taskId: DeleteTaskInput['taskId']
     throw new Error('Task not found');
   }
 }
+

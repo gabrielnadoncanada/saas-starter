@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { deleteAccountAction } from '@/features/auth/actions/delete-account.action';
+import { routes } from '@/constants/routes';
 import { DELETE_CONFIRMATION_WORD } from '@/features/auth/schemas/account.schema';
 import type { DeleteAccountActionState } from '@/features/auth/types/auth.types';
 
@@ -28,7 +29,7 @@ export function DeleteAccountCard() {
       return;
     }
 
-    void signOut({ redirectTo: '/sign-in' });
+    void signOut({ redirectTo: routes.auth.login });
   }, [deleteState.success]);
 
   if (!showConfirmation) {
