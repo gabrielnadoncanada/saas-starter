@@ -6,10 +6,11 @@
   "tailwind": {
     "config": "",
     "css": "app/globals.css",
-    "baseColor": "zinc",
+    "baseColor": "slate",
     "cssVariables": true,
     "prefix": ""
   },
+  "rtl": false,
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",

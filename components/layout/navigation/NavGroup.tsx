@@ -32,7 +32,7 @@ import {
   type NavItem,
   type NavLink,
   type NavGroup as NavGroupProps,
-} from '@/components/layout/model/Types'
+} from '@/components/layout/model/types'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

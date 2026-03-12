@@ -1,14 +1,10 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    ppr: true,
-    clientSegmentCache: true
-  },
   images: {
     remotePatterns: [
-      { hostname: 'lh3.googleusercontent.com' },
-      { hostname: 'avatars.githubusercontent.com' },
+      { hostname: "lh3.googleusercontent.com" },
+      { hostname: "avatars.githubusercontent.com" },
     ],
   },
 };

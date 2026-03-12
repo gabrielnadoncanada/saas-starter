@@ -37,7 +37,7 @@ export function TeamSwitcher() {
     void (async () => {
       try {
         const result = await listTeamsAction()
-
+        console.log(result)
         if (!result.ok || !result.data) {
           return
         }
@@ -49,6 +49,7 @@ export function TeamSwitcher() {
       }
     })()
   }, [])
+
 
   async function handleSwitch(nextTeamId: number) {
     if (!nextTeamId || nextTeamId === activeTeamId) {
@@ -71,7 +72,7 @@ export function TeamSwitcher() {
     }
   }
 
-  if (isLoading || teams.length <= 1) {
+  if (isLoading || teams.length < 1) {
     return null
   }
 

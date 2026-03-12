@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'Next.js SaaS Starter',
@@ -25,7 +26,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={manrope.className}
     >
-      <body className="min-h-[100dvh] bg-background text-foreground antialiased">
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -33,6 +34,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
