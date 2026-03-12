@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
-import useSWR, { mutate } from 'swr';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,20 +13,11 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { formatTaskValue, taskLabelOptions, taskPriorityOptions, taskStatusOptions } from '@/features/tasks/task-options';
 import { deleteTaskAction } from '@/features/tasks/actions/delete-task.action';
-import {
-  updateTaskAction,
-  updateTaskStatusAction
-} from '@/features/tasks/actions/update-task.action';
-import {
-  formatTaskValue,
-  taskLabelOptions,
-  taskPriorityOptions,
-  taskStatusOptions
-} from '@/features/tasks/task-options';
-import type { Task } from '@prisma/client';
+import { updateTaskAction, updateTaskStatusAction } from '@/features/tasks/actions/update-task.action';
+import type { TaskListItem } from '@/features/tasks/types/task.types';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const fieldClassName =
   'border-input dark:bg-input/30 flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]';
 const textareaClassName =
@@ -35,9 +26,11 @@ const textareaClassName =
 type TaskActionState = {
   error?: string;
   success?: string;
+  refreshKey?: number;
 };
 
-function TaskCard({ task }: { task: Task }) {
+function TaskCard({ task }: { task: TaskListItem }) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [updateState, updateAction, isUpdating] = useActionState<TaskActionState, FormData>(
     updateTaskAction,
@@ -53,11 +46,21 @@ function TaskCard({ task }: { task: Task }) {
   );
 
   useEffect(() => {
-    if (updateState.success || statusState.success || deleteState.success) {
-      setIsEditing(false);
-      void mutate('/api/tasks');
+    if (!updateState.refreshKey) {
+      return;
     }
-  }, [deleteState.success, statusState.success, updateState.success]);
+
+    setIsEditing(false);
+    router.refresh();
+  }, [router, updateState.refreshKey]);
+
+  useEffect(() => {
+    if (!statusState.refreshKey && !deleteState.refreshKey) {
+      return;
+    }
+
+    router.refresh();
+  }, [deleteState.refreshKey, router, statusState.refreshKey]);
 
   return (
     <li>
@@ -188,14 +191,8 @@ function TaskCard({ task }: { task: Task }) {
   );
 }
 
-export function TaskList() {
-  const { data, isLoading } = useSWR<Task[]>('/api/tasks', fetcher);
-
-  if (isLoading) {
-    return <p className="text-sm text-muted-foreground">Loading tasks...</p>;
-  }
-
-  if (!data?.length) {
+export function TaskList({ tasks }: { tasks: TaskListItem[] }) {
+  if (!tasks.length) {
     return (
       <Card>
         <CardHeader>
@@ -208,7 +205,7 @@ export function TaskList() {
 
   return (
     <ul className="space-y-4">
-      {data.map((task) => (
+      {tasks.map((task) => (
         <TaskCard key={task.id} task={task} />
       ))}
     </ul>

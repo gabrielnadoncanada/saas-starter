@@ -6,6 +6,13 @@ import { resendInvitation } from "@/features/team/server/resend-invitation";
 
 export const resendInvitationAction = validatedActionWithUser(
   invitationIdSchema,
-  async ({ invitationId }, _, user) =>
-    resendInvitation({ invitationId, user }),
+  async ({ invitationId }, _, user) => {
+    const result = await resendInvitation({ invitationId, user });
+
+    if ('error' in result) {
+      return result;
+    }
+
+    return { ...result, refreshKey: Date.now() };
+  },
 );

@@ -12,6 +12,6 @@ export const createTaskAction = validatedActionWithUser(
     await createTaskForCurrentTeam(data);
     revalidatePath('/dashboard/tasks');
 
-    return { success: 'Task created' };
+    return { success: 'Task created', refreshKey: Date.now() };
   }
 );

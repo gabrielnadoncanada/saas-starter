@@ -12,6 +12,6 @@ export const deleteTaskAction = validatedActionWithUser(
     await deleteTaskForCurrentTeam(taskId);
     revalidatePath('/dashboard/tasks');
 
-    return { success: 'Task deleted' };
+    return { success: 'Task deleted', refreshKey: Date.now() };
   }
 );

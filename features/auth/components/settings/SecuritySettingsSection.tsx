@@ -4,7 +4,11 @@ import { SecuritySettingsPanel } from '@/features/auth/components/settings/Secur
 import { getCurrentUser } from '@/lib/auth/get-current-user';
 import { getLinkedAccountsOverview } from '@/features/auth/server/linked-accounts';
 import type { LinkedProviderOverview } from '@/features/auth/types/auth.types';
-import { getEnabledOAuthProviderIds, OAUTH_PROVIDER_LABELS } from '@/lib/auth/providers';
+import {
+  getEnabledOAuthProviderIds,
+  hasMagicLinkProvider,
+  OAUTH_PROVIDER_LABELS
+} from '@/lib/auth/providers';
 
 function getSingleSearchParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -41,6 +45,7 @@ export async function SecuritySettingsSection({
   }
 
   const oauthProviders = getEnabledOAuthProviderIds();
+  const allowMagicLink = hasMagicLinkProvider();
   const linkedAccounts = await getLinkedAccountsOverview(user.id, oauthProviders);
 
   const success = getSingleSearchParam(searchParams.success);
@@ -53,6 +58,7 @@ export async function SecuritySettingsSection({
 
   return (
     <SecuritySettingsPanel
+      allowMagicLink={allowMagicLink}
       providers={mapLinkedProviders(linkedAccounts.providers)}
       feedback={{
         success: success === 'linked' ? `${providerLabel} linked successfully.` : undefined

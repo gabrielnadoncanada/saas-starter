@@ -1,26 +1,19 @@
 'use client';
 
-import { useActionState } from 'react';
-import useSWR from 'swr';
+import { useActionState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Loader2, Mail, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cancelInvitationAction } from '@/features/team/actions/cancel-invitation.action';
 import { resendInvitationAction } from '@/features/team/actions/resend-invitation.action';
+import type { PendingInvitationView } from '@/features/team/types/team.types';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+type ActionState = { error?: string; success?: string; refreshKey?: number };
 
-type PendingInvitation = {
-  id: number;
-  email: string;
-  role: string;
-  invitedAt: string;
-};
-
-type ActionState = { error?: string; success?: string };
-
-function InvitationRow({ invitation }: { invitation: PendingInvitation }) {
+function InvitationRow({ invitation }: { invitation: PendingInvitationView }) {
+  const router = useRouter();
   const [cancelState, cancelAction, isCanceling] = useActionState<ActionState, FormData>(
     cancelInvitationAction,
     {}
@@ -30,10 +23,16 @@ function InvitationRow({ invitation }: { invitation: PendingInvitation }) {
     {}
   );
 
+  useEffect(() => {
+    if (!cancelState.refreshKey && !resendState.refreshKey) {
+      return;
+    }
+
+    router.refresh();
+  }, [cancelState.refreshKey, resendState.refreshKey, router]);
+
   const feedback = cancelState?.error || cancelState?.success || resendState?.error || resendState?.success;
   const isError = cancelState?.error || resendState?.error;
-
-  if (cancelState?.success) return null;
 
   return (
     <li className="space-y-1">
@@ -68,13 +67,12 @@ function InvitationRow({ invitation }: { invitation: PendingInvitation }) {
   );
 }
 
-export function PendingInvitationsPanel() {
-  const { data: invitations } = useSWR<PendingInvitation[]>(
-    '/api/team/invitations',
-    fetcher
-  );
-
-  if (!invitations?.length) return null;
+export function PendingInvitationsPanel({
+  invitations
+}: {
+  invitations: PendingInvitationView[];
+}) {
+  if (!invitations.length) return null;
 
   return (
     <Card className="mb-8">

@@ -22,6 +22,13 @@ export const unlinkAuthProviderAction = validatedActionWithUser(
       };
     }
 
+    if (result.status === "blocked") {
+      return {
+        provider,
+        error: `Link another sign-in provider before unlinking ${OAUTH_PROVIDER_LABELS[provider]}.`,
+      };
+    }
+
     refresh();
 
     return {

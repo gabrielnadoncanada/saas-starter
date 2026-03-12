@@ -148,3 +148,22 @@ Do not use global `lib/` as:
 
 When in doubt, prefer feature ownership first.
 Move something to global `lib/` only when it is truly cross-feature technical infrastructure.
+
+---
+
+## Activity log example
+
+Use a shared helper such as `lib/activity-log.ts` for the low-level insert.
+
+Keep feature-owned lookups outside global `lib/`.
+
+Good:
+
+- `features/auth/server/linked-accounts.ts` gets any feature-owned data it needs, then calls the shared log helper
+- `features/team/...` uses the same helper inside team workflows
+
+Bad:
+
+- `lib/auth/...` importing team membership queries just to attach a `teamId`
+
+If a global auth hook needs to write an activity row, let it call the shared helper directly with the data it already owns.

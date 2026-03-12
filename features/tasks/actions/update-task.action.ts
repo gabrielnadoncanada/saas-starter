@@ -18,7 +18,7 @@ export const updateTaskAction = validatedActionWithUser(
     await updateTaskForCurrentTeam(data);
     revalidatePath('/dashboard/tasks');
 
-    return { success: 'Task updated' };
+    return { success: 'Task updated', refreshKey: Date.now() };
   }
 );
 
@@ -28,6 +28,6 @@ export const updateTaskStatusAction = validatedActionWithUser(
     await updateTaskStatusForCurrentTeam(data);
     revalidatePath('/dashboard/tasks');
 
-    return { success: 'Task updated' };
+    return { success: 'Task updated', refreshKey: Date.now() };
   }
 );

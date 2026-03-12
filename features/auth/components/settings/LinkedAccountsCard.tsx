@@ -15,11 +15,16 @@ import type {
 import { OAUTH_PROVIDER_LABELS } from '@/lib/auth/providers';
 
 type LinkedAccountsCardProps = {
+  allowMagicLink: boolean;
   providers: LinkedProviderOverview[];
   feedback?: SecuritySettingsFeedback;
 };
 
-export function LinkedAccountsCard({ providers, feedback }: LinkedAccountsCardProps) {
+export function LinkedAccountsCard({
+  allowMagicLink,
+  providers,
+  feedback
+}: LinkedAccountsCardProps) {
   const [linkedAccountsState, unlinkAction, isUnlinkPending] = useActionState<
     LinkedAccountsActionState,
     FormData
@@ -44,12 +49,20 @@ export function LinkedAccountsCard({ providers, feedback }: LinkedAccountsCardPr
         <div className="flex items-center justify-between rounded-lg border border-border p-4">
           <div>
             <p className="font-medium text-foreground">Magic Link</p>
-            <p className="text-sm text-muted-foreground">Always available for your email.</p>
+            <p className="text-sm text-muted-foreground">
+              {allowMagicLink
+                ? 'Available for your email.'
+                : 'Unavailable until Resend is configured.'}
+            </p>
           </div>
 
-          <div className="flex items-center gap-2 text-sm font-medium text-green-700">
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-            Active
+          <div
+            className={`flex items-center gap-2 text-sm font-medium ${
+              allowMagicLink ? 'text-green-700' : 'text-muted-foreground'
+            }`}
+          >
+            <CheckCircle2 className={`h-4 w-4 ${allowMagicLink ? 'text-green-600' : 'text-muted-foreground'}`} />
+            {allowMagicLink ? 'Active' : 'Inactive'}
           </div>
         </div>
 
@@ -82,7 +95,16 @@ export function LinkedAccountsCard({ providers, feedback }: LinkedAccountsCardPr
                 <form action={unlinkAction}>
                   <input type="hidden" name="provider" value={provider.provider} />
 
-                  <Button type="submit" variant="outline" disabled={isUnlinkPending}>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    disabled={isUnlinkPending || !provider.canUnlink}
+                    title={
+                      provider.canUnlink
+                        ? undefined
+                        : 'Link another sign-in method before unlinking this provider.'
+                    }
+                  >
                     {isUnlinkPending && linkedAccountsState.provider === provider.provider ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -122,7 +144,9 @@ export function LinkedAccountsCard({ providers, feedback }: LinkedAccountsCardPr
 
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Mail className="h-4 w-4" />
-          You can always sign in with a magic link, even after unlinking OAuth providers.
+          {allowMagicLink
+            ? 'You can still sign in with a magic link after unlinking OAuth providers.'
+            : 'Without Magic Link, keep at least one OAuth provider linked to your account.'}
         </p>
       </CardContent>
     </Card>

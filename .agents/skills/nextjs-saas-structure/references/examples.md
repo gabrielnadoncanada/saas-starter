@@ -101,6 +101,7 @@ Why this is good:
 - schemas stay separate from types
 - the feature has no ambiguous local `lib/`
 - route-level naming stays out of the feature
+- feature-owned team lookups stay in `features/`, while low-level shared logging can stay in `lib/`
 
 ---
 

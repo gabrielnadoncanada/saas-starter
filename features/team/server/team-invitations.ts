@@ -2,6 +2,8 @@ import { ActivityType } from '@prisma/client';
 import type { TeamRole, User } from '@prisma/client';
 import { db } from '@/lib/db/prisma';
 import { sendTeamInvitationEmail } from '@/lib/email/senders';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
+import { getUserTeamMembership } from '@/features/team/server/team-membership';
 
 export type InviteTeamMemberInput = {
   teamId: number;
@@ -118,4 +120,37 @@ export async function inviteTeamMemberToTeam(input: InviteTeamMemberInput) {
   const invitation = await createInvitationRecord(input);
 
   return sendInvitationEmail(input, invitation.id);
+}
+
+export async function listPendingInvitationsForCurrentTeam() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return [];
+  }
+
+  const membership = await getUserTeamMembership(user.id);
+
+  if (!membership?.teamId) {
+    return [];
+  }
+
+  const invitations = await db.invitation.findMany({
+    where: {
+      teamId: membership.teamId,
+      status: 'PENDING',
+    },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      invitedAt: true,
+    },
+    orderBy: { invitedAt: 'desc' },
+  });
+
+  return invitations.map((invitation) => ({
+    ...invitation,
+    invitedAt: invitation.invitedAt.toISOString(),
+  }));
 }

@@ -7,15 +7,24 @@ import type {
 } from '@/features/auth/types/auth.types';
 
 type SecuritySettingsPanelProps = {
+  allowMagicLink: boolean;
   providers: LinkedProviderOverview[];
   feedback?: SecuritySettingsFeedback;
 };
 
-export function SecuritySettingsPanel({ providers, feedback }: SecuritySettingsPanelProps) {
+export function SecuritySettingsPanel({
+  allowMagicLink,
+  providers,
+  feedback
+}: SecuritySettingsPanelProps) {
   return (
     <section className="flex-1 p-4 lg:p-8">
       <SettingsPageHeader title="Security Settings" />
-      <LinkedAccountsCard providers={providers} feedback={feedback} />
+      <LinkedAccountsCard
+        allowMagicLink={allowMagicLink}
+        providers={providers}
+        feedback={feedback}
+      />
       <DeleteAccountCard />
     </section>
   );

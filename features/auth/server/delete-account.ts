@@ -1,5 +1,6 @@
 import { ActivityType } from "@prisma/client";
 
+import { createActivityLog } from "@/lib/activity-log";
 import { db } from "@/lib/db/prisma";
 import { getUserTeamMembership } from "@/features/team/server/team-membership";
 import { getAccountDeletionBlocker } from "@/features/team/server/account-deletion-policy";
@@ -19,16 +20,12 @@ export async function deleteAccount(user: DeleteAccountUser) {
   }
 
   await db.$transaction(async (tx) => {
-    if (membership?.teamId) {
-      await tx.activityLog.create({
-        data: {
-          teamId: membership.teamId,
-          userId: user.id,
-          action: ActivityType.DELETE_ACCOUNT,
-          ipAddress: "",
-        },
-      });
-    }
+    await createActivityLog({
+      client: tx,
+      teamId: membership?.teamId,
+      userId: user.id,
+      action: ActivityType.DELETE_ACCOUNT,
+    });
 
     await tx.user.update({
       where: { id: user.id },

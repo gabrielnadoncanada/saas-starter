@@ -28,12 +28,18 @@ export const inviteTeamMemberAction = validatedActionWithUser(
       return { error: "Team not found" };
     }
 
-    return inviteTeamMemberToTeam({
+    const result = await inviteTeamMemberToTeam({
       teamId: userWithTeam.teamId,
       teamName: team.name,
       inviter: user,
       email,
       role,
     });
+
+    if ('error' in result) {
+      return result;
+    }
+
+    return { ...result, refreshKey: Date.now() };
   },
 );

@@ -1,7 +1,7 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
-import { mutate } from 'swr';
+import { useActionState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,19 +23,25 @@ const textareaClassName =
 type TaskActionState = {
   error?: string;
   success?: string;
+  refreshKey?: number;
 };
 
 export function TaskCreateForm() {
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState<TaskActionState, FormData>(
     createTaskAction,
     {}
   );
 
   useEffect(() => {
-    if (state.success) {
-      void mutate('/api/tasks');
+    if (!state.refreshKey || !state.success) {
+      return;
     }
-  }, [state.success]);
+
+    formRef.current?.reset();
+    router.refresh();
+  }, [router, state.refreshKey, state.success]);
 
   return (
     <Card>
@@ -43,7 +49,7 @@ export function TaskCreateForm() {
         <CardTitle>Create Task</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={formAction} className="space-y-4">
+        <form ref={formRef} action={formAction} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input id="title" name="title" placeholder="Ship the onboarding flow" required />

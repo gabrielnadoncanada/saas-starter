@@ -1,8 +1,17 @@
 import { ActivityType } from "@prisma/client";
 
 import { db } from "@/lib/db/prisma";
-import type { OAuthProviderId } from "@/lib/auth/providers";
-import { createAuthActivityForUser } from "@/lib/auth/activity";
+import {
+  hasMagicLinkProvider,
+  OAUTH_PROVIDER_LABELS,
+  type OAuthProviderId,
+} from "@/lib/auth/providers";
+import { createActivityLog } from "@/lib/activity-log";
+import { getUserTeamMembership } from "@/features/team/server/team-membership";
+
+const ALL_OAUTH_PROVIDER_IDS = Object.keys(
+  OAUTH_PROVIDER_LABELS,
+) as OAuthProviderId[];
 
 export async function getLinkedAccountsOverview(
   userId: number,
@@ -27,6 +36,7 @@ export async function getLinkedAccountsOverview(
   );
 
   const linkedCount = accounts.length;
+  const canUseMagicLink = hasMagicLinkProvider();
 
   return {
     providers: oauthProviders.map((provider) => {
@@ -37,7 +47,7 @@ export async function getLinkedAccountsOverview(
         provider,
         linkedAt,
         isLinked,
-        canUnlink: isLinked && linkedCount > 1,
+        canUnlink: isLinked && (canUseMagicLink || linkedCount > 1),
       };
     }),
   };
@@ -54,7 +64,7 @@ export async function unlinkOAuthAccountForUser(
   const linkedAccounts = await db.account.findMany({
     where: {
       userId: params.userId,
-      provider: { not: "resend" },
+      provider: { in: ALL_OAUTH_PROVIDER_IDS },
     },
     select: {
       id: true,
@@ -70,7 +80,7 @@ export async function unlinkOAuthAccountForUser(
     return { status: "not-found" as const };
   }
 
-  if (linkedAccounts.length <= 1) {
+  if (!hasMagicLinkProvider() && linkedAccounts.length <= 1) {
     return { status: "blocked" as const };
   }
 
@@ -78,10 +88,13 @@ export async function unlinkOAuthAccountForUser(
     where: { id: targetAccount.id },
   });
 
-  await createAuthActivityForUser(
-    params.userId,
-    ActivityType.UNLINK_AUTH_PROVIDER,
-  );
+  const membership = await getUserTeamMembership(params.userId);
+
+  await createActivityLog({
+    teamId: membership?.teamId,
+    userId: params.userId,
+    action: ActivityType.UNLINK_AUTH_PROVIDER,
+  });
 
   return { status: "unlinked" as const };
 }

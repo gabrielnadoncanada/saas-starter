@@ -33,6 +33,6 @@ export const removeTeamMemberAction = validatedActionWithUser(
       action: ActivityType.REMOVE_TEAM_MEMBER,
     });
 
-    return { success: "Team member removed successfully" };
+    return { success: "Team member removed successfully", refreshKey: Date.now() };
   },
 );
