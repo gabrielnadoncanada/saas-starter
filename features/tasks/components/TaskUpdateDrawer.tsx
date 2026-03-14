@@ -5,12 +5,20 @@ import { Loader2 } from 'lucide-react';
 
 import { updateTaskAction } from '@/features/tasks/actions/update-task.action';
 import { labels, priorities, statuses } from '@/features/tasks/constants';
+import type { UpdateTaskActionState } from '@/features/tasks/types/task-action.types';
 import type { Task } from '@/features/tasks/types/task.types';
 import { getFieldState } from '@/shared/lib/get-field-state';
 import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { Button } from '@/shared/components/ui/button';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
 import {
   Sheet,
   SheetClose,
@@ -21,9 +29,7 @@ import {
   SheetTitle,
 } from '@/shared/components/ui/sheet';
 import { Textarea } from '@/shared/components/ui/textarea';
-
-const selectClassName =
-  'border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 flex h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]';
+import { useTasks } from './TasksProvider';
 
 type TaskUpdateDrawerProps = {
   task: Task;
@@ -36,7 +42,11 @@ export function TaskUpdateDrawer({
   open,
   onOpenChange,
 }: TaskUpdateDrawerProps) {
-  const [state, formAction, isPending] = useActionState(updateTaskAction, {});
+  const { updateTask } = useTasks();
+  const [state, formAction, isPending] = useActionState<UpdateTaskActionState, FormData>(
+    updateTaskAction,
+    {}
+  );
 
   const title = state.values?.title ?? task.title;
   const description = state.values?.description ?? task.description ?? '';
@@ -59,10 +69,14 @@ export function TaskUpdateDrawer({
   });
 
   useEffect(() => {
+    if (state.task) {
+      updateTask(state.task);
+    }
+
     if (state.success) {
       onOpenChange(false);
     }
-  }, [onOpenChange, state.success]);
+  }, [onOpenChange, state.success, state.task, updateTask]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -103,55 +117,73 @@ export function TaskUpdateDrawer({
 
             <Field data-invalid={labelField.invalid}>
               <FieldLabel htmlFor={`task-label-${task.id}`}>Label</FieldLabel>
-              <select
-                id={`task-label-${task.id}`}
+              <Select
                 name='label'
                 defaultValue={label}
-                aria-invalid={labelField.invalid}
-                className={selectClassName}
               >
-                {labels.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  id={`task-label-${task.id}`}
+                  className='w-full'
+                  aria-invalid={labelField.invalid}
+                >
+                  <SelectValue placeholder='Select a label' />
+                </SelectTrigger>
+                <SelectContent>
+                  {labels.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FieldError>{labelField.error}</FieldError>
             </Field>
 
             <Field data-invalid={priorityField.invalid}>
               <FieldLabel htmlFor={`task-priority-${task.id}`}>Priority</FieldLabel>
-              <select
-                id={`task-priority-${task.id}`}
+              <Select
                 name='priority'
                 defaultValue={priority}
-                aria-invalid={priorityField.invalid}
-                className={selectClassName}
               >
-                {priorities.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  id={`task-priority-${task.id}`}
+                  className='w-full'
+                  aria-invalid={priorityField.invalid}
+                >
+                  <SelectValue placeholder='Select a priority' />
+                </SelectTrigger>
+                <SelectContent>
+                  {priorities.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FieldError>{priorityField.error}</FieldError>
             </Field>
 
             <Field data-invalid={statusField.invalid}>
               <FieldLabel htmlFor={`task-status-${task.id}`}>Status</FieldLabel>
-              <select
-                id={`task-status-${task.id}`}
+              <Select
                 name='status'
                 defaultValue={status}
-                aria-invalid={statusField.invalid}
-                className={selectClassName}
               >
-                {statuses.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  id={`task-status-${task.id}`}
+                  className='w-full'
+                  aria-invalid={statusField.invalid}
+                >
+                  <SelectValue placeholder='Select a status' />
+                </SelectTrigger>
+                <SelectContent>
+                  {statuses.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FieldError>{statusField.error}</FieldError>
             </Field>
           </FieldGroup>

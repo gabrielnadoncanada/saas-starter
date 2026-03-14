@@ -4,7 +4,10 @@ import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with
 import { invitationIdSchema } from "@/features/teams/schemas/team.schema";
 import { cancelInvitation } from "@/features/teams/server/cancel-invitation";
 
-export const cancelInvitationAction = validatedActionWithUser(
+export const cancelInvitationAction = validatedActionWithUser<
+  typeof invitationIdSchema,
+  { refreshKey?: number }
+>(
   invitationIdSchema,
   async ({ invitationId }, _, user) => {
     const result = await cancelInvitation({ invitationId, userId: user.id });

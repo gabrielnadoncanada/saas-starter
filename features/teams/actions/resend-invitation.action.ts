@@ -4,7 +4,10 @@ import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with
 import { invitationIdSchema } from "@/features/teams/schemas/team.schema";
 import { resendInvitation } from "@/features/teams/server/resend-invitation";
 
-export const resendInvitationAction = validatedActionWithUser(
+export const resendInvitationAction = validatedActionWithUser<
+  typeof invitationIdSchema,
+  { refreshKey?: number }
+>(
   invitationIdSchema,
   async ({ invitationId }, _, user) => {
     const result = await resendInvitation({ invitationId, user });

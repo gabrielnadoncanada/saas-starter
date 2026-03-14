@@ -7,6 +7,10 @@ import { CircleArrowUp, Loader2, Trash2 } from 'lucide-react';
 import { bulkDeleteTasksAction } from '@/features/tasks/actions/delete-task.action';
 import { bulkUpdateTaskStatusAction } from '@/features/tasks/actions/update-task.action';
 import { statuses } from '@/features/tasks/constants';
+import type {
+  BulkDeleteTasksActionState,
+  BulkUpdateTaskStatusActionState,
+} from '@/features/tasks/types/task-action.types';
 import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog';
 import { DataTableBulkActions as BulkActionsToolbar } from '@/shared/components/data-table';
@@ -20,6 +24,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/components/ui/tooltip';
 
 import type { Task } from '../types/task.types';
+import { useTasks } from './TasksProvider';
 
 type DataTableBulkActionsProps = {
   table: Table<Task>;
@@ -30,6 +35,7 @@ function serializeTaskIds(tasks: Task[]) {
 }
 
 export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
+  const { bulkDeleteTasks, bulkUpdateTaskStatus } = useTasks();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const selectedTasks = useMemo(
     () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
@@ -38,11 +44,17 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
   const taskIds = serializeTaskIds(selectedTasks);
   const statusFormRef = useRef<HTMLFormElement>(null);
   const deleteFormRef = useRef<HTMLFormElement>(null);
-  const [state, statusAction, isStatusPending] = useActionState(
+  const [state, statusAction, isStatusPending] = useActionState<
+    BulkUpdateTaskStatusActionState,
+    FormData
+  >(
     bulkUpdateTaskStatusAction,
     {}
   );
-  const [deleteState, deleteAction, isDeletePending] = useActionState(
+  const [deleteState, deleteAction, isDeletePending] = useActionState<
+    BulkDeleteTasksActionState,
+    FormData
+  >(
     bulkDeleteTasksAction,
     {}
   );
@@ -63,11 +75,28 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
   });
 
   useEffect(() => {
+    if (state.taskIds?.length && state.status) {
+      bulkUpdateTaskStatus(state.taskIds, state.status);
+    }
+
+    if (deleteState.taskIds?.length) {
+      bulkDeleteTasks(deleteState.taskIds);
+    }
+
     if (state.success || deleteState.success) {
       table.resetRowSelection();
       setIsDeleteOpen(false);
     }
-  }, [deleteState.success, state.success, table]);
+  }, [
+    bulkDeleteTasks,
+    bulkUpdateTaskStatus,
+    deleteState.success,
+    deleteState.taskIds,
+    state.status,
+    state.success,
+    state.taskIds,
+    table,
+  ]);
 
   return (
     <>

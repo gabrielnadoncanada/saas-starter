@@ -98,12 +98,20 @@ export async function createTaskForCurrentTeam(input: CreateTaskInput) {
 
 export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
   const teamId = await requireCurrentTeamId();
-
-  const result = await db.task.updateMany({
+  const existingTask = await db.task.findFirst({
     where: {
       id: input.taskId,
       teamId,
     },
+    select: { id: true },
+  });
+
+  if (!existingTask) {
+    throw new Error("Task not found");
+  }
+
+  return db.task.update({
+    where: { id: existingTask.id },
     data: {
       title: input.title,
       description: input.description || null,
@@ -112,10 +120,6 @@ export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
       status: input.status,
     },
   });
-
-  if (result.count === 0) {
-    throw new Error("Task not found");
-  }
 }
 
 export async function updateTaskStatusForCurrentTeam(

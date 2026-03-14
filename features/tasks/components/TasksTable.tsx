@@ -27,13 +27,9 @@ import {
 } from '@/shared/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/shared/components/data-table'
 import { priorities, statuses } from '../constants'
-import { type Task } from '../types/task.types'
 import { DataTableBulkActions } from './DataTableBulkActions'
 import { tasksColumns as columns } from './TasksColumns'
-
-type DataTableProps = {
-  data: Task[]
-}
+import { useTasks } from './TasksProvider'
 
 type TaskColumnMeta = {
   className?: string
@@ -41,7 +37,8 @@ type TaskColumnMeta = {
   tdClassName?: string
 }
 
-export function TasksTable({ data }: DataTableProps) {
+export function TasksTable() {
+  const { tasks } = useTasks()
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -55,16 +52,16 @@ export function TasksTable({ data }: DataTableProps) {
   const normalizedFilter = globalFilter.trim().toLowerCase()
   const filteredData = useMemo(() => {
     if (!normalizedFilter) {
-      return data
+      return tasks
     }
 
-    return data.filter((task) => {
+    return tasks.filter((task) => {
       return (
         task.code.toLowerCase().includes(normalizedFilter) ||
         task.title.toLowerCase().includes(normalizedFilter)
       )
     })
-  }, [data, normalizedFilter])
+  }, [tasks, normalizedFilter])
 
   const table = useReactTable({
     data: filteredData,

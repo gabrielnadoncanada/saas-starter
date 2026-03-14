@@ -5,7 +5,7 @@ import { useActionState, useState } from 'react';
 import { deleteAccountAction } from '@/features/account/actions/delete-account.action';
 import { DELETE_CONFIRMATION_WORD } from '@/features/account/schemas/account.schema';
 import type { DeleteAccountActionState } from '@/features/account/types/account.types';
-import { Alert, AlertDescription } from '@/shared/components/ui/alert';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import {
@@ -35,6 +35,14 @@ export function DeleteAccountCard() {
 
   const confirmation = state.values?.confirmation ?? '';
   const confirmationField = getFieldState(state, 'confirmation');
+
+  useToastMessage(state.error, {
+    kind: 'error',
+    skip: Boolean(state.fieldErrors),
+  });
+  useToastMessage(state.success, {
+    kind: 'success',
+  });
 
   return (
     <Card className="mt-6 border-destructive/30">
@@ -73,12 +81,6 @@ export function DeleteAccountCard() {
                 />
                 <FieldError>{confirmationField.error}</FieldError>
               </Field>
-
-              {state.error ? (
-                <Alert variant="destructive">
-                  <AlertDescription>{state.error}</AlertDescription>
-                </Alert>
-              ) : null}
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>

@@ -7,6 +7,7 @@ import { Loader2, Mail, X } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { cancelInvitationAction } from '@/features/teams/actions/cancel-invitation.action';
 import { resendInvitationAction } from '@/features/teams/actions/resend-invitation.action';
 import type { PendingInvitationView } from '@/features/teams/types/team.types';
@@ -35,6 +36,10 @@ function InvitationRow({ invitation }: { invitation: PendingInvitationView }) {
   const feedback = cancelState?.error || cancelState?.success || resendState?.error || resendState?.success;
   const isError = cancelState?.error || resendState?.error;
 
+  useToastMessage(feedback, {
+    kind: isError ? 'error' : 'success',
+  });
+
   return (
     <li className="space-y-1">
       <div className="flex items-center justify-between">
@@ -61,9 +66,6 @@ function InvitationRow({ invitation }: { invitation: PendingInvitationView }) {
           </form>
         </div>
       </div>
-      {feedback && (
-        <p className={`text-xs ${isError ? 'text-red-500' : 'text-green-500'}`}>{feedback}</p>
-      )}
     </li>
   );
 }

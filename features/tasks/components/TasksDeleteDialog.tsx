@@ -3,9 +3,11 @@
 import { useActionState, useEffect, useRef } from 'react';
 
 import { deleteTaskAction } from '@/features/tasks/actions/delete-task.action';
+import type { DeleteTaskActionState } from '@/features/tasks/types/task-action.types';
 import type { Task } from '@/features/tasks/types/task.types';
 import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog';
+import { useTasks } from './TasksProvider';
 
 type TasksDeleteDialogProps = {
   task: Task;
@@ -19,7 +21,11 @@ export function TasksDeleteDialog({
   onOpenChange,
 }: TasksDeleteDialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction, isPending] = useActionState(deleteTaskAction, {});
+  const { deleteTask } = useTasks();
+  const [state, formAction, isPending] = useActionState<DeleteTaskActionState, FormData>(
+    deleteTaskAction,
+    {}
+  );
 
   useToastMessage(state.error, {
     kind: 'error',
@@ -30,10 +36,14 @@ export function TasksDeleteDialog({
   });
 
   useEffect(() => {
+    if (state.taskId) {
+      deleteTask(state.taskId);
+    }
+
     if (state.success) {
       onOpenChange(false);
     }
-  }, [onOpenChange, state.success]);
+  }, [deleteTask, onOpenChange, state.success, state.taskId]);
 
   return (
     <>

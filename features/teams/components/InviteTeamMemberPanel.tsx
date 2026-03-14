@@ -9,6 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/c
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shared/components/ui/radio-group';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { inviteTeamMemberAction } from '@/features/teams/actions/invite-team-member.action';
 
 type ActionState = {
@@ -29,6 +30,13 @@ export function InviteTeamMemberPanel({
     inviteTeamMemberAction,
     {}
   );
+
+  useToastMessage(inviteState.error, {
+    kind: 'error',
+  });
+  useToastMessage(inviteState.success, {
+    kind: 'success',
+  });
 
   useEffect(() => {
     if (!inviteState.refreshKey) {
@@ -76,8 +84,6 @@ export function InviteTeamMemberPanel({
               </div>
             </RadioGroup>
           </div>
-          {inviteState.error ? <p className="text-red-500">{inviteState.error}</p> : null}
-          {inviteState.success ? <p className="text-green-500">{inviteState.success}</p> : null}
           <Button
             type="submit"
             className="bg-orange-500 text-white hover:bg-orange-600"
@@ -107,4 +113,3 @@ export function InviteTeamMemberPanel({
     </Card>
   );
 }
-

@@ -4,7 +4,6 @@ import { format, parseISO } from 'date-fns';
 import { signIn } from 'next-auth/react';
 import { useActionState, useState } from 'react';
 
-import { Alert, AlertDescription } from '@/shared/components/ui/alert';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -26,6 +25,7 @@ import type {
 import { routes } from '@/shared/constants/routes';
 import { OAUTH_PROVIDER_LABELS } from '@/shared/lib/auth/providers';
 import { getFieldState } from '@/shared/lib/get-field-state';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 
 type LinkedAccountsCardProps = {
   allowMagicLink: boolean;
@@ -47,6 +47,17 @@ export function LinkedAccountsCard({
   );
   const selectedProvider = state.values?.provider;
   const providerField = getFieldState(state, 'provider');
+
+  useToastMessage(state.error, {
+    kind: 'error',
+    skip: Boolean(state.fieldErrors),
+  });
+  useToastMessage(feedback?.error, {
+    kind: 'error',
+  });
+  useToastMessage(feedback?.success, {
+    kind: 'success',
+  });
 
   async function handleLinkAccount(provider: LinkedProviderOverview['provider']) {
     setLinkingProvider(provider);
@@ -121,29 +132,6 @@ export function LinkedAccountsCard({
         <FieldError>{providerField.error}</FieldError>
       </Field>
 
-      {
-        state.error ? (
-          <Alert variant="destructive">
-            <AlertDescription>{state.error}</AlertDescription>
-          </Alert>
-        ) : null
-      }
-
-      {
-        feedback?.error ? (
-          <Alert variant="destructive">
-            <AlertDescription>{feedback.error}</AlertDescription>
-          </Alert>
-        ) : null
-      }
-
-      {
-        feedback?.success ? (
-          <Alert>
-            <AlertDescription>{feedback.success}</AlertDescription>
-          </Alert>
-        ) : null
-      }
     </>
   );
 }

@@ -7,7 +7,10 @@ import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with
 import { unlinkOAuthAccountForUser } from "@/features/account/server/linked-accounts";
 import { unlinkAuthProviderSchema } from "@/features/account/schemas/account.schema";
 
-export const unlinkAuthProviderAction = validatedActionWithUser(
+export const unlinkAuthProviderAction = validatedActionWithUser<
+  typeof unlinkAuthProviderSchema,
+  {}
+>(
   unlinkAuthProviderSchema,
   async ({ provider }, _, user) => {
     const result = await unlinkOAuthAccountForUser({

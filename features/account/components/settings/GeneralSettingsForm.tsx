@@ -9,6 +9,7 @@ import type {
   UpdateAccountActionState,
 } from '@/features/account/types/account.types';
 import { getFieldState } from '@/shared/lib/get-field-state';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -37,6 +38,14 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
   const nameField = getFieldState(state, 'name');
   const phoneNumberField = getFieldState(state, 'phoneNumber');
   const emailField = getFieldState(state, 'email');
+
+  useToastMessage(state.error, {
+    kind: 'error',
+    skip: Boolean(state.fieldErrors),
+  });
+  useToastMessage(state.success, {
+    kind: 'success',
+  });
 
   return (
     <>
@@ -96,18 +105,6 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
             <FieldError>{emailField.error}</FieldError>
           </Field>
         </FieldGroup>
-
-        {state.error ? (
-          <p className="text-sm text-red-500" aria-live="polite">
-            {state.error}
-          </p>
-        ) : null}
-
-        {state.success ? (
-          <p className="text-sm text-green-500" aria-live="polite">
-            {state.success}
-          </p>
-        ) : null}
 
         <Button
           type="submit"

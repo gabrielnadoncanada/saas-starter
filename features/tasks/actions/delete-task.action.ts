@@ -13,17 +13,26 @@ import {
   deleteTaskForCurrentTeam,
 } from "@/features/tasks/server/tasks";
 
-export const deleteTaskAction = validatedActionWithUser(
+export const deleteTaskAction = validatedActionWithUser<
+  typeof deleteTaskSchema,
+  { taskId?: number }
+>(
   deleteTaskSchema,
   async ({ taskId }) => {
     await deleteTaskForCurrentTeam(taskId);
     revalidatePath(routes.app.tasks);
 
-    return { success: "Task deleted", refreshKey: Date.now() };
+    return {
+      success: "Task deleted",
+      taskId,
+    };
   },
 );
 
-export const bulkDeleteTasksAction = validatedActionWithUser(
+export const bulkDeleteTasksAction = validatedActionWithUser<
+  typeof bulkDeleteTasksSchema,
+  { taskIds?: number[] }
+>(
   bulkDeleteTasksSchema,
   async ({ taskIds }) => {
     const deletedCount = await bulkDeleteTasksForCurrentTeam(taskIds);
@@ -31,6 +40,7 @@ export const bulkDeleteTasksAction = validatedActionWithUser(
 
     return {
       success: `${deletedCount} task${deletedCount > 1 ? "s" : ""} deleted`,
+      taskIds,
     };
   },
 );

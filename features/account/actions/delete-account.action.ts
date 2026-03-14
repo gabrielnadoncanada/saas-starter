@@ -5,7 +5,10 @@ import { deleteAccount } from "@/features/account/server/delete-account";
 import { deleteAccountSchema } from "@/features/account/schemas/account.schema";
 import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
 
-export const deleteAccountAction = validatedActionWithUser(
+export const deleteAccountAction = validatedActionWithUser<
+  typeof deleteAccountSchema,
+  {}
+>(
   deleteAccountSchema,
   async (_, __, user) => {
     const result = await deleteAccount({

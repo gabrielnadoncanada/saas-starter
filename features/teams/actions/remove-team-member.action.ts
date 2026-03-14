@@ -7,7 +7,10 @@ import { db } from "@/shared/lib/db/prisma";
 import { removeTeamMemberSchema } from "@/features/teams/schemas/team.schema";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
-export const removeTeamMemberAction = validatedActionWithUser(
+export const removeTeamMemberAction = validatedActionWithUser<
+  typeof removeTeamMemberSchema,
+  { refreshKey?: number }
+>(
   removeTeamMemberSchema,
   async ({ memberId }, _, user) => {
     const userWithTeam = await getUserTeamMembership(user.id);

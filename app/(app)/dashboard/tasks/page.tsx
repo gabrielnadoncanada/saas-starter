@@ -9,7 +9,7 @@ export default async function DashboardTasksPage() {
   const tasks = await listCurrentTeamTasks();
 
   return (
-    <TasksProvider>
+    <TasksProvider initialTasks={tasks}>
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
@@ -20,7 +20,7 @@ export default async function DashboardTasksPage() {
           </div>
           <TasksPrimaryButtons />
         </div>
-        <TasksTable data={tasks} />
+        <TasksTable />
       </Main>
       <TasksDialogs />
     </TasksProvider>

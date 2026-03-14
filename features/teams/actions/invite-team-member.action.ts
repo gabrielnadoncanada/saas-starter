@@ -6,7 +6,10 @@ import { inviteTeamMemberSchema } from "@/features/teams/schemas/team.schema";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 import { inviteTeamMemberToTeam } from "@/features/teams/server/team-invitations";
 
-export const inviteTeamMemberAction = validatedActionWithUser(
+export const inviteTeamMemberAction = validatedActionWithUser<
+  typeof inviteTeamMemberSchema,
+  { refreshKey?: number }
+>(
   inviteTeamMemberSchema,
   async ({ email, role }, _, user) => {
     const userWithTeam = await getUserTeamMembership(user.id);

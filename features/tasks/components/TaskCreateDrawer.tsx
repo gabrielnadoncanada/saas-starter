@@ -5,11 +5,19 @@ import { Loader2 } from 'lucide-react';
 
 import { createTaskAction } from '@/features/tasks/actions/create-task.action';
 import { labels, priorities } from '@/features/tasks/constants';
+import type { CreateTaskActionState } from '@/features/tasks/types/task-action.types';
 import { getFieldState } from '@/shared/lib/get-field-state';
 import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { Button } from '@/shared/components/ui/button';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
 import {
   Sheet,
   SheetClose,
@@ -20,9 +28,7 @@ import {
   SheetTitle,
 } from '@/shared/components/ui/sheet';
 import { Textarea } from '@/shared/components/ui/textarea';
-
-const selectClassName =
-  'border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 flex h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]';
+import { useTasks } from './TasksProvider';
 
 type TaskCreateDrawerProps = {
   open: boolean;
@@ -30,7 +36,11 @@ type TaskCreateDrawerProps = {
 };
 
 export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) {
-  const [state, formAction, isPending] = useActionState(createTaskAction, {});
+  const { createTask } = useTasks();
+  const [state, formAction, isPending] = useActionState<CreateTaskActionState, FormData>(
+    createTaskAction,
+    {}
+  );
 
   const title = state.values?.title ?? '';
   const description = state.values?.description ?? '';
@@ -51,10 +61,14 @@ export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) 
   });
 
   useEffect(() => {
+    if (state.task) {
+      createTask(state.task);
+    }
+
     if (state.success) {
       onOpenChange(false);
     }
-  }, [onOpenChange, state.success]);
+  }, [createTask, onOpenChange, state.success, state.task]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -93,37 +107,45 @@ export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) 
 
             <Field data-invalid={labelField.invalid}>
               <FieldLabel htmlFor='create-task-label'>Label</FieldLabel>
-              <select
-                id='create-task-label'
+              <Select
                 name='label'
                 defaultValue={label}
-                aria-invalid={labelField.invalid}
-                className={selectClassName}
               >
-                {labels.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger id='create-task-label' className='w-full' aria-invalid={labelField.invalid}>
+                  <SelectValue placeholder='Select a label' />
+                </SelectTrigger>
+                <SelectContent>
+                  {labels.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FieldError>{labelField.error}</FieldError>
             </Field>
 
             <Field data-invalid={priorityField.invalid}>
               <FieldLabel htmlFor='create-task-priority'>Priority</FieldLabel>
-              <select
-                id='create-task-priority'
+              <Select
                 name='priority'
                 defaultValue={priority}
-                aria-invalid={priorityField.invalid}
-                className={selectClassName}
               >
-                {priorities.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  id='create-task-priority'
+                  className='w-full'
+                  aria-invalid={priorityField.invalid}
+                >
+                  <SelectValue placeholder='Select a priority' />
+                </SelectTrigger>
+                <SelectContent>
+                  {priorities.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FieldError>{priorityField.error}</FieldError>
             </Field>
           </FieldGroup>

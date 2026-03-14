@@ -14,18 +14,28 @@ import {
   updateTaskForCurrentTeam,
   updateTaskStatusForCurrentTeam,
 } from "@/features/tasks/server/tasks";
+import type { Task } from "@/features/tasks/types/task.types";
 
-export const updateTaskAction = validatedActionWithUser(
+export const updateTaskAction = validatedActionWithUser<
+  typeof updateTaskSchema,
+  { task?: Task }
+>(
   updateTaskSchema,
   async (data) => {
-    await updateTaskForCurrentTeam(data);
+    const task = await updateTaskForCurrentTeam(data);
     revalidatePath(routes.app.tasks);
 
-    return { success: "Task updated", refreshKey: Date.now() };
+    return {
+      success: "Task updated",
+      task,
+    };
   },
 );
 
-export const updateTaskStatusAction = validatedActionWithUser(
+export const updateTaskStatusAction = validatedActionWithUser<
+  typeof updateTaskStatusSchema,
+  { refreshKey?: number }
+>(
   updateTaskStatusSchema,
   async (data) => {
     await updateTaskStatusForCurrentTeam(data);
@@ -35,7 +45,10 @@ export const updateTaskStatusAction = validatedActionWithUser(
   },
 );
 
-export const bulkUpdateTaskStatusAction = validatedActionWithUser(
+export const bulkUpdateTaskStatusAction = validatedActionWithUser<
+  typeof bulkUpdateTaskStatusSchema,
+  { status?: Task["status"]; taskIds?: number[] }
+>(
   bulkUpdateTaskStatusSchema,
   async (data) => {
     const updatedCount = await bulkUpdateTaskStatusForCurrentTeam(data);
@@ -43,6 +56,8 @@ export const bulkUpdateTaskStatusAction = validatedActionWithUser(
 
     return {
       success: `${updatedCount} task${updatedCount > 1 ? "s" : ""} updated`,
+      status: data.status,
+      taskIds: data.taskIds,
     };
   },
 );

@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback } from 'react';
+
 import { TaskCreateDrawer } from './TaskCreateDrawer';
 import { TasksDeleteDialog } from './TasksDeleteDialog';
 import { useTasks } from './TasksProvider';
@@ -7,12 +9,20 @@ import { TaskUpdateDrawer } from './TaskUpdateDrawer';
 
 export function TasksDialogs() {
   const { closeDialog, currentTask, dialog } = useTasks();
+  const handleDialogOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        closeDialog();
+      }
+    },
+    [closeDialog]
+  );
 
   return (
     <>
       <TaskCreateDrawer
         open={dialog === 'create'}
-        onOpenChange={(open) => !open && closeDialog()}
+        onOpenChange={handleDialogOpenChange}
       />
 
       {currentTask ? (
@@ -20,7 +30,7 @@ export function TasksDialogs() {
           key={currentTask.id}
           task={currentTask}
           open={dialog === 'update'}
-          onOpenChange={(open) => !open && closeDialog()}
+          onOpenChange={handleDialogOpenChange}
         />
       ) : null}
 
@@ -28,7 +38,7 @@ export function TasksDialogs() {
         <TasksDeleteDialog
           task={currentTask}
           open={dialog === 'delete'}
-          onOpenChange={(open) => !open && closeDialog()}
+          onOpenChange={handleDialogOpenChange}
         />
       ) : null}
     </>

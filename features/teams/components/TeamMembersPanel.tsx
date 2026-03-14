@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { removeTeamMemberAction } from '@/features/teams/actions/remove-team-member.action';
 import type { TeamMemberView } from '@/features/teams/types/team.types';
 
@@ -28,6 +29,10 @@ export function TeamMembersPanel({ members }: TeamMembersPanelProps) {
     removeTeamMemberAction,
     {}
   );
+
+  useToastMessage(removeState.error, {
+    kind: 'error',
+  });
 
   useEffect(() => {
     if (!removeState.refreshKey) {
@@ -84,9 +89,7 @@ export function TeamMembersPanel({ members }: TeamMembersPanelProps) {
             </li>
           ))}
         </ul>
-        {removeState.error ? <p className="mt-4 text-red-500">{removeState.error}</p> : null}
       </CardContent>
     </Card>
   );
 }
-
