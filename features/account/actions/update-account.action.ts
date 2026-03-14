@@ -6,6 +6,12 @@ import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with
 
 export const updateAccountAction = validatedActionWithUser(
   updateAccountSchema,
-  async ({ name, email, phoneNumber }, _, user) =>
-    updateAccount({ userId: user.id, name, email, phoneNumber }),
+  async ({ name, email, phoneNumber }, _formData, user) => {
+    return updateAccount({
+      userId: user.id,
+      name,
+      email,
+      phoneNumber,
+    });
+  },
 );

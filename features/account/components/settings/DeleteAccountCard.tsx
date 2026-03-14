@@ -2,6 +2,9 @@
 
 import { useActionState, useState } from 'react';
 
+import { deleteAccountAction } from '@/features/account/actions/delete-account.action';
+import { DELETE_CONFIRMATION_WORD } from '@/features/account/schemas/account.schema';
+import type { DeleteAccountActionState } from '@/features/account/types/account.types';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -12,20 +15,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/shared/components/ui/dialog';
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+} from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
-import { deleteAccountAction } from '@/features/account/actions/delete-account.action';
-import { DELETE_CONFIRMATION_WORD } from '@/features/account/schemas/account.schema';
-import type { DeleteAccountActionState } from '@/features/account/types/account.types';
+import { getFieldState } from '@/shared/lib/get-field-state';
 
 export function DeleteAccountCard() {
   const [isOpen, setIsOpen] = useState(false);
+
   const [state, formAction, isPending] = useActionState<DeleteAccountActionState, FormData>(
     deleteAccountAction,
-    {}
+    {},
   );
+
+  const confirmation = state.values?.confirmation ?? '';
+  const confirmationField = getFieldState(state, 'confirmation');
 
   return (
     <Card className="mt-6 border-destructive/30">
@@ -52,15 +61,18 @@ export function DeleteAccountCard() {
             </DialogHeader>
 
             <form action={formAction} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="confirmation">Confirmation</Label>
+              <Field data-invalid={confirmationField.invalid}>
+                <FieldLabel htmlFor="confirmation">Confirmation</FieldLabel>
                 <Input
                   id="confirmation"
                   name="confirmation"
                   placeholder={DELETE_CONFIRMATION_WORD}
                   autoComplete="off"
+                  defaultValue={confirmation}
+                  aria-invalid={confirmationField.invalid}
                 />
-              </div>
+                <FieldError>{confirmationField.error}</FieldError>
+              </Field>
 
               {state.error ? (
                 <Alert variant="destructive">

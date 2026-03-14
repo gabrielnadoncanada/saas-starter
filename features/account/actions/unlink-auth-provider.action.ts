@@ -10,23 +10,28 @@ import { unlinkAuthProviderSchema } from "@/features/account/schemas/account.sch
 export const unlinkAuthProviderAction = validatedActionWithUser(
   unlinkAuthProviderSchema,
   async ({ provider }, _, user) => {
-    const result = await unlinkOAuthAccountForUser({ userId: user.id, provider });
+    const result = await unlinkOAuthAccountForUser({
+      userId: user.id,
+      provider,
+    });
 
     if (result.status === "blocked") {
       return {
-        provider,
         error:
           "You must keep at least one sign-in method linked to your account.",
+        values: { provider },
       };
     }
 
     if (result.status === "not-found") {
       return {
-        provider,
         error: "This provider is not linked to your account.",
+        values: { provider },
       };
     }
 
-    redirect(`${routes.app.settingsSecurity}?provider=${provider}&success=unlinked`);
+    redirect(
+      `${routes.app.settingsSecurity}?provider=${provider}&success=unlinked`,
+    );
   },
 );

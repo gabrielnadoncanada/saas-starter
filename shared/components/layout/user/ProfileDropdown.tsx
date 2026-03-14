@@ -42,20 +42,15 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={routes.app.settingsProfile}>
-                Profile
+              <Link href={routes.app.settingsAccount}>
+                Account
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
+
             <DropdownMenuItem asChild>
-              <Link href={routes.app.settingsAuthentication}>
-                Authentication
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={routes.app.settingsDisplay}>
-                Display
+              <Link href={routes.app.settingsTeam}>
+                Team
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>

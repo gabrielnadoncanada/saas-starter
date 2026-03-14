@@ -1,36 +1,42 @@
 import { z } from "zod";
 import type { User } from "@prisma/client";
+
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
-type ActionState = {
-  error?: string;
-  success?: string;
-  [key: string]: any;
-};
-
-type ValidatedActionWithUserFunction<S extends z.ZodType<any, any>, T> = (
+type ValidatedActionWithUserFunction<S extends z.ZodTypeAny> = (
   data: z.infer<S>,
   formData: FormData,
   user: User,
-) => Promise<T>;
+) => Promise<FormActionState<z.infer<S>>>;
 
-export function validatedActionWithUser<S extends z.ZodType<any, any>, T>(
+export function validatedActionWithUser<S extends z.ZodTypeAny>(
   schema: S,
-  action: ValidatedActionWithUserFunction<S, T>,
+  action: ValidatedActionWithUserFunction<S>,
 ) {
-  return async (_prevState: ActionState, formData: FormData) => {
+  type Values = z.infer<S>;
+  type State = FormActionState<Values>;
+
+  return async (_prevState: State, formData: FormData): Promise<State> => {
     const user = await getCurrentUser();
 
     if (!user) {
-      throw new Error("User is not authenticated");
+      return {
+        error: "User is not authenticated.",
+      };
     }
 
-    const result = schema.safeParse(Object.fromEntries(formData));
+    const rawValues = Object.fromEntries(formData) as Record<string, unknown>;
+    const parsed = schema.safeParse(rawValues);
 
-    if (!result.success) {
-      return { error: result.error.errors[0].message };
+    if (!parsed.success) {
+      return {
+        error: "Please fix the highlighted fields.",
+        values: rawValues as Partial<Values>,
+        fieldErrors: parsed.error.flatten().fieldErrors as State["fieldErrors"],
+      };
     }
 
-    return action(result.data, formData, user);
+    return action(parsed.data, formData, user);
   };
 }

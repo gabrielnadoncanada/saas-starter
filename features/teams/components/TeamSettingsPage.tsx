@@ -1,5 +1,6 @@
 import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { Button } from '@/shared/components/ui/button';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/shared/components/ui/item';
 import { customerPortalAction } from '@/features/billing/actions/customer-portal.action';
 import { InviteTeamMemberPanel } from '@/features/teams/components/InviteTeamMemberPanel';
 import { PendingInvitationsPanel } from '@/features/teams/components/PendingInvitationsPanel';
@@ -30,21 +31,19 @@ export async function TeamSettingsPage() {
   return (
     <section className="flex-1 p-4 lg:p-8">
       <SettingsPageHeader title="Team Settings" />
-      <div className="mb-8 rounded-xl border border-border bg-card p-6">
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <p className="font-medium">Current Plan: {team?.planName || 'Free'}</p>
-            <p className="text-sm text-muted-foreground">
-              {getSubscriptionLabel(team?.subscriptionStatus ?? null)}
-            </p>
-          </div>
+      <Item variant="outline" className="mb-8">
+        <ItemContent>
+          <ItemTitle>Current Plan: {team?.planName || 'Free'}</ItemTitle>
+          <ItemDescription>{getSubscriptionLabel(team?.subscriptionStatus ?? null)}</ItemDescription>
+        </ItemContent>
+        <ItemActions>
           <form action={customerPortalAction}>
             <Button type="submit" variant="outline">
               Manage Subscription
             </Button>
           </form>
-        </div>
-      </div>
+        </ItemActions>
+      </Item>
       <TeamMembersPanel members={team?.teamMembers ?? []} />
       <PendingInvitationsPanel invitations={invitations} />
       <InviteTeamMemberPanel isOwner={isOwner} />

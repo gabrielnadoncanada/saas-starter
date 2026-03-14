@@ -1,5 +1,6 @@
 'use client';
 
+import { format, parseISO } from 'date-fns';
 import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Mail, X } from 'lucide-react';
@@ -40,7 +41,7 @@ function InvitationRow({ invitation }: { invitation: PendingInvitationView }) {
         <div>
           <p className="text-sm font-medium">{invitation.email}</p>
           <p className="text-xs text-muted-foreground capitalize">
-            {invitation.role} -- invited {new Date(invitation.invitedAt).toLocaleDateString()}
+            {invitation.role} -- invited {format(parseISO(invitation.invitedAt), 'PP')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -89,4 +90,3 @@ export function PendingInvitationsPanel({
     </Card>
   );
 }
-

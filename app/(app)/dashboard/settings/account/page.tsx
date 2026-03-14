@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation';
 
+import { DeleteAccountCard } from '@/features/account/components/settings/DeleteAccountCard';
+import { GeneralSettingsForm } from '@/features/account/components/settings/GeneralSettingsForm';
 import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
-import { GeneralSettingsForm } from '@/features/account/components/settings/GeneralSettingsForm';
 
-export async function GeneralSettingsSection() {
+export default async function SettingsPage() {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -23,6 +24,7 @@ export async function GeneralSettingsSection() {
           image: user.image ?? null
         }}
       />
+      <DeleteAccountCard />
     </section>
   );
 }

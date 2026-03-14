@@ -93,17 +93,12 @@ export function NavUser({ user }: NavUserProps) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link href={routes.app.settingsProfile}>
+                  <Link href={routes.app.settingsAccount}>
                     <BadgeCheck />
-                    Profile
+                    Account
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={routes.app.settingsAuthentication}>
-                    <CreditCard />
-                    Authentication
-                  </Link>
-                </DropdownMenuItem>
+
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem

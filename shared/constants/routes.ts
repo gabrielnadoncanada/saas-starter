@@ -25,11 +25,8 @@ export const routes = {
     roles: "/dashboard/roles",
     sessions: "/dashboard/sessions",
     settings: "/dashboard/settings",
-    settingsProfile: "/dashboard/settings/profile",
-    settingsAuthentication: "/dashboard/settings/authentication",
+    settingsAccount: "/dashboard/settings/account",
     settingsSecurity: "/dashboard/settings/security",
-    settingsAppearance: "/dashboard/settings/appearance",
-    settingsNotifications: "/dashboard/settings/notifications",
-    settingsDisplay: "/dashboard/settings/display",
+    settingsTeam: "/dashboard/settings/team",
   },
 } as const;

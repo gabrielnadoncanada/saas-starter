@@ -3,16 +3,22 @@
 import { useActionState } from 'react';
 import { Loader2 } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
 import { updateAccountAction } from '@/features/account/actions/update-account.action';
 import type {
   GeneralSettingsInitialValues,
-  UpdateAccountActionState
+  UpdateAccountActionState,
 } from '@/features/account/types/account.types';
+import { getFieldState } from '@/shared/lib/get-field-state';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/shared/components/ui/field';
+import { Input } from '@/shared/components/ui/input';
 
 type GeneralSettingsFormProps = {
   initialValues: GeneralSettingsInitialValues;
@@ -21,8 +27,16 @@ type GeneralSettingsFormProps = {
 export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps) {
   const [state, formAction, isPending] = useActionState<UpdateAccountActionState, FormData>(
     updateAccountAction,
-    {}
+    {},
   );
+
+  const name = state.values?.name ?? initialValues.name;
+  const email = state.values?.email ?? initialValues.email;
+  const phoneNumber = state.values?.phoneNumber ?? initialValues.phoneNumber ?? '';
+
+  const nameField = getFieldState(state, 'name');
+  const phoneNumberField = getFieldState(state, 'phoneNumber');
+  const emailField = getFieldState(state, 'email');
 
   return (
     <Card>
@@ -33,63 +47,72 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
       <CardContent>
         <div className="mb-6 flex items-center gap-4">
           <Avatar className="size-16">
-            <AvatarImage src={initialValues.image ?? undefined} alt={initialValues.name} />
+            <AvatarImage src={initialValues.image ?? undefined} alt={name} />
             <AvatarFallback className="justify-center text-lg">
-              {(initialValues.name || '?')[0].toUpperCase()}
+              {(name || '?')[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
+
           <div>
-            <p className="text-sm font-medium">{initialValues.name}</p>
-            <p className="text-xs text-muted-foreground">{initialValues.email}</p>
+            <p className="text-sm font-medium">{name}</p>
+            <p className="text-xs text-muted-foreground">{email}</p>
           </div>
         </div>
 
         <form className="space-y-4" action={formAction}>
-          <div>
-            <Label htmlFor="name" className="mb-2">
-              Name
-            </Label>
+          <FieldGroup>
+            <Field data-invalid={nameField.invalid}>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <Input
+                id="name"
+                name="name"
+                placeholder="Enter your name"
+                defaultValue={name}
+                aria-invalid={nameField.invalid}
+                required
+              />
+              <FieldError>{nameField.error}</FieldError>
+            </Field>
 
-            <Input
-              id="name"
-              name="name"
-              placeholder="Enter your name"
-              defaultValue={state.name || initialValues.name}
-              required
-            />
-          </div>
+            <Field data-invalid={phoneNumberField.invalid}>
+              <FieldLabel htmlFor="phoneNumber">Phone number</FieldLabel>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                placeholder="Enter your phone number"
+                defaultValue={phoneNumber}
+                aria-invalid={phoneNumberField.invalid}
+              />
+              <FieldError>{phoneNumberField.error}</FieldError>
+            </Field>
 
-          <div>
-            <Label htmlFor="phoneNumber" className="mb-2">
-              Phone number
-            </Label>
+            <Field data-invalid={emailField.invalid}>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                defaultValue={email}
+                aria-invalid={emailField.invalid}
+                required
+              />
+              <FieldError>{emailField.error}</FieldError>
+            </Field>
+          </FieldGroup>
 
-            <Input
-              id="phoneNumber"
-              name="phoneNumber"
-              type="tel"
-              placeholder="Enter your phone number"
-              defaultValue={state.phoneNumber ?? initialValues.phoneNumber}
-            />
-          </div>
+          {state.error ? (
+            <p className="text-sm text-red-500" aria-live="polite">
+              {state.error}
+            </p>
+          ) : null}
 
-          <div>
-            <Label htmlFor="email" className="mb-2">
-              Email
-            </Label>
-
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              defaultValue={initialValues.email}
-              required
-            />
-          </div>
-
-          {state.error ? <p className="text-sm text-red-500">{state.error}</p> : null}
-          {state.success ? <p className="text-sm text-green-500">{state.success}</p> : null}
+          {state.success ? (
+            <p className="text-sm text-green-500" aria-live="polite">
+              {state.success}
+            </p>
+          ) : null}
 
           <Button
             type="submit"

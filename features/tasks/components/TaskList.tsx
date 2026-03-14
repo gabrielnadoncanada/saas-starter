@@ -1,5 +1,6 @@
 'use client';
 
+import { format, parseISO } from 'date-fns';
 import { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -75,7 +76,7 @@ function TaskCard({ task }: { task: TaskListItem }) {
                 {formatTaskValue(task.label)} · {formatTaskValue(task.priority)} priority
               </CardDescription>
               <p className="text-sm text-muted-foreground">
-                Updated {new Date(task.updatedAt).toLocaleString()}
+                Updated {format(parseISO(task.updatedAt), 'PPp')}
               </p>
             </div>
             <div className="flex gap-2">

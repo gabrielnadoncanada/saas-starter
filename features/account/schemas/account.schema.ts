@@ -3,12 +3,9 @@ import { z } from "zod";
 export const DELETE_CONFIRMATION_WORD = "DELETE";
 
 export const deleteAccountSchema = z.object({
-  confirmation: z
-    .string()
-    .refine(
-      (value) => value === DELETE_CONFIRMATION_WORD,
-      "Type DELETE to confirm.",
-    ),
+  confirmation: z.literal(DELETE_CONFIRMATION_WORD, {
+    errorMap: () => ({ message: "Type DELETE to confirm." }),
+  }),
 });
 
 export const updateAccountSchema = z.object({
