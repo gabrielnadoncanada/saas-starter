@@ -12,7 +12,8 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select'
 import Link from 'next/link'
-import { settingsGroup } from '@/shared/components/layout/navigation/config/settings-group'
+import { settingsGroup } from '@/shared/components/navigation/config/settings-group'
+import type { SidebarNavItem } from '@/shared/components/navigation/sidebar-types'
 
 export function SidebarNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   const router = useRouter()
@@ -39,7 +40,7 @@ export function SidebarNav({ className, ...props }: React.HTMLAttributes<HTMLEle
             <SelectValue placeholder='Theme' />
           </SelectTrigger>
           <SelectContent>
-            {items.map((item, index) => (
+            {items.map((item: SidebarNavItem, index: number) => (
               <SelectItem key={`${item.url}-${index}`} value={item.url ?? ''}>
                 <div className='flex gap-x-4 px-2 py-1'>
                   <span className='scale-125'>{item.icon && React.createElement(item.icon)}</span>
@@ -62,7 +63,7 @@ export function SidebarNav({ className, ...props }: React.HTMLAttributes<HTMLEle
           )}
           {...props}
         >
-          {items.map((item, index) => (
+          {items.map((item: SidebarNavItem, index: number) => (
             <Link key={`${item.url}-${index}`} href={item.url ?? ''}
               className={cn(
                 buttonVariants({ variant: 'ghost' }),

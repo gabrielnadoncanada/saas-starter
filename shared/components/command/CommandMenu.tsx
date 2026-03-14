@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { sidebarData } from '@/shared/components/layout/navigation/config/sidebar-data'
+import { sidebarData } from '@/shared/components/navigation/config/sidebar-data'
 import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 import {
@@ -18,6 +18,7 @@ import {
 } from '@/shared/components/ui/command'
 import { useSearch } from '@/shared/components/command/SearchProvider'
 import { useTheme } from "next-themes"
+import type { SidebarNavGroup } from '@/shared/components/navigation/sidebar-types'
 
 export function CommandMenu() {
   const router = useRouter()
@@ -38,7 +39,7 @@ export function CommandMenu() {
       <CommandList>
         <ScrollArea type='hover' className='h-72 pe-1'>
           <CommandEmpty>No results found.</CommandEmpty>
-          {sidebarData.navGroups.map((group) => (
+          {sidebarData.navGroups.map((group: SidebarNavGroup) => (
             <CommandGroup key={group.title} heading={group.title}>
               {group.items.map((navItem, i) => {
                 if (navItem.url)

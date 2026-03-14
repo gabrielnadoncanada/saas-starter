@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 import { routes } from "@/shared/constants/routes";
-import type { SidebarData } from "@/shared/components/layout/navigation/sidebar-types";
+import type { SidebarData } from "@/shared/components/navigation/sidebar-types";
 import { settingsGroup } from "./settings-group";
 
 export const sidebarData: SidebarData = {
@@ -79,7 +79,7 @@ export const sidebarData: SidebarData = {
       title: "General",
       items: [
         { title: "Dashboard", url: "/", icon: LayoutDashboard },
-        { title: "Tasks", url: "/tasks", icon: ListTodo },
+        { title: "Tasks", url: routes.app.tasks, icon: ListTodo },
         { title: "Apps", url: "/apps", icon: Package },
         { title: "Chats", url: "/chats", badge: "3", icon: MessagesSquare },
         { title: "Users", url: "/users", icon: Users },

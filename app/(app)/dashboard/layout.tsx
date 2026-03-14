@@ -1,6 +1,6 @@
 import { ThemeSwitch } from '@/shared/components/layout/preferences/ThemeSwitch';
 import { Header } from '@/shared/components/layout/shell/Header';
-import { Search } from '@/shared/components/layout/navigation/Search';
+import { Search } from '@/shared/components/navigation/Search';
 import { ProfileDropdown } from '@/shared/components/layout/user/ProfileDropdown';
 import { getCookie } from '@/shared/lib/cookies'
 import { cn } from '@/shared/lib/utils'

@@ -10,23 +10,24 @@ export function TasksDialogs() {
 
   return (
     <>
-      {dialog === 'create' ? (
-        <TaskCreateDrawer open onOpenChange={(open) => !open && closeDialog()} />
-      ) : null}
+      <TaskCreateDrawer
+        open={dialog === 'create'}
+        onOpenChange={(open) => !open && closeDialog()}
+      />
 
-      {dialog === 'update' && currentTask ? (
+      {currentTask ? (
         <TaskUpdateDrawer
           key={currentTask.id}
           task={currentTask}
-          open
+          open={dialog === 'update'}
           onOpenChange={(open) => !open && closeDialog()}
         />
       ) : null}
 
-      {dialog === 'delete' && currentTask ? (
+      {currentTask ? (
         <TasksDeleteDialog
           task={currentTask}
-          open
+          open={dialog === 'delete'}
           onOpenChange={(open) => !open && closeDialog()}
         />
       ) : null}

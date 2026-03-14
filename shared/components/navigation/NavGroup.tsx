@@ -32,7 +32,7 @@ import {
   type SidebarNavGroup,
   type SidebarNavItem,
   type SidebarNavLink
-} from '@/shared/components/layout/navigation/sidebar-types'
+} from '@/shared/components/navigation/sidebar-types'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

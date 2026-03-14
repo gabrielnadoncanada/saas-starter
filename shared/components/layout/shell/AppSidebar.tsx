@@ -7,10 +7,11 @@ import {
   SidebarHeader,
   SidebarRail
 } from '@/shared/components/ui/sidebar'
-import { sidebarData } from '@/shared/components/layout/navigation/config/sidebar-data'
-import { NavGroup } from '@/shared/components/layout/navigation/NavGroup'
+import { sidebarData } from '@/shared/components/navigation/config/sidebar-data'
 import { TeamSwitcher } from '@/features/teams/components/TeamSwitcher'
 import { NavUser } from '@/shared/components/layout/user/NavUser'
+import { NavGroup } from '@/shared/components/navigation/NavGroup'
+import type { SidebarNavGroup } from '@/shared/components/navigation/sidebar-types'
 
 export function AppSidebar() {
   return (
@@ -19,7 +20,7 @@ export function AppSidebar() {
         <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
-        {sidebarData.navGroups.map((props) => (
+        {sidebarData.navGroups.map((props: SidebarNavGroup) => (
           <NavGroup key={props.title} {...props} />
         ))}
       </SidebarContent>
