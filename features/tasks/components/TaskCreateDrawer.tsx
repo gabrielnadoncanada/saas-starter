@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { createTaskAction } from '@/features/tasks/actions/create-task.action';
 import { labels, priorities } from '@/features/tasks/constants';
 import { getFieldState } from '@/shared/lib/get-field-state';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { Button } from '@/shared/components/ui/button';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
@@ -40,6 +41,14 @@ export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) 
   const descriptionField = getFieldState(state, 'description');
   const labelField = getFieldState(state, 'label');
   const priorityField = getFieldState(state, 'priority');
+
+  useToastMessage(state.error, {
+    kind: 'error',
+    skip: Boolean(state.fieldErrors),
+  });
+  useToastMessage(state.success, {
+    kind: 'success',
+  });
 
   useEffect(() => {
     if (state.success) {
@@ -118,18 +127,6 @@ export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) 
               <FieldError>{priorityField.error}</FieldError>
             </Field>
           </FieldGroup>
-
-          {state.error ? (
-            <p className='text-sm text-destructive' aria-live='polite'>
-              {state.error}
-            </p>
-          ) : null}
-
-          {state.success ? (
-            <p className='text-sm text-green-600' aria-live='polite'>
-              {state.success}
-            </p>
-          ) : null}
 
           <SheetFooter className='mt-auto gap-2 px-0'>
             <SheetClose asChild>

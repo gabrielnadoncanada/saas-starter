@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from 'react';
 
 import { deleteTaskAction } from '@/features/tasks/actions/delete-task.action';
 import type { Task } from '@/features/tasks/types/task.types';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog';
 
 type TasksDeleteDialogProps = {
@@ -19,6 +20,14 @@ export function TasksDeleteDialog({
 }: TasksDeleteDialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(deleteTaskAction, {});
+
+  useToastMessage(state.error, {
+    kind: 'error',
+    skip: Boolean(state.fieldErrors),
+  });
+  useToastMessage(state.success, {
+    kind: 'success',
+  });
 
   useEffect(() => {
     if (state.success) {
@@ -46,7 +55,6 @@ export function TasksDeleteDialog({
               You are about to delete <strong>{task.title}</strong>.
             </p>
             <p>This action cannot be undone.</p>
-            {state.error ? <p className='text-sm text-destructive'>{state.error}</p> : null}
           </div>
         }
         confirmText='Delete'

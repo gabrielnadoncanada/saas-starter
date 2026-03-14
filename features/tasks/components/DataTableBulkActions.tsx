@@ -7,6 +7,7 @@ import { CircleArrowUp, Loader2, Trash2 } from 'lucide-react';
 import { bulkDeleteTasksAction } from '@/features/tasks/actions/delete-task.action';
 import { bulkUpdateTaskStatusAction } from '@/features/tasks/actions/update-task.action';
 import { statuses } from '@/features/tasks/constants';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog';
 import { DataTableBulkActions as BulkActionsToolbar } from '@/shared/components/data-table';
 import { Button } from '@/shared/components/ui/button';
@@ -45,6 +46,21 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
     bulkDeleteTasksAction,
     {}
   );
+
+  useToastMessage(state.error, {
+    kind: 'error',
+    skip: Boolean(state.fieldErrors),
+  });
+  useToastMessage(state.success, {
+    kind: 'success',
+  });
+  useToastMessage(deleteState.error, {
+    kind: 'error',
+    skip: Boolean(deleteState.fieldErrors),
+  });
+  useToastMessage(deleteState.success, {
+    kind: 'success',
+  });
 
   useEffect(() => {
     if (state.success || deleteState.success) {
@@ -139,9 +155,6 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
         desc={
           <div className='space-y-3'>
             <p>This action will permanently delete the selected tasks.</p>
-            {deleteState.error ? (
-              <p className='text-sm text-destructive'>{deleteState.error}</p>
-            ) : null}
           </div>
         }
         confirmText='Delete'
