@@ -1,31 +1,31 @@
-import { getActiveTeamId } from '@/features/teams/server/active-team'
-import { getCurrentUser } from '@/lib/auth/get-current-user'
-import { db } from '@/lib/db/prisma'
+import { getActiveTeamId } from "@/features/teams/server/active-team";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { db } from "@/shared/lib/db/prisma";
 
 export async function getCurrentTeam() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
   if (!user) {
-    return null
+    return null;
   }
 
-  return getTeamForUser(user.id)
+  return getTeamForUser(user.id);
 }
 
 export async function getTeamForUser(userId: number) {
-  const activeTeamId = await getActiveTeamId()
+  const activeTeamId = await getActiveTeamId();
   const memberships = await db.teamMember.findMany({
     where: { userId },
-    orderBy: { joinedAt: 'asc' },
+    orderBy: { joinedAt: "asc" },
     select: { teamId: true },
-  })
+  });
 
   const selectedTeamId =
-    memberships.find((membership) => membership.teamId === activeTeamId)?.teamId ??
-    memberships[0]?.teamId
+    memberships.find((membership) => membership.teamId === activeTeamId)
+      ?.teamId ?? memberships[0]?.teamId;
 
   if (!selectedTeamId) {
-    return null
+    return null;
   }
 
   return db.team.findUnique({
@@ -43,5 +43,5 @@ export async function getTeamForUser(userId: number) {
         },
       },
     },
-  })
+  });
 }

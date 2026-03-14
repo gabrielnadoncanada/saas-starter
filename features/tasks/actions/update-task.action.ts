@@ -1,17 +1,17 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
-import { routes } from '@/constants/routes';
-import { validatedActionWithUser } from '@/lib/auth/validated-action-with-user';
+import { routes } from "@/shared/constants/routes";
+import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
 import {
   updateTaskSchema,
-  updateTaskStatusSchema
-} from '@/features/tasks/schemas/task.schema';
+  updateTaskStatusSchema,
+} from "@/features/tasks/schemas/task.schema";
 import {
   updateTaskForCurrentTeam,
-  updateTaskStatusForCurrentTeam
-} from '@/features/tasks/server/tasks';
+  updateTaskStatusForCurrentTeam,
+} from "@/features/tasks/server/tasks";
 
 export const updateTaskAction = validatedActionWithUser(
   updateTaskSchema,
@@ -19,8 +19,8 @@ export const updateTaskAction = validatedActionWithUser(
     await updateTaskForCurrentTeam(data);
     revalidatePath(routes.app.tasks);
 
-    return { success: 'Task updated', refreshKey: Date.now() };
-  }
+    return { success: "Task updated", refreshKey: Date.now() };
+  },
 );
 
 export const updateTaskStatusAction = validatedActionWithUser(
@@ -29,6 +29,6 @@ export const updateTaskStatusAction = validatedActionWithUser(
     await updateTaskStatusForCurrentTeam(data);
     revalidatePath(routes.app.tasks);
 
-    return { success: 'Task updated', refreshKey: Date.now() };
-  }
+    return { success: "Task updated", refreshKey: Date.now() };
+  },
 );

@@ -1,12 +1,12 @@
 import { ActivityType } from "@prisma/client";
 
-import { db } from "@/lib/db/prisma";
+import { db } from "@/shared/lib/db/prisma";
 import {
   hasMagicLinkProvider,
   OAUTH_PROVIDER_LABELS,
   type OAuthProviderId,
-} from "@/lib/auth/providers";
-import { createActivityLog } from "@/lib/activity-log";
+} from "@/shared/lib/auth/providers";
+import { createActivityLog } from "@/shared/lib/activity-log";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 const ALL_OAUTH_PROVIDER_IDS = Object.keys(
@@ -98,4 +98,3 @@ export async function unlinkOAuthAccountForUser(
 
   return { status: "unlinked" as const };
 }
-

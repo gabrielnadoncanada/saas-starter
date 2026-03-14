@@ -1,12 +1,12 @@
-import { SettingsPageHeader } from '@/components/shared/SettingsPageHeader';
-import { Button } from '@/components/ui/button';
+import { SettingsPageHeader } from '@/shared/components/shared/SettingsPageHeader';
+import { Button } from '@/shared/components/ui/button';
 import { customerPortalAction } from '@/features/billing/actions/customer-portal.action';
 import { InviteTeamMemberPanel } from '@/features/teams/components/InviteTeamMemberPanel';
 import { PendingInvitationsPanel } from '@/features/teams/components/PendingInvitationsPanel';
 import { TeamMembersPanel } from '@/features/teams/components/TeamMembersPanel';
 import { getCurrentTeam } from '@/features/teams/server/current-team';
 import { listPendingInvitationsForCurrentTeam } from '@/features/teams/server/team-invitations';
-import { getCurrentUser } from '@/lib/auth/get-current-user';
+import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 
 function getSubscriptionLabel(subscriptionStatus: string | null) {
   if (subscriptionStatus === 'active') {

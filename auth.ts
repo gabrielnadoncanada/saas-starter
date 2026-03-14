@@ -1,10 +1,10 @@
 import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { authCallbacks } from "@/lib/auth/callbacks";
-import { authEvents } from "@/lib/auth/events";
-import { db } from "@/lib/db/prisma";
-import { getAuthProviders } from "@/lib/auth/providers";
+import { authCallbacks } from "@/shared/lib/auth/callbacks";
+import { authEvents } from "@/shared/lib/auth/events";
+import { db } from "@/shared/lib/db/prisma";
+import { getAuthProviders } from "@/shared/lib/auth/providers";
 
 export const authConfig = {
   adapter: PrismaAdapter(db),

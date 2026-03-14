@@ -3,7 +3,7 @@
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/components/ui/button';
 
 export function SubmitPricingButton() {
   const { pending } = useFormStatus();

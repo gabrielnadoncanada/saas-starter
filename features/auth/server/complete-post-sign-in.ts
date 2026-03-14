@@ -1,5 +1,5 @@
 import { ActivityType } from "@prisma/client";
-import { db } from "@/lib/db/prisma";
+import { db } from "@/shared/lib/db/prisma";
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
 
 type CompletePostSignInParams = {
@@ -8,9 +8,11 @@ type CompletePostSignInParams = {
   inviteId?: string | null;
 };
 
-export async function completePostSignIn(
-  { userId, email, inviteId }: CompletePostSignInParams,
-) {
+export async function completePostSignIn({
+  userId,
+  email,
+  inviteId,
+}: CompletePostSignInParams) {
   if (!inviteId) {
     return ensureUserWorkspace(userId, email);
   }

@@ -1,7 +1,7 @@
 import { ActivityType } from "@prisma/client";
 
-import { createActivityLog } from "@/lib/activity-log";
-import { db } from "@/lib/db/prisma";
+import { createActivityLog } from "@/shared/lib/activity-log";
+import { db } from "@/shared/lib/db/prisma";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 import { getAccountDeletionBlocker } from "@/features/teams/server/account-deletion-policy";
 
@@ -60,4 +60,3 @@ export async function deleteAccount(user: DeleteAccountUser) {
 
   return { success: "Account deleted successfully." };
 }
-

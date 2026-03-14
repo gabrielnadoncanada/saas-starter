@@ -1,4 +1,4 @@
-import { routes } from '@/constants/routes';
+import { routes } from "@/shared/constants/routes";
 
 type PostSignInParams = {
   redirect?: string | null;

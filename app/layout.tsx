@@ -1,8 +1,8 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
-import { ThemeProvider } from '@/components/shared/ThemeProvider';
-import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from '@/shared/components/shared/ThemeProvider';
+import { Toaster } from '@/shared/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'Next.js SaaS Starter',

@@ -3,16 +3,16 @@
 import { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
 import { formatTaskValue, taskLabelOptions, taskPriorityOptions, taskStatusOptions } from '@/features/tasks/task-options';
 import { deleteTaskAction } from '@/features/tasks/actions/delete-task.action';
 import { updateTaskAction, updateTaskStatusAction } from '@/features/tasks/actions/update-task.action';

@@ -4,16 +4,16 @@ import { useActionState } from 'react';
 import { signIn as signInWithProvider } from 'next-auth/react';
 import { CheckCircle2, Link2, Loader2, Mail, Unlink2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { routes } from '@/constants/routes';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/shared/components/ui/button';
+import { routes } from '@/shared/constants/routes';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { unlinkAuthProviderAction } from '@/features/auth/actions/unlink-auth-provider.action';
 import type {
   LinkedAccountsActionState,
   LinkedProviderOverview,
   SecuritySettingsFeedback
 } from '@/features/auth/types/auth.types';
-import { OAUTH_PROVIDER_LABELS } from '@/lib/auth/providers';
+import { OAUTH_PROVIDER_LABELS } from '@/shared/lib/auth/providers';
 
 type LinkedAccountsCardProps = {
   allowMagicLink: boolean;
@@ -58,9 +58,8 @@ export function LinkedAccountsCard({
           </div>
 
           <div
-            className={`flex items-center gap-2 text-sm font-medium ${
-              allowMagicLink ? 'text-green-700' : 'text-muted-foreground'
-            }`}
+            className={`flex items-center gap-2 text-sm font-medium ${allowMagicLink ? 'text-green-700' : 'text-muted-foreground'
+              }`}
           >
             <CheckCircle2 className={`h-4 w-4 ${allowMagicLink ? 'text-green-600' : 'text-muted-foreground'}`} />
             {allowMagicLink ? 'Active' : 'Inactive'}

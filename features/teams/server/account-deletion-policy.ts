@@ -1,4 +1,4 @@
-import { db } from "@/lib/db/prisma";
+import { db } from "@/shared/lib/db/prisma";
 
 const ACTIVE_STATUSES = ["active", "trialing"] as const;
 

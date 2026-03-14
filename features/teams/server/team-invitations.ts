@@ -1,14 +1,14 @@
-import { ActivityType } from '@prisma/client';
-import type { TeamRole, User } from '@prisma/client';
-import { db } from '@/lib/db/prisma';
-import { sendTeamInvitationEmail } from '@/lib/email/senders';
-import { getCurrentUser } from '@/lib/auth/get-current-user';
-import { getUserTeamMembership } from '@/features/teams/server/team-membership';
+import { ActivityType } from "@prisma/client";
+import type { TeamRole, User } from "@prisma/client";
+import { db } from "@/shared/lib/db/prisma";
+import { sendTeamInvitationEmail } from "@/shared/lib/email/senders";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 export type InviteTeamMemberInput = {
   teamId: number;
   teamName: string;
-  inviter: Pick<User, 'id' | 'email' | 'name'>;
+  inviter: Pick<User, "id" | "email" | "name">;
   email: string;
   role: TeamRole;
 };
@@ -28,7 +28,7 @@ async function ensureNoExistingMembership(
   });
 
   if (existingMember) {
-    return { error: 'User is already a member of this team' };
+    return { error: "User is already a member of this team" };
   }
 
   return null;
@@ -41,12 +41,12 @@ async function ensureNoPendingInvitation(
     where: {
       email: input.email,
       teamId: input.teamId,
-      status: 'PENDING',
+      status: "PENDING",
     },
   });
 
   if (existingInvitation) {
-    return { error: 'An invitation has already been sent to this email' };
+    return { error: "An invitation has already been sent to this email" };
   }
 
   return null;
@@ -60,7 +60,7 @@ async function createInvitationRecord(input: InviteTeamMemberInput) {
         email: input.email,
         role: input.role,
         invitedBy: input.inviter.id,
-        status: 'PENDING',
+        status: "PENDING",
       },
     });
 
@@ -69,7 +69,7 @@ async function createInvitationRecord(input: InviteTeamMemberInput) {
         teamId: input.teamId,
         userId: input.inviter.id,
         action: ActivityType.INVITE_TEAM_MEMBER,
-        ipAddress: '',
+        ipAddress: "",
       },
     });
 
@@ -90,18 +90,19 @@ async function sendInvitationEmail(
       invitationId,
     });
   } catch (error) {
-    console.error('[team:invitation.email-failed]', {
+    console.error("[team:invitation.email-failed]", {
       email: input.email,
       invitationId,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
 
     return {
-      success: 'Invitation created successfully. Email delivery could not be confirmed.',
+      success:
+        "Invitation created successfully. Email delivery could not be confirmed.",
     };
   }
 
-  return { success: 'Invitation sent successfully' };
+  return { success: "Invitation sent successfully" };
 }
 
 export async function inviteTeamMemberToTeam(input: InviteTeamMemberInput) {
@@ -138,7 +139,7 @@ export async function listPendingInvitationsForCurrentTeam() {
   const invitations = await db.invitation.findMany({
     where: {
       teamId: membership.teamId,
-      status: 'PENDING',
+      status: "PENDING",
     },
     select: {
       id: true,
@@ -146,7 +147,7 @@ export async function listPendingInvitationsForCurrentTeam() {
       role: true,
       invitedAt: true,
     },
-    orderBy: { invitedAt: 'desc' },
+    orderBy: { invitedAt: "desc" },
   });
 
   return invitations.map((invitation) => ({
@@ -154,4 +155,3 @@ export async function listPendingInvitationsForCurrentTeam() {
     invitedAt: invitation.invitedAt.toISOString(),
   }));
 }
-

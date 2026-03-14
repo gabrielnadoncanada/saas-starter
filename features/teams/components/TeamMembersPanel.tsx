@@ -3,9 +3,9 @@
 import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { removeTeamMemberAction } from '@/features/teams/actions/remove-team-member.action';
 import type { TeamMemberView } from '@/features/teams/types/team.types';
 

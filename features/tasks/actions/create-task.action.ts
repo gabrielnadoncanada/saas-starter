@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
-import { routes } from '@/constants/routes';
-import { validatedActionWithUser } from '@/lib/auth/validated-action-with-user';
-import { createTaskSchema } from '@/features/tasks/schemas/task.schema';
-import { createTaskForCurrentTeam } from '@/features/tasks/server/tasks';
+import { routes } from "@/shared/constants/routes";
+import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { createTaskSchema } from "@/features/tasks/schemas/task.schema";
+import { createTaskForCurrentTeam } from "@/features/tasks/server/tasks";
 
 export const createTaskAction = validatedActionWithUser(
   createTaskSchema,
@@ -13,6 +13,6 @@ export const createTaskAction = validatedActionWithUser(
     await createTaskForCurrentTeam(data);
     revalidatePath(routes.app.tasks);
 
-    return { success: 'Task created', refreshKey: Date.now() };
-  }
+    return { success: "Task created", refreshKey: Date.now() };
+  },
 );

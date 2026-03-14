@@ -143,16 +143,17 @@ Prefer:
 
 ---
 
-## 7. Shared components folder absorbing feature UI
+## 7. Root shared folder absorbing feature UI too early
 
 Bad:
 
 ```txt
-components/
-  shared/
-    BillingPlanCard.tsx
-    DeleteAccountCard.tsx
-    InvoiceFilters.tsx
+shared/
+  components/
+    app/
+      BillingPlanCard.tsx
+      DeleteAccountCard.tsx
+      InvoiceFilters.tsx
 ```
 
 Problem:
@@ -162,7 +163,7 @@ Problem:
 
 Prefer:
 - keep feature UI inside the feature
-- move to `components/shared/` only when reuse is proven
+- move to `shared/components/app/` only when reuse is proven
 
 ---
 
@@ -185,15 +186,16 @@ Prefer:
 
 ---
 
-## 9. Global `lib/` holding feature business logic
+## 9. `shared/lib/` holding feature business logic
 
 Bad:
 
 ```txt
-lib/
-  auth-onboarding.ts
-  customer-import.ts
-  invoice-summary.ts
+shared/
+  lib/
+    auth-onboarding.ts
+    customer-import.ts
+    invoice-summary.ts
 ```
 
 Problem:
@@ -202,7 +204,7 @@ Problem:
 
 Prefer:
 - domain logic inside `features/<feature>/`
-- global `lib/` only for app-wide technical infrastructure
+- `shared/lib/` only for app-wide technical infrastructure
 
 ---
 

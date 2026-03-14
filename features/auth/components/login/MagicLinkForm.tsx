@@ -5,8 +5,8 @@ import { useState, useTransition } from 'react';
 import { signIn } from 'next-auth/react';
 import { Loader2, Mail } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { routes } from '@/constants/routes';
+import { Button } from '@/shared/components/ui/button';
+import { routes } from '@/shared/constants/routes';
 import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
 
 type MagicLinkFormProps = {

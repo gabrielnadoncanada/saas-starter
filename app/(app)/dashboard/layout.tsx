@@ -1,10 +1,10 @@
 'use client';
 
-import { ThemeSwitch } from '@/components/layout/preferences/ThemeSwitch';
-import { AuthenticatedLayout } from '@/components/layout/shell/AuthenticatedLayout';
-import { Header } from '@/components/layout/shell/Header';
-import { Search } from '@/components/layout/navigation/Search';
-import { ProfileDropdown } from '@/components/layout/user/ProfileDropdown';
+import { ThemeSwitch } from '@/shared/components/layout/preferences/ThemeSwitch';
+import { AuthenticatedLayout } from '@/shared/components/layout/shell/AuthenticatedLayout';
+import { Header } from '@/shared/components/layout/shell/Header';
+import { Search } from '@/shared/components/layout/navigation/Search';
+import { ProfileDropdown } from '@/shared/components/layout/user/ProfileDropdown';
 export default function DashboardLayout({
   children
 }: {

@@ -14,49 +14,49 @@ Receive real-time notifications when email events occur (delivered, bounced, ope
 
 ### Email Events
 
-| Event | Trigger | Use Case |
-|-------|---------|----------|
-| `email.sent` | API request successful, delivery attempted | Confirm email accepted |
-| `email.delivered` | Email reached recipient's mail server | Confirm successful delivery |
-| `email.bounced` | Mail server permanently rejected (hard bounce) | Remove from list, alert user |
-| `email.complained` | Recipient marked as spam | Unsubscribe, review content |
-| `email.opened` | Recipient opened email | Track engagement |
-| `email.clicked` | Recipient clicked a link | Track engagement |
-| `email.delivery_delayed` | Temporary delivery issue (soft bounce) | Monitor, may resolve automatically |
-| `email.failed` | Send error (invalid recipient, quota, etc.) | Debug, alert |
+| Event                    | Trigger                                        | Use Case                           |
+| ------------------------ | ---------------------------------------------- | ---------------------------------- |
+| `email.sent`             | API request successful, delivery attempted     | Confirm email accepted             |
+| `email.delivered`        | Email reached recipient's mail server          | Confirm successful delivery        |
+| `email.bounced`          | Mail server permanently rejected (hard bounce) | Remove from list, alert user       |
+| `email.complained`       | Recipient marked as spam                       | Unsubscribe, review content        |
+| `email.opened`           | Recipient opened email                         | Track engagement                   |
+| `email.clicked`          | Recipient clicked a link                       | Track engagement                   |
+| `email.delivery_delayed` | Temporary delivery issue (soft bounce)         | Monitor, may resolve automatically |
+| `email.failed`           | Send error (invalid recipient, quota, etc.)    | Debug, alert                       |
 
 ### Bounce Types
 
-| Type | Event | Action |
-|------|-------|--------|
-| **Hard bounce (Permanent)** | `email.bounced` | Remove address immediately - never retry |
-| **Soft bounce (Transient)** | `email.delivery_delayed` | Monitor - Resend retries automatically |
-| **Undetermined** | `email.bounced` | Treat as hard bounce if repeated |
+| Type                        | Event                    | Action                                   |
+| --------------------------- | ------------------------ | ---------------------------------------- |
+| **Hard bounce (Permanent)** | `email.bounced`          | Remove address immediately - never retry |
+| **Soft bounce (Transient)** | `email.delivery_delayed` | Monitor - Resend retries automatically   |
+| **Undetermined**            | `email.bounced`          | Treat as hard bounce if repeated         |
 
 **Hard bounces** (`email.bounced`) are permanent failures. The address is invalid and will never accept mail. Continuing to send to hard-bounced addresses destroys your sender reputation.
 
-| Subtype | Cause |
-|---------|-------|
-| General | Recipient's email provider sent a hard bounce |
+| Subtype | Cause                                           |
+| ------- | ----------------------------------------------- |
+| General | Recipient's email provider sent a hard bounce   |
 | NoEmail | Address doesn't exist or couldn't be determined |
 
 **Soft bounces** (`email.delivery_delayed`) are temporary issues. Resend automatically retries these. If delivery ultimately fails after retries, you'll receive an `email.bounced` event.
 
-| Subtype | Cause | May Resolve If... |
-|---------|-------|-------------------|
-| General | Temporary rejection | Underlying issue clears |
-| MailboxFull | Recipient's inbox at capacity | Recipient frees space |
-| MessageTooLarge | Exceeds provider size limit | You reduce message size |
-| ContentRejected | Contains disallowed content | You modify content |
-| AttachmentRejected | Attachment type/size rejected | You modify attachment |
+| Subtype            | Cause                         | May Resolve If...       |
+| ------------------ | ----------------------------- | ----------------------- |
+| General            | Temporary rejection           | Underlying issue clears |
+| MailboxFull        | Recipient's inbox at capacity | Recipient frees space   |
+| MessageTooLarge    | Exceeds provider size limit   | You reduce message size |
+| ContentRejected    | Contains disallowed content   | You modify content      |
+| AttachmentRejected | Attachment type/size rejected | You modify attachment   |
 
 **Undetermined bounces** occur when the bounce message doesn't contain enough information for Resend to determine the reason. Treat repeated undetermined bounces as hard bounces.
 
 ### Other Events
 
-| Event | Trigger |
-|-------|---------|
-| `domain.created` / `updated` / `deleted` | Domain configuration changes |
+| Event                                     | Trigger                                     |
+| ----------------------------------------- | ------------------------------------------- |
+| `domain.created` / `updated` / `deleted`  | Domain configuration changes                |
 | `contact.created` / `updated` / `deleted` | Contact list changes (not from CSV imports) |
 
 ## Setup
@@ -81,15 +81,16 @@ Receive real-time notifications when email events occur (delivered, bounced, ope
 
 Every webhook includes these headers for verification:
 
-| Header | Purpose |
-|--------|---------|
-| `svix-id` | Unique message identifier |
-| `svix-timestamp` | Unix timestamp when sent |
-| `svix-signature` | Cryptographic signature |
+| Header           | Purpose                   |
+| ---------------- | ------------------------- |
+| `svix-id`        | Unique message identifier |
+| `svix-timestamp` | Unix timestamp when sent  |
+| `svix-signature` | Cryptographic signature   |
 
 ### Get Your Webhook Secret
 
 Find your signing secret in the Resend dashboard:
+
 1. Go to resend.com/webhooks
 2. Click on your webhook
 3. Copy the signing secret (starts with `whsec_`)
@@ -101,9 +102,9 @@ Store it securely as `RESEND_WEBHOOK_SECRET` environment variable.
 Example using Next.js:
 
 ```typescript
-import { Resend } from 'resend';
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db'; // Your database client (Prisma, Drizzle, etc.)
+import { Resend } from "resend";
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/shared/lib/db"; // Your database client (Prisma, Drizzle, etc.)
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -117,63 +118,63 @@ export async function POST(req: NextRequest) {
     const event = resend.webhooks.verify({
       payload,
       headers: {
-        'svix-id': req.headers.get('svix-id'),
-        'svix-timestamp': req.headers.get('svix-timestamp'),
-        'svix-signature': req.headers.get('svix-signature'),
+        "svix-id": req.headers.get("svix-id"),
+        "svix-timestamp": req.headers.get("svix-timestamp"),
+        "svix-signature": req.headers.get("svix-signature"),
       },
       secret: process.env.RESEND_WEBHOOK_SECRET,
     });
 
     // Handle the verified event
     switch (event.type) {
-      case 'email.delivered':
+      case "email.delivered":
         // update database with the email delivery status
         break;
 
-      case 'email.bounced':
+      case "email.bounced":
         // Hard bounce - remove from mailing list immediately
         break;
 
-      case 'email.complained':
+      case "email.complained":
         // Spam complaint - unsubscribe and flag
         break;
 
       default:
         // handle other events
-        return new Response('OK', { status: 200, body: 'Event skipped' });
+        return new Response("OK", { status: 200, body: "Event skipped" });
     }
 
-    return new NextResponse('OK', { status: 200 });
+    return new NextResponse("OK", { status: 200 });
   } catch (error) {
-    console.error('Webhook verification failed:', error);
-    return new NextResponse('Invalid signature', { status: 400 });
+    console.error("Webhook verification failed:", error);
+    return new NextResponse("Invalid signature", { status: 400 });
   }
 }
 ```
 
 ## Common Mistakes
 
-| Mistake | Fix |
-|---------|-----|
-| Not verifying signatures | **Always verify** — unverified webhooks can't be trusted |
-| Using parsed JSON body | Use raw request body - JSON parsing breaks signature |
-| Using `express.json()` middleware | Use `express.raw()` for webhook routes |
-| Hardcoding webhook secret | Store in environment variable |
-| Returning non-200 status for valid webhooks | Return 200 OK to acknowledge receipt |
+| Mistake                                     | Fix                                                      |
+| ------------------------------------------- | -------------------------------------------------------- |
+| Not verifying signatures                    | **Always verify** — unverified webhooks can't be trusted |
+| Using parsed JSON body                      | Use raw request body - JSON parsing breaks signature     |
+| Using `express.json()` middleware           | Use `express.raw()` for webhook routes                   |
+| Hardcoding webhook secret                   | Store in environment variable                            |
+| Returning non-200 status for valid webhooks | Return 200 OK to acknowledge receipt                     |
 
 ## Retry Schedule
 
 If your endpoint doesn't return HTTP 200, Resend retries with exponential backoff:
 
 | Attempt | Delay After Failure |
-|---------|---------------------|
-| 1 | Immediate |
-| 2 | 5 seconds |
-| 3 | 5 minutes |
-| 4 | 30 minutes |
-| 5 | 2 hours |
-| 6 | 5 hours |
-| 7 | 10 hours |
+| ------- | ------------------- |
+| 1       | Immediate           |
+| 2       | 5 seconds           |
+| 3       | 5 minutes           |
+| 4       | 30 minutes          |
+| 5       | 2 hours             |
+| 6       | 5 hours             |
+| 7       | 10 hours            |
 
 Example: A webhook that fails 3 times before succeeding will be delivered ~35 minutes after the first attempt.
 

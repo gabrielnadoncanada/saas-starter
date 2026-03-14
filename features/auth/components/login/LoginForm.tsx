@@ -6,13 +6,13 @@ import { signIn } from 'next-auth/react';
 import { useMemo, useState } from 'react';
 import { CircleIcon } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { routes } from '@/constants/routes';
+import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import { routes } from '@/shared/constants/routes';
 import { MagicLinkForm } from '@/features/auth/components/login/MagicLinkForm';
 import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
-import type { OAuthProviderId } from '@/lib/auth/providers';
+import type { OAuthProviderId } from '@/shared/lib/auth/providers';
 
 const OAUTH_PROVIDER_LABELS: Record<OAuthProviderId, string> = {
   google: 'Continue with Google',

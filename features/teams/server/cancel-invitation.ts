@@ -1,5 +1,5 @@
-import { db } from '@/lib/db/prisma';
-import { getUserTeamMembership } from '@/features/teams/server/team-membership';
+import { db } from "@/shared/lib/db/prisma";
+import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 type CancelInvitationParams = {
   invitationId: number;
@@ -13,30 +13,29 @@ export async function cancelInvitation({
   const userWithTeam = await getUserTeamMembership(userId);
 
   if (!userWithTeam?.teamId) {
-    return { error: 'User is not part of a team' };
+    return { error: "User is not part of a team" };
   }
 
-  if (userWithTeam.teamRole !== 'OWNER') {
-    return { error: 'Only team owners can cancel invitations' };
+  if (userWithTeam.teamRole !== "OWNER") {
+    return { error: "Only team owners can cancel invitations" };
   }
 
   const invitation = await db.invitation.findFirst({
     where: {
       id: invitationId,
       teamId: userWithTeam.teamId,
-      status: 'PENDING',
+      status: "PENDING",
     },
   });
 
   if (!invitation) {
-    return { error: 'Invitation not found' };
+    return { error: "Invitation not found" };
   }
 
   await db.invitation.update({
     where: { id: invitationId },
-    data: { status: 'CANCELED' },
+    data: { status: "CANCELED" },
   });
 
-  return { success: 'Invitation canceled' };
+  return { success: "Invitation canceled" };
 }
-

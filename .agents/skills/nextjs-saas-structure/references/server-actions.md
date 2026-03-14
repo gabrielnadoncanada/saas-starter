@@ -9,10 +9,6 @@ Default split:
 - `actions/` = the Next.js mutation boundary
 - `server/` = feature-specific server logic and database access
 
-This should be the default in App Router SaaS starters.
-
----
-
 ## What a server action should contain at maximum
 
 A server action should contain only these responsibilities:
@@ -24,9 +20,7 @@ A server action should contain only these responsibilities:
 5. call `revalidatePath`, `revalidateTag`, `refresh`, or `redirect` if needed
 6. return a small serializable result or action state
 
-That is the default ceiling.
-
-If an action starts doing more than this, move the extra logic into `server/`.
+That is the default ceiling. If an action does more, move the rest into `server/`.
 
 ---
 
@@ -42,10 +36,6 @@ Do not keep these in `actions/` by default:
 - non-trivial error translation logic
 - cross-file reusable logic needed by multiple actions or routes
 
-The action should remain a boundary file, not the main place where the feature works.
-
----
-
 ## What belongs in `server/`
 
 Use `features/<feature>/server/` for feature-specific server-only logic such as:
@@ -58,32 +48,23 @@ Use `features/<feature>/server/` for feature-specific server-only logic such as:
 - assembling derived server data for sections, pages, or dashboards
 - feature-level permission checks that need database access
 
-Examples:
-- `current-user.ts`
-- `create-invoice.ts`
-- `linked-accounts.ts`
-- `billing-usage.ts`
-- `complete-post-sign-in.ts`
+Examples: `current-user.ts`, `create-invoice.ts`, `linked-accounts.ts`, `billing-usage.ts`, `complete-post-sign-in.ts`.
 
 If a file imports Prisma or touches the database, it usually belongs in `server/`.
 
 ---
 
-## What stays in global `lib/` instead of feature `server/`
+## What stays in `shared/lib/` instead of feature `server/`
 
-Use global `lib/` only for shared infrastructure.
+Use `shared/lib/` only for shared infrastructure.
 
 Examples:
-- `lib/db/prisma.ts`
+- `shared/lib/db/prisma.ts`
 - auth provider setup
 - Stripe client setup
 - generic framework integrations
 
-Do not move feature queries into global `lib/` just because they talk to the database.
-
-Keep domain-owned database logic inside the owning feature.
-
----
+Do not move feature queries into `shared/lib/` just because they talk to the database.
 
 ## Testability rules for `server/`
 
@@ -95,13 +76,6 @@ Keep `server/` files easy to test:
 - avoid `cookies`, `headers`, and other Next request APIs unless truly necessary
 - keep Next-specific APIs in `actions/` or route files
 - keep files focused by responsibility
-
-This makes it easy to:
-- unit test pure server helpers
-- integration test Prisma-backed functions
-- keep E2E focused on the real user flows
-
----
 
 ## Good default split
 
@@ -141,7 +115,7 @@ export async function createInvoiceAction(formData: FormData) {
 
 ```ts
 // server/create-invoice.ts
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/shared/lib/db/prisma';
 
 export async function createInvoice(input: {
   customerId: string;
@@ -155,10 +129,6 @@ export async function createInvoice(input: {
   });
 }
 ```
-
-This split is usually enough.
-
----
 
 ## Better pattern when there is auth or business logic
 
@@ -187,7 +157,7 @@ export async function updateAccountAction(formData: FormData) {
 
 ```ts
 // server/update-account.ts
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/shared/lib/db/prisma';
 
 export async function updateAccount(params: {
   userId: number;
@@ -199,13 +169,6 @@ export async function updateAccount(params: {
   });
 }
 ```
-
-Benefits:
-- the action stays framework-thin
-- database logic is reusable
-- `server/update-account.ts` is easier to unit or integration test
-
----
 
 ## When to split `server/` further
 
@@ -230,22 +193,12 @@ features/
         billing-usage.ts
 ```
 
-Do not create nested folders too early.
-
----
-
 ## Testing guidance
 
 Default testing split:
 - test `server/` with unit and integration tests
 - test `actions/` lightly through integration or E2E
 - test full user flows with Playwright or equivalent
-
-Good rule:
-- if it contains Prisma or domain logic, prefer testing the `server/` function directly
-- if it contains `revalidatePath`, `redirect`, or action state wiring, test the boundary with higher-level tests
-
----
 
 ## Decision rule
 

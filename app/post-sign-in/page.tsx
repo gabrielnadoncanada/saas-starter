@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
 
 import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
-import { getCurrentUser } from '@/lib/auth/get-current-user';
+import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
-import { db } from '@/lib/db/prisma';
+import { db } from '@/shared/lib/db/prisma';
 
 type PostSignInPageProps = {
   searchParams: Promise<{

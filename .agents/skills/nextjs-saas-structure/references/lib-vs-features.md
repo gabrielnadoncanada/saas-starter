@@ -1,17 +1,17 @@
-# Global `lib/` versus `features/`
+# Root `shared/` versus `features/`
 
 ## Core rule
 
 Choose placement based on ownership, not on whether code is server-side, shared, or important.
 
-- global technical infrastructure owned by the app -> `lib/`
+- app-wide shared code not owned by one domain -> `shared/`
 - product logic owned by one domain -> `features/<feature>/`
 
 ---
 
-## `lib/` DOES
+## `shared/` DOES
 
-Global `lib/` does contain:
+Root `shared/` does contain:
 
 - database client setup
 - auth framework setup
@@ -20,20 +20,25 @@ Global `lib/` does contain:
 - environment parsing
 - framework integration code
 - app-wide technical utilities
+- app-wide reusable UI
+- app-wide constants
 
 Examples:
 
-- `lib/db/prisma.ts`
-- `lib/auth/providers.ts`
-- `lib/auth/auth.ts`
-- `lib/stripe/client.ts`
-- `lib/env.ts`
+- `shared/lib/db/prisma.ts`
+- `shared/lib/auth/providers.ts`
+- `shared/lib/auth/auth.ts`
+- `shared/lib/stripe/client.ts`
+- `shared/lib/env.ts`
+- `shared/components/ui/button.tsx`
+- `shared/components/app/PageHeader.tsx`
+- `shared/constants/routes.ts`
 
 ---
 
-## `lib/` DOES NOT
+## `shared/` DOES NOT
 
-Global `lib/` does not contain:
+Root `shared/` does not contain:
 
 - task creation logic
 - invitation workflows
@@ -45,10 +50,10 @@ Global `lib/` does not contain:
 
 Bad examples:
 
-- `lib/create-task.ts`
-- `lib/invite-member.ts`
-- `lib/delete-account.ts`
-- `lib/invoice-summary.ts`
+- `shared/lib/create-task.ts`
+- `shared/lib/invite-member.ts`
+- `shared/lib/delete-account.ts`
+- `shared/lib/invoice-summary.ts`
 
 These belong in their owning feature.
 
@@ -90,7 +95,7 @@ Bad examples:
 - `features/teams/env.ts`
 - `features/auth/stripe-client.ts`
 
-These belong in global `lib/`.
+These belong in root `shared/`.
 
 ---
 
@@ -98,14 +103,14 @@ These belong in global `lib/`.
 
 ### Mistake 1
 
-"It touches the database, so it belongs in `lib/`."
+"It touches the database, so it belongs in `shared/`."
 
 Wrong.
 Database access that belongs to one feature should stay in that feature.
 
 ### Mistake 2
 
-"It is reused in two places, so it must move to global `lib/`."
+"It is reused in two places, so it must move to root `shared/`."
 
 Wrong.
 If both usages belong to the same feature, keep it in that feature.
@@ -116,7 +121,7 @@ If both usages belong to the same feature, keep it in that feature.
 
 Wrong.
 Global auth infrastructure should not depend on `features/`.
-Move supporting auth-system logic into `lib/auth/`.
+Move supporting auth-system logic into `shared/lib/auth/`.
 
 ---
 
@@ -130,16 +135,16 @@ Ask:
 
 If the answer is:
 
-- app-wide infrastructure -> `lib/`
+- app-wide shared code -> `shared/`
 - owned by one feature -> `features/<feature>/`
 
 ---
 
 ## Strong rule
 
-`lib/` is not a misc folder.
+`shared/` is not a misc folder.
 
-Do not use global `lib/` as:
+Do not use root `shared/` as:
 
 - a dumping ground
 - a place for random server code
@@ -147,15 +152,15 @@ Do not use global `lib/` as:
 - a place for anything you do not know how to classify
 
 When in doubt, prefer feature ownership first.
-Move something to global `lib/` only when it is truly cross-feature technical infrastructure.
+Move something to root `shared/` only when it is truly cross-feature app-level code.
 
 ---
 
 ## Activity log example
 
-Use a shared helper such as `lib/activity-log.ts` for the low-level insert.
+Use a shared helper such as `shared/lib/activity-log.ts` for the low-level insert.
 
-Keep feature-owned lookups outside global `lib/`.
+Keep feature-owned lookups outside root `shared/`.
 
 Good:
 
@@ -164,6 +169,6 @@ Good:
 
 Bad:
 
-- `lib/auth/...` importing team membership queries just to attach a `teamId`
+- `shared/lib/auth/...` importing team membership queries just to attach a `teamId`
 
 If a global auth hook needs to write an activity row, let it call the shared helper directly with the data it already owns.

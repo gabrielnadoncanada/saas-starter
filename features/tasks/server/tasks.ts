@@ -1,16 +1,16 @@
-import 'server-only';
+import "server-only";
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { db } from '@/lib/db/prisma';
-import { getCurrentUser } from '@/lib/auth/get-current-user';
-import { getUserTeamMembership } from '@/features/teams/server/team-membership';
+import { db } from "@/shared/lib/db/prisma";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 import type {
   createTaskSchema,
   deleteTaskSchema,
   updateTaskSchema,
-  updateTaskStatusSchema
-} from '@/features/tasks/schemas/task.schema';
+  updateTaskStatusSchema,
+} from "@/features/tasks/schemas/task.schema";
 
 type CreateTaskInput = z.infer<typeof createTaskSchema>;
 type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
@@ -19,10 +19,10 @@ type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;
 
 function isUniqueCodeError(error: unknown) {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'code' in error &&
-    error.code === 'P2002'
+    "code" in error &&
+    error.code === "P2002"
   );
 }
 
@@ -30,13 +30,13 @@ async function requireCurrentTeamId() {
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error('User is not authenticated');
+    throw new Error("User is not authenticated");
   }
 
   const userWithTeam = await getUserTeamMembership(user.id);
 
   if (!userWithTeam?.teamId) {
-    throw new Error('User is not part of a team');
+    throw new Error("User is not part of a team");
   }
 
   return userWithTeam.teamId;
@@ -45,11 +45,11 @@ async function requireCurrentTeamId() {
 async function createTaskCode(teamId: number) {
   const latestTask = await db.task.findFirst({
     where: { teamId },
-    orderBy: { id: 'desc' },
-    select: { code: true }
+    orderBy: { id: "desc" },
+    select: { code: true },
   });
 
-  const latestNumber = Number(latestTask?.code.replace('TASK-', '')) || 0;
+  const latestNumber = Number(latestTask?.code.replace("TASK-", "")) || 0;
   return `TASK-${latestNumber + 1}`;
 }
 
@@ -58,7 +58,7 @@ export async function listCurrentTeamTasks() {
 
   return db.task.findMany({
     where: { teamId },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: "desc" },
   });
 }
 
@@ -76,20 +76,20 @@ export async function createTaskForCurrentTeam(input: CreateTaskInput) {
           description: input.description || null,
           label: input.label,
           priority: input.priority,
-          status: 'TODO'
-        }
+          status: "TODO",
+        },
       });
     } catch (error) {
       if (!isUniqueCodeError(error)) {
         throw error;
       }
 
-      const nextNumber = Number(code.replace('TASK-', '')) + 1;
+      const nextNumber = Number(code.replace("TASK-", "")) + 1;
       code = `TASK-${nextNumber}`;
     }
   }
 
-  throw new Error('Could not generate a unique task code');
+  throw new Error("Could not generate a unique task code");
 }
 
 export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
@@ -98,52 +98,55 @@ export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
   const result = await db.task.updateMany({
     where: {
       id: input.taskId,
-      teamId
+      teamId,
     },
     data: {
       title: input.title,
       description: input.description || null,
       label: input.label,
       priority: input.priority,
-      status: input.status
-    }
+      status: input.status,
+    },
   });
 
   if (result.count === 0) {
-    throw new Error('Task not found');
+    throw new Error("Task not found");
   }
 }
 
-export async function updateTaskStatusForCurrentTeam(input: UpdateTaskStatusInput) {
+export async function updateTaskStatusForCurrentTeam(
+  input: UpdateTaskStatusInput,
+) {
   const teamId = await requireCurrentTeamId();
 
   const result = await db.task.updateMany({
     where: {
       id: input.taskId,
-      teamId
+      teamId,
     },
     data: {
-      status: input.status
-    }
+      status: input.status,
+    },
   });
 
   if (result.count === 0) {
-    throw new Error('Task not found');
+    throw new Error("Task not found");
   }
 }
 
-export async function deleteTaskForCurrentTeam(taskId: DeleteTaskInput['taskId']) {
+export async function deleteTaskForCurrentTeam(
+  taskId: DeleteTaskInput["taskId"],
+) {
   const teamId = await requireCurrentTeamId();
 
   const result = await db.task.deleteMany({
     where: {
       id: taskId,
-      teamId
-    }
+      teamId,
+    },
   });
 
   if (result.count === 0) {
-    throw new Error('Task not found');
+    throw new Error("Task not found");
   }
 }
-

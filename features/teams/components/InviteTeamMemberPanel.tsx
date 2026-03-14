@@ -4,11 +4,11 @@ import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, PlusCircle } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/shared/components/ui/radio-group';
 import { inviteTeamMemberAction } from '@/features/teams/actions/invite-team-member.action';
 
 type ActionState = {

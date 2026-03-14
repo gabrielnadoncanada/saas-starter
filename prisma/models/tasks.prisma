@@ -32,11 +32,11 @@ model Task {
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
+  @@unique([teamId, code])
   @@index([teamId])
   @@index([status])
   @@index([priority])
   @@index([label])
   @@index([teamId, status])
   @@index([teamId, priority])
-  @@unique([teamId, code])
 }

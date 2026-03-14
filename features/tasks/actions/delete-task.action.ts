@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
-import { routes } from '@/constants/routes';
-import { validatedActionWithUser } from '@/lib/auth/validated-action-with-user';
-import { deleteTaskSchema } from '@/features/tasks/schemas/task.schema';
-import { deleteTaskForCurrentTeam } from '@/features/tasks/server/tasks';
+import { routes } from "@/shared/constants/routes";
+import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { deleteTaskSchema } from "@/features/tasks/schemas/task.schema";
+import { deleteTaskForCurrentTeam } from "@/features/tasks/server/tasks";
 
 export const deleteTaskAction = validatedActionWithUser(
   deleteTaskSchema,
@@ -13,6 +13,6 @@ export const deleteTaskAction = validatedActionWithUser(
     await deleteTaskForCurrentTeam(taskId);
     revalidatePath(routes.app.tasks);
 
-    return { success: 'Task deleted', refreshKey: Date.now() };
-  }
+    return { success: "Task deleted", refreshKey: Date.now() };
+  },
 );

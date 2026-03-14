@@ -27,20 +27,30 @@ Start from this structure by default:
 ```txt
 app/
 features/
-components/
-  ui/
-  shared/
-lib/
-hooks/
-types/
-constants/
+shared/
+  components/
+    ui/
+    app/
+  lib/
+  constants/
+  hooks/
+  types/
 ```
 
-`hooks/`, `types/`, and `constants/` are optional. Use them only when they add real clarity.
+`shared/constants/`, `shared/hooks/`, and `shared/types/` are optional. Use them only when they add real clarity.
 
-## Feature default
+## Folder responsibilities
 
-For most business features, start with:
+### `app/`
+
+Use `app/` only for route files and route composition.
+Keep it thin.
+
+### `features/`
+
+Use `features/` for domain-owned product logic.
+
+Default feature shape:
 
 ```txt
 features/
@@ -53,100 +63,53 @@ features/
     types/
 ```
 
-Use only the folders that are actually needed.
+Only add the folders that are actually needed.
 
-## Folder responsibilities
+### `shared/`
 
-### `app/`
+Use root `shared/` for app-wide code that is not owned by one product feature.
 
-Use `app/` only for Next.js route files and route composition.
+Typical responsibilities:
 
-Typical files:
+- `shared/components/ui/` = base or design-system UI
+- `shared/components/app/` = reusable app-level components
+- `shared/lib/` = technical infrastructure and cross-feature helpers
+- `shared/constants/` = app-level constants
+- `shared/hooks/` = app-wide reusable React hooks
+- `shared/types/` = app-level shared types
 
-- `page.tsx`
-- `layout.tsx`
-- `loading.tsx`
-- `error.tsx`
-- `route.ts`
+Do not move feature-owned business logic into `shared/`.
 
-Keep `app/` thin. Do not place heavy business logic here.
+## Ownership rule
 
-### `features/`
+Choose between `shared/` and `features/` based on ownership, not on whether code is:
 
-Use `features/` for domain-specific code.
+- server-side
+- reused in a few files
+- important
+- database-related
 
-Inside a feature by default:
+Put code in `shared/` when:
 
-- `actions/` = server actions
-- `components/` = feature-specific UI
-- `server/` = feature-specific server-only logic
-- `schemas/` = runtime validation
-- `utils/` = pure helpers
-- `types/` = shared feature contracts only
-
-See `references/server-actions.md` for the exact split between `actions/` and `server/`.
-
-### `components/`
-
-Use `components/` for shared UI reused across the app.
-
-Recommended structure:
-
-- `components/ui/` = base or design-system UI
-- `components/shared/` = reusable app-level components
-
-Do not place feature-specific business logic here.
-
-### `lib/`
-
-Use global `lib/` only for shared technical infrastructure across the app.
+- it is app-wide technical infrastructure
+- it is app-level reusable UI
+- it integrates a framework or external service
+- it would still make sense if one feature disappeared
 
 Examples:
 
-- auth setup
-- database client
-- Stripe helpers
-- Supabase setup
-- framework integrations
-- generic utility functions
+- `shared/lib/db/prisma.ts`
+- `shared/lib/auth/providers.ts`
+- `shared/lib/env.ts`
+- `shared/components/ui/button.tsx`
+- `shared/components/app/PageHeader.tsx`
+- `shared/constants/routes.ts`
 
-Do not use global `lib/` for feature-specific business logic.
+Put code in `features/<feature>/` when:
 
-Inside a feature, prefer `server/` or `utils/` over a catch-all local `lib/`.
-
-## Global `lib/` versus `features/`
-
-This distinction is critical.
-
-Use global `lib/` for app-wide technical infrastructure that is not owned by one product feature.
-
-Use `features/` for domain-owned product logic, even when that logic:
-
-- runs on the server
-- touches the database
-- is reused across multiple screens inside the feature
-- contains validation or transactions
-
-### Put code in global `lib/` when:
-
-- it is technical infrastructure for the whole app
-- it integrates a framework or external platform
-- it would still make sense even if a specific feature disappeared
-- it is not owned by one product domain
-
-Examples:
-
-- `lib/db/prisma.ts`
-- `lib/auth/providers.ts`
-- `lib/auth/auth.ts`
-- `lib/stripe/client.ts`
-- `lib/env.ts`
-
-### Put code in `features/<feature>/` when:
-
-- it belongs to one domain or product feature
-- it would disappear if that feature disappeared
-- it expresses business rules, feature workflows, or feature-specific database logic
+- it belongs to one domain
+- it expresses business rules or workflows
+- it contains feature-specific queries, validation, or UI
 
 Examples:
 
@@ -155,63 +118,28 @@ Examples:
 - `features/auth/server/delete-account.ts`
 - `features/billing/server/create-checkout-session.ts`
 
-### Important clarification
+## Boundaries
 
-Do **not** move code to global `lib/` just because it:
+Use these defaults:
 
-- is server-side
-- touches Prisma
-- is reused in more than one file
-- feels important
+- route files and route composition -> `app/`
+- domain-owned product logic -> `features/<feature>/`
+- app-wide shared code -> `shared/`
+- feature-specific server-only code -> `features/<feature>/server/`
+- feature-specific pure helpers -> `features/<feature>/utils/`
+- feature-specific UI -> `features/<feature>/components/`
 
-Those are not ownership rules.
+Inside a feature, prefer `server/` or `utils/` over a catch-all local `lib/`.
 
-The primary rule is ownership:
-
-- app-wide technical infrastructure -> `lib/`
-- feature-owned product logic -> `features/<feature>/`
-
-### Direction rule
-
-Global infrastructure may be used by features.
-
-Do not make global infrastructure depend on `features/`.
+Do not let root shared code depend on `features/`.
 
 Good:
 
-- `features/tasks/server/create-task.ts` imports `lib/db/prisma.ts`
+- `features/tasks/server/create-task.ts` imports `shared/lib/db/prisma.ts`
 
 Bad:
 
-- `lib/auth/auth.ts` imports `features/auth/server/...`
-
-If global auth, database, Stripe, or framework code needs support logic, keep that support logic in global `lib/` too.
-
-### `hooks/`
-
-Use hooks only for real reusable React behavior.
-
-Prefer server components and server-loaded props before introducing custom hooks.
-
-Do not create hooks for:
-
-- simple pure functions
-- trivial wrappers
-- code that can stay in a server component
-- logic used in only one small local place unless a hook clearly improves readability
-
-## Placement rules
-
-Use these rules when deciding where code should live:
-
-- route files and route composition -> `app/`
-- business logic for one domain -> `features/<feature>/`
-- shared UI -> `components/`
-- shared technical infrastructure -> `lib/`
-- reusable app-wide React behavior -> `hooks/`
-- feature-specific React behavior -> `features/<feature>/hooks/` only when really needed
-- feature-specific server-only code -> `features/<feature>/server/`
-- feature-specific pure helpers -> `features/<feature>/utils/`
+- `shared/lib/auth/auth.ts` imports `features/auth/server/...`
 
 ## Naming rules
 
@@ -229,22 +157,17 @@ Default recommendation:
 - mappers -> `domain.mapper.ts`
 - actions -> `do-something.action.ts`
 
-Do not mix naming styles in the same codebase.
-
 ## Core rules
 
 - keep the structure simple
 - keep `app/` thin
-- put business logic in `features/`
+- keep business logic in `features/`
+- keep app-wide reusable code in root `shared/`
 - keep shared UI generic
-- prefer `server/` for feature-specific server logic
-- prefer `utils/` for feature-specific pure helpers
-- use hooks only for real React behavior
+- keep server actions thin
+- keep Prisma and feature workflows in `server/` by default
 - avoid adding folders and layers too early
 - do not over-design small SaaS starters
-- keep database access out of server actions by default
-- optimize for easy testing of server logic
-- choose between `lib/` and `features/` based on ownership, not on whether code is server-side or reused
 
 ## Review workflow
 
@@ -253,13 +176,12 @@ When reviewing a structure or suggesting a refactor:
 1. start from the default structure above
 2. keep `app/` thin
 3. move domain logic into `features/`
-4. separate shared UI from feature UI
-5. replace ambiguous feature-local `lib/` folders with clearer folders such as `server/` or `utils/` when appropriate
-   5a. verify that global `lib/` is only holding app-wide technical infrastructure and not feature-owned business logic
-6. rename misleading files such as feature-local `XxxPage.tsx`
-7. move Prisma queries and transactions out of `actions/` and into `server/` by default
-8. keep the recommendation pragmatic and small
-9. add abstraction only when complexity clearly justifies it
+4. move app-wide code into root `shared/`
+5. separate shared UI from feature UI
+6. replace ambiguous feature-local `lib/` folders with `server/` or `utils/`
+7. rename misleading files such as feature-local `XxxPage.tsx`
+8. move Prisma queries and transactions out of `actions/` and into `server/`
+9. keep the recommendation pragmatic and small
 
 ## Reference files
 
@@ -270,7 +192,7 @@ Consult these references when relevant:
 - common mistakes and anti-patterns -> `references/anti-patterns.md`
 - scaling guidance -> `references/scaling.md`
 - exact `actions/` versus `server/` boundary -> `references/server-actions.md`
-- exact `lib/` versus `features/` ownership -> `references/lib-vs-features.md`
+- exact `shared/` versus `features/` ownership -> `references/lib-vs-features.md`
 
 ## Output expectations
 
@@ -282,4 +204,3 @@ When answering:
 4. prefer practical renames over abstract theory
 5. avoid enterprise over-design
 6. optimize for readability by the next developer, not architectural purity
-7. make server logic easy to test by keeping Next.js-specific code at the boundaries

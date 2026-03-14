@@ -1,4 +1,4 @@
-import { SettingsPageHeader } from '@/components/shared/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/shared/SettingsPageHeader';
 import { DeleteAccountCard } from '@/features/auth/components/settings/DeleteAccountCard';
 import { LinkedAccountsCard } from '@/features/auth/components/settings/LinkedAccountsCard';
 import type {

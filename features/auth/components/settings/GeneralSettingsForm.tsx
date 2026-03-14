@@ -3,11 +3,11 @@
 import { useActionState } from 'react';
 import { Loader2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { updateAccountAction } from '@/features/auth/actions/update-account.action';
 import type {
   GeneralSettingsInitialValues,
@@ -56,6 +56,20 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
               placeholder="Enter your name"
               defaultValue={state.name || initialValues.name}
               required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="phoneNumber" className="mb-2">
+              Phone number
+            </Label>
+
+            <Input
+              id="phoneNumber"
+              name="phoneNumber"
+              type="tel"
+              placeholder="Enter your phone number"
+              defaultValue={state.phoneNumber ?? initialValues.phoneNumber}
             />
           </div>
 

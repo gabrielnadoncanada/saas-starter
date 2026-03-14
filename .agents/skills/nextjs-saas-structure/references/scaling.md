@@ -110,9 +110,9 @@ A use-case is usually not justified for:
 
 ---
 
-## Good trigger for `components/shared/`
+## Good trigger for `shared/components/app/`
 
-Move a component from a feature to `components/shared/` only when:
+Move a component from a feature to `shared/components/app/` only when:
 - it is reused by multiple features
 - the UI concept is truly app-level
 - it carries no feature-specific business assumptions

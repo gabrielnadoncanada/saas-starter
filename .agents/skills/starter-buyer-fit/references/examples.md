@@ -5,7 +5,7 @@
 ```ts
 "use server";
 
-import { validatedActionWithUser } from "@/lib/auth/middleware";
+import { validatedActionWithUser } from "@/shared/lib/auth/middleware";
 import { updateProfileSchema } from "@/features/account/schemas/account.schema";
 import { updateProfile } from "@/features/account/server/update-profile";
 
@@ -16,7 +16,7 @@ export const updateProfileAction = validatedActionWithUser(
 ```
 
 ```ts
-import { db } from "@/lib/db/prisma";
+import { db } from "@/shared/lib/db/prisma";
 
 export async function updateProfile(userId: number, data: UpdateProfileInput) {
   await db.user.update({
@@ -32,6 +32,7 @@ export async function updateProfile(userId: number, data: UpdateProfileInput) {
 ```
 
 Judgment:
+
 - strong fit
 - obvious flow
 - thin boundary
@@ -68,12 +69,14 @@ export async function updateProfile(
 ```
 
 Judgment:
+
 - technically fine
 - borderline for this buyer
 - adds scaffolding whose payoff is not obvious
 - better for a codebase selling advanced testability than for an indie starter
 
 Better move:
+
 - keep the function
 - keep the thin action
 - remove the default dependency object unless complexity clearly grows
@@ -107,6 +110,7 @@ export class UpdateProfileUseCase {
 ```
 
 Judgment:
+
 - possible fit for an internal enterprise app
 - too much for a ShipFast-style starter
 - too many concepts before a buyer can make a normal edit
@@ -137,6 +141,7 @@ export async function syncSubscriptionState(event: Stripe.Event) {
 ```
 
 Judgment:
+
 - extra structure is justified
 - billing is naturally high-risk and multi-step
 - still keep the flow understandable

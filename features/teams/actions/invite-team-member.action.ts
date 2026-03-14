@@ -1,7 +1,7 @@
 "use server";
 
-import { validatedActionWithUser } from "@/lib/auth/validated-action-with-user";
-import { db } from "@/lib/db/prisma";
+import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { db } from "@/shared/lib/db/prisma";
 import { inviteTeamMemberSchema } from "@/features/teams/schemas/team.schema";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 import { inviteTeamMemberToTeam } from "@/features/teams/server/team-invitations";
@@ -15,7 +15,7 @@ export const inviteTeamMemberAction = validatedActionWithUser(
       return { error: "User is not part of a team" };
     }
 
-    if (userWithTeam.teamRole !== 'OWNER') {
+    if (userWithTeam.teamRole !== "OWNER") {
       return { error: "Only team owners can invite members" };
     }
 
@@ -36,11 +36,10 @@ export const inviteTeamMemberAction = validatedActionWithUser(
       role,
     });
 
-    if ('error' in result) {
+    if ("error" in result) {
       return result;
     }
 
     return { ...result, refreshKey: Date.now() };
   },
 );
-

@@ -1,4 +1,4 @@
-import type { OAuthProviderId } from "@/lib/auth/providers";
+import type { OAuthProviderId } from "@/shared/lib/auth/providers";
 
 export type ActionFeedback = {
   error?: string;
@@ -9,6 +9,7 @@ export type DeleteAccountActionState = ActionFeedback;
 
 export type UpdateAccountActionState = {
   name?: string;
+  phoneNumber?: string;
   error?: string;
   success?: string;
 };
@@ -32,5 +33,6 @@ export type SecuritySettingsFeedback = ActionFeedback;
 export type GeneralSettingsInitialValues = {
   name: string;
   email: string;
+  phoneNumber: string;
   image: string | null;
 };

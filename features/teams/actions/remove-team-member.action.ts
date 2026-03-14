@@ -1,9 +1,9 @@
 "use server";
 
-import { validatedActionWithUser } from "@/lib/auth/validated-action-with-user";
-import { createActivityLog } from "@/lib/activity-log";
+import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { createActivityLog } from "@/shared/lib/activity-log";
 import { ActivityType } from "@prisma/client";
-import { db } from "@/lib/db/prisma";
+import { db } from "@/shared/lib/db/prisma";
 import { removeTeamMemberSchema } from "@/features/teams/schemas/team.schema";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
@@ -33,7 +33,9 @@ export const removeTeamMemberAction = validatedActionWithUser(
       action: ActivityType.REMOVE_TEAM_MEMBER,
     });
 
-    return { success: "Team member removed successfully", refreshKey: Date.now() };
+    return {
+      success: "Team member removed successfully",
+      refreshKey: Date.now(),
+    };
   },
 );
-
