@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Manrope } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/shared/components/app/ThemeProvider';
 import { Toaster } from '@/shared/components/ui/sonner';
 
@@ -13,7 +13,7 @@ export const viewport: Viewport = {
   maximumScale: 1
 };
 
-const manrope = Manrope({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
   children
@@ -24,7 +24,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={manrope.className}
+      className={inter.className}
     >
       <body>
         <ThemeProvider

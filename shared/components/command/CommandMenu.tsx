@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { sidebarData } from '@/shared/components/layout/navigation/sidebar-data'
+import { sidebarData } from '@/shared/components/layout/navigation/config/sidebar-data'
 import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 import {

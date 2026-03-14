@@ -52,102 +52,98 @@ export function LinkedAccountsCard({
     setLinkingProvider(provider);
 
     await signIn(provider, {
-      redirectTo: `${routes.app.settingsSecurity}?provider=${provider}&success=linked`
+      redirectTo: `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`
     });
 
     setLinkingProvider(null);
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Linked Sign-in Methods</CardTitle>
-        <CardDescription>
-          Manage the providers you use to access this account.
-          {allowMagicLink ? ' Magic links are enabled.' : ''}
-        </CardDescription>
-      </CardHeader>
+    <>
+      <ItemGroup className="gap-4">
+        {providers.map((provider) => {
+          const isUnlinkingProvider = selectedProvider === provider.provider && isPending;
+          const isLinkingProvider = linkingProvider === provider.provider;
 
-      <CardContent className="space-y-4">
-        <ItemGroup className="gap-4">
-          {providers.map((provider) => {
-            const isUnlinkingProvider = selectedProvider === provider.provider && isPending;
-            const isLinkingProvider = linkingProvider === provider.provider;
+          return (
+            <Item key={provider.provider} variant="outline">
+              <ItemContent>
+                <ItemTitle>
+                  {OAUTH_PROVIDER_LABELS[provider.provider]}
+                  {provider.isLinked ? <Badge variant="secondary">Linked</Badge> : null}
+                </ItemTitle>
+                <ItemDescription>
+                  {provider.linkedAt
+                    ? `Linked on ${format(parseISO(provider.linkedAt), 'PP')}`
+                    : 'Not linked yet'}
+                </ItemDescription>
+              </ItemContent>
 
-            return (
-              <Item key={provider.provider} variant="outline">
-                <ItemContent>
-                  <ItemTitle>
-                    {OAUTH_PROVIDER_LABELS[provider.provider]}
-                    {provider.isLinked ? <Badge variant="secondary">Linked</Badge> : null}
-                  </ItemTitle>
-                  <ItemDescription>
-                    {provider.linkedAt
-                      ? `Linked on ${format(parseISO(provider.linkedAt), 'PP')}`
-                      : 'Not linked yet'}
-                  </ItemDescription>
-                </ItemContent>
-
-                <ItemActions>
-                  {provider.isLinked ? (
-                    provider.canUnlink ? (
-                      <form action={formAction}>
-                        <input type="hidden" name="provider" value={provider.provider} />
-                        <Button type="submit" variant="outline" disabled={isUnlinkingProvider}>
-                          {isUnlinkingProvider ? 'Unlinking...' : 'Unlink'}
-                        </Button>
-                      </form>
-                    ) : (
-                      <Badge>Required</Badge>
-                    )
+              <ItemActions>
+                {provider.isLinked ? (
+                  provider.canUnlink ? (
+                    <form action={formAction}>
+                      <input type="hidden" name="provider" value={provider.provider} />
+                      <Button type="submit" variant="outline" disabled={isUnlinkingProvider}>
+                        {isUnlinkingProvider ? 'Unlinking...' : 'Unlink'}
+                      </Button>
+                    </form>
                   ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={isLinkingProvider}
-                      onClick={() => void handleLinkAccount(provider.provider)}
-                    >
-                      {isLinkingProvider ? 'Redirecting...' : 'Link'}
-                    </Button>
-                  )}
-                </ItemActions>
-              </Item>
-            );
-          })}
-        </ItemGroup>
+                    <Badge>Required</Badge>
+                  )
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isLinkingProvider}
+                    onClick={() => void handleLinkAccount(provider.provider)}
+                  >
+                    {isLinkingProvider ? 'Redirecting...' : 'Link'}
+                  </Button>
+                )}
+              </ItemActions>
+            </Item>
+          );
+        })}
+      </ItemGroup>
 
-        <Field data-invalid={providerField.invalid} className="gap-1">
-          <FieldLabel className="sr-only" htmlFor="linked-account-provider">
-            Provider
-          </FieldLabel>
-          <input
-            id="linked-account-provider"
-            type="hidden"
-            name="provider"
-            value={selectedProvider ?? ''}
-            readOnly
-          />
-          <FieldError>{providerField.error}</FieldError>
-        </Field>
+      <Field data-invalid={providerField.invalid} className="gap-1">
+        <FieldLabel className="sr-only" htmlFor="linked-account-provider">
+          Provider
+        </FieldLabel>
+        <input
+          id="linked-account-provider"
+          type="hidden"
+          name="provider"
+          value={selectedProvider ?? ''}
+          readOnly
+        />
+        <FieldError>{providerField.error}</FieldError>
+      </Field>
 
-        {state.error ? (
+      {
+        state.error ? (
           <Alert variant="destructive">
             <AlertDescription>{state.error}</AlertDescription>
           </Alert>
-        ) : null}
+        ) : null
+      }
 
-        {feedback?.error ? (
+      {
+        feedback?.error ? (
           <Alert variant="destructive">
             <AlertDescription>{feedback.error}</AlertDescription>
           </Alert>
-        ) : null}
+        ) : null
+      }
 
-        {feedback?.success ? (
+      {
+        feedback?.success ? (
           <Alert>
             <AlertDescription>{feedback.success}</AlertDescription>
           </Alert>
-        ) : null}
-      </CardContent>
-    </Card>
+        ) : null
+      }
+    </>
   );
 }

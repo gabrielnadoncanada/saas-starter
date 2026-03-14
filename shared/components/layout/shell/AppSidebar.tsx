@@ -7,7 +7,7 @@ import {
   SidebarHeader,
   SidebarRail
 } from '@/shared/components/ui/sidebar'
-import { sidebarData } from '@/shared/components/layout/navigation/sidebar-data'
+import { sidebarData } from '@/shared/components/layout/navigation/config/sidebar-data'
 import { NavGroup } from '@/shared/components/layout/navigation/NavGroup'
 import { TeamSwitcher } from '@/features/teams/components/TeamSwitcher'
 import { NavUser } from '@/shared/components/layout/user/NavUser'

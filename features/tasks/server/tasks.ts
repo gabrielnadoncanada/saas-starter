@@ -6,6 +6,8 @@ import { db } from "@/shared/lib/db/prisma";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 import type {
+  bulkDeleteTasksSchema,
+  bulkUpdateTaskStatusSchema,
   createTaskSchema,
   deleteTaskSchema,
   updateTaskSchema,
@@ -16,6 +18,8 @@ type CreateTaskInput = z.infer<typeof createTaskSchema>;
 type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
 type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;
+type BulkDeleteTasksInput = z.infer<typeof bulkDeleteTasksSchema>;
+type BulkUpdateTaskStatusInput = z.infer<typeof bulkUpdateTaskStatusSchema>;
 
 function isUniqueCodeError(error: unknown) {
   return (
@@ -149,4 +153,45 @@ export async function deleteTaskForCurrentTeam(
   if (result.count === 0) {
     throw new Error("Task not found");
   }
+}
+
+export async function bulkUpdateTaskStatusForCurrentTeam(
+  input: BulkUpdateTaskStatusInput,
+) {
+  const teamId = await requireCurrentTeamId();
+
+  const result = await db.task.updateMany({
+    where: {
+      id: { in: input.taskIds },
+      teamId,
+    },
+    data: {
+      status: input.status,
+    },
+  });
+
+  if (result.count === 0) {
+    throw new Error("Tasks not found");
+  }
+
+  return result.count;
+}
+
+export async function bulkDeleteTasksForCurrentTeam(
+  taskIds: BulkDeleteTasksInput["taskIds"],
+) {
+  const teamId = await requireCurrentTeamId();
+
+  const result = await db.task.deleteMany({
+    where: {
+      id: { in: taskIds },
+      teamId,
+    },
+  });
+
+  if (result.count === 0) {
+    throw new Error("Tasks not found");
+  }
+
+  return result.count;
 }

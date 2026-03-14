@@ -1,13 +1,6 @@
-import { formatDistanceToNow } from 'date-fns';
 import { redirect } from 'next/navigation';
 
 import { LinkedAccountsCard } from '@/features/account/components/settings/LinkedAccountsCard';
-import {
-  activityIconMap,
-  emptyActivityIcon,
-  formatActivityAction,
-  getActivityLogs
-} from '@/features/account/server/activity-log';
 import { getLinkedAccountsOverview } from '@/features/account/server/linked-accounts';
 import type {
   LinkedProviderOverview,
@@ -21,7 +14,7 @@ import {
   hasMagicLinkProvider,
   OAUTH_PROVIDER_LABELS
 } from '@/shared/lib/auth/providers';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { ContentSection } from '@/features/account/components/settings/ContentSection';
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   OAuthAccountNotLinked: 'Unable to link this provider. Try a different sign-in method.',
@@ -52,7 +45,7 @@ function mapLinkedProviders(
   }));
 }
 
-export default async function SecurityPage({ searchParams }: PageProps) {
+export default async function AuthenticationPage({ searchParams }: PageProps) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -62,10 +55,7 @@ export default async function SecurityPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
-  const [linkedAccounts, logs] = await Promise.all([
-    getLinkedAccountsOverview(user.id, oauthProviders),
-    getActivityLogs()
-  ]);
+  const linkedAccounts = await getLinkedAccountsOverview(user.id, oauthProviders);
 
   const success = getSingleSearchParam(resolvedSearchParams.success);
   const provider = getSingleSearchParam(resolvedSearchParams.provider);
@@ -84,56 +74,18 @@ export default async function SecurityPage({ searchParams }: PageProps) {
           ? `${providerLabel} unlinked successfully.`
           : undefined
   };
-  const EmptyActivityIcon = emptyActivityIcon;
 
   return (
-    <section className="flex-1 space-y-6 p-4 lg:p-8">
-      <SettingsPageHeader title="Security" />
+    <ContentSection
+      title='Authentication Settings'
+      desc='Manage your authentication settings and connect your accounts.'
+    >
+
       <LinkedAccountsCard
         allowMagicLink={allowMagicLink}
         providers={mapLinkedProviders(linkedAccounts.providers)}
         feedback={feedback}
       />
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {logs.length > 0 ? (
-            <ul className="space-y-4">
-              {logs.map((log) => {
-                const Icon = activityIconMap[log.action] || emptyActivityIcon;
-
-                return (
-                  <li key={log.id} className="flex items-center space-x-4">
-                    <div className="rounded-full bg-orange-100 p-2">
-                      <Icon className="h-5 w-5 text-orange-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">
-                        {formatActivityAction(log.action)}
-                        {log.ipAddress && ` from IP ${log.ipAddress}`}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(log.timestamp, { addSuffix: true })}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <EmptyActivityIcon className="mb-4 h-12 w-12 text-orange-500" />
-              <h3 className="mb-2 text-lg font-semibold text-foreground">No activity yet</h3>
-              <p className="max-w-sm text-sm text-muted-foreground">
-                When you perform actions like signing in or updating your account,
-                they&apos;ll appear here.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </section>
+    </ContentSection>
   );
 }

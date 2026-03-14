@@ -26,7 +26,8 @@ export const routes = {
     sessions: "/dashboard/sessions",
     settings: "/dashboard/settings",
     settingsAccount: "/dashboard/settings/account",
-    settingsSecurity: "/dashboard/settings/security",
+    settingsAuthentication: "/dashboard/settings/authentication",
+    settingsActivityLog: "/dashboard/settings/activity",
     settingsTeam: "/dashboard/settings/team",
   },
 } as const;

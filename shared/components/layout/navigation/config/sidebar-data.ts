@@ -5,7 +5,6 @@ import {
   Construction,
   FileX,
   GalleryVerticalEnd,
-  HelpCircle,
   LayoutDashboard,
   ListTodo,
   Lock,
@@ -15,13 +14,13 @@ import {
   ServerOff,
   Settings,
   ShieldCheck,
-  UserCog,
   UserX,
   Users,
 } from "lucide-react";
 
 import { routes } from "@/shared/constants/routes";
 import type { SidebarData } from "@/shared/components/layout/navigation/sidebar-types";
+import { settingsGroup } from "./settings-group";
 
 export const sidebarData: SidebarData = {
   user: {
@@ -121,31 +120,6 @@ export const sidebarData: SidebarData = {
         },
       ],
     },
-    {
-      title: "Other",
-      items: [
-        {
-          title: "Settings",
-          icon: Settings,
-          items: [
-            {
-              title: "Account",
-              url: routes.app.settingsAccount,
-              icon: UserCog,
-            },
-            {
-              title: "Security",
-              url: routes.app.settingsSecurity,
-              icon: ShieldCheck,
-            },
-            {
-              title: "Team",
-              url: routes.app.settingsTeam,
-              icon: Users,
-            },
-          ],
-        },
-      ],
-    },
+    settingsGroup,
   ],
 };

@@ -29,8 +29,7 @@ export async function TeamSettingsPage() {
     !!team?.teamMembers.some((member) => member.user.id === user?.id && member.role === 'OWNER');
 
   return (
-    <section className="flex-1 p-4 lg:p-8">
-      <SettingsPageHeader title="Team Settings" />
+    <>
       <Item variant="outline" className="mb-8">
         <ItemContent>
           <ItemTitle>Current Plan: {team?.planName || 'Free'}</ItemTitle>
@@ -47,6 +46,6 @@ export async function TeamSettingsPage() {
       <TeamMembersPanel members={team?.teamMembers ?? []} />
       <PendingInvitationsPanel invitations={invitations} />
       <InviteTeamMemberPanel isOwner={isOwner} />
-    </section>
+    </>
   );
 }
