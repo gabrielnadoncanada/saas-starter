@@ -11,7 +11,7 @@ import type {
   BulkDeleteTasksActionState,
   BulkUpdateTaskStatusActionState,
 } from '@/features/tasks/types/task-action.types';
-import { useToastMessage } from '@/shared/hooks/useToastMessage';
+import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog';
 import { DataTableBulkActions as BulkActionsToolbar } from '@/shared/components/data-table';
 import { Button } from '@/shared/components/ui/button';
@@ -59,20 +59,8 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
     {}
   );
 
-  useToastMessage(state.error, {
-    kind: 'error',
-    skip: Boolean(state.fieldErrors),
-  });
-  useToastMessage(state.success, {
-    kind: 'success',
-  });
-  useToastMessage(deleteState.error, {
-    kind: 'error',
-    skip: Boolean(deleteState.fieldErrors),
-  });
-  useToastMessage(deleteState.success, {
-    kind: 'success',
-  });
+  useFormActionToasts(state);
+  useFormActionToasts(deleteState);
 
   useEffect(() => {
     if (state.taskIds?.length && state.status) {

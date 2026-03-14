@@ -9,7 +9,7 @@ import type {
   UpdateAccountActionState,
 } from '@/features/account/types/account.types';
 import { getFieldState } from '@/shared/lib/get-field-state';
-import { useToastMessage } from '@/shared/hooks/useToastMessage';
+import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -39,13 +39,7 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
   const phoneNumberField = getFieldState(state, 'phoneNumber');
   const emailField = getFieldState(state, 'email');
 
-  useToastMessage(state.error, {
-    kind: 'error',
-    skip: Boolean(state.fieldErrors),
-  });
-  useToastMessage(state.success, {
-    kind: 'success',
-  });
+  useFormActionToasts(state);
 
   return (
     <>

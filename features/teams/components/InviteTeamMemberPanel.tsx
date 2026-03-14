@@ -9,7 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/c
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shared/components/ui/radio-group';
-import { useToastMessage } from '@/shared/hooks/useToastMessage';
+import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { inviteTeamMemberAction } from '@/features/teams/actions/invite-team-member.action';
 
 type ActionState = {
@@ -31,12 +31,7 @@ export function InviteTeamMemberPanel({
     {}
   );
 
-  useToastMessage(inviteState.error, {
-    kind: 'error',
-  });
-  useToastMessage(inviteState.success, {
-    kind: 'success',
-  });
+  useFormActionToasts(inviteState);
 
   useEffect(() => {
     if (!inviteState.refreshKey) {

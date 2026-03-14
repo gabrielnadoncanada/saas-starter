@@ -8,7 +8,7 @@ import { labels, priorities, statuses } from '@/features/tasks/constants';
 import type { UpdateTaskActionState } from '@/features/tasks/types/task-action.types';
 import type { Task } from '@/features/tasks/types/task.types';
 import { getFieldState } from '@/shared/lib/get-field-state';
-import { useToastMessage } from '@/shared/hooks/useToastMessage';
+import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { Button } from '@/shared/components/ui/button';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
@@ -60,13 +60,7 @@ export function TaskUpdateDrawer({
   const priorityField = getFieldState(state, 'priority');
   const statusField = getFieldState(state, 'status');
 
-  useToastMessage(state.error, {
-    kind: 'error',
-    skip: Boolean(state.fieldErrors),
-  });
-  useToastMessage(state.success, {
-    kind: 'success',
-  });
+  useFormActionToasts(state);
 
   useEffect(() => {
     if (state.task) {

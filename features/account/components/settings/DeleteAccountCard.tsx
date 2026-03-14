@@ -5,7 +5,7 @@ import { useActionState, useState } from 'react';
 import { deleteAccountAction } from '@/features/account/actions/delete-account.action';
 import { DELETE_CONFIRMATION_WORD } from '@/features/account/schemas/account.schema';
 import type { DeleteAccountActionState } from '@/features/account/types/account.types';
-import { useToastMessage } from '@/shared/hooks/useToastMessage';
+import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import {
@@ -36,13 +36,7 @@ export function DeleteAccountCard() {
   const confirmation = state.values?.confirmation ?? '';
   const confirmationField = getFieldState(state, 'confirmation');
 
-  useToastMessage(state.error, {
-    kind: 'error',
-    skip: Boolean(state.fieldErrors),
-  });
-  useToastMessage(state.success, {
-    kind: 'success',
-  });
+  useFormActionToasts(state);
 
   return (
     <Card className="mt-6 border-destructive/30">
