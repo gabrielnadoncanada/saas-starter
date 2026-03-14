@@ -1,4 +1,4 @@
-import { SecuritySettingsSection } from '@/features/auth/components/settings/SecuritySettingsSection';
+import { SecuritySettingsSection } from '@/features/account/components/settings/SecuritySettingsSection';
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

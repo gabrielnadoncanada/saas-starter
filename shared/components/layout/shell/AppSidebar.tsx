@@ -5,10 +5,9 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
+  SidebarRail
 } from '@/shared/components/ui/sidebar'
-// import { AppTitle } from './AppTitle'
-import { sidebarData } from '@/shared/components/layout/model/SidebarData'
+import { sidebarData } from '@/shared/components/layout/navigation/sidebar-data'
 import { NavGroup } from '@/shared/components/layout/navigation/NavGroup'
 import { TeamSwitcher } from '@/features/teams/components/TeamSwitcher'
 import { NavUser } from '@/shared/components/layout/user/NavUser'
@@ -18,10 +17,6 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
         <TeamSwitcher />
-
-        {/* Replace <TeamSwitch /> with the following <AppTitle />
-         /* if you want to use the normal app title instead of TeamSwitch dropdown */}
-        {/* <AppTitle /> */}
       </SidebarHeader>
       <SidebarContent>
         {sidebarData.navGroups.map((props) => (

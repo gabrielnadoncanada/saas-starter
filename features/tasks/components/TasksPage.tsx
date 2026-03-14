@@ -1,4 +1,4 @@
-import { SettingsPageHeader } from '@/shared/components/shared/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { TaskCreateForm } from '@/features/tasks/components/TaskCreateForm';
 import { TaskList } from '@/features/tasks/components/TaskList';
 import { listCurrentTeamTasks } from '@/features/tasks/server/tasks';

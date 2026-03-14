@@ -2,8 +2,8 @@ import { ActivityType } from "@prisma/client";
 
 import { createActivityLog } from "@/shared/lib/activity-log";
 import { db } from "@/shared/lib/db/prisma";
-import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 import { getAccountDeletionBlocker } from "@/features/teams/server/account-deletion-policy";
+import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 export type DeleteAccountUser = {
   id: number;

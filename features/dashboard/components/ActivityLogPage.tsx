@@ -1,4 +1,4 @@
-import { SettingsPageHeader } from '@/shared/components/shared/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import {
   activityIconMap,

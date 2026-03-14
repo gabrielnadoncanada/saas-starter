@@ -1,12 +1,12 @@
 import { ActivityType } from "@prisma/client";
 
-import { db } from "@/shared/lib/db/prisma";
+import { createActivityLog } from "@/shared/lib/activity-log";
 import {
   hasMagicLinkProvider,
   OAUTH_PROVIDER_LABELS,
   type OAuthProviderId,
 } from "@/shared/lib/auth/providers";
-import { createActivityLog } from "@/shared/lib/activity-log";
+import { db } from "@/shared/lib/db/prisma";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 const ALL_OAUTH_PROVIDER_IDS = Object.keys(

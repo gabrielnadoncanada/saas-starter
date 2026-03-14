@@ -1,10 +1,10 @@
-import { SettingsPageHeader } from '@/shared/components/shared/SettingsPageHeader';
-import { DeleteAccountCard } from '@/features/auth/components/settings/DeleteAccountCard';
-import { LinkedAccountsCard } from '@/features/auth/components/settings/LinkedAccountsCard';
+import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
+import { DeleteAccountCard } from '@/features/account/components/settings/DeleteAccountCard';
+import { LinkedAccountsCard } from '@/features/account/components/settings/LinkedAccountsCard';
 import type {
   LinkedProviderOverview,
   SecuritySettingsFeedback
-} from '@/features/auth/types/auth.types';
+} from '@/features/account/types/account.types';
 
 type SecuritySettingsPanelProps = {
   allowMagicLink: boolean;

@@ -1,4 +1,4 @@
-import { SettingsPageHeader } from '@/shared/components/shared/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { Button } from '@/shared/components/ui/button';
 import { customerPortalAction } from '@/features/billing/actions/customer-portal.action';
 import { InviteTeamMemberPanel } from '@/features/teams/components/InviteTeamMemberPanel';
@@ -51,4 +51,3 @@ export async function TeamSettingsPage() {
     </section>
   );
 }
-

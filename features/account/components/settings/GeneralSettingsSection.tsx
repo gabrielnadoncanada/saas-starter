@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
 
-import { SettingsPageHeader } from '@/shared/components/shared/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { routes } from '@/shared/constants/routes';
-import { GeneralSettingsForm } from '@/features/auth/components/settings/GeneralSettingsForm';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
+import { GeneralSettingsForm } from '@/features/account/components/settings/GeneralSettingsForm';
 
 export async function GeneralSettingsSection() {
   const user = await getCurrentUser();

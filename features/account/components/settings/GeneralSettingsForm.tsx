@@ -3,16 +3,16 @@
 import { useActionState } from 'react';
 import { Loader2 } from 'lucide-react';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
-import { updateAccountAction } from '@/features/auth/actions/update-account.action';
+import { updateAccountAction } from '@/features/account/actions/update-account.action';
 import type {
   GeneralSettingsInitialValues,
   UpdateAccountActionState
-} from '@/features/auth/types/auth.types';
+} from '@/features/account/types/account.types';
 
 type GeneralSettingsFormProps = {
   initialValues: GeneralSettingsInitialValues;
@@ -34,7 +34,7 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
         <div className="mb-6 flex items-center gap-4">
           <Avatar className="size-16">
             <AvatarImage src={initialValues.image ?? undefined} alt={initialValues.name} />
-            <AvatarFallback className="text-lg justify-center">
+            <AvatarFallback className="justify-center text-lg">
               {(initialValues.name || '?')[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>

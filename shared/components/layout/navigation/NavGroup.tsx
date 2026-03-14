@@ -28,23 +28,23 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 import {
-  type NavCollapsible,
-  type NavItem,
-  type NavLink,
-  type NavGroup as NavGroupProps,
-} from '@/shared/components/layout/model/types'
+  type SidebarNavCollapsible,
+  type SidebarNavGroup,
+  type SidebarNavItem,
+  type SidebarNavLink
+} from '@/shared/components/layout/navigation/sidebar-types'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-export function NavGroup({ title, items }: NavGroupProps) {
+export function NavGroup({ title, items }: SidebarNavGroup) {
   const { state, isMobile } = useSidebar()
   const pathname = usePathname()
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item: NavItem) => {
+        {items.map((item: SidebarNavItem) => {
           const key =
             'items' in item
               ? `${item.title}-group`
@@ -75,7 +75,7 @@ function NavBadge({ children }: { children: ReactNode }) {
   return <Badge className='rounded-full px-1 py-0 text-xs'>{children}</Badge>
 }
 
-function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
+function SidebarMenuLink({ item, href }: { item: SidebarNavLink; href: string }) {
   const { setOpenMobile } = useSidebar()
   return (
     <SidebarMenuItem>
@@ -98,7 +98,7 @@ function SidebarMenuCollapsible({
   item,
   href,
 }: {
-  item: NavCollapsible
+  item: SidebarNavCollapsible
   href: string
 }) {
   const { setOpenMobile } = useSidebar()
@@ -119,7 +119,7 @@ function SidebarMenuCollapsible({
         </CollapsibleTrigger>
         <CollapsibleContent className='CollapsibleContent'>
           <SidebarMenuSub>
-            {item.items.map((subItem: NavItem) => (
+            {item.items.map((subItem: SidebarNavItem) => (
               <SidebarMenuSubItem key={subItem.title}>
                 <SidebarMenuSubButton
                   asChild
@@ -144,7 +144,7 @@ function SidebarMenuCollapsedDropdown({
   item,
   href,
 }: {
-  item: NavCollapsible
+  item: SidebarNavCollapsible
   href: string
 }) {
   return (
@@ -186,7 +186,7 @@ function SidebarMenuCollapsedDropdown({
   )
 }
 
-function checkIsActive(href: string, item: NavItem, mainNav = false) {
+function checkIsActive(href: string, item: SidebarNavItem, mainNav = false) {
   return false;
   // return (
   //   href === item.url || // /endpint?search=param

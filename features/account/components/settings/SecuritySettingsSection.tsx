@@ -1,15 +1,15 @@
 import { redirect } from 'next/navigation';
 
 import { routes } from '@/shared/constants/routes';
-import { SecuritySettingsPanel } from '@/features/auth/components/settings/SecuritySettingsPanel';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
-import { getLinkedAccountsOverview } from '@/features/auth/server/linked-accounts';
-import type { LinkedProviderOverview } from '@/features/auth/types/auth.types';
 import {
   getEnabledOAuthProviderIds,
   hasMagicLinkProvider,
   OAUTH_PROVIDER_LABELS
 } from '@/shared/lib/auth/providers';
+import { SecuritySettingsPanel } from '@/features/account/components/settings/SecuritySettingsPanel';
+import { getLinkedAccountsOverview } from '@/features/account/server/linked-accounts';
+import type { LinkedProviderOverview } from '@/features/account/types/account.types';
 
 function getSingleSearchParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;

@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { sidebarData } from '@/shared/components/layout/model/SidebarData'
+import { sidebarData } from '@/shared/components/layout/navigation/sidebar-data'
 import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 import {
@@ -16,7 +16,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/shared/components/ui/command'
-import { useSearch } from '@/shared/components/shared/SearchProvider'
+import { useSearch } from '@/shared/components/command/SearchProvider'
 import { useTheme } from "next-themes"
 
 export function CommandMenu() {

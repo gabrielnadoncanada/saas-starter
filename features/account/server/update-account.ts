@@ -1,4 +1,5 @@
 import { ActivityType } from "@prisma/client";
+
 import { createActivityLog } from "@/shared/lib/activity-log";
 import { db } from "@/shared/lib/db/prisma";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";

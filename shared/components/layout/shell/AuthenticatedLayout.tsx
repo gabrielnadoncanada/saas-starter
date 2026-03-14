@@ -1,6 +1,6 @@
 import { getCookie } from '@/shared/lib/cookies'
 import { cn } from '@/shared/lib/utils'
-import { SearchProvider } from '@/shared/components/shared/SearchProvider'
+import { SearchProvider } from '@/shared/components/command/SearchProvider'
 import { SidebarInset, SidebarProvider } from '@/shared/components/ui/sidebar'
 import { TooltipProvider } from '@/shared/components/ui/tooltip'
 import { AppSidebar } from '@/shared/components/layout/shell/AppSidebar'
