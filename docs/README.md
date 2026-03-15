@@ -9,6 +9,7 @@ This documentation system is the operating system for the SaaS starter product. 
 - No important product or technical decision should remain only in conversation.
 - `nextjs-saas-structure` is the default structural standard for code placement and boundaries.
 - `starter-buyer-fit` is the default buyer-fit standard for judging whether an abstraction is sellable to the target customer.
+- The repository is the source of truth for the actual runtime stack and implementation state.
 
 ## Document map
 
@@ -19,6 +20,7 @@ This documentation system is the operating system for the SaaS starter product. 
 ### 02-product
 - `value-proposition.md` — the commercial value delivered, differentiators, alternatives, and buyer outcomes.
 - `mvp-scope.md` — what is in V1, what is explicitly out of scope, and how feature decisions are made.
+- `v1-blueprint.md` — the official build blueprint for the sellable V1, including modules, sequencing, and tier split.
 
 ### 03-architecture
 - `technical-architecture.md` — stack, conventions, system boundaries, and non-negotiable engineering principles.
@@ -45,15 +47,17 @@ This documentation system is the operating system for the SaaS starter product. 
 4. Open questions must be tracked explicitly instead of being hidden in prose.
 5. When a structural decision is being made, default to `nextjs-saas-structure` unless there is a documented reason to deviate.
 6. When an abstraction or pattern is being evaluated, default to `starter-buyer-fit` unless there is a documented reason to deviate.
+7. When stack claims appear in docs or marketing, they must match the repository.
 
 ## Recommended reading order for a new collaborator
 1. `01-strategy/vision.md`
 2. `01-strategy/ideal-customer-profile.md`
 3. `02-product/value-proposition.md`
 4. `02-product/mvp-scope.md`
-5. `03-architecture/technical-architecture.md`
-6. `04-marketing-sales/offer.md`
-7. `05-execution/roadmap.md`
+5. `02-product/v1-blueprint.md`
+6. `03-architecture/technical-architecture.md`
+7. `04-marketing-sales/offer.md`
+8. `05-execution/roadmap.md`
 
 ## Current status
 - Documentation system initialized.
@@ -61,4 +65,5 @@ This documentation system is the operating system for the SaaS starter product. 
 - Structural standard locked to `nextjs-saas-structure`.
 - Buyer-fit standard locked to `starter-buyer-fit`.
 - Product direction narrowed to an AI-native but pragmatic Next.js SaaS starter for solo founders and small technical teams.
-- Next step: convert the strategy into an exact V1 blueprint and build order.
+- Stack baseline corrected to the current repository reality: Next.js 16, React 19, Prisma, Stripe, Tailwind 4, and NextAuth v5 beta.
+- Next step: turn the V1 blueprint into a build sequence and update the public-facing sales assets.

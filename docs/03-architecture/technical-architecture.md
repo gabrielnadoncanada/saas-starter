@@ -11,15 +11,23 @@ Provide a codebase that is production-capable without becoming an internal frame
 - Use `starter-buyer-fit` as the default standard for judging whether a pattern is commercially appropriate for the target buyer.
 - Any deviation from those defaults must be explained in `decisions-log.md`.
 
-## Candidate stack
-- Next.js
+## Current stack baseline
+This section reflects the actual repository baseline and should be updated whenever the repo changes materially.
+
+- Next.js 16
+- React 19
 - TypeScript
-- Tailwind CSS
+- Tailwind CSS 4
 - shadcn/ui
-- Supabase or equivalent database and auth stack
-- Stripe for subscriptions
-- Resend or equivalent transactional email provider
-- Vercel-first deployment path
+- NextAuth v5 beta
+- Prisma
+- Stripe
+- Vercel-first deployment assumptions
+
+## Why this matters commercially
+The starter is not selling “modern for modern’s sake”. It is selling a current, credible foundation. The stack must therefore be both:
+- modern enough to feel premium,
+- stable and understandable enough to avoid buyer anxiety.
 
 ## Core engineering principles
 1. **Obvious beats clever**.
@@ -28,6 +36,7 @@ Provide a codebase that is production-capable without becoming an internal frame
 4. **Remove abstraction until repetition proves it is needed**.
 5. **Buyer customization speed is a first-class requirement**.
 6. **Structure must remain sellable to a 149+ buyer, not just satisfying to the author**.
+7. **The repository, not memory, is the source of truth for stack claims**.
 
 ## Default structural baseline
 ```txt
@@ -65,12 +74,13 @@ Use only the folders that are actually needed.
 - Use global `lib/` only for shared technical infrastructure.
 - Keep database access out of server actions by default and place feature server logic in `server/`.
 - Avoid custom meta-framework conventions that are not immediately legible.
+- Preserve compatibility with current Next.js idioms instead of designing around outdated App Router constraints.
 
 ## Allowed sophistication
 More structure can be justified in:
 - billing,
 - auth,
-- teams and permissions,
+- workspaces and permissions,
 - webhooks,
 - external sync,
 - background jobs,
@@ -91,16 +101,17 @@ Standard feature work should stay direct and local.
 Every major subsystem should be explained in docs sufficiently for:
 - a buyer reading the repository,
 - a collaborator joining the project,
-- an AI assistant being asked to modify or extend the code.
+- an AI assistant reasoning on top of the codebase.
 
-## Non-functional requirements
-- fast local setup,
-- deterministic env configuration,
-- consistent naming,
-- strong type safety on critical flows,
-- minimal surprise when tracing a request.
+At minimum, docs must clearly explain:
+- auth and session model,
+- billing and subscription flow,
+- workspace model,
+- environment variables,
+- local setup,
+- where to customize key UI and product flows.
 
-## Open questions
-- final decision on Supabase vs alternative backend path,
-- exact team and workspace depth for V1,
-- whether AI modules should be core or packaged separately.
+## Open architecture questions
+- Keep NextAuth as the long-term auth baseline or evaluate a simpler auth path?
+- Is Prisma still the best fit for the starter’s buyer and hosting assumptions?
+- Which AI-facing surface belongs in the core product versus optional modules?

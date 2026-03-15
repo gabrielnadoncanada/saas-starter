@@ -32,7 +32,8 @@ An AI-native, monetization-ready Next.js SaaS starter built for launch speed, cl
 - a clear codebase with strong defaults,
 - a monetization-ready base with essential product flows,
 - a system optimized for speed of understanding and customization,
-- a premium product positioned above cheap boilerplates.
+- a premium product positioned above cheap boilerplates,
+- a modern codebase aligned with current Next.js-era expectations, not a legacy App Router baseline.
 
 ## What this product is not
 - not a generic template for every possible app category,
@@ -48,16 +49,19 @@ An AI-native, monetization-ready Next.js SaaS starter built for launch speed, cl
 - Every feature added must strengthen perceived buyer value.
 - The product must stay understandable to a competent Next.js developer without extra doctrine.
 - The pricing floor is 149 USD.
+- Public messaging about the stack must match the real repository state.
 
 ## Governing standards
 - Structural and folder decisions default to `nextjs-saas-structure`.
 - Buyer-fit and abstraction judgments default to `starter-buyer-fit`.
+- Stack claims are validated against the repository.
 
 ## Key hypotheses
 1. Buyers will pay 149 USD or more for a starter that removes monetization and setup friction.
 2. Buyers care more about customization speed than architectural sophistication.
 3. Clear documentation materially increases conversion and reduces refund and support risk.
 4. AI-native positioning can differentiate the starter if it does not add buyer-facing complexity.
+5. A modern baseline such as Next.js 16 and React 19 strengthens premium perception, but only if the codebase and docs feel current rather than experimental.
 
 ## Risks
 - Over-scoping before real buyer validation.
@@ -65,11 +69,12 @@ An AI-native, monetization-ready Next.js SaaS starter built for launch speed, cl
 - Excessive abstractions that slow customization.
 - Weak positioning causing the product to look like another generic starter.
 - Letting AI-native ambition bloat V1 beyond what supports a 149+ offer.
+- Creating marketing claims that are more current than the actual implementation quality.
 
 ## Open questions
 - Which AI-native capabilities create immediate value without bloating V1?
 - What is the best Starter vs Pro split while keeping 149 USD compelling?
-- What license/update policy best supports premium perception without support overload?
+- What license and update policy best supports premium perception without support overload?
 
 ## Success criteria
 - Buyers understand the offer in under 30 seconds.

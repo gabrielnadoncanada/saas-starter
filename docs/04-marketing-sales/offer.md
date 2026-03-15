@@ -9,6 +9,9 @@ A premium one-time purchase AI-native SaaS starter that gives solo founders and 
 ## Core promise
 Stop rebuilding the same SaaS foundation. Start from a monetization-ready base you can actually understand, customize, and ship.
 
+## Product framing
+This is a premium starter built on a modern stack baseline. It should feel current and credible, not like a discounted boilerplate or a legacy code pack.
+
 ## Proposed packages
 ### Starter — 149 USD
 - core codebase
@@ -24,6 +27,7 @@ Stop rebuilding the same SaaS foundation. Start from a monetization-ready base y
 - extended docs
 - more advanced examples or patterns
 - selected AI-native modules if they clearly increase perceived value
+- stronger template coverage for common B2B SaaS scenarios
 
 ### Agency / Extended — 499 to 699 USD
 - broader usage rights

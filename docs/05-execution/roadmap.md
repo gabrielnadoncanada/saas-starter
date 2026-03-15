@@ -27,13 +27,14 @@ Freeze the high-level product direction and technical constraints before buildin
 - pricing floor locked at 149 USD,
 - structural standard locked to `nextjs-saas-structure`,
 - buyer-fit standard locked to `starter-buyer-fit`,
-- stack decisions narrowed,
+- repository stack baseline reflected in docs,
 - architecture principles finalized,
 - package structure drafted.
 
 ### Risks
 - drifting into over-engineering,
-- building premium modules before validating core value.
+- building premium modules before validating core value,
+- letting docs lag behind the repository.
 
 ## Phase 3 — Build the sellable core
 ### Goal
@@ -85,7 +86,7 @@ Convert interest into first sales and real-world learning.
 
 ## Near-term critical path
 1. finalize exact V1 blueprint,
-2. lock stack and billing path,
+2. lock auth and billing posture for the current stack,
 3. define Starter vs Pro split,
 4. build core monetization-ready modules,
 5. package proof and messaging.

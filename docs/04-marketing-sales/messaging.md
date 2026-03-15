@@ -25,10 +25,13 @@ The product includes monetization primitives and real app structure.
 ### 3. Clear enough to customize fast
 The codebase and docs are meant to be understood quickly by a competent Next.js developer.
 
-### 4. Premium where it matters
+### 4. Modern without being confusing
+Current stack choices strengthen buyer confidence, but the product still avoids internal-framework complexity.
+
+### 5. Premium where it matters
 Polished UI, clean defaults, and docs increase trust and reduce friction.
 
-### 5. Worth more than cheap boilerplates
+### 6. Worth more than cheap boilerplates
 The product is positioned as a premium shortcut, not a disposable template.
 
 ## Common objections and response angles
@@ -62,6 +65,7 @@ Response: because the value is in weeks of saved work, premium execution quality
 - clear
 - premium
 - fast
+- modern
 
 ## Words to avoid overusing
 - revolutionary

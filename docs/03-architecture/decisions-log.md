@@ -1,30 +1,8 @@
 # Decisions Log
 
-## Purpose
-Track product and technical decisions with enough context to preserve reasoning and reduce future re-litigation.
-
----
-
-## 2026-03-15 — Create a documentation operating system
+## 2026-03-15 — Optimize for buyer value over architectural purity
 ### Decision
-Adopt a structured `/docs` hierarchy as the project source of truth for strategy, product, architecture, marketing, and execution.
-
-### Why
-Conversation-only context does not scale, cannot be reliably reused, and weakens both human execution and AI assistance.
-
-### Alternatives rejected
-- keep decisions in chat only,
-- use scattered notes without an index,
-- document only technical concerns.
-
-### Consequences
-Documentation becomes part of the product development workflow, not an afterthought.
-
----
-
-## 2026-03-15 — Optimize for buyer clarity over architectural sophistication
-### Decision
-The starter will prioritize time-to-understand and time-to-customize over advanced abstractions.
+Default to pragmatic structure and commercially legible code rather than advanced abstractions.
 
 ### Why
 The buyer's main job is to adapt and ship, not admire architecture.
@@ -118,7 +96,24 @@ The V1 build must include a minimal but clear workspace model without drifting i
 
 ---
 
+## 2026-03-15 — Correct the documented stack baseline to match the repository
+### Decision
+Treat the current starter baseline as a Next.js 16 and React 19 codebase with Prisma, Stripe, Tailwind 4, and NextAuth v5 beta.
+
+### Why
+Outdated stack claims reduce trust and lead to wrong product, build, and messaging decisions.
+
+### Alternatives rejected
+- continuing to describe the project as an older Next.js baseline,
+- allowing documentation to drift away from the repository.
+
+### Consequences
+Technical docs, roadmap language, and sales messaging must reflect the actual current stack and avoid legacy framing.
+
+---
+
 ## Pending decisions
-- final backend and auth choice,
+- final auth posture for V1 versus long-term,
 - exact Starter vs Pro split,
-- which AI-native modules belong in V1.
+- which AI-native modules belong in V1,
+- update and support policy.
