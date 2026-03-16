@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { updateAccountAction } from '@/features/account/actions/update-account.action';
@@ -12,6 +12,7 @@ import { getFieldState } from '@/shared/lib/get-field-state';
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
+import { PhoneInput } from '@/shared/components/forms/phone-input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import {
   Field,
@@ -38,6 +39,11 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
   const nameField = getFieldState(state, 'name');
   const phoneNumberField = getFieldState(state, 'phoneNumber');
   const emailField = getFieldState(state, 'email');
+  const [phoneNumberValue, setPhoneNumberValue] = useState(phoneNumber);
+
+  useEffect(() => {
+    setPhoneNumberValue(phoneNumber);
+  }, [phoneNumber]);
 
   useFormActionToasts(state);
 
@@ -74,12 +80,12 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
 
           <Field data-invalid={phoneNumberField.invalid}>
             <FieldLabel htmlFor="phoneNumber">Phone number</FieldLabel>
-            <Input
+            <PhoneInput
               id="phoneNumber"
               name="phoneNumber"
-              type="tel"
               placeholder="Enter your phone number"
-              defaultValue={phoneNumber}
+              value={phoneNumberValue}
+              onChange={(value) => setPhoneNumberValue(value ?? '')}
               aria-invalid={phoneNumberField.invalid}
             />
             <FieldError>{phoneNumberField.error}</FieldError>

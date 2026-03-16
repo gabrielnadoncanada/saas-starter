@@ -57,7 +57,7 @@ export const plans: Record<PlanId, Plan> = {
       "api.access",
     ],
     limits: {
-      tasksPerMonth: Infinity,
+      tasksPerMonth: 8,
       teamMembers: 50,
       storageMb: 50000,
     },
