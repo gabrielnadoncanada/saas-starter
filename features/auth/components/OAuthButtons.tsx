@@ -23,11 +23,11 @@ export function OAuthButtons({
     <div className="space-y-3">
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300" />
+          <div className="w-full border-t" />
         </div>
 
         <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-2 text-gray-500">Or continue with</span>
+          <span className="bg-background px-2 text-muted-foreground text-uppercase">Or continue with</span>
         </div>
       </div>
 
@@ -39,7 +39,7 @@ export function OAuthButtons({
             key={provider}
             type="button"
             variant="outline"
-            className="w-full rounded-full"
+            className="w-full "
             disabled={pendingProvider !== null}
             onClick={() => onProviderClick(provider)}
           >

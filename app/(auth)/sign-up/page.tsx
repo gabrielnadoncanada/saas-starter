@@ -20,8 +20,8 @@ export default function SignUpPage() {
             {hasProviderChoice
               ? 'Use your email link or a connected provider to create your account.'
               : 'No sign-up method is currently configured.'}
-            <br />
-            Already have an account?{" "}
+
+            &nbsp;Already have an account?{" "}
             <Link href={routes.auth.login} className="underline underline-offset-4 hover:text-primary">
               Sign In
             </Link>

@@ -135,7 +135,7 @@ export function AuthForm({
             <Button
               type="button"
               variant="outline"
-              className="w-full rounded-full"
+              className="w-full "
               onClick={() => void handleMagicLink()}
               disabled={isSendingMagicLink}
             >
