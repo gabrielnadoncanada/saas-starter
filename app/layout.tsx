@@ -5,8 +5,16 @@ import { ThemeProvider } from '@/shared/components/app/ThemeProvider';
 import { Toaster } from '@/shared/components/ui/sonner';
 
 export const metadata: Metadata = {
-  title: 'Next.js SaaS Starter',
-  description: 'Get started quickly with Next.js, Postgres, Prisma, and Stripe.'
+  title: {
+    default: 'SaaS Starter — Auth, Billing, and Plan Gating Built In',
+    template: '%s | SaaS Starter',
+  },
+  description:
+    'The Next.js SaaS starter where billing actually controls your product. Auth, Stripe, enforced plan gating, teams, and a polished dashboard. Buy once, own the code.',
+  openGraph: {
+    type: 'website',
+    siteName: 'SaaS Starter',
+  },
 };
 
 export const viewport: Viewport = {

@@ -1,7 +1,7 @@
 /**
  * Re-exports Prisma-generated enums so feature code never imports
- * directly from the generated client path. If the generated path
- * changes after a Prisma upgrade, only this file needs updating.
+ * directly from the Prisma client path. If Prisma's export surface
+ * changes after an upgrade, only this file needs updating.
  */
 export {
   ActivityType,
@@ -11,4 +11,4 @@ export {
   TaskPriority,
   TaskStatus,
   TeamRole,
-} from "@/shared/lib/db/generated/client/enums";
+} from "@prisma/client";

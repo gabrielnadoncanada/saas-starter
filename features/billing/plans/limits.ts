@@ -3,11 +3,14 @@
  *
  * To add a new limit: add a key here, set its value in each plan
  * in plans.ts, then guard it with assertLimit() or checkLimit().
+ *
+ * Enforced:  tasksPerMonth, teamMembers
+ * Placeholder (wire up when you build the feature): storageMb
  */
 export const limitKeys = [
   "tasksPerMonth",
   "teamMembers",
-  "storageMb",
+  "storageMb", // placeholder — enforce when you add file uploads
 ] as const;
 
 export type LimitKey = (typeof limitKeys)[number];
