@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 
+import type { PricingModel } from '@/features/billing/plans';
 import { checkoutAction } from '@/features/billing/actions/checkout.action';
 import { SubmitPricingButton } from '@/features/billing/components/SubmitPricingButton';
 
@@ -11,8 +12,10 @@ type PricePlan = {
   productName: string;
   description: string | null;
   features: string[];
+  pricingModel: PricingModel;
   monthly: { priceId: string; unitAmount: number; trialDays: number } | null;
   yearly: { priceId: string; unitAmount: number; trialDays: number } | null;
+  oneTime: { priceId: string; unitAmount: number } | null;
 };
 
 type PricingToggleProps = {
@@ -27,21 +30,36 @@ function PricingCard({
   trialDays,
   features,
   priceId,
+  pricingModel,
 }: {
   name: string;
   price: number;
-  interval: string;
-  trialDays: number;
+  interval: string | null;
+  trialDays: number | null;
   features: string[];
   priceId: string;
+  pricingModel: PricingModel;
 }) {
+  const isOneTime = pricingModel === 'one_time';
+  const isPerSeat = pricingModel === 'per_seat';
+
   return (
     <div className="pt-6">
       <h2 className="mb-2 text-2xl font-medium text-foreground">{name}</h2>
-      <p className="mb-4 text-sm text-muted-foreground">with {trialDays} day free trial</p>
+      {trialDays ? (
+        <p className="mb-4 text-sm text-muted-foreground">with {trialDays} day free trial</p>
+      ) : (
+        <p className="mb-4 text-sm text-muted-foreground">
+          {isOneTime ? 'one-time payment' : '\u00A0'}
+        </p>
+      )}
       <p className="mb-6 text-4xl font-medium text-foreground">
         ${price / 100}{' '}
-        <span className="text-xl font-normal text-muted-foreground">per user / {interval}</span>
+        {!isOneTime && interval && (
+          <span className="text-xl font-normal text-muted-foreground">
+            {isPerSeat ? `per seat / ${interval}` : `per user / ${interval}`}
+          </span>
+        )}
       </p>
       <ul className="mb-8 space-y-4">
         {features.map((feature, index) => (
@@ -53,7 +71,8 @@ function PricingCard({
       </ul>
       <form action={checkoutAction}>
         <input type="hidden" name="priceId" value={priceId} />
-        <SubmitPricingButton />
+        <input type="hidden" name="pricingModel" value={pricingModel} />
+        <SubmitPricingButton label={isOneTime ? 'Buy Now' : undefined} />
       </form>
     </div>
   );
@@ -62,9 +81,12 @@ function PricingCard({
 export function PricingToggle({ plans, hasYearlyPrices }: PricingToggleProps) {
   const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
 
+  const recurringPlans = plans.filter((p) => p.pricingModel !== 'one_time');
+  const oneTimePlans = plans.filter((p) => p.pricingModel === 'one_time');
+
   return (
     <>
-      {hasYearlyPrices && (
+      {hasYearlyPrices && recurringPlans.length > 0 && (
         <div className="mb-8 flex items-center justify-center gap-4">
           <span
             className={`text-sm font-medium ${billingInterval === 'month' ? 'text-foreground' : 'text-muted-foreground'}`}
@@ -92,9 +114,9 @@ export function PricingToggle({ plans, hasYearlyPrices }: PricingToggleProps) {
       )}
 
       <div
-        className={`mx-auto grid max-w-xl gap-8 ${plans.length > 1 ? `md:grid-cols-${Math.min(plans.length, 3)}` : ''}`}
+        className={`mx-auto grid max-w-xl gap-8 ${recurringPlans.length > 1 ? `md:grid-cols-${Math.min(recurringPlans.length, 3)}` : ''}`}
       >
-        {plans.map((plan) => {
+        {recurringPlans.map((plan) => {
           const activePrice =
             billingInterval === 'year' && plan.yearly ? plan.yearly : plan.monthly;
 
@@ -109,10 +131,34 @@ export function PricingToggle({ plans, hasYearlyPrices }: PricingToggleProps) {
               trialDays={activePrice.trialDays}
               features={plan.features}
               priceId={activePrice.priceId}
+              pricingModel={plan.pricingModel}
             />
           );
         })}
       </div>
+
+      {oneTimePlans.length > 0 && (
+        <div
+          className={`mx-auto mt-12 grid max-w-xl gap-8 ${oneTimePlans.length > 1 ? `md:grid-cols-${Math.min(oneTimePlans.length, 3)}` : ''}`}
+        >
+          {oneTimePlans.map((plan) => {
+            if (!plan.oneTime) return null;
+
+            return (
+              <PricingCard
+                key={plan.productId}
+                name={plan.productName}
+                price={plan.oneTime.unitAmount}
+                interval={null}
+                trialDays={null}
+                features={plan.features}
+                priceId={plan.oneTime.priceId}
+                pricingModel={plan.pricingModel}
+              />
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
 import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
+import type { PricingModel } from '@/features/billing/plans';
 import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
@@ -18,7 +19,7 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
     redirect(routes.auth.login);
   }
 
-  const { inviteId, redirect: authRedirect, priceId } =
+  const { inviteId, redirect: authRedirect, priceId, pricingModel } =
     getAuthFlowParams(rawSearchParams);
 
   const teamId = await completePostSignIn({
@@ -40,7 +41,8 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
       priceId,
       stripeCustomerId: team.stripeCustomerId,
       userEmail: user.email,
-      userId: user.id
+      userId: user.id,
+      pricingModel: (pricingModel as PricingModel) || "flat",
     });
 
     redirect(url);

@@ -12,6 +12,7 @@ type ResendMagicLinkButtonProps = {
   email: string;
   redirect?: AuthRedirect | null;
   priceId?: string | null;
+  pricingModel?: string | null;
   inviteId?: string | null;
 };
 
@@ -19,6 +20,7 @@ export function ResendMagicLinkButton({
   email,
   redirect,
   priceId,
+  pricingModel,
   inviteId
 }: ResendMagicLinkButtonProps) {
   const [isPending, setIsPending] = useState(false);
@@ -33,6 +35,7 @@ export function ResendMagicLinkButton({
         redirectTo: getPostSignInCallbackUrl({
           redirect,
           priceId,
+          pricingModel,
           inviteId
         })
       });

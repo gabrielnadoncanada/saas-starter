@@ -4,7 +4,11 @@
       "Bash(cd:*)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(npx prisma:*)",
+      "Bash(pnpm test:*)"
     ]
   }
 }

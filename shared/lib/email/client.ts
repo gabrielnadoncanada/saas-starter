@@ -1,40 +1,42 @@
+import { Resend } from "resend";
 import { getEmailConfig } from "@/shared/lib/email/config";
 import type { EmailPayload, SendEmailOptions } from "@/shared/lib/email/types";
 
-type ResendSendEmailResponse = {
-  id: string;
-};
+let resendClient: Resend | null = null;
+
+function getResendClient() {
+  if (!resendClient) {
+    const config = getEmailConfig();
+    resendClient = new Resend(config.apiKey);
+  }
+  return resendClient;
+}
 
 export async function sendEmail(
   payload: EmailPayload,
   options: SendEmailOptions,
 ) {
   const config = getEmailConfig();
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
+  const resend = getResendClient();
+
+  const { data, error } = await resend.emails.send({
+    from: config.from,
+    to: payload.to,
+    subject: payload.subject,
+    react: payload.react,
+    text: payload.text,
+    replyTo: payload.replyTo ?? config.replyTo,
+    tags: payload.tags,
     headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": options.idempotencyKey,
+      "X-Idempotency-Key": options.idempotencyKey,
     },
-    body: JSON.stringify({
-      from: config.from,
-      to: payload.to,
-      subject: payload.subject,
-      html: payload.html,
-      text: payload.text,
-      reply_to: payload.replyTo ?? config.replyTo,
-      tags: payload.tags,
-    }),
   });
 
-  if (!response.ok) {
-    const body = await response.text();
-
+  if (error) {
     throw new Error(
-      `Resend send failed with status ${response.status}: ${body.slice(0, 500)}`,
+      `Resend send failed: ${error.name} - ${error.message}`,
     );
   }
 
-  return (await response.json()) as ResendSendEmailResponse;
+  return { id: data!.id };
 }

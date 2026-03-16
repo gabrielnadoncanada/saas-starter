@@ -5,7 +5,7 @@ import { useFormStatus } from 'react-dom';
 
 import { Button } from '@/shared/components/ui/button';
 
-export function SubmitPricingButton() {
+export function SubmitPricingButton({ label = 'Get Started' }: { label?: string }) {
   const { pending } = useFormStatus();
 
   return (
@@ -22,7 +22,7 @@ export function SubmitPricingButton() {
         </>
       ) : (
         <>
-          Get Started
+          {label}
           <ArrowRight className="ml-2 h-4 w-4" />
         </>
       )}

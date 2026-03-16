@@ -10,6 +10,10 @@ import { listPendingInvitationsForCurrentTeam } from '@/features/teams/server/te
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 
 function getSubscriptionLabel(subscriptionStatus: string | null) {
+  if (subscriptionStatus === 'lifetime') {
+    return 'Lifetime access';
+  }
+
   if (subscriptionStatus === 'active') {
     return 'Billed monthly';
   }
@@ -38,7 +42,7 @@ export async function TeamSettingsPage() {
         <ItemActions>
           <form action={customerPortalAction}>
             <Button type="submit" variant="outline">
-              Manage Subscription
+              {team?.pricingModel === 'one_time' ? 'View Billing' : 'Manage Subscription'}
             </Button>
           </form>
         </ItemActions>

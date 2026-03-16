@@ -1,14 +1,7 @@
+import { createElement } from "react";
 import { getAppBaseUrl } from "@/shared/lib/email/config";
 import type { EmailPayload } from "@/shared/lib/email/types";
-
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+import { TeamInvitationEmail } from "@/shared/lib/email/templates/team-invitation";
 
 function buildAbsoluteUrl(path: string) {
   const baseUrl = getAppBaseUrl();
@@ -25,21 +18,21 @@ export function buildTeamInvitationEmail(input: {
   const invitationUrl = buildAbsoluteUrl(
     `/sign-in?inviteId=${input.invitationId}`,
   );
-  const safeInviterName = escapeHtml(input.inviterName);
-  const safeTeamName = escapeHtml(input.teamName);
 
   return {
     to: [input.email],
-    subject: `You're invited to join ${input.teamName}`,
+    subject: `Vous êtes invité à rejoindre ${input.teamName}`,
+    react: createElement(TeamInvitationEmail, {
+      inviterName: input.inviterName,
+      teamName: input.teamName,
+      role: input.role,
+      invitationUrl,
+    }),
     text: [
-      `${input.inviterName} invited you to join ${input.teamName} as ${input.role}.`,
+      `${input.inviterName} vous invite à rejoindre ${input.teamName} en tant que ${input.role}.`,
       "",
-      `Accept the invitation: ${invitationUrl}`,
+      `Accepter l'invitation : ${invitationUrl}`,
     ].join("\n"),
-    html: [
-      `<p><strong>${safeInviterName}</strong> invited you to join <strong>${safeTeamName}</strong> as ${escapeHtml(input.role)}.</p>`,
-      `<p><a href="${escapeHtml(invitationUrl)}">Accept the invitation</a></p>`,
-    ].join(""),
     tags: [{ name: "email_type", value: "team_invitation" }],
   };
 }

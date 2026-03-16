@@ -37,7 +37,7 @@ export function AuthForm({
 }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { redirect, priceId, inviteId, error } = getAuthFlowParams(searchParams);
+  const { redirect, priceId, pricingModel, inviteId, error } = getAuthFlowParams(searchParams);
 
   const [email, setEmail] = useState('');
   const [pendingProvider, setPendingProvider] = useState<OAuthProviderId | null>(null);
@@ -47,6 +47,7 @@ export function AuthForm({
   const callbackUrl = getPostSignInCallbackUrl({
     redirect,
     priceId,
+    pricingModel,
     inviteId
   });
   const oauthErrorMessage = error
@@ -96,6 +97,7 @@ export function AuthForm({
         email: normalizedEmail,
         redirect,
         priceId,
+        pricingModel,
         inviteId
       }));
     } catch {

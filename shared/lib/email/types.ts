@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 export type EmailTag = {
   name: string;
   value: string;
@@ -6,7 +8,7 @@ export type EmailTag = {
 export type EmailPayload = {
   to: string[];
   subject: string;
-  html: string;
+  react: ReactElement;
   text: string;
   tags?: EmailTag[];
   replyTo?: string[];

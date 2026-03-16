@@ -1,3 +1,4 @@
+import { syncSeatQuantity } from "@/features/billing/server/sync-seat-quantity";
 import { ActivityType } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
@@ -67,6 +68,8 @@ export async function completePostSignIn({
       },
     });
   });
+
+  syncSeatQuantity(invitation.teamId);
 
   return invitation.teamId;
 }

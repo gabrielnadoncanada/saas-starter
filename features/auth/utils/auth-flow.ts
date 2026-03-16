@@ -6,12 +6,14 @@ export type AuthRedirect = "checkout";
 export type AuthFlowParams = {
   redirect: AuthRedirect | null;
   priceId: NullableString;
+  pricingModel: NullableString;
   inviteId: NullableString;
   error: NullableString;
 };
 type AuthFlowHrefParams = {
   redirect?: AuthRedirect | null;
   priceId?: string | null;
+  pricingModel?: string | null;
   inviteId?: string | null;
 };
 type CheckEmailHrefParams = AuthFlowHrefParams & {
@@ -59,6 +61,7 @@ export function getAuthFlowParams(
   return {
     redirect: parseAuthRedirect(readQueryValue(searchParams, "redirect")),
     priceId: readQueryValue(searchParams, "priceId"),
+    pricingModel: readQueryValue(searchParams, "pricingModel"),
     inviteId: readQueryValue(searchParams, "inviteId"),
     error: readQueryValue(searchParams, "error"),
   };
@@ -66,7 +69,7 @@ export function getAuthFlowParams(
 
 export function buildAuthHref(
   pathname: string,
-  { redirect, priceId, inviteId }: AuthFlowHrefParams,
+  { redirect, priceId, pricingModel, inviteId }: AuthFlowHrefParams,
 ): string {
   const query = new URLSearchParams();
   const normalizedPriceId = normalizeOptionalValue(priceId);
@@ -75,6 +78,10 @@ export function buildAuthHref(
   if (redirect === "checkout" && normalizedPriceId) {
     query.set("redirect", "checkout");
     query.set("priceId", normalizedPriceId);
+    const normalizedPricingModel = normalizeOptionalValue(pricingModel);
+    if (normalizedPricingModel) {
+      query.set("pricingModel", normalizedPricingModel);
+    }
   }
 
   if (normalizedInviteId) {
@@ -88,11 +95,11 @@ export function buildAuthHref(
 
 export function buildCheckEmailHref(
   pathname: string,
-  { email, redirect, priceId, inviteId }: CheckEmailHrefParams,
+  { email, redirect, priceId, pricingModel, inviteId }: CheckEmailHrefParams,
 ): string {
   const query = new URLSearchParams();
   const normalizedEmail = normalizeOptionalValue(email);
-  const baseHref = buildAuthHref(pathname, { redirect, priceId, inviteId });
+  const baseHref = buildAuthHref(pathname, { redirect, priceId, pricingModel, inviteId });
 
   if (normalizedEmail) {
     query.set("email", normalizedEmail);

@@ -1,7 +1,10 @@
+import { createElement } from "react";
 import { z } from "zod";
 import ResendProvider from "next-auth/providers/resend";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import { Resend } from "resend";
+import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
 
 /**
  * Controls whether OAuth providers allow automatic account linking
@@ -82,6 +85,22 @@ export function getAuthProviders() {
       ResendProvider({
         apiKey: process.env.RESEND_API_KEY,
         from: process.env.EMAIL_FROM,
+        async sendVerificationRequest({ identifier: email, url }) {
+          const resend = new Resend(process.env.RESEND_API_KEY);
+
+          const { error } = await resend.emails.send({
+            from: process.env.EMAIL_FROM!,
+            to: [email],
+            subject: "Votre lien de connexion",
+            react: createElement(MagicLinkEmail, { url }),
+          });
+
+          if (error) {
+            throw new Error(
+              `Failed to send magic link: ${error.name} - ${error.message}`,
+            );
+          }
+        },
       })
     );
   }

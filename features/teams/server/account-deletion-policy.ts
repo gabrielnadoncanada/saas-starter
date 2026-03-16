@@ -1,6 +1,6 @@
 import { db } from "@/shared/lib/db/prisma";
 
-const ACTIVE_STATUSES = ["active", "trialing"] as const;
+const ACTIVE_STATUSES = ["active", "trialing", "lifetime"] as const;
 
 export type UserTeamMembershipLike = {
   teamId: number | null;

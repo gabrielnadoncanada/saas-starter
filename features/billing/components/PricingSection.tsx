@@ -1,3 +1,4 @@
+import { resolvePricingModel } from '@/features/billing/plans';
 import {
   getStripePrices,
   getStripeProducts
@@ -27,20 +28,26 @@ export async function PricingSection() {
 
   const plans = products
     .map((product) => {
+      const pricingModel = resolvePricingModel(product.metadata);
+
       const monthlyPrice = prices.find(
-        (p) => p.productId === product.id && p.interval === 'month'
+        (p) => p.productId === product.id && p.type === 'recurring' && p.interval === 'month'
       );
       const yearlyPrice = prices.find(
-        (p) => p.productId === product.id && p.interval === 'year'
+        (p) => p.productId === product.id && p.type === 'recurring' && p.interval === 'year'
+      );
+      const oneTimePrice = prices.find(
+        (p) => p.productId === product.id && p.type === 'one_time'
       );
 
-      if (!monthlyPrice && !yearlyPrice) return null;
+      if (!monthlyPrice && !yearlyPrice && !oneTimePrice) return null;
 
       return {
         productId: product.id,
         productName: product.name,
         description: product.description,
         features: parseFeatures(product),
+        pricingModel,
         monthly: monthlyPrice
           ? {
               priceId: monthlyPrice.id,
@@ -55,7 +62,13 @@ export async function PricingSection() {
               trialDays: yearlyPrice.trialPeriodDays ?? 7,
             }
           : null,
-        sortAmount: monthlyPrice?.unitAmount ?? yearlyPrice?.unitAmount ?? 0,
+        oneTime: oneTimePrice
+          ? {
+              priceId: oneTimePrice.id,
+              unitAmount: oneTimePrice.unitAmount ?? 0,
+            }
+          : null,
+        sortAmount: monthlyPrice?.unitAmount ?? yearlyPrice?.unitAmount ?? oneTimePrice?.unitAmount ?? 0,
       };
     })
     .filter((plan): plan is NonNullable<typeof plan> => plan !== null)

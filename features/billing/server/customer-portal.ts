@@ -6,6 +6,7 @@ import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
 type CreatePortalParams = {
   stripeCustomerId: string;
   stripeProductId: string;
+  stripeSubscriptionId: string | null;
 };
 
 export async function createCustomerPortalSession(
@@ -17,6 +18,18 @@ export async function createCustomerPortalSession(
 
   if (configurations.data.length > 0) {
     configuration = configurations.data[0];
+  } else if (!params.stripeSubscriptionId) {
+    // One-time purchase: simplified portal (payment history only)
+    configuration = await deps.stripe.billingPortal.configurations.create({
+      business_profile: {
+        headline: "Your billing history",
+      },
+      features: {
+        payment_method_update: {
+          enabled: true,
+        },
+      },
+    });
   } else {
     const product = await deps.stripe.products.retrieve(params.stripeProductId);
     if (!product.active) {

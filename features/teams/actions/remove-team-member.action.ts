@@ -1,5 +1,6 @@
 "use server";
 
+import { syncSeatQuantity } from "@/features/billing/server/sync-seat-quantity";
 import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
 import { createActivityLog } from "@/shared/lib/activity-log";
 import { ActivityType } from "@/shared/lib/db/enums";
@@ -25,6 +26,8 @@ export const removeTeamMemberAction = validatedActionWithUser<
         teamId: guard.teamId,
       },
     });
+
+    syncSeatQuantity(guard.teamId);
 
     await createActivityLog({
       teamId: guard.teamId,

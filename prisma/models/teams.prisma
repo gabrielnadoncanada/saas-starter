@@ -37,6 +37,7 @@ model Team {
   stripeProductId      String?
   planName             String?  @db.VarChar(50)
   subscriptionStatus   String?  @db.VarChar(20)
+  pricingModel         String?  @db.VarChar(20)
 
   teamMembers  TeamMember[]
   activityLogs ActivityLog[]

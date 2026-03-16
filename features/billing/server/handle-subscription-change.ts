@@ -20,6 +20,10 @@ export async function handleSubscriptionChange(
     return;
   }
 
+  if (team.pricingModel === "one_time") {
+    return;
+  }
+
   if (status === "active" || status === "trialing") {
     const plan = subscription.items.data[0]?.plan;
     const productId = plan?.product as string;

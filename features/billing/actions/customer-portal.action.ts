@@ -19,6 +19,7 @@ export async function customerPortalAction() {
   const url = await createCustomerPortalSession({
     stripeCustomerId: team.stripeCustomerId,
     stripeProductId: team.stripeProductId,
+    stripeSubscriptionId: team.stripeSubscriptionId,
   });
 
   redirect(url);

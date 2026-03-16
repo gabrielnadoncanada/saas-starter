@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import type { PricingModel } from "@/features/billing/plans";
 import { buildAuthHref } from "@/features/auth/utils/auth-flow";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -11,12 +12,14 @@ import { createCheckoutSession } from "@/features/billing/server/create-checkout
 export async function checkoutAction(formData: FormData) {
   const user = await getCurrentUser();
   const priceId = formData.get("priceId") as string;
+  const pricingModel = (formData.get("pricingModel") as PricingModel) || "flat";
 
   if (!user) {
     redirect(
       buildAuthHref(routes.auth.login, {
         redirect: "checkout",
         priceId,
+        pricingModel,
       }),
     );
   }
@@ -29,6 +32,7 @@ export async function checkoutAction(formData: FormData) {
     stripeCustomerId: team.stripeCustomerId,
     userEmail: user.email,
     userId: user.id,
+    pricingModel,
   });
 
   redirect(url);

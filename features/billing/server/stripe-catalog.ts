@@ -4,7 +4,6 @@ export async function getStripePrices(deps = { stripe: defaultStripe }) {
   const prices = await deps.stripe.prices.list({
     expand: ["data.product"],
     active: true,
-    type: "recurring",
   });
 
   return prices.data.map((price) => ({
@@ -13,8 +12,9 @@ export async function getStripePrices(deps = { stripe: defaultStripe }) {
       typeof price.product === "string" ? price.product : price.product.id,
     unitAmount: price.unit_amount,
     currency: price.currency,
-    interval: price.recurring?.interval,
-    trialPeriodDays: price.recurring?.trial_period_days,
+    type: price.type,
+    interval: price.recurring?.interval ?? null,
+    trialPeriodDays: price.recurring?.trial_period_days ?? null,
   }));
 }
 

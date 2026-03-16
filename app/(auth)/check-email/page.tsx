@@ -18,7 +18,7 @@ type CheckEmailPageProps = {
 export default async function CheckEmailPage({ searchParams }: CheckEmailPageProps) {
   const rawSearchParams = await searchParams;
   const email = rawSearchParams.email?.trim() || null;
-  const { redirect, priceId, inviteId } = getAuthFlowParams(rawSearchParams);
+  const { redirect, priceId, pricingModel, inviteId } = getAuthFlowParams(rawSearchParams);
 
   return (
     <Suspense>
@@ -44,6 +44,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
                 email={email}
                 redirect={redirect}
                 priceId={priceId}
+                pricingModel={pricingModel}
                 inviteId={inviteId}
               />
             </>

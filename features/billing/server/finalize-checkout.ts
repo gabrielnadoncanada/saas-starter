@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 
+import { resolvePricingModel } from "@/features/billing/plans";
 import { db as defaultDb } from "@/shared/lib/db/prisma";
 import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
 
@@ -16,29 +17,6 @@ export async function finalizeCheckoutSession(
   }
 
   const customerId = session.customer.id;
-  const subscriptionId =
-    typeof session.subscription === "string"
-      ? session.subscription
-      : session.subscription?.id;
-
-  if (!subscriptionId) {
-    throw new Error("No subscription found for this session.");
-  }
-
-  const subscription = await deps.stripe.subscriptions.retrieve(
-    subscriptionId,
-    { expand: ["items.data.price.product"] },
-  );
-
-  const plan = subscription.items.data[0]?.price;
-  if (!plan) {
-    throw new Error("No plan found for this subscription.");
-  }
-
-  const productId = (plan.product as Stripe.Product).id;
-  if (!productId) {
-    throw new Error("No product ID found for this subscription.");
-  }
 
   const userId = session.client_reference_id;
   if (!userId) {
@@ -62,14 +40,71 @@ export async function finalizeCheckoutSession(
     throw new Error("User is not associated with any team.");
   }
 
+  // One-time payment flow
+  if (session.mode === "payment") {
+    const lineItems = await deps.stripe.checkout.sessions.listLineItems(
+      sessionId,
+      { expand: ["data.price.product"] },
+    );
+
+    const firstItem = lineItems.data[0];
+    const product = firstItem?.price?.product as Stripe.Product | undefined;
+
+    if (!product) {
+      throw new Error("No product found for this payment session.");
+    }
+
+    await deps.db.team.update({
+      where: { id: userTeam.teamId },
+      data: {
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: null,
+        stripeProductId: product.id,
+        planName: product.name,
+        subscriptionStatus: "lifetime",
+        pricingModel: "one_time",
+      },
+    });
+
+    return;
+  }
+
+  // Subscription flow (flat / per_seat)
+  const subscriptionId =
+    typeof session.subscription === "string"
+      ? session.subscription
+      : session.subscription?.id;
+
+  if (!subscriptionId) {
+    throw new Error("No subscription found for this session.");
+  }
+
+  const subscription = await deps.stripe.subscriptions.retrieve(
+    subscriptionId,
+    { expand: ["items.data.price.product"] },
+  );
+
+  const plan = subscription.items.data[0]?.price;
+  if (!plan) {
+    throw new Error("No plan found for this subscription.");
+  }
+
+  const product = plan.product as Stripe.Product;
+  if (!product.id) {
+    throw new Error("No product ID found for this subscription.");
+  }
+
+  const pricingModel = resolvePricingModel(product.metadata);
+
   await deps.db.team.update({
     where: { id: userTeam.teamId },
     data: {
       stripeCustomerId: customerId,
       stripeSubscriptionId: subscriptionId,
-      stripeProductId: productId,
-      planName: (plan.product as Stripe.Product).name,
+      stripeProductId: product.id,
+      planName: product.name,
       subscriptionStatus: subscription.status,
+      pricingModel,
     },
   });
 }
