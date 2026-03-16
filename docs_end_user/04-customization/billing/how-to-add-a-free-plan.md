@@ -6,61 +6,64 @@ Offer a no-payment entry plan without sending the user through Stripe checkout.
 
 ## Current State
 
-The starter does not have a dedicated free-plan flow yet. The current pricing page is built around paid Stripe prices and subscription checkout.
+The starter ships with a `free` plan already defined in `features/billing/plans/plans.ts`. When a team has no Stripe subscription, `resolvePlanFromStripeName(null)` returns `"free"` automatically.
+
+The free plan is **the default**. No code change is needed to have it work.
 
 ## Files to Edit
 
-- `features/billing/components/PricingSection.tsx`
-- `features/billing/actions/checkout.action.ts`
-- `features/teams/components/TeamSettingsPage.tsx`
-- optionally `prisma/models/teams.prisma`
+- `features/billing/plans/plans.ts` — adjust free plan capabilities and limits
+- `features/billing/components/PricingSection.tsx` — optionally add a free-plan card
 
 ## Steps
 
-### Step 1 - Decide what “free” means
+### Step 1 — Customize the free plan
 
-The simplest version is:
+Edit the `free` entry in `features/billing/plans/plans.ts`:
 
-- no Stripe checkout
-- `planName` shown as `Free`
-- `subscriptionStatus` left empty
+```ts
+free: {
+  id: "free",
+  name: "Free",
+  capabilities: ["task.create", "billing.portal"],
+  limits: {
+    tasksPerMonth: 10,
+    teamMembers: 1,
+    storageMb: 100,
+  },
+},
+```
 
-### Step 2 - Add a free card or button
+Add or remove capabilities and adjust limits to match your product.
 
-Edit `features/billing/components/PricingSection.tsx` and add a free-plan card that links directly into the app instead of submitting to Stripe.
+### Step 2 — Optionally show a free-plan card on the pricing page
 
-### Step 3 - Decide whether you need persisted plan state
+If you want a visible "Free" tier on your pricing page, add a card in `PricingSection.tsx` that links to `/sign-up` instead of submitting to Stripe checkout.
 
-If free users need explicit DB state, add a stored value to the team record and set it during onboarding or plan selection.
+### Step 3 — Test the gating
 
-### Step 4 - Update team settings copy
+Sign in without a Stripe subscription. The guards will resolve your plan to `free` and enforce the capabilities and limits you defined.
 
-Edit `features/teams/components/TeamSettingsPage.tsx` so free teams display the right label.
+## How It Works
+
+When `team.planName` is `null` (no Stripe subscription), `resolvePlanFromStripeName()` returns `"free"`. The guards then check the `free` plan's capabilities and limits. No special database state is needed.
 
 ## Common Mistakes
 
-- Treating a free plan like a Stripe subscription when you do not need that complexity
-- Adding free-plan UI without deciding how gating should work
+- Adding a free-plan Stripe product when you don't need one
+- Forgetting that the free plan is already the default fallback
 
 ## Complexity Scorecard
 
-- Time to find where to edit: 3/5
-- Number of files to modify: 3/5
-- Architecture explanation required: 3/5
-- Locality of change: 3/5
-- Buyer confidence after reading: 3/5
-- Total: 15/25
-- Verdict: borderline
-
-## Flags
-
-- The starter does not yet expose one obvious free-plan entry point
-- Free-plan behavior is partly a product decision, not only a code change
-
-## Simplification Recommendation
-
-Add one small server function for “assign free plan to current team” and call it from a free-plan CTA. That would make this guide much shorter and more local.
+- Time to find where to edit: 5/5
+- Number of files to modify: 5/5
+- Architecture explanation required: 5/5
+- Locality of change: 5/5
+- Buyer confidence after reading: 5/5
+- Total: 25/25
+- Verdict: excellent
 
 ## Related Documents
 
 - `how-to-change-plan-gating.md`
+- `../../03-understanding-the-starter/billing-architecture.md`

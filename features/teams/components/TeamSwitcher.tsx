@@ -19,6 +19,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/shared/components/ui/sidebar'
+import { terminology } from '@/shared/constants/terminology'
 
 type TeamOption = {
   id: number
@@ -93,7 +94,7 @@ export function TeamSwitcher() {
               </div>
               <div className='grid flex-1 text-start text-sm leading-tight'>
                 <span className='truncate font-semibold'>{activeTeam?.name}</span>
-                <span className='truncate text-xs'>Team</span>
+                <span className='truncate text-xs'>{terminology.Singular}</span>
               </div>
               <ChevronsUpDown className='ms-auto' />
             </SidebarMenuButton>
@@ -105,7 +106,7 @@ export function TeamSwitcher() {
             sideOffset={4}
           >
             <DropdownMenuLabel className='text-xs text-muted-foreground'>
-              Teams
+              {terminology.Plural}
             </DropdownMenuLabel>
             {teams.map((team) => (
               <DropdownMenuItem

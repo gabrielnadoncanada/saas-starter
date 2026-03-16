@@ -18,6 +18,7 @@ import { getMonthlyUsage } from '@/features/billing/usage';
 import { UsageMeter } from '@/features/billing/components/UsageMeter';
 import { PlanBadge } from '@/features/billing/components/PlanBadge';
 import { UpgradeCard } from '@/features/billing/components/UpgradeCard';
+import { terminology } from '@/shared/constants/terminology';
 
 export default async function DashboardPage() {
   const [team, tasks] = await Promise.all([
@@ -74,7 +75,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardDescription>Team Members</CardDescription>
+            <CardDescription>{terminology.Singular} Members</CardDescription>
             <CardTitle className="text-2xl flex items-center gap-2">
               <Users className="h-5 w-5 text-orange-500" />
               {memberCount}
@@ -86,7 +87,7 @@ export default async function DashboardPage() {
       {!hasCapability(planId, "team.analytics") && (
         <UpgradeCard
           feature="Team Analytics"
-          description="Upgrade to the Team plan to access advanced analytics for your team."
+          description={`Upgrade to the ${terminology.Singular} plan to access advanced analytics for your ${terminology.singular}.`}
         />
       )}
 
@@ -99,7 +100,7 @@ export default async function DashboardPage() {
         </Link>
         <Link href={routes.app.settingsTeam}>
           <Button variant="outline">
-            Team Settings
+            {terminology.Singular} Settings
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

@@ -28,6 +28,7 @@ If you just bought the starter, follow these docs in order:
 Start here based on the job:
 
 - Auth flow and providers: `04-customization/auth/`
+- Billing, plans, and feature gating: `04-customization/billing/`
 - Branding and theme: `04-customization/branding/`
 - Landing page and pricing page: `04-customization/marketing/`
 - Dashboard pages and navigation: `04-customization/dashboard/`
@@ -52,7 +53,8 @@ At the time of writing, the repo gives you:
 - NextAuth-based sign-in and sign-up pages
 - PostgreSQL with Prisma
 - Stripe checkout and subscription webhook handling
-- Team-aware data model
+- Plan gating system with capabilities, usage limits, and guards
+- Team-aware data model with RBAC
 - Dashboard shell, account settings, auth settings, activity log, and tasks
 
 ## Documentation Approach

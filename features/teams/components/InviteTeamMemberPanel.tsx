@@ -11,6 +11,7 @@ import { Label } from '@/shared/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shared/components/ui/radio-group';
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { inviteTeamMemberAction } from '@/features/teams/actions/invite-team-member.action';
+import { terminology } from '@/shared/constants/terminology';
 
 type ActionState = {
   error?: string;
@@ -44,7 +45,7 @@ export function InviteTeamMemberPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Invite Team Member</CardTitle>
+        <CardTitle>Invite {terminology.Singular} Member</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={inviteAction} className="space-y-4">
@@ -101,7 +102,7 @@ export function InviteTeamMemberPanel({
       {!isOwner ? (
         <CardFooter>
           <p className="text-sm text-muted-foreground">
-            You must be a team owner to invite new members.
+            You must be a {terminology.singular} owner to invite new members.
           </p>
         </CardFooter>
       ) : null}

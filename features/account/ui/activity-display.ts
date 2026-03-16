@@ -10,6 +10,7 @@ import {
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
+import { terminology } from "@/shared/constants/terminology";
 
 export const activityIconMap: Record<string, LucideIcon> = {
   SIGN_UP: UserPlus,
@@ -37,11 +38,11 @@ export function formatActivityAction(action: string) {
     case "UPDATE_ACCOUNT":
       return "You updated your account";
     case "CREATE_TEAM":
-      return "You created a new team";
+      return `You created a new ${terminology.singular}`;
     case "REMOVE_TEAM_MEMBER":
-      return "You removed a team member";
+      return `You removed a ${terminology.singular} member`;
     case "INVITE_TEAM_MEMBER":
-      return "You invited a team member";
+      return `You invited a ${terminology.singular} member`;
     case "ACCEPT_INVITATION":
       return "You accepted an invitation";
     case "LINK_AUTH_PROVIDER":

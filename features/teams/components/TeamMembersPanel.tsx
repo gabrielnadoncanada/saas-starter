@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { removeTeamMemberAction } from '@/features/teams/actions/remove-team-member.action';
 import type { TeamMemberView } from '@/features/teams/types/team.types';
+import { terminology } from '@/shared/constants/terminology';
 
 type ActionState = {
   error?: string;
@@ -44,10 +45,10 @@ export function TeamMembersPanel({ members }: TeamMembersPanelProps) {
     return (
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Team Members</CardTitle>
+          <CardTitle>{terminology.Singular} Members</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">No team members yet.</p>
+          <p className="text-muted-foreground">No {terminology.singular} members yet.</p>
         </CardContent>
       </Card>
     );
@@ -56,7 +57,7 @@ export function TeamMembersPanel({ members }: TeamMembersPanelProps) {
   return (
     <Card className="mb-8">
       <CardHeader>
-        <CardTitle>Team Members</CardTitle>
+        <CardTitle>{terminology.Singular} Members</CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">

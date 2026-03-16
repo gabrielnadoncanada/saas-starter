@@ -6,19 +6,31 @@ Add authorization rules based on team membership role.
 
 ## Current State
 
-The data model supports `OWNER`, `ADMIN`, and `MEMBER`, but most current enforcement is hard-coded around `OWNER`.
+The data model supports `OWNER`, `ADMIN`, and `MEMBER`. The starter ships with a centralized RBAC guard at `features/teams/server/require-team-role.ts` that is already used in all team-management actions.
 
 ## Files to Edit
 
-- `prisma/models/teams.prisma`
-- `features/teams/server/team-membership.ts`
-- `features/teams/actions/invite-team-member.action.ts`
-- `features/teams/actions/remove-team-member.action.ts`
-- any page or action you want to protect
+- `features/teams/server/require-team-role.ts` — the reusable guard
+- The server action or server function you want to protect
+
+## How It Works
+
+`requireTeamRole(userId, allowedRoles)` checks the user's team membership and returns either the team context or an error:
+
+```ts
+import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
+
+const result = await requireTeamRole(user.id, ["OWNER", "ADMIN"]);
+if (isTeamRoleError(result)) {
+  return { error: result.error };
+}
+
+// result.teamId, result.teamRole, result.user are available
+```
 
 ## Steps
 
-### Step 1 - Decide the rule
+### Step 1 — Decide the rule
 
 Examples:
 
@@ -26,26 +38,46 @@ Examples:
 - `OWNER` and `ADMIN` can invite
 - only `OWNER` can manage billing
 
-### Step 2 - Update the server action or server function
+### Step 2 — Guard the server action
 
-Put the real enforcement close to the protected action, not only in the UI.
+Call `requireTeamRole` with the allowed roles at the top of your server action:
 
-### Step 3 - Update the UI to match
+```ts
+const result = await requireTeamRole(user.id, ["OWNER"]);
+if (isTeamRoleError(result)) {
+  return { error: result.error };
+}
+```
 
-Hide or disable buttons where needed after the server rule is in place.
+### Step 3 — Update the UI to match
+
+Hide or disable buttons where the user's role doesn't allow the action. The server guard is the source of truth — UI changes are cosmetic.
+
+## Existing Usage
+
+These actions already use `requireTeamRole`:
+
+- `features/teams/actions/invite-team-member.action.ts` — `["OWNER"]`
+- `features/teams/actions/remove-team-member.action.ts` — `["OWNER"]`
+- `features/teams/server/cancel-invitation.ts` — `["OWNER"]`
+- `features/teams/server/resend-invitation.ts` — `["OWNER"]`
+
+To allow `ADMIN` to also invite, change `["OWNER"]` to `["OWNER", "ADMIN"]` in the invite action.
 
 ## Common Mistakes
 
 - Adding role-based UI without server enforcement
-- Treating `ADMIN` as supported everywhere when the current code mostly checks `OWNER`
+- Forgetting to import `isTeamRoleError` for the type guard check
 
-## Flags
+## Complexity Scorecard
 
-- Role support exists in the schema, but the starter does not yet centralize authorization rules
-
-## Simplification Recommendation
-
-Add one tiny shared helper like `canManageTeam(teamRole)` once you have more than two repeated role checks.
+- Time to find where to edit: 5/5
+- Number of files to modify: 5/5
+- Architecture explanation required: 5/5
+- Locality of change: 5/5
+- Buyer confidence after reading: 5/5
+- Total: 25/25
+- Verdict: excellent
 
 ## Related Documents
 
