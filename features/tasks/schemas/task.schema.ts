@@ -1,8 +1,4 @@
-import {
-  TaskLabel,
-  TaskPriority,
-  TaskStatus,
-} from "@/shared/lib/db/generated/client/enums";
+import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
 import { z } from "zod";
 
 const taskTitleSchema = z

@@ -1,12 +1,12 @@
 import { formatDistanceToNow } from 'date-fns';
 import { redirect } from 'next/navigation';
 
+import { getActivityLogs } from '@/features/account/server/activity-log';
 import {
   activityIconMap,
   emptyActivityIcon,
   formatActivityAction,
-  getActivityLogs
-} from '@/features/account/server/activity-log';
+} from '@/features/account/ui/activity-display';
 import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { routes } from '@/shared/constants/routes';
