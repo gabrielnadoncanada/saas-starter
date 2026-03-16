@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { buildAuthHref } from "@/features/auth/utils/auth-flow";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getCurrentTeam } from "@/features/teams/server/current-team";
@@ -12,7 +13,12 @@ export async function checkoutAction(formData: FormData) {
   const priceId = formData.get("priceId") as string;
 
   if (!user) {
-    redirect(`${routes.auth.login}?redirect=checkout&priceId=${priceId}`);
+    redirect(
+      buildAuthHref(routes.auth.login, {
+        redirect: "checkout",
+        priceId,
+      }),
+    );
   }
 
   const team = await getCurrentTeam();

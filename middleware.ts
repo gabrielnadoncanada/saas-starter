@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
+import { routes } from '@/shared/constants/routes';
 
-const protectedRoutes = '/dashboard';
+const protectedRoutes = routes.app.dashboard;
 
 export default auth((request) => {
   const isProtectedRoute = request.nextUrl.pathname.startsWith(protectedRoutes);
 
   if (isProtectedRoute && !request.auth) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+    return NextResponse.redirect(new URL(routes.auth.login, request.url));
   }
 
   return NextResponse.next();

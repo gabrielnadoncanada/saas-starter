@@ -1,32 +1,33 @@
 import { redirect } from 'next/navigation';
 
+import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
 import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
+import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
 import { db } from '@/shared/lib/db/prisma';
 
 type PostSignInPageProps = {
-  searchParams: Promise<{
-    inviteId?: string;
-    redirect?: string;
-    priceId?: string;
-  }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function PostSignInPage({ searchParams }: PostSignInPageProps) {
-  const [user, params] = await Promise.all([getCurrentUser(), searchParams]);
+  const [user, rawSearchParams] = await Promise.all([getCurrentUser(), searchParams]);
 
   if (!user) {
-    redirect('/sign-in');
+    redirect(routes.auth.login);
   }
+
+  const { inviteId, redirect: authRedirect, priceId } =
+    getAuthFlowParams(rawSearchParams);
 
   const teamId = await completePostSignIn({
     userId: user.id,
     email: user.email,
-    inviteId: params.inviteId
+    inviteId
   });
 
-  if (params.redirect === 'checkout' && params.priceId) {
+  if (authRedirect === 'checkout' && priceId) {
     const team = await db.team.findUnique({
       where: { id: teamId }
     });
@@ -36,7 +37,7 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
     }
 
     const url = await createCheckoutSession({
-      priceId: params.priceId,
+      priceId,
       stripeCustomerId: team.stripeCustomerId,
       userEmail: user.email,
       userId: user.id
@@ -45,5 +46,5 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
     redirect(url);
   }
 
-  redirect('/dashboard');
+  redirect(routes.app.dashboard);
 }

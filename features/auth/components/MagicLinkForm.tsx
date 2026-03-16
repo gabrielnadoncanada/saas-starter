@@ -1,39 +1,60 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { Loader2, Mail } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import { routes } from '@/shared/constants/routes';
+import type { AuthRedirect } from '@/features/auth/utils/auth-flow';
 import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
 
 type MagicLinkFormProps = {
   email: string;
-  redirect?: string | null;
+  redirect?: AuthRedirect | null;
   priceId?: string | null;
   inviteId?: string | null;
 };
 
-export function MagicLinkForm({ email, redirect, priceId, inviteId }: MagicLinkFormProps) {
+function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function buildCheckEmailHref(email: string): string {
+  return `${routes.auth.checkEmail}?email=${encodeURIComponent(email)}`;
+}
+
+export function MagicLinkForm({
+  email,
+  redirect,
+  priceId,
+  inviteId
+}: MagicLinkFormProps) {
   const router = useRouter();
   const [error, setError] = useState('');
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleMagicLink() {
-    if (!email) {
+  async function handleMagicLink() {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
       setError('Enter your email first.');
       return;
     }
 
-    setError('');
+    try {
+      setError('');
+      setIsSubmitting(true);
 
-    startTransition(async () => {
       const result = await signIn('resend', {
-        email,
+        email: normalizedEmail,
         redirect: false,
-        redirectTo: getPostSignInCallbackUrl({ redirect, priceId, inviteId })
+        redirectTo: getPostSignInCallbackUrl({
+          redirect,
+          priceId,
+          inviteId
+        })
       });
 
       if (result?.error) {
@@ -41,9 +62,12 @@ export function MagicLinkForm({ email, redirect, priceId, inviteId }: MagicLinkF
         return;
       }
 
-      router.push(`${routes.auth.checkEmail}?email=${encodeURIComponent(email)}`);
-      router.refresh();
-    });
+      router.push(buildCheckEmailHref(normalizedEmail));
+    } catch {
+      setError('Unable to send the sign-in link. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -52,10 +76,10 @@ export function MagicLinkForm({ email, redirect, priceId, inviteId }: MagicLinkF
         type="button"
         variant="outline"
         className="w-full rounded-full"
-        onClick={handleMagicLink}
-        disabled={isPending}
+        onClick={() => void handleMagicLink()}
+        disabled={isSubmitting}
       >
-        {isPending ? (
+        {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Sending link...

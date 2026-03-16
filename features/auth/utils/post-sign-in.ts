@@ -1,7 +1,8 @@
 import { routes } from "@/shared/constants/routes";
+import { buildAuthHref, type AuthRedirect } from "@/features/auth/utils/auth-flow";
 
 type PostSignInParams = {
-  redirect?: string | null;
+  redirect?: AuthRedirect | null;
   priceId?: string | null;
   inviteId?: string | null;
 };
@@ -10,19 +11,10 @@ export function getPostSignInCallbackUrl({
   redirect,
   priceId,
   inviteId,
-}: PostSignInParams) {
-  const params = new URLSearchParams();
-
-  if (redirect === "checkout" && priceId) {
-    params.set("redirect", redirect);
-    params.set("priceId", priceId);
-  }
-
-  if (inviteId) {
-    params.set("inviteId", inviteId);
-  }
-
-  const query = params.toString();
-
-  return query ? `${routes.auth.postSignIn}?${query}` : routes.auth.postSignIn;
+}: PostSignInParams): string {
+  return buildAuthHref(routes.auth.postSignIn, {
+    redirect,
+    priceId,
+    inviteId,
+  });
 }

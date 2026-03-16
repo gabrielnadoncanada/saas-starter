@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { LoginForm } from '@/features/auth/components/login/LoginForm';
+import { AuthForm } from '@/features/auth/components/AuthForm';
 import { getEnabledOAuthProviderIds, hasMagicLinkProvider } from '@/shared/lib/auth/providers';
 
 export default function SignUpPage() {
@@ -8,7 +8,7 @@ export default function SignUpPage() {
 
   return (
     <Suspense>
-      <LoginForm
+      <AuthForm
         mode="signup"
         oauthProviders={oauthProviders}
         allowMagicLink={allowMagicLink}

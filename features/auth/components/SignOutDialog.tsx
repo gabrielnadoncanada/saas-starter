@@ -16,6 +16,14 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
+  function buildSignInRedirectHref(currentPath: string) {
+    const query = new URLSearchParams({
+      redirect: currentPath
+    })
+
+    return `${routes.auth.login}?${query.toString()}`
+  }
+
   async function handleSignOut() {
     setIsLoading(true)
 
@@ -23,9 +31,7 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
 
     try {
       await signOut({ redirect: false })
-      router.push(
-        `${routes.auth.login}?redirect=${encodeURIComponent(currentPath)}`
-      )
+      router.push(buildSignInRedirectHref(currentPath))
       router.refresh()
     } finally {
       setIsLoading(false)
