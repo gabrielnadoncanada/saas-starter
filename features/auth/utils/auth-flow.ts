@@ -1,7 +1,3 @@
-import { routes } from "@/shared/constants/routes";
-
-import type { AuthMode } from "@/features/auth/types/auth.types";
-
 type NullableString = string | null;
 type QueryValue = string | string[] | undefined;
 type AuthFlowQueryParams = Record<string, QueryValue>;
@@ -18,15 +14,11 @@ type AuthFlowHrefParams = {
   priceId?: string | null;
   inviteId?: string | null;
 };
+type CheckEmailHrefParams = AuthFlowHrefParams & {
+  email?: string | null;
+};
 
 const AUTH_REDIRECTS = new Set<AuthRedirect>(["checkout"]);
-
-type BuildAlternateAuthHrefParams = {
-  mode: AuthMode;
-  redirect: AuthRedirect | null;
-  priceId: NullableString;
-  inviteId: NullableString;
-};
 
 function parseAuthRedirect(value: string | null): AuthRedirect | null {
   if (!value) {
@@ -94,34 +86,23 @@ export function buildAuthHref(
   return queryString ? `${pathname}?${queryString}` : pathname;
 }
 
-export function buildAlternateAuthHref({
-  mode,
-  redirect,
-  priceId,
-  inviteId,
-}: BuildAlternateAuthHrefParams): string {
-  const pathname = mode === "signin" ? routes.auth.signup : routes.auth.login;
+export function buildCheckEmailHref(
+  pathname: string,
+  { email, redirect, priceId, inviteId }: CheckEmailHrefParams,
+): string {
+  const query = new URLSearchParams();
+  const normalizedEmail = normalizeOptionalValue(email);
+  const baseHref = buildAuthHref(pathname, { redirect, priceId, inviteId });
 
-  return buildAuthHref(pathname, { redirect, priceId, inviteId });
-}
-
-export function getAuthSubtitle(params: {
-  allowMagicLink: boolean;
-  hasOAuthProviders: boolean;
-}): string {
-  const { allowMagicLink, hasOAuthProviders } = params;
-
-  if (allowMagicLink && hasOAuthProviders) {
-    return "Use a magic link or one of your social providers to continue.";
+  if (normalizedEmail) {
+    query.set("email", normalizedEmail);
   }
 
-  if (allowMagicLink) {
-    return "Use a magic link to continue.";
+  if (!query.size) {
+    return baseHref;
   }
 
-  if (hasOAuthProviders) {
-    return "Use one of your social providers to continue.";
-  }
+  const separator = baseHref.includes("?") ? "&" : "?";
 
-  return "Choose an available sign-in method to continue.";
+  return `${baseHref}${separator}${query.toString()}`;
 }

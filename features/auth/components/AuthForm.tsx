@@ -1,22 +1,19 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { Loader2, Mail } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
-import { MagicLinkForm } from '@/features/auth/components/MagicLinkForm';
-import { AuthHeader } from '@/features/auth/components/AuthHeader';
-import { AuthModeLink } from '@/features/auth/components/AuthModeLink';
 import { OAuthButtons } from '@/features/auth/components/OAuthButtons';
-import {
-  buildAlternateAuthHref,
-  getAuthFlowParams,
-  getAuthSubtitle
-} from '@/features/auth/utils/auth-flow';
+import { Field, FieldError, FieldLabel } from '@/shared/components/ui/field';
+import { buildCheckEmailHref, getAuthFlowParams } from '@/features/auth/utils/auth-flow';
 import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
-import type { AuthMode } from '@/features/auth/types/auth.types';
+import { Button } from '@/shared/components/ui/button';
+import { routes } from '@/shared/constants/routes';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
 import type { OAuthProviderId } from '@/shared/lib/auth/providers';
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -25,39 +22,40 @@ const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   OAuthSignin: 'Unable to sign in. Please try again.'
 };
 
+function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase();
+}
+
 type AuthFormProps = {
-  mode?: AuthMode;
   oauthProviders?: OAuthProviderId[];
   allowMagicLink?: boolean;
 };
 
 export function AuthForm({
-  mode = 'signin',
   oauthProviders = [],
   allowMagicLink = false
 }: AuthFormProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { redirect, priceId, inviteId, error } = getAuthFlowParams(searchParams);
 
   const [email, setEmail] = useState('');
   const [pendingProvider, setPendingProvider] = useState<OAuthProviderId | null>(null);
+  const [emailError, setEmailError] = useState('');
+  const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
 
   const callbackUrl = getPostSignInCallbackUrl({
     redirect,
     priceId,
     inviteId
   });
+  const oauthErrorMessage = error
+    ? OAUTH_ERROR_MESSAGES[error] ?? 'Unable to sign in. Please try again.'
+    : null;
 
-  const alternateAuthHref = buildAlternateAuthHref({
-    mode,
-    redirect,
-    priceId,
-    inviteId
-  });
-
-  const subtitle = getAuthSubtitle({
-    allowMagicLink,
-    hasOAuthProviders: oauthProviders.length > 0
+  useToastMessage(oauthErrorMessage, {
+    kind: 'error',
+    trigger: error
   });
 
   async function handleOAuthSignIn(provider: OAuthProviderId) {
@@ -72,19 +70,47 @@ export function AuthForm({
     }
   }
 
-  const oauthErrorMessage = error ? OAUTH_ERROR_MESSAGES[error] : null;
+  async function handleMagicLink() {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
+      setEmailError('Enter your email first.');
+      return;
+    }
+
+    try {
+      setEmailError('');
+      setIsSendingMagicLink(true);
+
+      const result = await signIn('resend', {
+        email: normalizedEmail,
+        redirect: false,
+        redirectTo: callbackUrl
+      });
+
+      if (result?.error) {
+        throw new Error('Unable to send the sign-in link. Please try again.');
+      }
+
+      router.push(buildCheckEmailHref(routes.auth.checkEmail, {
+        email: normalizedEmail,
+        redirect,
+        priceId,
+        inviteId
+      }));
+    } catch {
+      toast.error('Unable to send the sign-in link. Please try again.');
+    } finally {
+      setIsSendingMagicLink(false);
+    }
+  }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <AuthHeader mode={mode} subtitle={subtitle} />
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="space-y-6 rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
-          <div className="space-y-3">
-            <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </Label>
-
+    <>
+      {allowMagicLink ? (
+        <div className="space-y-3">
+          <Field data-invalid={Boolean(emailError)}>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
             <Input
               id="email"
               name="email"
@@ -92,35 +118,48 @@ export function AuthForm({
               autoComplete="email"
               required
               maxLength={255}
-              className="rounded-full border-gray-300 px-4 py-2"
-              placeholder="Enter your email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              aria-invalid={Boolean(emailError)}
+              onChange={(event) => {
+                setEmail(event.target.value);
+
+                if (emailError) {
+                  setEmailError('');
+                }
+              }}
             />
+            <FieldError>{emailError}</FieldError>
+          </Field>
 
-            {allowMagicLink ? (
-              <MagicLinkForm
-                email={email.trim()}
-                redirect={redirect}
-                priceId={priceId}
-                inviteId={inviteId}
-              />
-            ) : null}
+          <div className="space-y-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full rounded-full"
+              onClick={() => void handleMagicLink()}
+              disabled={isSendingMagicLink}
+            >
+              {isSendingMagicLink ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending link...
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Continue with Email
+                </>
+              )}
+            </Button>
           </div>
-
-          {oauthErrorMessage ? (
-            <p className="text-sm text-red-500">{oauthErrorMessage}</p>
-          ) : null}
-
-          <OAuthButtons
-            providers={oauthProviders}
-            pendingProvider={pendingProvider}
-            onProviderClick={(provider) => void handleOAuthSignIn(provider)}
-          />
-
-          <AuthModeLink mode={mode} href={alternateAuthHref} />
         </div>
-      </div>
-    </div>
+      ) : null}
+
+      <OAuthButtons
+        providers={oauthProviders}
+        pendingProvider={pendingProvider}
+        onProviderClick={(provider) => void handleOAuthSignIn(provider)}
+      />
+    </>
   );
 }
