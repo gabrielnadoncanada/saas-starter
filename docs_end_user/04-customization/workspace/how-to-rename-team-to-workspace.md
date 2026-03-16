@@ -2,63 +2,59 @@
 
 ## Purpose
 
-Change the visible product language from `team` to `workspace`, `organization`, or another name that fits your SaaS.
+Change the visible product language from "Team" to "Workspace", "Organization", or another name that fits your SaaS.
 
 ## Files to Edit
 
-- `features/teams/components/TeamSwitcher.tsx`
-- `features/teams/components/TeamSettingsPage.tsx`
-- `app/(app)/dashboard/settings/team/page.tsx`
-- `shared/components/navigation/config/sidebar-data.ts`
-- `shared/components/navigation/config/settings-group.ts`
-- user-facing copy in auth, account, and email templates if needed
+- `shared/constants/terminology.ts` — single source of truth for all UI labels
 
 ## Steps
 
-### Step 1 - Rename visible labels first
+### Step 1 — Edit terminology.ts
 
-Change the UI text in the team switcher, team settings page, and navigation.
+Open `shared/constants/terminology.ts` and change the four values:
 
-### Step 2 - Rename settings-page copy
+```ts
+export const terminology = {
+  singular: "workspace",
+  plural: "workspaces",
+  Singular: "Workspace",
+  Plural: "Workspaces",
+} as const;
+```
 
-Update `app/(app)/dashboard/settings/team/page.tsx` and `features/teams/components/TeamSettingsPage.tsx`.
+### Step 2 — Done
 
-### Step 3 - Rename related user-facing strings
+All UI labels that reference the team concept import from `terminology.ts`. A single edit propagates to:
 
-Check:
+- TeamSwitcher dropdown label and header
+- Team Members panel title and empty state
+- Invite Team Member panel title and permission message
+- Team settings page title and description
+- Sidebar navigation link
+- Activity log labels ("created a new workspace", "removed a workspace member")
+- Dashboard overview card and upgrade prompt
 
-- onboarding text
-- delete-account warnings
-- invitation emails
-- pricing copy if billing is team-owned
+### Step 3 — Optional: rename internal folders
 
-### Step 4 - Leave internal code names alone unless you want a deeper refactor
-
-For many buyers, changing visible language is enough. Renaming internal folders and model names is optional and much more invasive.
+For most buyers, changing visible labels is enough. If you also want to rename internal folders (e.g. `features/teams/` to `features/workspaces/`), that is a deeper refactor that requires updating all import paths. This is cosmetic and does not affect the product.
 
 ## Common Mistakes
 
-- Renaming only the sidebar and leaving `team` all over the settings UI
-- Starting with internal renames instead of visible labels
+- Forgetting to update all four values (singular, plural, Singular, Plural)
+- Trying to rename internal code before changing visible labels — always start with `terminology.ts`
 
 ## Complexity Scorecard
 
-- Time to find where to edit: 3/5
-- Number of files to modify: 3/5
-- Architecture explanation required: 4/5
-- Locality of change: 3/5
-- Buyer confidence after reading: 4/5
-- Total: 17/25
-- Verdict: borderline
-
-## Flags
-
-- The concept is visible across UI, onboarding, billing, and email
-
-## Simplification Recommendation
-
-If workspace naming is a core product promise, add one shared terminology source for visible labels instead of repeating strings manually.
+- Time to find where to edit: 5/5
+- Number of files to modify: 5/5
+- Architecture explanation required: 5/5
+- Locality of change: 5/5
+- Buyer confidence after reading: 5/5
+- Total: 25/25
+- Verdict: excellent
 
 ## Related Documents
 
 - `how-to-disable-team-layer.md`
+- `how-to-add-team-role-rules.md`
