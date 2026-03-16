@@ -4,9 +4,9 @@ import { format, parseISO } from 'date-fns';
 import { signIn } from 'next-auth/react';
 import { useActionState, useState } from 'react';
 
+import { OAuthProviderIcon } from '@/features/auth/components/OAuthProviderIcon';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Field, FieldError, FieldLabel } from '@/shared/components/ui/field';
 import {
   Item,
@@ -23,7 +23,7 @@ import type {
   SecuritySettingsFeedback
 } from '@/features/account/types/account.types';
 import { routes } from '@/shared/constants/routes';
-import { OAUTH_PROVIDER_LABELS } from '@/shared/lib/auth/providers';
+import { getOAuthProviderConfig } from '@/shared/lib/auth/providers';
 import { getFieldState } from '@/shared/lib/get-field-state';
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { useToastMessage } from '@/shared/hooks/useToastMessage';
@@ -75,12 +75,14 @@ export function LinkedAccountsCard({
         {providers.map((provider) => {
           const isUnlinkingProvider = selectedProvider === provider.provider && isPending;
           const isLinkingProvider = linkingProvider === provider.provider;
+          const providerConfig = getOAuthProviderConfig(provider.provider);
 
           return (
             <Item key={provider.provider} variant="outline">
               <ItemContent>
-                <ItemTitle>
-                  {OAUTH_PROVIDER_LABELS[provider.provider]}
+                <ItemTitle className="flex items-center gap-2">
+                  <OAuthProviderIcon provider={provider.provider} className="h-4 w-4 shrink-0" />
+                  {providerConfig.label}
                   {provider.isLinked ? <Badge variant="secondary">Linked</Badge> : null}
                 </ItemTitle>
                 <ItemDescription>

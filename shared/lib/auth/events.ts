@@ -1,5 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-import { ActivityType } from "@prisma/client";
+import { ActivityType } from "@/shared/lib/db/enums";
 import {
   logLinkedAuthProvider,
   logUserSignIn,

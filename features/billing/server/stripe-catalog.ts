@@ -28,6 +28,7 @@ export async function getStripeProducts(deps = { stripe: defaultStripe }) {
     id: product.id,
     name: product.name,
     description: product.description,
+    metadata: product.metadata,
     defaultPriceId:
       typeof product.default_price === "string"
         ? product.default_price

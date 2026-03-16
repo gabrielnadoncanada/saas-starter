@@ -1,0 +1,38 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
+import { routes } from "@/shared/constants/routes";
+
+type UpgradeCardProps = {
+  feature: string;
+  description?: string;
+};
+
+export function UpgradeCard({ feature, description }: UpgradeCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Upgrade Required</CardTitle>
+        <CardDescription>
+          {description ??
+            `Your current plan does not include ${feature}. Upgrade to unlock this feature.`}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Link href={routes.marketing.pricing}>
+          <Button>
+            View Plans
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}

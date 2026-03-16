@@ -1,0 +1,11 @@
+model UsageRecord {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  limitKey  String   @db.VarChar(50)
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId, limitKey, createdAt])
+  @@index([teamId, limitKey])
+}

@@ -1,4 +1,4 @@
-import type { ActivityType } from "@prisma/client";
+import type { ActivityType } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 
 type ActivityLogClient = Pick<typeof db, "activityLog">;

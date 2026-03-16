@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { oauthProviderIdSchema } from "@/shared/lib/auth/providers";
+
 export const DELETE_CONFIRMATION_WORD = "DELETE";
 
 export const deleteAccountSchema = z.object({
@@ -19,7 +21,7 @@ export const updateAccountSchema = z.object({
 });
 
 export const unlinkAuthProviderSchema = z.object({
-  provider: z.enum(["google", "github"]),
+  provider: oauthProviderIdSchema,
 });
 
 export type UpdateAccountInput = z.infer<typeof updateAccountSchema>;

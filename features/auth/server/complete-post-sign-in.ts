@@ -1,4 +1,4 @@
-import { ActivityType } from "@prisma/client";
+import { ActivityType } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
 

@@ -3,12 +3,16 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { routes } from '@/shared/constants/routes';
 
-const protectedRoutes = routes.app.dashboard;
+const protectedPrefixes = [
+  routes.app.dashboard,
+];
+
+function isProtectedRoute(pathname: string) {
+  return protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
+}
 
 export default auth((request) => {
-  const isProtectedRoute = request.nextUrl.pathname.startsWith(protectedRoutes);
-
-  if (isProtectedRoute && !request.auth) {
+  if (isProtectedRoute(request.nextUrl.pathname) && !request.auth) {
     return NextResponse.redirect(new URL(routes.auth.login, request.url));
   }
 

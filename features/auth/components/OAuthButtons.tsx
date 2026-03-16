@@ -1,8 +1,9 @@
 import { Button } from '@/shared/components/ui/button';
 import {
-  OAUTH_PROVIDER_LABELS,
+  getOAuthProviderConfig,
   type OAuthProviderId
 } from '@/shared/lib/auth/providers';
+import { OAuthProviderIcon } from '@/features/auth/components/OAuthProviderIcon';
 
 type OAuthButtonsProps = {
   providers: OAuthProviderId[];
@@ -33,6 +34,7 @@ export function OAuthButtons({
 
       {providers.map((provider) => {
         const isPending = pendingProvider === provider;
+        const providerConfig = getOAuthProviderConfig(provider);
 
         return (
           <Button
@@ -43,7 +45,8 @@ export function OAuthButtons({
             disabled={pendingProvider !== null}
             onClick={() => onProviderClick(provider)}
           >
-            {isPending ? 'Please wait...' : `Continue with ${OAUTH_PROVIDER_LABELS[provider]}`}
+            <OAuthProviderIcon provider={provider} className="mr-2 h-4 w-4 shrink-0" />
+            {isPending ? 'Please wait...' : providerConfig.authButtonLabel}
           </Button>
         );
       })}

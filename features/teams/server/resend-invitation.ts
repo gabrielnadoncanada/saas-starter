@@ -1,7 +1,7 @@
 import type { User } from "@prisma/client";
 import { db } from "@/shared/lib/db/prisma";
 import { sendTeamInvitationEmail } from "@/shared/lib/email/senders";
-import { getUserTeamMembership } from "@/features/teams/server/team-membership";
+import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
 
 type ResendInvitationParams = {
   invitationId: number;
@@ -12,20 +12,16 @@ export async function resendInvitation({
   invitationId,
   user,
 }: ResendInvitationParams) {
-  const userWithTeam = await getUserTeamMembership(user.id);
+  const guard = await requireTeamRole(user.id, ["OWNER"]);
 
-  if (!userWithTeam?.teamId) {
-    return { error: "User is not part of a team" };
-  }
-
-  if (userWithTeam.teamRole !== "OWNER") {
-    return { error: "Only team owners can resend invitations" };
+  if (isTeamRoleError(guard)) {
+    return guard;
   }
 
   const invitation = await db.invitation.findFirst({
     where: {
       id: invitationId,
-      teamId: userWithTeam.teamId,
+      teamId: guard.teamId,
       status: "PENDING",
     },
     include: { team: { select: { name: true } } },

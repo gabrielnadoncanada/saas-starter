@@ -1,5 +1,5 @@
 import { db } from "@/shared/lib/db/prisma";
-import { getUserTeamMembership } from "@/features/teams/server/team-membership";
+import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
 
 type CancelInvitationParams = {
   invitationId: number;
@@ -10,20 +10,16 @@ export async function cancelInvitation({
   invitationId,
   userId,
 }: CancelInvitationParams) {
-  const userWithTeam = await getUserTeamMembership(userId);
+  const guard = await requireTeamRole(userId, ["OWNER"]);
 
-  if (!userWithTeam?.teamId) {
-    return { error: "User is not part of a team" };
-  }
-
-  if (userWithTeam.teamRole !== "OWNER") {
-    return { error: "Only team owners can cancel invitations" };
+  if (isTeamRoleError(guard)) {
+    return guard;
   }
 
   const invitation = await db.invitation.findFirst({
     where: {
       id: invitationId,
-      teamId: userWithTeam.teamId,
+      teamId: guard.teamId,
       status: "PENDING",
     },
   });

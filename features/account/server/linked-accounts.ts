@@ -1,4 +1,4 @@
-import { ActivityType } from "@prisma/client";
+import { ActivityType } from "@/shared/lib/db/enums";
 
 import { createActivityLog } from "@/shared/lib/activity-log";
 import {

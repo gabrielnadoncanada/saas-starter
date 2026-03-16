@@ -2,10 +2,10 @@
 
 import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
 import { createActivityLog } from "@/shared/lib/activity-log";
-import { ActivityType } from "@prisma/client";
+import { ActivityType } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 import { removeTeamMemberSchema } from "@/features/teams/schemas/team.schema";
-import { getUserTeamMembership } from "@/features/teams/server/team-membership";
+import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
 
 export const removeTeamMemberAction = validatedActionWithUser<
   typeof removeTeamMemberSchema,
@@ -13,25 +13,21 @@ export const removeTeamMemberAction = validatedActionWithUser<
 >(
   removeTeamMemberSchema,
   async ({ memberId }, _, user) => {
-    const userWithTeam = await getUserTeamMembership(user.id);
+    const guard = await requireTeamRole(user.id, ["OWNER"]);
 
-    if (!userWithTeam?.teamId) {
-      return { error: "User is not part of a team" };
-    }
-
-    if (userWithTeam.teamRole !== "OWNER") {
-      return { error: "Only team owners can remove members" };
+    if (isTeamRoleError(guard)) {
+      return guard;
     }
 
     await db.teamMember.deleteMany({
       where: {
         id: memberId,
-        teamId: userWithTeam.teamId,
+        teamId: guard.teamId,
       },
     });
 
     await createActivityLog({
-      teamId: userWithTeam.teamId,
+      teamId: guard.teamId,
       userId: user.id,
       action: ActivityType.REMOVE_TEAM_MEMBER,
     });

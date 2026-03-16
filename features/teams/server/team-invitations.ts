@@ -1,5 +1,5 @@
-import { ActivityType } from "@prisma/client";
-import type { TeamRole, User } from "@prisma/client";
+import type { User } from "@prisma/client";
+import { ActivityType, type TeamRole } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 import { sendTeamInvitationEmail } from "@/shared/lib/email/senders";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";

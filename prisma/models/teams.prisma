@@ -42,6 +42,7 @@ model Team {
   activityLogs ActivityLog[]
   invitations  Invitation[]
   tasks        Task[]
+  usageRecords UsageRecord[]
 }
 
 model TeamMember {

@@ -48,44 +48,55 @@ function PricingCard({
   );
 }
 
+function parseFeatures(product: {
+  metadata: Record<string, string>;
+  description: string | null;
+}): string[] {
+  if (product.metadata.features) {
+    return product.metadata.features.split(',').map((f) => f.trim());
+  }
+
+  if (product.description) {
+    return [product.description];
+  }
+
+  return [];
+}
+
 export async function PricingSection() {
   const [prices, products] = await Promise.all([
     getStripePrices(),
     getStripeProducts()
   ]);
 
-  const basePlan = products.find((product) => product.name === 'Base');
-  const plusPlan = products.find((product) => product.name === 'Plus');
-  const basePrice = prices.find((price) => price.productId === basePlan?.id);
-  const plusPrice = prices.find((price) => price.productId === plusPlan?.id);
+  const plans = products
+    .map((product) => {
+      const price = prices.find((p) => p.productId === product.id);
+      if (!price) return null;
+
+      return {
+        product,
+        price,
+        unitAmount: price.unitAmount ?? 0,
+      };
+    })
+    .filter((plan): plan is NonNullable<typeof plan> => plan !== null)
+    .sort((a, b) => a.unitAmount - b.unitAmount);
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-xl gap-8 md:grid-cols-2">
-        <PricingCard
-          name={basePlan?.name || 'Base'}
-          price={basePrice?.unitAmount || 800}
-          interval={basePrice?.interval || 'month'}
-          trialDays={basePrice?.trialPeriodDays || 7}
-          features={[
-            'Unlimited Usage',
-            'Unlimited Workspace Members',
-            'Email Support'
-          ]}
-          priceId={basePrice?.id}
-        />
-        <PricingCard
-          name={plusPlan?.name || 'Plus'}
-          price={plusPrice?.unitAmount || 1200}
-          interval={plusPrice?.interval || 'month'}
-          trialDays={plusPrice?.trialPeriodDays || 7}
-          features={[
-            'Everything in Base, and:',
-            'Early Access to New Features',
-            '24/7 Support + Slack Access'
-          ]}
-          priceId={plusPrice?.id}
-        />
+      <div className={`mx-auto grid max-w-xl gap-8 ${plans.length > 1 ? `md:grid-cols-${Math.min(plans.length, 3)}` : ''}`}>
+        {plans.map((plan) => (
+          <PricingCard
+            key={plan.product.id}
+            name={plan.product.name}
+            price={plan.price.unitAmount ?? 0}
+            interval={plan.price.interval ?? 'month'}
+            trialDays={plan.price.trialPeriodDays ?? 7}
+            features={parseFeatures(plan.product)}
+            priceId={plan.price.id}
+          />
+        ))}
       </div>
     </main>
   );

@@ -1,7 +1,6 @@
 "use server";
 
 import { setActiveTeamId } from "@/features/teams/server/active-team";
-import { listTeamsForUser } from "@/features/teams/server/team-membership";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 interface SwitchTeamInput {
@@ -19,13 +18,11 @@ export async function switchTeamAction({ teamId }: SwitchTeamInput) {
     return { ok: false, error: "User is not authenticated" };
   }
 
-  const teams = await listTeamsForUser(user.id);
-
-  if (!teams.some((team) => team.id === teamId)) {
+  try {
+    await setActiveTeamId(user.id, teamId);
+  } catch {
     return { ok: false, error: "Team not found" };
   }
-
-  await setActiveTeamId(teamId);
 
   return { ok: true };
 }
