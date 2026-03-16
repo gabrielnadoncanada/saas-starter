@@ -21,8 +21,6 @@ export function SidebarNav({ className, ...props }: React.HTMLAttributes<HTMLEle
   const [value, setValue] = useState(pathname)
   const items = settingsGroup.items[0].items ?? []
 
-
-  console.log(items)
   useEffect(() => {
     setValue(pathname)
   }, [pathname])

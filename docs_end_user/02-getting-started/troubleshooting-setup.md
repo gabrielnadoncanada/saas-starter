@@ -29,7 +29,7 @@ Stripe is not fully configured, or the seed did not create products.
 
 ### Magic links are not sent
 
-The auth provider requires `AUTH_RESEND_KEY` and `AUTH_RESEND_FROM`.
+The auth provider requires `RESEND_API_KEY` and `EMAIL_FROM`.
 
 ## Best Follow-Up Docs
 

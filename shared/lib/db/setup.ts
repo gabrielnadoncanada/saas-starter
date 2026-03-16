@@ -22,7 +22,7 @@ function question(query: string): Promise<string> {
   );
 }
 
-async function checkStripeCLI() {
+async function checkStripeCLI(): Promise<boolean> {
   console.log(
     'Step 1: Checking if Stripe CLI is installed and authenticated...'
   );
@@ -30,10 +30,10 @@ async function checkStripeCLI() {
     await execAsync('stripe --version');
     console.log('Stripe CLI is installed.');
 
-    // Check if Stripe CLI is authenticated
     try {
       await execAsync('stripe config --list');
       console.log('Stripe CLI is authenticated.');
+      return true;
     } catch (error) {
       console.log(
         'Stripe CLI is not authenticated or the authentication has expired.'
@@ -43,37 +43,29 @@ async function checkStripeCLI() {
         'Have you completed the authentication? (y/n): '
       );
       if (answer.toLowerCase() !== 'y') {
-        console.log(
-          'Please authenticate with Stripe CLI and run this script again.'
+        console.warn(
+          'Skipping Stripe CLI setup. You can set STRIPE_WEBHOOK_SECRET manually in .env later.'
         );
-        process.exit(1);
+        return false;
       }
 
-      // Verify authentication after user confirms login
       try {
         await execAsync('stripe config --list');
         console.log('Stripe CLI authentication confirmed.');
+        return true;
       } catch (error) {
-        console.error(
-          'Failed to verify Stripe CLI authentication. Please try again.'
+        console.warn(
+          'Failed to verify Stripe CLI authentication. Skipping webhook secret generation.'
         );
-        process.exit(1);
+        return false;
       }
     }
   } catch (error) {
-    console.error(
-      'Stripe CLI is not installed. Please install it and try again.'
+    console.warn(
+      'Stripe CLI is not installed. Skipping webhook secret generation.'
     );
-    console.log('To install Stripe CLI, follow these steps:');
-    console.log('1. Visit: https://docs.stripe.com/stripe-cli');
-    console.log(
-      '2. Download and install the Stripe CLI for your operating system'
-    );
-    console.log('3. After installation, run: stripe login');
-    console.log(
-      'After installation and authentication, please run this setup script again.'
-    );
-    process.exit(1);
+    console.log('To install Stripe CLI later, visit: https://docs.stripe.com/stripe-cli');
+    return false;
   }
 }
 
@@ -110,6 +102,20 @@ async function setupLocalPostgres() {
     process.exit(1);
   }
 
+  const dockerComposePath = path.join(process.cwd(), 'docker-compose.yml');
+  try {
+    await fs.access(dockerComposePath);
+    const overwrite = await question(
+      'docker-compose.yml already exists. Overwrite? (y/n): '
+    );
+    if (overwrite.toLowerCase() !== 'y') {
+      console.log('Keeping existing docker-compose.yml.');
+      return;
+    }
+  } catch {
+    // File doesn't exist, proceed
+  }
+
   console.log('Creating docker-compose.yml file...');
   const dockerComposeContent = `
 services:
@@ -129,10 +135,7 @@ volumes:
   postgres_data:
 `;
 
-  await fs.writeFile(
-    path.join(process.cwd(), 'docker-compose.yml'),
-    dockerComposeContent
-  );
+  await fs.writeFile(dockerComposePath, dockerComposeContent);
   console.log('docker-compose.yml file created.');
 
   console.log('Starting Docker container with `docker compose up -d`...');
@@ -189,16 +192,34 @@ async function writeEnvFile(envVars: Record<string, string>) {
     .map(([key, value]) => `${key}=${value}`)
     .join('\n');
 
-  await fs.writeFile(path.join(process.cwd(), '.env'), envContent);
-  console.log('.env file created with the necessary variables.');
+  const envPath = path.join(process.cwd(), '.env');
+
+  try {
+    await fs.access(envPath);
+    // .env already exists — write to .env.generated instead
+    const generatedPath = path.join(process.cwd(), '.env.generated');
+    await fs.writeFile(generatedPath, envContent);
+    console.warn(
+      '.env already exists. Generated values written to .env.generated — merge manually.'
+    );
+  } catch {
+    // .env doesn't exist, safe to write
+    await fs.writeFile(envPath, envContent);
+    console.log('.env file created with the necessary variables.');
+  }
 }
 
 async function main() {
-  await checkStripeCLI();
+  const hasStripeCLI = await checkStripeCLI();
 
   const POSTGRES_URL = await getPostgresURL();
   const STRIPE_SECRET_KEY = await getStripeSecretKey();
-  const STRIPE_WEBHOOK_SECRET = await createStripeWebhook();
+
+  let STRIPE_WEBHOOK_SECRET = '';
+  if (hasStripeCLI) {
+    STRIPE_WEBHOOK_SECRET = await createStripeWebhook();
+  }
+
   const BASE_URL = 'http://localhost:3000';
   const AUTH_SECRET = generateAuthSecret();
 
@@ -208,6 +229,8 @@ async function main() {
     STRIPE_WEBHOOK_SECRET,
     BASE_URL,
     AUTH_SECRET,
+    RESEND_API_KEY: '',
+    EMAIL_FROM: '',
   });
 
   console.log('Setup completed successfully. Next: run pnpm db:migrate then pnpm db:seed.');

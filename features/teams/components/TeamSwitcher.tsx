@@ -37,7 +37,6 @@ export function TeamSwitcher() {
     void (async () => {
       try {
         const result = await listTeamsAction()
-        console.log(result)
         if (!result.ok || !result.data) {
           return
         }

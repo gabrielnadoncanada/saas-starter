@@ -16,8 +16,8 @@ Check `app/post-sign-in/page.tsx`. That page provisions the user team and handle
 
 Check:
 
-- `AUTH_RESEND_KEY`
-- `AUTH_RESEND_FROM`
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
 - Resend domain setup
 
 ## Protected routes are still accessible or redirect incorrectly

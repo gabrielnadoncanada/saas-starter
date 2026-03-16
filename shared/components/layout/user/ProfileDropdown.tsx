@@ -16,9 +16,18 @@ import {
 import { routes } from '@/shared/constants/routes'
 import { SignOutDialog } from '@/features/auth/components/SignOutDialog'
 import Link from 'next/link'
+import { useUser } from '@/shared/components/providers/UserProvider'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
+  const user = useUser()
+
+  const initials = user.name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((chunk) => chunk[0]?.toUpperCase() ?? '')
+    .join('') || 'U'
 
   return (
     <>
@@ -26,16 +35,16 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
-              <AvatarFallback>SN</AvatarFallback>
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>satnaing</p>
+              <p className='text-sm leading-none font-medium'>{user.name}</p>
               <p className='text-xs leading-none text-muted-foreground'>
-                satnaingdev@gmail.com
+                {user.email}
               </p>
             </div>
           </DropdownMenuLabel>

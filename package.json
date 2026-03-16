@@ -8,7 +8,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:setup": "pnpm exec tsx lib/db/setup.ts",
+    "db:setup": "pnpm exec tsx shared/lib/db/setup.ts",
     "db:format": "pnpm exec prisma format",
     "db:generate": "pnpm exec prisma generate",
     "db:migrate": "pnpm exec prisma migrate dev",

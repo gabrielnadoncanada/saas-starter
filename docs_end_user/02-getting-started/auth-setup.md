@@ -28,8 +28,8 @@ If no method is configured, the sign-in and sign-up pages load but show that no 
 Add these variables:
 
 ```env
-AUTH_RESEND_KEY=re_...
-AUTH_RESEND_FROM=Acme <login@example.com>
+RESEND_API_KEY=re_...
+EMAIL_FROM=Acme <login@example.com>
 ```
 
 Once both are present, the auth form enables the email link flow.
@@ -94,7 +94,7 @@ After a successful auth flow, the app redirects to `/post-sign-in`. That page:
 ## Common Mistakes
 
 - Setting provider keys but forgetting the callback URL in Google or GitHub
-- Expecting magic link to work with only `RESEND_API_KEY`
+- Expecting magic link to work without setting `EMAIL_FROM`
 - Forgetting to set `AUTH_SECRET`
 
 ## Related Docs

@@ -1,10 +1,11 @@
 import Stripe from "stripe";
 
 import { db as defaultDb } from "@/shared/lib/db/prisma";
+import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
 
 export async function handleSubscriptionChange(
   subscription: Stripe.Subscription,
-  deps = { db: defaultDb },
+  deps = { db: defaultDb, stripe: defaultStripe },
 ) {
   const customerId = subscription.customer as string;
   const subscriptionId = subscription.id;
@@ -21,13 +22,20 @@ export async function handleSubscriptionChange(
 
   if (status === "active" || status === "trialing") {
     const plan = subscription.items.data[0]?.plan;
+    const productId = plan?.product as string;
+
+    let planName: string | null = null;
+    if (productId) {
+      const product = await deps.stripe.products.retrieve(productId);
+      planName = product.name;
+    }
 
     await deps.db.team.update({
       where: { id: team.id },
       data: {
         stripeSubscriptionId: subscriptionId,
-        stripeProductId: plan?.product as string,
-        planName: (plan?.product as Stripe.Product).name,
+        stripeProductId: productId,
+        planName,
         subscriptionStatus: status,
       },
     });

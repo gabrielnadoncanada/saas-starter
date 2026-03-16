@@ -25,32 +25,17 @@ STRIPE_WEBHOOK_SECRET=
 ## Auth Providers
 
 ```env
-AUTH_RESEND_KEY=
-AUTH_RESEND_FROM=
+RESEND_API_KEY=
+EMAIL_FROM=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 ```
 
-- `AUTH_RESEND_KEY` and `AUTH_RESEND_FROM`: enable magic-link auth
+- `RESEND_API_KEY` and `EMAIL_FROM`: enable magic-link auth and shared app email
+- `EMAIL_REPLY_TO`: optional reply-to address for app email
 - Google and GitHub pairs: enable those OAuth buttons
-
-## Shared App Email
-
-```env
-RESEND_API_KEY=
-EMAIL_FROM=
-EMAIL_REPLY_TO=
-```
-
-- `RESEND_API_KEY`: shared email sending key
-- `EMAIL_FROM`: default sender
-- `EMAIL_REPLY_TO`: optional reply-to address
-
-## Important Note
-
-This repo currently keeps auth email env vars and shared app email env vars separate.
 
 ## Related Docs
 

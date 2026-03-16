@@ -1,15 +1,3 @@
-type SidebarUser = {
-  name: string;
-  email: string;
-  avatar: string;
-};
-
-type SidebarTeam = {
-  name: string;
-  logo: React.ElementType;
-  plan: string;
-};
-
 type SidebarBaseItem = {
   title: string;
   badge?: string;
@@ -34,7 +22,5 @@ export type SidebarNavGroup = {
 };
 
 export type SidebarData = {
-  user: SidebarUser;
-  teams: SidebarTeam[];
   navGroups: SidebarNavGroup[];
 };

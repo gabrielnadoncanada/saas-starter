@@ -36,11 +36,11 @@ Fix:
 
 Cause:
 
-- auth uses `AUTH_RESEND_KEY` and `AUTH_RESEND_FROM`, not only `RESEND_API_KEY`
+- `RESEND_API_KEY` and `EMAIL_FROM` are both required for magic-link auth
 
 Fix:
 
-- add the auth-specific Resend variables
+- make sure both `RESEND_API_KEY` and `EMAIL_FROM` are set in `.env`
 
 ## Pricing page shows fallback values only
 

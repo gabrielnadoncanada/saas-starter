@@ -35,8 +35,8 @@ Without these, the database, auth session signing, and Stripe flow will not work
 The auth provider code currently checks:
 
 ```env
-AUTH_RESEND_KEY=re_...
-AUTH_RESEND_FROM=Acme <login@example.com>
+RESEND_API_KEY=re_...
+EMAIL_FROM=Acme <login@example.com>
 ```
 
 ### Social login
@@ -52,24 +52,11 @@ If a provider pair is missing, that provider simply does not appear on the sign-
 
 ## App Email Variables
 
-Separate from auth, the shared email config reads:
+The same `RESEND_API_KEY` and `EMAIL_FROM` variables are shared by both magic-link auth and app email sending. You can also set an optional reply-to address:
 
 ```env
-RESEND_API_KEY=re_...
-EMAIL_FROM=Acme <notifications@example.com>
 EMAIL_REPLY_TO=
 ```
-
-Use these when you send app emails outside the NextAuth magic-link flow.
-
-## Important Current Quirk
-
-This repo currently uses two Resend variable sets:
-
-- `AUTH_RESEND_KEY` and `AUTH_RESEND_FROM` for magic-link auth
-- `RESEND_API_KEY` and `EMAIL_FROM` for shared app email sending
-
-That is the current code reality. Do not collapse them in your docs or deployment checklist unless you also simplify the code.
 
 ## Base URL
 

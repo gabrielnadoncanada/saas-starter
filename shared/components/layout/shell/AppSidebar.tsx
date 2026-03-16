@@ -12,8 +12,11 @@ import { TeamSwitcher } from '@/features/teams/components/TeamSwitcher'
 import { NavUser } from '@/shared/components/layout/user/NavUser'
 import { NavGroup } from '@/shared/components/navigation/NavGroup'
 import type { SidebarNavGroup } from '@/shared/components/navigation/sidebar-types'
+import { useUser } from '@/shared/components/providers/UserProvider'
 
 export function AppSidebar() {
+  const user = useUser()
+
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
@@ -25,7 +28,7 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={sidebarData.user} />
+        <NavUser user={{ ...user, avatar: '' }} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

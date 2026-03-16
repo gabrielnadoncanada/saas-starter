@@ -10,7 +10,7 @@ export const OAUTH_PROVIDER_LABELS = {
 export type OAuthProviderId = keyof typeof OAUTH_PROVIDER_LABELS;
 
 export function hasMagicLinkProvider() {
-  return Boolean(process.env.AUTH_RESEND_KEY && process.env.AUTH_RESEND_FROM);
+  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
 }
 
 export function getEnabledOAuthProviderIds(): OAuthProviderId[] {
@@ -33,8 +33,8 @@ export function getAuthProviders() {
   if (hasMagicLinkProvider()) {
     providers.push(
       ResendProvider({
-        apiKey: process.env.AUTH_RESEND_KEY,
-        from: process.env.AUTH_RESEND_FROM
+        apiKey: process.env.RESEND_API_KEY,
+        from: process.env.EMAIL_FROM
       })
     );
   }

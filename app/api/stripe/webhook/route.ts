@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 
 import { handleSubscriptionChange } from "@/features/billing/server/handle-subscription-change";
+import { finalizeCheckoutSession } from "@/features/billing/server/finalize-checkout";
 import { stripe } from "@/shared/lib/stripe/client";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -24,12 +25,28 @@ export async function POST(request: NextRequest) {
 
   switch (event.type) {
     case "customer.subscription.updated":
-    case "customer.subscription.deleted":
+    case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
       await handleSubscriptionChange(subscription);
       break;
-    default:
-      console.log(`Unhandled event type ${event.type}`);
+    }
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      await finalizeCheckoutSession(session.id);
+      break;
+    }
+    case "invoice.payment_failed": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const sub = invoice.parent?.subscription_details?.subscription;
+      const subscriptionId =
+        typeof sub === "string" ? sub : sub?.id;
+      if (subscriptionId) {
+        const subscription =
+          await stripe.subscriptions.retrieve(subscriptionId);
+        await handleSubscriptionChange(subscription);
+      }
+      break;
+    }
   }
 
   return NextResponse.json({ received: true });
