@@ -68,3 +68,10 @@ Output standard:
 - Do not introduce dependency injection, repositories, use-cases, command handlers, or factory layers by default.
 - Extra structure is allowed only when the underlying workflow is genuinely complex, high-risk, or highly reusable.
 - If an abstraction needs explanation before it feels useful, it is probably too expensive.
+
+## Local Database
+
+- You can always reset the local database when needed.
+- Do not treat the local database like production.
+- If a clean reset is the fastest correct way to resolve local Prisma drift or schema mismatch, do it.
+- En local, privilegie la remise a zero propre des etats casses (DB, caches, artefacts generes, migrations ratees) plutot que les contournements conservateurs.

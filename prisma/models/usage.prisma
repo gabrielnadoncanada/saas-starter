@@ -1,11 +1,11 @@
 model UsageCounter {
   id          Int      @id @default(autoincrement())
-  teamId       Int
-  limitKey     String   @db.VarChar(50)
-  periodStart  DateTime
-  count        Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  teamId      Int
+  limitKey    String   @db.VarChar(50)
+  periodStart DateTime
+  count       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 

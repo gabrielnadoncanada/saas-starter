@@ -25,18 +25,18 @@ enum InvitationStatus {
 }
 
 model Team {
-  id                   Int      @id @default(autoincrement())
-  name                 String   @db.VarChar(100)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  stripeCustomerId     String?  @unique
-  stripeSubscriptionId String?  @unique
-  stripeProductId      String?
-  planId               String?  @db.VarChar(20)
-  planName             String?  @db.VarChar(50)
-  subscriptionStatus   String?  @db.VarChar(20)
-  pricingModel         String?  @db.VarChar(20)
-  pendingCheckoutPriceId String?   @db.VarChar(255)
+  id                       Int       @id @default(autoincrement())
+  name                     String    @db.VarChar(100)
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+  stripeCustomerId         String?   @unique
+  stripeSubscriptionId     String?   @unique
+  stripeProductId          String?
+  planId                   String?   @db.VarChar(20)
+  planName                 String?   @db.VarChar(50)
+  subscriptionStatus       String?   @db.VarChar(20)
+  pricingModel             String?   @db.VarChar(20)
+  pendingCheckoutPriceId   String?   @db.VarChar(255)
   pendingCheckoutStartedAt DateTime?
 
   teamMembers            TeamMember[]

@@ -7,7 +7,11 @@ export const routes = {
     login: "/sign-in",
     signup: "/sign-up",
     checkEmail: "/check-email",
+    forgotPassword: "/forgot-password",
     postSignIn: "/post-sign-in",
+    resetPassword: "/reset-password",
+    verifyEmail: "/verify-email",
+    verifyEmailSent: "/verify-email/sent",
   },
   app: {
     dashboard: "/dashboard",

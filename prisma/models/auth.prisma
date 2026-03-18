@@ -5,17 +5,24 @@ enum PlatformRole {
   SUPER_ADMIN
 }
 
+enum AuthTokenType {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
 model User {
-  id            Int          @id @default(autoincrement())
-  name          String?      @db.VarChar(100)
-  email         String       @unique @db.VarChar(255)
-  phoneNumber   String?      @map("phone_number") @db.VarChar(30)
-  emailVerified DateTime?
-  image         String?
-  platformRole  PlatformRole @default(USER)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  deletedAt     DateTime?
+  id                Int          @id @default(autoincrement())
+  name              String?      @db.VarChar(100)
+  email             String       @unique @db.VarChar(255)
+  phoneNumber       String?      @map("phone_number") @db.VarChar(30)
+  passwordHash      String?      @map("password_hash") @db.VarChar(255)
+  passwordUpdatedAt DateTime?    @map("password_updated_at")
+  emailVerified     DateTime?
+  image             String?
+  platformRole      PlatformRole @default(USER)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  deletedAt         DateTime?
 
   accounts               Account[]
   sessions               Session[]
@@ -23,6 +30,7 @@ model User {
   invitationsSent        Invitation[]            @relation("InvitationSender")
   activityLogs           ActivityLog[]
   assistantConversations AssistantConversation[]
+  authTokens             AuthToken[]
 }
 
 model Account {
@@ -66,4 +74,19 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model AuthToken {
+  id         Int           @id @default(autoincrement())
+  userId     Int
+  type       AuthTokenType
+  tokenHash  String        @unique @map("token_hash") @db.Char(64)
+  expiresAt  DateTime      @map("expires_at")
+  consumedAt DateTime?     @map("consumed_at")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([expiresAt])
 }

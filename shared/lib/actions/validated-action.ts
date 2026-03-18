@@ -1,27 +1,36 @@
 import { z } from "zod";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
-export type ActionState = {
-  error?: string;
-  success?: string;
-  [key: string]: any;
-};
-
-type ValidatedActionFunction<S extends z.ZodType<any, any>, T> = (
+type ValidatedActionFunction<
+  S extends z.ZodTypeAny,
+  TExtraState extends object,
+> = (
   data: z.infer<S>,
   formData: FormData,
-) => Promise<T>;
+) => Promise<FormActionState<z.infer<S>> & TExtraState>;
 
-export function validatedAction<S extends z.ZodType<any, any>, T>(
+export function validatedAction<
+  S extends z.ZodTypeAny,
+  TExtraState extends object = Record<string, never>,
+>(
   schema: S,
-  action: ValidatedActionFunction<S, T>,
+  action: ValidatedActionFunction<S, TExtraState>,
 ) {
-  return async (_prevState: ActionState, formData: FormData) => {
-    const result = schema.safeParse(Object.fromEntries(formData));
+  type Values = z.infer<S>;
+  type State = FormActionState<Values> & TExtraState;
 
-    if (!result.success) {
-      return { error: result.error.errors[0].message };
+  return async (_prevState: State, formData: FormData): Promise<State> => {
+    const rawValues = Object.fromEntries(formData) as Record<string, unknown>;
+    const parsed = schema.safeParse(rawValues);
+
+    if (!parsed.success) {
+      return {
+        error: "Please fix the highlighted fields.",
+        values: rawValues as Partial<Values>,
+        fieldErrors: parsed.error.flatten().fieldErrors as State["fieldErrors"],
+      } as State;
     }
 
-    return action(result.data, formData);
+    return action(parsed.data, formData);
   };
 }

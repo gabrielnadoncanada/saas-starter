@@ -3,9 +3,11 @@ import { z } from "zod";
 import ResendProvider from "next-auth/providers/resend";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { Resend } from "resend";
 import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
 import { createRateLimiter } from "@/shared/lib/rate-limit/in-memory-rate-limiter";
+import { authenticatePasswordCredentials } from "@/features/auth/server/credentials-user";
 
 // Rate limit: max 3 magic links per email per 15 minutes
 const magicLinkRateLimiter = createRateLimiter({
@@ -84,10 +86,25 @@ export function getEnabledOAuthProviderIds(): OAuthProviderId[] {
 }
 
 export function getAuthProviders() {
-  const providers = [];
+  return [
+    CredentialsProvider({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const email =
+          typeof credentials.email === "string" ? credentials.email : "";
+        const password =
+          typeof credentials.password === "string" ? credentials.password : "";
 
-  if (hasMagicLinkProvider()) {
-    providers.push(
+        const result = await authenticatePasswordCredentials({ email, password });
+
+        return result.status === "success" ? result.user : null;
+      },
+    }),
+    ...(hasMagicLinkProvider()
+      ? [
       ResendProvider({
         apiKey: process.env.RESEND_API_KEY,
         from: process.env.EMAIL_FROM,
@@ -117,14 +134,10 @@ export function getAuthProviders() {
           }
         },
       })
-    );
-  }
-
-  providers.push(
+      ]
+      : []),
     ...oauthProviders
       .filter((provider) => provider.isEnabled())
       .map((provider) => provider.createProvider()),
-  );
-
-  return providers;
+  ];
 }

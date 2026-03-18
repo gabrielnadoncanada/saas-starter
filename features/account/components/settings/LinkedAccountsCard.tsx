@@ -71,6 +71,12 @@ export function LinkedAccountsCard({
 
   return (
     <>
+      {allowMagicLink ? (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Email magic links are enabled for your account email.
+        </p>
+      ) : null}
+
       <ItemGroup className="gap-4">
         {providers.map((provider) => {
           const isUnlinkingProvider = selectedProvider === provider.provider && isPending;

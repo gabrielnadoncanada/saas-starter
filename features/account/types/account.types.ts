@@ -8,7 +8,6 @@ export type DeleteAccountActionState = FormActionState<DeleteAccountValues>;
 
 export type UpdateAccountValues = {
   name: string;
-  email: string;
   phoneNumber: string | null;
 };
 

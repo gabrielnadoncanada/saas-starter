@@ -7,6 +7,8 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   db: {},
 }));
 
+type UsageDbClient = NonNullable<Parameters<typeof consumeMonthlyUsage>[3]>["db"];
+
 function createUsageDb(overrides: Record<string, unknown> = {}) {
   return {
     usageCounter: {
@@ -15,7 +17,7 @@ function createUsageDb(overrides: Record<string, unknown> = {}) {
       findUnique: vi.fn().mockResolvedValue({ count: 0 }),
       ...overrides,
     },
-  } as never;
+  } as unknown as UsageDbClient;
 }
 
 describe("consumeMonthlyUsage", () => {

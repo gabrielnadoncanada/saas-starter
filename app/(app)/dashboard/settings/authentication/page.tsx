@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
+import { PasswordSettingsCard } from '@/features/auth/components/PasswordSettingsCard';
 import { LinkedAccountsCard } from '@/features/account/components/settings/LinkedAccountsCard';
 import { getLinkedAccountsOverview } from '@/features/account/server/linked-accounts';
 import type {
@@ -80,12 +81,17 @@ export default async function AuthenticationPage({ searchParams }: PageProps) {
       title='Authentication Settings'
       desc='Manage your authentication settings and connect your accounts.'
     >
+      <>
+        <div className="mb-6">
+          <PasswordSettingsCard hasPassword={Boolean(user.passwordHash)} />
+        </div>
 
-      <LinkedAccountsCard
-        allowMagicLink={allowMagicLink}
-        providers={mapLinkedProviders(linkedAccounts.providers)}
-        feedback={feedback}
-      />
+        <LinkedAccountsCard
+          allowMagicLink={allowMagicLink}
+          providers={mapLinkedProviders(linkedAccounts.providers)}
+          feedback={feedback}
+        />
+      </>
     </ContentSection>
   );
 }

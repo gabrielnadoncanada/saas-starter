@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { ActivityType } from "@/shared/lib/db/enums";
 
 import { createActivityLog } from "@/shared/lib/activity-log";
@@ -9,62 +8,38 @@ import type { UpdateAccountActionState } from "@/features/account/types/account.
 type UpdateAccountParams = {
   userId: number;
   name: string;
-  email: string;
   phoneNumber: string | null;
 };
 
 export async function updateAccount({
   userId,
   name,
-  email,
   phoneNumber,
 }: UpdateAccountParams): Promise<UpdateAccountActionState> {
   const userWithTeam = await getUserTeamMembership(userId);
 
-  try {
-    await db.user.update({
-      where: { id: userId },
-      data: { name, email, phoneNumber },
-    });
+  await db.user.update({
+    where: { id: userId },
+    data: { name, phoneNumber },
+  });
 
-    if (userWithTeam?.teamId) {
-      try {
-        await createActivityLog({
-          teamId: userWithTeam.teamId,
-          userId,
-          action: ActivityType.UPDATE_ACCOUNT,
-        });
-      } catch {
-        // optional: internal logging
-      }
+  if (userWithTeam?.teamId) {
+    try {
+      await createActivityLog({
+        teamId: userWithTeam.teamId,
+        userId,
+        action: ActivityType.UPDATE_ACCOUNT,
+      });
+    } catch {
+      // optional: internal logging
     }
-
-    return {
-      success: "Account updated successfully.",
-      values: {
-        name,
-        email,
-        phoneNumber,
-      },
-    };
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      return {
-        error: "Please fix the highlighted fields.",
-        values: {
-          name,
-          email,
-          phoneNumber,
-        },
-        fieldErrors: {
-          email: ["This email is already in use."],
-        },
-      };
-    }
-
-    throw error;
   }
+
+  return {
+    success: "Account updated successfully.",
+    values: {
+      name,
+      phoneNumber,
+    },
+  };
 }

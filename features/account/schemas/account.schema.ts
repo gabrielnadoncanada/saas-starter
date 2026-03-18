@@ -12,7 +12,6 @@ export const deleteAccountSchema = z.object({
 
 export const updateAccountSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  email: z.string().email("Invalid email address"),
   phoneNumber: z
     .string()
     .trim()

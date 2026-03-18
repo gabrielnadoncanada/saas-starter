@@ -33,12 +33,10 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
   );
 
   const name = state.values?.name ?? initialValues.name;
-  const email = state.values?.email ?? initialValues.email;
   const phoneNumber = state.values?.phoneNumber ?? initialValues.phoneNumber ?? '';
 
   const nameField = getFieldState(state, 'name');
   const phoneNumberField = getFieldState(state, 'phoneNumber');
-  const emailField = getFieldState(state, 'email');
   const [phoneNumberValue, setPhoneNumberValue] = useState(phoneNumber);
 
   useEffect(() => {
@@ -59,7 +57,7 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
 
         <div>
           <p className="text-sm font-medium">{name}</p>
-          <p className="text-xs text-muted-foreground">{email}</p>
+          <p className="text-xs text-muted-foreground">{initialValues.email}</p>
         </div>
       </div>
 
@@ -91,20 +89,11 @@ export function GeneralSettingsForm({ initialValues }: GeneralSettingsFormProps)
             <FieldError>{phoneNumberField.error}</FieldError>
           </Field>
 
-          <Field data-invalid={emailField.invalid}>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              defaultValue={email}
-              aria-invalid={emailField.invalid}
-              required
-            />
-            <FieldError>{emailField.error}</FieldError>
-          </Field>
         </FieldGroup>
+
+        <p className="text-sm text-muted-foreground">
+          Your sign-in email cannot be changed from this form.
+        </p>
 
         <Button
           type="submit"

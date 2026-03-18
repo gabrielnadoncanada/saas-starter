@@ -1,14 +1,22 @@
 import { Suspense } from 'react';
 import { AuthForm } from '@/features/auth/components/AuthForm';
+import { PasswordSignUpForm } from '@/features/auth/components/PasswordSignUpForm';
 import { getEnabledOAuthProviderIds, hasMagicLinkProvider } from '@/shared/lib/auth/providers';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import Link from 'next/link';
 import { routes } from '@/shared/constants/routes';
+import { Separator } from '@/shared/components/ui/separator';
+import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
 
-export default function SignUpPage() {
+type SignUpPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
   const hasProviderChoice = allowMagicLink || oauthProviders.length > 0;
+  const authFlow = getAuthFlowParams(await searchParams);
 
   return (
     <Suspense>
@@ -18,8 +26,8 @@ export default function SignUpPage() {
         description={(
           <>
             {hasProviderChoice
-              ? 'Use your email link or a connected provider to create your account.'
-              : 'No sign-up method is currently configured.'}
+              ? 'Create your account with a password, an email link, or a connected provider.'
+              : 'Create your account with a password.'}
 
             &nbsp;Already have an account?{" "}
             <Link href={routes.auth.login} className="underline underline-offset-4 hover:text-primary">
@@ -41,10 +49,18 @@ export default function SignUpPage() {
           </p>
         )}
       >
-        <AuthForm
-          oauthProviders={oauthProviders}
-          allowMagicLink={allowMagicLink}
-        />
+        <div className="space-y-6">
+          <PasswordSignUpForm {...authFlow} />
+          {hasProviderChoice ? (
+            <>
+              <Separator />
+              <AuthForm
+                oauthProviders={oauthProviders}
+                allowMagicLink={allowMagicLink}
+              />
+            </>
+          ) : null}
+        </div>
       </AuthCard>
     </Suspense>
   );
