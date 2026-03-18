@@ -21,11 +21,17 @@ const { syncSeatQuantity } = await import(
 
 function mockDb(overrides: Record<string, any> = {}) {
   const tx = {
+    $queryRaw: vi.fn().mockResolvedValue([]),
     processedStripeCheckout: {
       create: vi.fn().mockResolvedValue({}),
     },
     team: {
+      findUnique: vi.fn().mockResolvedValue({
+        stripeSubscriptionId: null,
+        subscriptionStatus: null,
+      }),
       update: vi.fn().mockResolvedValue({}),
+      ...overrides.txTeam,
     },
   };
 
@@ -61,7 +67,6 @@ describe("finalizeCheckoutSession", () => {
     const db = mockDb({
       team: {
         findUnique: vi.fn().mockResolvedValue({ id: 10 }),
-        update: vi.fn().mockResolvedValue({}),
       },
     });
     const stripe = mockStripe({
@@ -99,6 +104,8 @@ describe("finalizeCheckoutSession", () => {
         planName: "Lifetime",
         subscriptionStatus: "lifetime",
         pricingModel: "one_time",
+        pendingCheckoutPriceId: null,
+        pendingCheckoutStartedAt: null,
       },
     });
   });
@@ -107,7 +114,6 @@ describe("finalizeCheckoutSession", () => {
     const db = mockDb({
       team: {
         findUnique: vi.fn().mockResolvedValue({ id: 20 }),
-        update: vi.fn().mockResolvedValue({}),
       },
     });
     const stripe = mockStripe({
@@ -161,7 +167,6 @@ describe("finalizeCheckoutSession", () => {
     const db = mockDb({
       team: {
         findUnique: vi.fn().mockResolvedValue({ id: 30 }),
-        update: vi.fn().mockResolvedValue({}),
       },
     });
     const stripe = mockStripe({

@@ -1,7 +1,12 @@
 import Stripe from "stripe";
 import type { Prisma } from "@prisma/client";
 
-import { resolvePlanFromStripeProduct, resolvePricingModel } from "@/features/billing/plans";
+import {
+  isTerminalStripeSubscriptionStatus,
+  resolvePlanFromStripeProduct,
+  resolvePricingModel,
+} from "@/features/billing/plans";
+import { releaseCheckoutForTeam } from "@/features/billing/server/checkout-lock";
 import { syncSeatQuantity } from "@/features/billing/server/sync-seat-quantity";
 import { db as defaultDb } from "@/shared/lib/db/prisma";
 import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
@@ -12,6 +17,17 @@ function isUniqueConstraintError(error: unknown) {
     error !== null &&
     "code" in error &&
     error.code === "P2002"
+  );
+}
+
+function hasConflictingActiveSubscription(team: {
+  stripeSubscriptionId: string | null;
+  subscriptionStatus: string | null;
+}, subscriptionId: string) {
+  return (
+    !!team.stripeSubscriptionId &&
+    team.stripeSubscriptionId !== subscriptionId &&
+    !isTerminalStripeSubscriptionStatus(team.subscriptionStatus)
   );
 }
 
@@ -43,7 +59,13 @@ export async function finalizeCheckoutSession(
   }
 
   async function runOnce(
-    work: (tx: Prisma.TransactionClient) => Promise<void>,
+    work: (
+      tx: Prisma.TransactionClient,
+      lockedTeam: {
+        stripeSubscriptionId: string | null;
+        subscriptionStatus: string | null;
+      },
+    ) => Promise<void>,
   ) {
     return deps.db.$transaction(async (tx) => {
       try {
@@ -61,7 +83,21 @@ export async function finalizeCheckoutSession(
         throw error;
       }
 
-      await work(tx);
+      await tx.$queryRaw`SELECT id FROM "Team" WHERE id = ${teamId} FOR UPDATE`;
+
+      const lockedTeam = await tx.team.findUnique({
+        where: { id: teamId },
+        select: {
+          stripeSubscriptionId: true,
+          subscriptionStatus: true,
+        },
+      });
+
+      if (!lockedTeam) {
+        throw new Error("Team not found in database.");
+      }
+
+      await work(tx, lockedTeam);
 
       return true;
     });
@@ -92,6 +128,8 @@ export async function finalizeCheckoutSession(
           planName: product.name,
           subscriptionStatus: "lifetime",
           pricingModel: "one_time",
+          pendingCheckoutPriceId: null,
+          pendingCheckoutStartedAt: null,
         },
       });
     });
@@ -130,7 +168,11 @@ export async function finalizeCheckoutSession(
 
   const pricingModel = resolvePricingModel(product.metadata);
 
-  const wasProcessed = await runOnce(async (tx) => {
+  const wasProcessed = await runOnce(async (tx, lockedTeam) => {
+    if (hasConflictingActiveSubscription(lockedTeam, subscriptionId)) {
+      throw new Error("Team already has an active subscription.");
+    }
+
     await tx.team.update({
       where: { id: teamId },
       data: {
@@ -143,6 +185,8 @@ export async function finalizeCheckoutSession(
         pricingModel,
       },
     });
+
+    await releaseCheckoutForTeam(teamId, tx);
   });
 
   if (!wasProcessed) {

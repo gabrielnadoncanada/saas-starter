@@ -1,5 +1,8 @@
 import type { User } from "@prisma/client";
 import { ActivityType, type TeamRole } from "@/shared/lib/db/enums";
+import { LimitReachedError, UpgradeRequiredError } from "@/features/billing/errors";
+import { assertCapability, assertLimit } from "@/features/billing/guards";
+import type { PlanId } from "@/features/billing/plans";
 import { db } from "@/shared/lib/db/prisma";
 import { sendTeamInvitationEmail } from "@/shared/lib/email/senders";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -7,7 +10,7 @@ import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 export type InviteTeamMemberInput = {
   teamId: number;
-  teamName: string;
+  planId: PlanId;
   inviter: Pick<User, "id" | "email" | "name">;
   email: string;
   role: TeamRole;
@@ -15,45 +18,74 @@ export type InviteTeamMemberInput = {
 
 type InviteTeamMemberResult = { error: string } | { success: string };
 
-async function ensureNoExistingMembership(
-  input: InviteTeamMemberInput,
-): Promise<InviteTeamMemberResult | null> {
-  const existingMember = await db.teamMember.findFirst({
-    where: {
-      teamId: input.teamId,
-      user: {
-        email: input.email,
-      },
-    },
-  });
-
-  if (existingMember) {
-    return { error: "User is already a member of this team" };
-  }
-
-  return null;
-}
-
-async function ensureNoPendingInvitation(
-  input: InviteTeamMemberInput,
-): Promise<InviteTeamMemberResult | null> {
-  const existingInvitation = await db.invitation.findFirst({
-    where: {
-      email: input.email,
-      teamId: input.teamId,
-      status: "PENDING",
-    },
-  });
-
-  if (existingInvitation) {
-    return { error: "An invitation has already been sent to this email" };
-  }
-
-  return null;
-}
-
 async function createInvitationRecord(input: InviteTeamMemberInput) {
   return db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "Team" WHERE id = ${input.teamId} FOR UPDATE`;
+
+    const team = await tx.team.findUnique({
+      where: { id: input.teamId },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            teamMembers: true,
+          },
+        },
+      },
+    });
+
+    if (!team) {
+      return { error: "Team not found" } satisfies InviteTeamMemberResult;
+    }
+
+    try {
+      assertCapability(input.planId, "team.invite");
+      const pendingInvitationCount = await tx.invitation.count({
+        where: {
+          teamId: input.teamId,
+          status: "PENDING",
+        },
+      });
+      assertLimit(
+        input.planId,
+        "teamMembers",
+        team._count.teamMembers + pendingInvitationCount,
+      );
+    } catch (error) {
+      if (error instanceof UpgradeRequiredError || error instanceof LimitReachedError) {
+        return { error: error.message } satisfies InviteTeamMemberResult;
+      }
+
+      throw error;
+    }
+
+    const existingMember = await tx.teamMember.findFirst({
+      where: {
+        teamId: input.teamId,
+        user: {
+          email: input.email,
+        },
+      },
+    });
+
+    if (existingMember) {
+      return { error: "User is already a member of this team" } satisfies InviteTeamMemberResult;
+    }
+
+    const existingInvitation = await tx.invitation.findFirst({
+      where: {
+        email: input.email,
+        teamId: input.teamId,
+        status: "PENDING",
+      },
+    });
+
+    if (existingInvitation) {
+      return {
+        error: "An invitation has already been sent to this email",
+      } satisfies InviteTeamMemberResult;
+    }
+
     const invitation = await tx.invitation.create({
       data: {
         teamId: input.teamId,
@@ -73,20 +105,21 @@ async function createInvitationRecord(input: InviteTeamMemberInput) {
       },
     });
 
-    return invitation;
+    return { invitationId: invitation.id, teamName: team.name };
   });
 }
 
 async function sendInvitationEmail(
   input: InviteTeamMemberInput,
   invitationId: number,
+  teamName: string,
 ): Promise<InviteTeamMemberResult> {
   try {
     await sendTeamInvitationEmail({
       email: input.email,
       role: input.role,
       inviterName: input.inviter.name || input.inviter.email,
-      teamName: input.teamName,
+      teamName,
       invitationId,
     });
   } catch (error) {
@@ -106,21 +139,13 @@ async function sendInvitationEmail(
 }
 
 export async function inviteTeamMemberToTeam(input: InviteTeamMemberInput) {
-  const membershipError = await ensureNoExistingMembership(input);
+  const result = await createInvitationRecord(input);
 
-  if (membershipError) {
-    return membershipError;
+  if ("error" in result) {
+    return result;
   }
 
-  const invitationError = await ensureNoPendingInvitation(input);
-
-  if (invitationError) {
-    return invitationError;
-  }
-
-  const invitation = await createInvitationRecord(input);
-
-  return sendInvitationEmail(input, invitation.id);
+  return sendInvitationEmail(input, result.invitationId, result.teamName);
 }
 
 export async function listPendingInvitationsForCurrentTeam() {

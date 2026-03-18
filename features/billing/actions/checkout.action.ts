@@ -3,7 +3,11 @@
 import { redirect } from "next/navigation";
 
 import { buildAuthHref } from "@/features/auth/utils/auth-flow";
-import { isTerminalStripeSubscriptionStatus } from "@/features/billing/plans";
+import {
+  CheckoutInProgressError,
+  clearCheckoutReservation,
+  reserveCheckoutForTeam,
+} from "@/features/billing/server/checkout-lock";
 import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -32,20 +36,29 @@ export async function checkoutAction(formData: FormData) {
 
   const team = await getCurrentTeam();
   if (!team) throw new Error("Team not found");
-  if (
-    team.stripeSubscriptionId &&
-    !isTerminalStripeSubscriptionStatus(team.subscriptionStatus)
-  ) {
-    redirect(routes.app.settingsTeam);
+
+  try {
+    await reserveCheckoutForTeam(team.id, priceId);
+
+    try {
+      const url = await createCheckoutSession({
+        priceId,
+        teamId: team.id,
+        seatQuantity: team.teamMembers.length,
+        stripeCustomerId: team.stripeCustomerId,
+        userEmail: user.email,
+      });
+
+      redirect(url);
+    } catch (error) {
+      await clearCheckoutReservation(team.id);
+      throw error;
+    }
+  } catch (error) {
+    if (error instanceof CheckoutInProgressError) {
+      redirect(routes.app.settingsTeam);
+    }
+
+    throw error;
   }
-
-  const url = await createCheckoutSession({
-    priceId,
-    teamId: team.id,
-    seatQuantity: team.teamMembers.length,
-    stripeCustomerId: team.stripeCustomerId,
-    userEmail: user.email,
-  });
-
-  redirect(url);
 }

@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
   }
 
   switch (event.type) {
+    case "customer.subscription.created":
     case "customer.subscription.updated":
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
       await finalizeCheckoutSession(session.id);
       break;
     }
+    case "invoice.payment_action_required":
     case "invoice.payment_failed":
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
@@ -42,6 +44,12 @@ export async function POST(request: NextRequest) {
       const subscriptionId =
         typeof sub === "string" ? sub : sub?.id;
       if (subscriptionId) {
+        if (event.type === "invoice.payment_action_required") {
+          console.warn("Stripe invoice requires customer action", {
+            invoiceId: invoice.id,
+            subscriptionId,
+          });
+        }
         const subscription =
           await stripe.subscriptions.retrieve(subscriptionId);
         await handleSubscriptionChange(subscription);

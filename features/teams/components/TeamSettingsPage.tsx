@@ -22,6 +22,14 @@ function getSubscriptionLabel(subscriptionStatus: string | null) {
     return 'Trial period';
   }
 
+  if (subscriptionStatus === 'past_due') {
+    return 'Payment overdue. Update billing to restore paid access.';
+  }
+
+  if (subscriptionStatus === 'unpaid' || subscriptionStatus === 'incomplete') {
+    return 'Payment issue. Update billing to continue.';
+  }
+
   return 'No active subscription';
 }
 

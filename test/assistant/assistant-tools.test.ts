@@ -101,6 +101,7 @@ describe("assistant tools", () => {
     vi.mocked(consumeMonthlyUsage).mockRejectedValue(
       new LimitReachedError("emailSyncsPerMonth", 50, 50, "Pro"),
     );
+    vi.mocked(emailProvider.getRecentMessages).mockResolvedValue([]);
 
     const result = await reviewInboxExecute({ limit: 3 });
 
@@ -108,7 +109,7 @@ describe("assistant tools", () => {
     if (!result.success) {
       expect(result.error.code).toBe("LIMIT_REACHED");
     }
-    expect(emailProvider.getRecentMessages).not.toHaveBeenCalled();
+    expect(emailProvider.getRecentMessages).toHaveBeenCalledWith(3);
   });
 
   it("consumes email sync usage before a successful inbox review", async () => {

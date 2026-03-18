@@ -46,6 +46,10 @@ export async function handleSubscriptionChange(
   }
 
   if (team.pricingModel === "one_time") {
+    console.info("Ignoring subscription webhook for one-time team", {
+      customerId,
+      subscriptionId,
+    });
     return;
   }
 

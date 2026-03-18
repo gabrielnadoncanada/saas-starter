@@ -1,7 +1,9 @@
+import { unstable_cache } from "next/cache";
+
 import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
 
-export async function getStripePrices(deps = { stripe: defaultStripe }) {
-  const prices = await deps.stripe.prices.list({
+async function listStripePrices(stripe = defaultStripe) {
+  const prices = await stripe.prices.list({
     expand: ["data.product"],
     active: true,
   });
@@ -18,8 +20,8 @@ export async function getStripePrices(deps = { stripe: defaultStripe }) {
   }));
 }
 
-export async function getStripeProducts(deps = { stripe: defaultStripe }) {
-  const products = await deps.stripe.products.list({
+async function listStripeProducts(stripe = defaultStripe) {
+  const products = await stripe.products.list({
     active: true,
     expand: ["data.default_price"],
   });
@@ -34,4 +36,32 @@ export async function getStripeProducts(deps = { stripe: defaultStripe }) {
         ? product.default_price
         : product.default_price?.id,
   }));
+}
+
+const getCachedStripePrices = unstable_cache(
+  () => listStripePrices(),
+  ["stripe-prices"],
+  { revalidate: 300 },
+);
+
+const getCachedStripeProducts = unstable_cache(
+  () => listStripeProducts(),
+  ["stripe-products"],
+  { revalidate: 300 },
+);
+
+export async function getStripePrices(deps = { stripe: defaultStripe }) {
+  if (deps.stripe === defaultStripe) {
+    return getCachedStripePrices();
+  }
+
+  return listStripePrices(deps.stripe);
+}
+
+export async function getStripeProducts(deps = { stripe: defaultStripe }) {
+  if (deps.stripe === defaultStripe) {
+    return getCachedStripeProducts();
+  }
+
+  return listStripeProducts(deps.stripe);
 }

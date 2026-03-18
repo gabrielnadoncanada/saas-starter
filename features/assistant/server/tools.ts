@@ -48,13 +48,13 @@ export const assistantTools = {
       try {
         const teamPlan = await getToolTeamPlan();
         assertCapability(teamPlan.planId, "email.sync");
+        const messages = await emailProvider.getRecentMessages(limit ?? 5);
+
         await consumeMonthlyUsage(
           teamPlan.teamId,
           "emailSyncsPerMonth",
           teamPlan.planId,
         );
-
-        const messages = await emailProvider.getRecentMessages(limit ?? 5);
 
         return {
           success: true,
