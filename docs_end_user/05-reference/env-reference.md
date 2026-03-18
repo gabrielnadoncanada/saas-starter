@@ -22,6 +22,18 @@ STRIPE_WEBHOOK_SECRET=
 - `STRIPE_SECRET_KEY`: used by the Stripe client
 - `STRIPE_WEBHOOK_SECRET`: used by `/api/stripe/webhook`
 
+## AI Assistant
+
+```env
+AI_PROVIDER=
+GOOGLE_GENERATIVE_AI_API_KEY=
+GROQ_API_KEY=
+```
+
+- `AI_PROVIDER`: selects `google` or `groq` for the assistant module
+- `GOOGLE_GENERATIVE_AI_API_KEY`: required when `AI_PROVIDER=google`
+- `GROQ_API_KEY`: required when `AI_PROVIDER=groq`
+
 ## Auth Providers
 
 ```env

@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 
-import { resolvePlanFromStripeName } from "@/features/billing/plans/stripe-map";
+import {
+  resolvePlanFromStripeName,
+  resolvePlanFromStripeProduct,
+} from "@/features/billing/plans/stripe-map";
 import { resolvePricingModel } from "@/features/billing/plans/pricing-model";
 
 describe("resolvePlanFromStripeName", () => {
@@ -19,6 +22,22 @@ describe("resolvePlanFromStripeName", () => {
   it("falls back to free for null/undefined", () => {
     expect(resolvePlanFromStripeName(null)).toBe("free");
     expect(resolvePlanFromStripeName(undefined)).toBe("free");
+  });
+
+  it("normalizes case and surrounding whitespace", () => {
+    expect(resolvePlanFromStripeName(" pro ")).toBe("pro");
+    expect(resolvePlanFromStripeName("TEAM")).toBe("team");
+  });
+});
+
+describe("resolvePlanFromStripeProduct", () => {
+  it("prefers stable metadata plan IDs", () => {
+    expect(
+      resolvePlanFromStripeProduct({
+        name: "Totally Custom Name",
+        metadata: { plan_id: "team" },
+      }),
+    ).toBe("team");
   });
 });
 

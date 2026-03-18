@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Sparkles, Users } from 'lucide-react';
 import { getCurrentTeam } from '@/features/teams/server/current-team';
 import { listCurrentTeamTasks } from '@/features/tasks/server/tasks';
 import { Main } from '@/shared/components/layout/shell/Main';
@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { routes } from '@/shared/constants/routes';
-import { resolvePlanFromStripeName, getPlan } from '@/features/billing/plans';
+import { resolveTeamPlan, getPlan } from '@/features/billing/plans';
 import { hasCapability, checkLimit } from '@/features/billing/guards';
 import { getMonthlyUsage } from '@/features/billing/usage';
 import { UsageMeter } from '@/features/billing/components/UsageMeter';
@@ -26,15 +26,18 @@ export default async function DashboardPage() {
     listCurrentTeamTasks(),
   ]);
 
-  const planId = resolvePlanFromStripeName(team?.planName);
+  const planId = resolveTeamPlan(team);
   const plan = getPlan(planId);
   const memberCount = team?.teamMembers?.length ?? 0;
   const taskCount = tasks.length;
 
-  const tasksUsage = team
-    ? await getMonthlyUsage(team.id, "tasksPerMonth")
-    : 0;
+  const [tasksUsage, aiUsage] = await Promise.all([
+    team ? getMonthlyUsage(team.id, "tasksPerMonth") : 0,
+    team ? getMonthlyUsage(team.id, "aiRequestsPerMonth") : 0,
+  ]);
   const taskLimit = checkLimit(planId, "tasksPerMonth", tasksUsage);
+  const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
+  const canUseAI = hasCapability(planId, "ai.assistant");
 
   return (
     <Main className="flex flex-1 flex-col gap-4 sm:gap-6">
@@ -82,6 +85,25 @@ export default async function DashboardPage() {
             </CardTitle>
           </CardHeader>
         </Card>
+
+        {canUseAI && (
+          <Card>
+            <CardHeader>
+              <CardDescription>AI Assistant</CardDescription>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-orange-500" />
+                {aiUsage} requests
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <UsageMeter
+                label="Monthly usage"
+                current={aiUsage}
+                limit={aiLimit.limit}
+              />
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {!hasCapability(planId, "team.analytics") && (
@@ -95,6 +117,12 @@ export default async function DashboardPage() {
         <Link href={routes.app.tasks}>
           <Button variant="outline">
             View Tasks
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
+        <Link href={routes.app.assistant}>
+          <Button variant="outline">
+            AI Assistant
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

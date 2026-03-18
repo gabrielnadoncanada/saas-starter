@@ -66,6 +66,13 @@ const rows: ComparisonRow[] = [
     buildFromScratch: 'no',
   },
   {
+    feature: 'AI-ready assistant pattern with plan gating + quotas',
+    thisStarter: 'yes',
+    freeBoilerplate: 'no',
+    heavierStarter: 'no',
+    buildFromScratch: 'no',
+  },
+  {
     feature: 'Working CRUD example with plan gating',
     thisStarter: 'yes',
     freeBoilerplate: 'no',

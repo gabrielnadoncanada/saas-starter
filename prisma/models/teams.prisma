@@ -32,15 +32,18 @@ model Team {
   stripeCustomerId     String?  @unique
   stripeSubscriptionId String?  @unique
   stripeProductId      String?
+  planId               String?  @db.VarChar(20)
   planName             String?  @db.VarChar(50)
   subscriptionStatus   String?  @db.VarChar(20)
   pricingModel         String?  @db.VarChar(20)
 
-  teamMembers  TeamMember[]
-  activityLogs ActivityLog[]
-  invitations  Invitation[]
-  tasks        Task[]
-  usageRecords UsageRecord[]
+  teamMembers            TeamMember[]
+  activityLogs           ActivityLog[]
+  invitations            Invitation[]
+  tasks                  Task[]
+  usageCounters          UsageCounter[]
+  processedCheckouts     ProcessedStripeCheckout[]
+  assistantConversations AssistantConversation[]
 }
 
 model TeamMember {

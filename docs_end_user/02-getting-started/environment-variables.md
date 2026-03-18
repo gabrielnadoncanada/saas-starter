@@ -13,6 +13,7 @@ This guide explains which variables matter first and which parts of the starter 
 - `shared/lib/email/config.ts`
 - `shared/lib/stripe/client.ts`
 - `app/api/stripe/webhook/route.ts`
+- `features/assistant/server/get-assistant-model.ts`
 
 ## Required For A Basic Local Setup
 
@@ -27,6 +28,21 @@ AUTH_SECRET=your-random-secret
 ```
 
 Without these, the database, auth session signing, and Stripe flow will not work correctly.
+
+## AI Assistant Variables
+
+The assistant module is optional, but if you want the AI-ready billing pattern to work locally you should also set:
+
+```env
+AI_PROVIDER=google
+GOOGLE_GENERATIVE_AI_API_KEY=
+GROQ_API_KEY=
+```
+
+- `AI_PROVIDER` accepts `google` or `groq`
+- Default is `google`
+- Only the selected provider key is required at runtime
+- There is no silent fallback if the selected key is missing
 
 ## Auth Variables
 
@@ -76,6 +92,7 @@ After editing `.env`, verify:
 3. at least one auth method is visible
 4. `/pricing` loads
 5. Stripe checkout can start
+6. `/dashboard/assistant` works when your chosen AI provider key is set
 
 ## Related Docs
 

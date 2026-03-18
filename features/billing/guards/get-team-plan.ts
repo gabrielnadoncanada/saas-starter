@@ -1,6 +1,6 @@
 import { getCurrentTeam } from "@/features/teams/server/current-team";
 import type { PlanId, PricingModel } from "../plans";
-import { resolvePlanFromStripeName } from "../plans";
+import { resolveTeamPlan } from "../plans";
 
 type TeamPlanInfo = {
   planId: PlanId;
@@ -20,7 +20,7 @@ export async function getTeamPlan(): Promise<TeamPlanInfo | null> {
   if (!team) return null;
 
   return {
-    planId: resolvePlanFromStripeName(team.planName),
+    planId: resolveTeamPlan(team),
     teamId: team.id,
     teamName: team.name,
     subscriptionStatus: team.subscriptionStatus,

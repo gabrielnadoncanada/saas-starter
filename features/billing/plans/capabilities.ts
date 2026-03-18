@@ -5,7 +5,8 @@
  * To gate a new feature, add a key here, then add it to the relevant
  * plans in plans.ts, then guard it with assertCapability().
  *
- * Enforced:  task.create, team.invite, team.analytics, billing.portal
+ * Enforced:  task.create, team.invite, team.analytics, billing.portal,
+ *            ai.assistant, email.sync, invoice.create
  * Placeholder (wire up when you build the feature): task.export, api.access
  */
 export const capabilities = [
@@ -15,6 +16,9 @@ export const capabilities = [
   "team.analytics",
   "billing.portal",
   "api.access", // placeholder — enforce in your API middleware
+  "ai.assistant",
+  "email.sync",
+  "invoice.create",
 ] as const;
 
 export type Capability = (typeof capabilities)[number];

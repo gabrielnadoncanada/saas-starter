@@ -17,11 +17,12 @@ model User {
   updatedAt     DateTime     @updatedAt
   deletedAt     DateTime?
 
-  accounts        Account[]
-  sessions        Session[]
-  teamMembers     TeamMember[]
-  invitationsSent Invitation[]  @relation("InvitationSender")
-  activityLogs    ActivityLog[]
+  accounts               Account[]
+  sessions               Session[]
+  teamMembers            TeamMember[]
+  invitationsSent        Invitation[]            @relation("InvitationSender")
+  activityLogs           ActivityLog[]
+  assistantConversations AssistantConversation[]
 }
 
 model Account {

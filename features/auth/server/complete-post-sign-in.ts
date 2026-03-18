@@ -1,4 +1,6 @@
 import { syncSeatQuantity } from "@/features/billing/server/sync-seat-quantity";
+import { assertCapability, assertLimit } from "@/features/billing/guards";
+import { resolveTeamPlan } from "@/features/billing/plans";
 import { ActivityType } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
@@ -36,6 +38,28 @@ export async function completePostSignIn({
     return ensureUserWorkspace(userId, email);
   }
 
+  const invitedTeam = await db.team.findUnique({
+    where: { id: invitation.teamId },
+    select: {
+      planId: true,
+      planName: true,
+      subscriptionStatus: true,
+      _count: {
+        select: {
+          teamMembers: true,
+        },
+      },
+    },
+  });
+
+  if (!invitedTeam) {
+    throw new Error("Invited team not found.");
+  }
+
+  const invitedTeamPlan = resolveTeamPlan(invitedTeam);
+  assertCapability(invitedTeamPlan, "team.invite");
+  assertLimit(invitedTeamPlan, "teamMembers", invitedTeam._count.teamMembers);
+
   await db.$transaction(async (tx) => {
     const existingMembership = await tx.teamMember.findFirst({
       where: {
@@ -69,7 +93,7 @@ export async function completePostSignIn({
     });
   });
 
-  syncSeatQuantity(invitation.teamId);
+  await syncSeatQuantity(invitation.teamId);
 
   return invitation.teamId;
 }

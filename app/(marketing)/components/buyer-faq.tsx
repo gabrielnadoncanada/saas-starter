@@ -7,12 +7,12 @@ const faqs = [
   {
     question: 'What exactly do I get?',
     answer:
-      'You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, PostgreSQL + Prisma setup, email templates, and 72 documentation files including 31 step-by-step customization guides.',
+      'You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions plus demo inbox and invoice draft scaffolds, PostgreSQL + Prisma setup, email templates, and 72 documentation files including 31 step-by-step customization guides.',
   },
   {
     question: 'What is NOT included?',
     answer:
-      'This is a starter, not a finished product. You will need to build your own product features on top of it. It does not include hosting, domain names, Stripe account setup, or third-party API keys. It also does not include a mobile app, admin panel, or analytics dashboard — those are features you build yourself using the patterns provided.',
+      'This is a starter, not a finished product. You will need to build your own product features on top of it. It does not include hosting, domain names, Stripe account setup, or third-party API keys. It also does not include a mobile app, admin panel, analytics dashboard, a real email inbox integration, or persisted invoicing flows - those are features you build yourself using the patterns provided.',
   },
   {
     question: 'What is the license?',
@@ -27,7 +27,7 @@ const faqs = [
   {
     question: 'What kind of support is included?',
     answer:
-      'Starter is documentation-only — the 72 included docs cover setup, architecture, customization, and troubleshooting. Pro includes priority email support for 6 months. Agency includes priority email support for 12 months. This is not an agency-style retainer — support covers questions about the starter itself, not custom feature development.',
+      'Starter is documentation-only - the 72 included docs cover setup, architecture, customization, and troubleshooting. Pro includes priority email support for 6 months. Agency includes priority email support for 12 months. This is not an agency-style retainer - support covers questions about the starter itself, not custom feature development.',
   },
   {
     question: 'Is there a refund policy?',
@@ -42,12 +42,12 @@ const faqs = [
   {
     question: 'How is this different from free boilerplates?',
     answer:
-      'Free boilerplates give you auth and maybe Stripe checkout. This starter gives you enforced plan gating — capability-based feature flags and usage limits that actually control what users can do based on their plan. It also includes three billing models (flat, per-seat, one-time), team management with roles, 72 docs, and a working CRUD example with plan-gated creation. The difference is between "Stripe is connected" and "billing actually controls your product."',
+      'Free boilerplates give you auth and maybe Stripe checkout. This starter gives you enforced plan gating - capability-based feature flags and usage limits that actually control what users can do based on their plan. It also includes three billing models, team management, 72 docs, a working CRUD example, and an AI-ready monetization pattern you can adapt instead of inventing from scratch.',
   },
   {
     question: 'How is this different from ShipFast or MakerKit?',
     answer:
-      'Most starters focus on getting Stripe connected and leave plan enforcement to you. This starter ships a working plan gating system — assertCapability() and assertLimit() calls that enforce what each plan allows. You can gate any feature or enforce any usage quota in two lines of code. The codebase is also feature-organized (not framework-organized), so you can read, modify, or delete any feature without learning a custom abstraction layer.',
+      'Most starters focus on getting Stripe connected and leave plan enforcement to you. This starter ships a working plan gating system - assertCapability() and assertLimit() calls that enforce what each plan allows. You can gate any feature or enforce any usage quota in two lines of code. The codebase is also feature-organized, so you can read, modify, or delete any feature without learning a custom abstraction layer first.',
   },
   {
     question: 'Can I use this for client projects?',
@@ -57,12 +57,12 @@ const faqs = [
   {
     question: 'What tech stack does this use?',
     answer:
-      'Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS 4, shadcn/ui, Prisma ORM, PostgreSQL, Stripe, NextAuth v5, Resend for email, Vitest for testing, Zod for validation, and TanStack React Table.',
+      'Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS 4, shadcn/ui, Prisma ORM, PostgreSQL, Stripe, NextAuth v5, Resend for email, the Vercel AI SDK for the assistant module, Vitest for testing, Zod for validation, and TanStack React Table.',
   },
   {
     question: 'How long does setup take?',
     answer:
-      'If you have PostgreSQL and Stripe API keys ready, first run takes about 10 minutes: clone, install, configure env, run migrations, seed, and start the dev server. The getting-started guide walks through every step.',
+      'If you have PostgreSQL and Stripe API keys ready, first run takes about 10 minutes: clone, install, configure env, run migrations, seed, and start the dev server. The getting-started guide walks through every step. AI setup adds one provider key and an optional AI_PROVIDER switch.',
   },
 ];
 
@@ -78,6 +78,7 @@ export function BuyerFaq() {
         <dl className="divide-y divide-border">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
+
             return (
               <div key={index} className="py-4">
                 <dt>

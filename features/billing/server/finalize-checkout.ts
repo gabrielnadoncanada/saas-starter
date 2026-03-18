@@ -1,8 +1,19 @@
 import Stripe from "stripe";
+import type { Prisma } from "@prisma/client";
 
-import { resolvePricingModel } from "@/features/billing/plans";
+import { resolvePlanFromStripeProduct, resolvePricingModel } from "@/features/billing/plans";
+import { syncSeatQuantity } from "@/features/billing/server/sync-seat-quantity";
 import { db as defaultDb } from "@/shared/lib/db/prisma";
 import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
+
+function isUniqueConstraintError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "P2002"
+  );
+}
 
 export async function finalizeCheckoutSession(
   sessionId: string,
@@ -18,26 +29,42 @@ export async function finalizeCheckoutSession(
 
   const customerId = session.customer.id;
 
-  const userId = session.client_reference_id;
-  if (!userId) {
-    throw new Error("No user ID found in session's client_reference_id.");
+  const teamId = Number(session.metadata?.teamId);
+  if (!Number.isInteger(teamId) || teamId <= 0) {
+    throw new Error("No valid team ID found in session metadata.");
   }
 
-  const user = await deps.db.user.findUnique({
-    where: { id: Number(userId) },
+  const team = await deps.db.team.findUnique({
+    where: { id: teamId },
   });
 
-  if (!user) {
-    throw new Error("User not found in database.");
+  if (!team) {
+    throw new Error("Team not found in database.");
   }
 
-  const userTeam = await deps.db.teamMember.findFirst({
-    where: { userId: user.id },
-    select: { teamId: true },
-  });
+  async function runOnce(
+    work: (tx: Prisma.TransactionClient) => Promise<void>,
+  ) {
+    return deps.db.$transaction(async (tx) => {
+      try {
+        await tx.processedStripeCheckout.create({
+          data: {
+            sessionId,
+            teamId,
+          },
+        });
+      } catch (error) {
+        if (isUniqueConstraintError(error)) {
+          return false;
+        }
 
-  if (!userTeam) {
-    throw new Error("User is not associated with any team.");
+        throw error;
+      }
+
+      await work(tx);
+
+      return true;
+    });
   }
 
   // One-time payment flow
@@ -54,17 +81,24 @@ export async function finalizeCheckoutSession(
       throw new Error("No product found for this payment session.");
     }
 
-    await deps.db.team.update({
-      where: { id: userTeam.teamId },
-      data: {
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: null,
-        stripeProductId: product.id,
-        planName: product.name,
-        subscriptionStatus: "lifetime",
-        pricingModel: "one_time",
-      },
+    const wasProcessed = await runOnce(async (tx) => {
+      await tx.team.update({
+        where: { id: teamId },
+        data: {
+          planId: resolvePlanFromStripeProduct(product),
+          stripeCustomerId: customerId,
+          stripeSubscriptionId: null,
+          stripeProductId: product.id,
+          planName: product.name,
+          subscriptionStatus: "lifetime",
+          pricingModel: "one_time",
+        },
+      });
     });
+
+    if (!wasProcessed) {
+      return;
+    }
 
     return;
   }
@@ -96,15 +130,26 @@ export async function finalizeCheckoutSession(
 
   const pricingModel = resolvePricingModel(product.metadata);
 
-  await deps.db.team.update({
-    where: { id: userTeam.teamId },
-    data: {
-      stripeCustomerId: customerId,
-      stripeSubscriptionId: subscriptionId,
-      stripeProductId: product.id,
-      planName: product.name,
-      subscriptionStatus: subscription.status,
-      pricingModel,
-    },
+  const wasProcessed = await runOnce(async (tx) => {
+    await tx.team.update({
+      where: { id: teamId },
+      data: {
+        planId: resolvePlanFromStripeProduct(product),
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: subscriptionId,
+        stripeProductId: product.id,
+        planName: product.name,
+        subscriptionStatus: subscription.status,
+        pricingModel,
+      },
+    });
   });
+
+  if (!wasProcessed) {
+    return;
+  }
+
+  if (pricingModel === "per_seat") {
+    await syncSeatQuantity(teamId, deps);
+  }
 }

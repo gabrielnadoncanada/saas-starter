@@ -1,0 +1,17 @@
+model AssistantConversation {
+  id            String   @id @default(cuid())
+  teamId        Int
+  userId        Int
+  title         String   @db.VarChar(120)
+  messagesJson  Json
+  lastMessageAt DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([teamId, userId, lastMessageAt(sort: Desc)])
+  @@index([userId])
+  @@index([teamId])
+}

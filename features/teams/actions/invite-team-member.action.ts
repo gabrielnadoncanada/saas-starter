@@ -22,12 +22,26 @@ export const inviteTeamMemberAction = validatedActionWithUser<
 
     const team = await db.team.findUnique({
       where: { id: guard.teamId },
-      select: { name: true, _count: { select: { teamMembers: true } } },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            teamMembers: true,
+          },
+        },
+      },
     });
 
     if (!team) {
       return { error: "Team not found" };
     }
+
+    const pendingInvitationCount = await db.invitation.count({
+      where: {
+        teamId: guard.teamId,
+        status: "PENDING",
+      },
+    });
 
     const teamPlan = await getTeamPlan();
 
@@ -37,7 +51,11 @@ export const inviteTeamMemberAction = validatedActionWithUser<
 
     try {
       assertCapability(teamPlan.planId, "team.invite");
-      assertLimit(teamPlan.planId, "teamMembers", team._count.teamMembers);
+      assertLimit(
+        teamPlan.planId,
+        "teamMembers",
+        team._count.teamMembers + pendingInvitationCount,
+      );
     } catch (error) {
       if (error instanceof UpgradeRequiredError || error instanceof LimitReachedError) {
         return { error: error.message };

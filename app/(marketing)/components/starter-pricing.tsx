@@ -26,6 +26,7 @@ const tiers: Tier[] = [
       'Team management with roles and invitations',
       'Dashboard shell with sidebar, settings, activity log',
       'Tasks CRUD example with plan-gated creation',
+      'AI-ready assistant module with real task actions and honest scaffolds',
       'PostgreSQL + Prisma with migrations and seed',
       'Email templates with Resend',
       '72 documentation files including 31 customization guides',

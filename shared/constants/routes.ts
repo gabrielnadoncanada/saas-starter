@@ -12,6 +12,7 @@ export const routes = {
   app: {
     dashboard: "/dashboard",
     tasks: "/dashboard/tasks",
+    assistant: "/dashboard/assistant",
     settings: "/dashboard/settings",
     settingsAccount: "/dashboard/settings/account",
     settingsAuthentication: "/dashboard/settings/authentication",

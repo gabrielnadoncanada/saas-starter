@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
       await finalizeCheckoutSession(session.id);
       break;
     }
-    case "invoice.payment_failed": {
+    case "invoice.payment_failed":
+    case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const sub = invoice.parent?.subscription_details?.subscription;
       const subscriptionId =

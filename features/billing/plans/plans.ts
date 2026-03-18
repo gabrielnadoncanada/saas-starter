@@ -25,6 +25,8 @@ export const plans: Record<PlanId, Plan> = {
       tasksPerMonth: 10,
       teamMembers: 1,
       storageMb: 100,
+      aiRequestsPerMonth: 0,
+      emailSyncsPerMonth: 0,
     },
   },
 
@@ -37,11 +39,16 @@ export const plans: Record<PlanId, Plan> = {
       "team.invite",
       "billing.portal",
       "api.access",
+      "ai.assistant",
+      "email.sync",
+      "invoice.create",
     ],
     limits: {
       tasksPerMonth: 1000,
       teamMembers: 5,
       storageMb: 5000,
+      aiRequestsPerMonth: 100,
+      emailSyncsPerMonth: 50,
     },
   },
 
@@ -55,11 +62,16 @@ export const plans: Record<PlanId, Plan> = {
       "team.analytics",
       "billing.portal",
       "api.access",
+      "ai.assistant",
+      "email.sync",
+      "invoice.create",
     ],
     limits: {
       tasksPerMonth: 10000,
       teamMembers: 50,
       storageMb: 50000,
+      aiRequestsPerMonth: 500,
+      emailSyncsPerMonth: 200,
     },
   },
 };

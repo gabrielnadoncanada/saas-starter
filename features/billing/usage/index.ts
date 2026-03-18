@@ -1,1 +1,1 @@
-export { recordUsage, getMonthlyUsage, getTotalUsage } from "./usage-service";
+export { consumeMonthlyUsage, getMonthlyUsage } from "./usage-service";

@@ -1,5 +1,6 @@
 import { ActivityType } from "@/shared/lib/db/enums";
 
+import { syncSeatQuantity } from "@/features/billing/server/sync-seat-quantity";
 import { createActivityLog } from "@/shared/lib/activity-log";
 import { db } from "@/shared/lib/db/prisma";
 import { getAccountDeletionBlocker } from "@/features/teams/server/account-deletion-policy";
@@ -57,6 +58,10 @@ export async function deleteAccount(user: DeleteAccountUser) {
       });
     }
   });
+
+  if (membership?.teamId) {
+    await syncSeatQuantity(membership.teamId);
+  }
 
   return { success: "Account deleted successfully." };
 }

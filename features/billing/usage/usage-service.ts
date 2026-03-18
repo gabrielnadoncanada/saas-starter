@@ -1,17 +1,69 @@
 import { db } from "@/shared/lib/db/prisma";
-import type { LimitKey } from "../plans";
+import { LimitReachedError } from "../errors";
+import type { LimitKey, PlanId } from "../plans";
+import { getPlan } from "../plans";
+import { getPlanLimit } from "../guards/get-plan-limit";
+
+function getPeriodStart(date = new Date()) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+type UsageDbClient = Pick<typeof db, "usageCounter">;
 
 /**
- * Records a usage event for a team.
- * Call this after the action succeeds (e.g. after creating a task).
+ * Atomically reserves one unit of monthly usage.
  */
-export async function recordUsage(teamId: number, limitKey: LimitKey) {
-  await db.usageRecord.create({
-    data: {
+export async function consumeMonthlyUsage(
+  teamId: number,
+  limitKey: LimitKey,
+  planId: PlanId,
+  deps: { db: UsageDbClient } = { db },
+) {
+  const periodStart = getPeriodStart();
+  const limit = getPlanLimit(planId, limitKey);
+
+  await deps.db.usageCounter.upsert({
+    where: {
+      teamId_limitKey_periodStart: {
+        teamId,
+        limitKey,
+        periodStart,
+      },
+    },
+    create: {
       teamId,
       limitKey,
+      periodStart,
+      count: 0,
+    },
+    update: {},
+  });
+
+  const result = await deps.db.usageCounter.updateMany({
+    where: {
+      teamId,
+      limitKey,
+      periodStart,
+      count: {
+        lt: limit,
+      },
+    },
+    data: {
+      count: {
+        increment: 1,
+      },
     },
   });
+
+  if (result.count === 0) {
+    const currentUsage = await getMonthlyUsage(teamId, limitKey, deps);
+    throw new LimitReachedError(
+      limitKey,
+      limit,
+      currentUsage,
+      getPlan(planId).name,
+    );
+  }
 }
 
 /**
@@ -21,31 +73,20 @@ export async function recordUsage(teamId: number, limitKey: LimitKey) {
 export async function getMonthlyUsage(
   teamId: number,
   limitKey: LimitKey,
+  deps: { db: UsageDbClient } = { db },
 ): Promise<number> {
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  return db.usageRecord.count({
+  const counter = await deps.db.usageCounter.findUnique({
     where: {
-      teamId,
-      limitKey,
-      createdAt: { gte: startOfMonth },
+      teamId_limitKey_periodStart: {
+        teamId,
+        limitKey,
+        periodStart: getPeriodStart(),
+      },
+    },
+    select: {
+      count: true,
     },
   });
-}
 
-/**
- * Counts total (non-periodic) usage.
- * Use for limits like teamMembers or storageMb that aren't time-bound.
- */
-export async function getTotalUsage(
-  teamId: number,
-  limitKey: LimitKey,
-): Promise<number> {
-  return db.usageRecord.count({
-    where: {
-      teamId,
-      limitKey,
-    },
-  });
+  return counter?.count ?? 0;
 }

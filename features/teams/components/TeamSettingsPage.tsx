@@ -40,11 +40,13 @@ export async function TeamSettingsPage() {
           <ItemDescription>{getSubscriptionLabel(team?.subscriptionStatus ?? null)}</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <form action={customerPortalAction}>
-            <Button type="submit" variant="outline">
-              {team?.pricingModel === 'one_time' ? 'View Billing' : 'Manage Subscription'}
-            </Button>
-          </form>
+          {isOwner && team?.stripeCustomerId && team?.stripeProductId ? (
+            <form action={customerPortalAction}>
+              <Button type="submit" variant="outline">
+                {team?.pricingModel === 'one_time' ? 'View Billing' : 'Manage Subscription'}
+              </Button>
+            </form>
+          ) : null}
         </ItemActions>
       </Item>
       <TeamMembersPanel members={team?.teamMembers ?? []} />

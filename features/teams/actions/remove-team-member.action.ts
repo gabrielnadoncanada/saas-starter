@@ -27,7 +27,7 @@ export const removeTeamMemberAction = validatedActionWithUser<
       },
     });
 
-    syncSeatQuantity(guard.teamId);
+    await syncSeatQuantity(guard.teamId);
 
     await createActivityLog({
       teamId: guard.teamId,

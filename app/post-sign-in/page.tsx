@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 
 import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
-import type { PricingModel } from '@/features/billing/plans';
 import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
@@ -19,7 +18,7 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
     redirect(routes.auth.login);
   }
 
-  const { inviteId, redirect: authRedirect, priceId, pricingModel } =
+  const { inviteId, redirect: authRedirect, priceId } =
     getAuthFlowParams(rawSearchParams);
 
   const teamId = await completePostSignIn({
@@ -29,20 +28,44 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
   });
 
   if (authRedirect === 'checkout' && priceId) {
-    const team = await db.team.findUnique({
-      where: { id: teamId }
-    });
+    const [team, membership] = await Promise.all([
+      db.team.findUnique({
+        where: { id: teamId },
+        select: {
+          id: true,
+          stripeCustomerId: true,
+          _count: {
+            select: {
+              teamMembers: true,
+            },
+          },
+        },
+      }),
+      db.teamMember.findFirst({
+        where: {
+          teamId,
+          userId: user.id,
+        },
+        select: {
+          role: true,
+        },
+      }),
+    ]);
 
     if (!team) {
       throw new Error('Team not found after sign-in provisioning.');
     }
 
+    if (membership?.role !== 'OWNER') {
+      redirect(routes.app.dashboard);
+    }
+
     const url = await createCheckoutSession({
       priceId,
+      teamId: team.id,
+      seatQuantity: team._count.teamMembers,
       stripeCustomerId: team.stripeCustomerId,
       userEmail: user.email,
-      userId: user.id,
-      pricingModel: (pricingModel as PricingModel) || "flat",
     });
 
     redirect(url);
