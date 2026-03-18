@@ -8,6 +8,7 @@ import {
   clearCheckoutReservation,
   reserveCheckoutForTeam,
 } from "@/features/billing/server/checkout-lock";
+import { getStripePrices } from "@/features/billing/server/stripe-catalog";
 import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -36,6 +37,13 @@ export async function checkoutAction(formData: FormData) {
 
   const team = await getCurrentTeam();
   if (!team) throw new Error("Team not found");
+
+  // Validate priceId against the Stripe catalog allowlist
+  const allowedPrices = await getStripePrices();
+  const isAllowedPrice = allowedPrices.some((p) => p.id === priceId);
+  if (!isAllowedPrice) {
+    throw new Error("Invalid price selected.");
+  }
 
   try {
     await reserveCheckoutForTeam(team.id, priceId);

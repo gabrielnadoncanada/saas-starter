@@ -22,21 +22,14 @@ export async function consumeMonthlyUsage(
   const periodStart = getPeriodStart();
   const limit = getPlanLimit(planId, limitKey);
 
-  await deps.db.usageCounter.upsert({
-    where: {
-      teamId_limitKey_periodStart: {
-        teamId,
-        limitKey,
-        periodStart,
-      },
-    },
-    create: {
+  await deps.db.usageCounter.createMany({
+    data: {
       teamId,
       limitKey,
       periodStart,
       count: 0,
     },
-    update: {},
+    skipDuplicates: true,
   });
 
   const result = await deps.db.usageCounter.updateMany({

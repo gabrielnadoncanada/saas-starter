@@ -56,6 +56,7 @@ export function AssistantChat({
   const [modelId, setModelId] = useState<string>(assistantModels[0].id);
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const conversationIdRef = useRef<string | null>(conversationId);
+  const initialMessagesRef = useRef(initialMessages);
   const onConversationCreatedRef = useRef(onConversationCreated);
   const onConversationUpdatedRef = useRef(onConversationUpdated);
   const selectedModelRef = useRef<(typeof assistantModels)[number]>(
@@ -79,6 +80,7 @@ export function AssistantChat({
             return {
               body: {
                 ...body,
+                messages,
                 conversationId: currentConversationId,
                 modelId: selectedModel.id,
                 provider: selectedModel.provider,
@@ -93,6 +95,7 @@ export function AssistantChat({
           return {
             body: {
               ...body,
+              messages,
               conversationId: conversation.id,
               modelId: selectedModel.id,
               provider: selectedModel.provider,
@@ -139,10 +142,23 @@ export function AssistantChat({
   }, [selectedModel]);
 
   useEffect(() => {
+    initialMessagesRef.current = initialMessages;
+  }, [initialMessages]);
+
+  useEffect(() => {
+    clearError();
+    setMessages(initialMessagesRef.current);
+  }, [clearError, setMessages]);
+
+  useEffect(() => {
+    if (resetKey === 0) {
+      return;
+    }
+
     stop();
     clearError();
-    setMessages(initialMessages);
-  }, [clearError, initialMessages, resetKey, setMessages, stop]);
+    setMessages(initialMessagesRef.current);
+  }, [clearError, resetKey, setMessages, stop]);
 
   const sendAssistantMessage = (message: PromptInputMessage) => {
     const text = message.text.trim();

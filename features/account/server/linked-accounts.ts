@@ -2,7 +2,6 @@ import { ActivityType } from "@/shared/lib/db/enums";
 
 import { createActivityLog } from "@/shared/lib/activity-log";
 import {
-  hasMagicLinkProvider,
   OAUTH_PROVIDER_LABELS,
   type OAuthProviderId,
 } from "@/shared/lib/auth/providers";
@@ -36,7 +35,6 @@ export async function getLinkedAccountsOverview(
   );
 
   const linkedCount = accounts.length;
-  const canUseMagicLink = hasMagicLinkProvider();
 
   return {
     providers: oauthProviders.map((provider) => {
@@ -47,7 +45,7 @@ export async function getLinkedAccountsOverview(
         provider,
         linkedAt,
         isLinked,
-        canUnlink: isLinked && (canUseMagicLink || linkedCount > 1),
+        canUnlink: isLinked && linkedCount > 1,
       };
     }),
   };
@@ -80,7 +78,8 @@ export async function unlinkOAuthAccountForUser(
     return { status: "not-found" as const };
   }
 
-  if (!hasMagicLinkProvider() && linkedAccounts.length <= 1) {
+  // Block unlink if this is the last linked account — prevents lockout
+  if (linkedAccounts.length <= 1) {
     return { status: "blocked" as const };
   }
 

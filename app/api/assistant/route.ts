@@ -43,8 +43,38 @@ export async function POST(req: Request) {
     throw error;
   }
 
-  // 3. Parse the request and convert UI messages to model messages
+  // 3. Parse the request and validate payload size
+  const MAX_MESSAGES = 100;
+  const MAX_MESSAGE_LENGTH = 10_000;
+
   const { messages, modelId, provider, conversationId } = await req.json();
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return Response.json(
+      { error: "Conversation messages are required." },
+      { status: 400 },
+    );
+  }
+
+  if (messages.length > MAX_MESSAGES) {
+    return Response.json(
+      { error: `Too many messages (max ${MAX_MESSAGES}).` },
+      { status: 400 },
+    );
+  }
+
+  for (const msg of messages) {
+    const text = msg?.parts
+      ?.filter((p: { type: string }) => p.type === "text")
+      ?.map((p: { text: string }) => p.text)
+      ?.join("") ?? "";
+    if (text.length > MAX_MESSAGE_LENGTH) {
+      return Response.json(
+        { error: `Message too long (max ${MAX_MESSAGE_LENGTH} characters).` },
+        { status: 400 },
+      );
+    }
+  }
+
   if (conversationId) {
     const conversation = await getAssistantConversation(conversationId);
     if (!conversation) {

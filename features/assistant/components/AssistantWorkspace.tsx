@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   deleteAssistantConversationRequest,
@@ -37,6 +37,7 @@ export function AssistantWorkspace({
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pendingConversationUrlRef = useRef<string | null | undefined>(undefined);
   const [chatResetKey, setChatResetKey] = useState(0);
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
@@ -48,6 +49,7 @@ export function AssistantWorkspace({
     useState<AssistantConversationListItem[]>(initialConversations);
 
   const replaceConversationUrl = (conversationId: string | null) => {
+    pendingConversationUrlRef.current = conversationId;
     router.replace(buildConversationUrl(pathname, conversationId), {
       scroll: false,
     });
@@ -109,6 +111,15 @@ export function AssistantWorkspace({
 
   useEffect(() => {
     const conversationId = searchParams.get("conversationId");
+
+    if (pendingConversationUrlRef.current !== undefined) {
+      if (conversationId !== pendingConversationUrlRef.current) {
+        return;
+      }
+
+      pendingConversationUrlRef.current = undefined;
+      return;
+    }
 
     if (!conversationId && selectedConversationId) {
       resetChat();

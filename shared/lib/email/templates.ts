@@ -8,20 +8,26 @@ function buildAbsoluteUrl(path: string) {
   return new URL(path, baseUrl).toString();
 }
 
+function sanitizeForEmailSubject(value: string) {
+  return value.replace(/[\r\n]/g, " ").trim().slice(0, 100);
+}
+
 export function buildTeamInvitationEmail(input: {
   email: string;
   role: string;
   inviterName: string;
   teamName: string;
-  invitationId: number;
+  invitationToken: string;
 }): EmailPayload {
   const invitationUrl = buildAbsoluteUrl(
-    `/sign-in?inviteId=${input.invitationId}`,
+    `/sign-in?inviteId=${input.invitationToken}`,
   );
+
+  const safeTeamName = sanitizeForEmailSubject(input.teamName);
 
   return {
     to: [input.email],
-    subject: `Vous êtes invité à rejoindre ${input.teamName}`,
+    subject: `Vous êtes invité à rejoindre ${safeTeamName}`,
     react: createElement(TeamInvitationEmail, {
       inviterName: input.inviterName,
       teamName: input.teamName,

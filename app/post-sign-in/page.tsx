@@ -2,6 +2,12 @@ import { redirect } from 'next/navigation';
 
 import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
 import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
+import {
+  CheckoutInProgressError,
+  clearCheckoutReservation,
+  reserveCheckoutForTeam,
+} from '@/features/billing/server/checkout-lock';
+import { getStripePrices } from '@/features/billing/server/stripe-catalog';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
@@ -60,15 +66,38 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
       redirect(routes.app.dashboard);
     }
 
-    const url = await createCheckoutSession({
-      priceId,
-      teamId: team.id,
-      seatQuantity: team._count.teamMembers,
-      stripeCustomerId: team.stripeCustomerId,
-      userEmail: user.email,
-    });
+    // Validate that the priceId is in the Stripe catalog (prevent arbitrary price injection)
+    const allowedPrices = await getStripePrices();
+    const isAllowedPrice = allowedPrices.some((p) => p.id === priceId);
 
-    redirect(url);
+    if (!isAllowedPrice) {
+      redirect(routes.app.dashboard);
+    }
+
+    try {
+      // Use checkout lock to prevent double checkouts
+      await reserveCheckoutForTeam(team.id, priceId);
+
+      try {
+        const url = await createCheckoutSession({
+          priceId,
+          teamId: team.id,
+          seatQuantity: team._count.teamMembers,
+          stripeCustomerId: team.stripeCustomerId,
+          userEmail: user.email,
+        });
+
+        redirect(url);
+      } catch (error) {
+        await clearCheckoutReservation(team.id);
+        throw error;
+      }
+    } catch (error) {
+      if (error instanceof CheckoutInProgressError) {
+        redirect(routes.app.settingsTeam);
+      }
+      throw error;
+    }
   }
 
   redirect(routes.app.dashboard);

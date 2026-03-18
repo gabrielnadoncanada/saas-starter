@@ -14,11 +14,17 @@ export type DeleteAccountUser = {
 export async function deleteAccount(user: DeleteAccountUser) {
   const membership = await getUserTeamMembership(user.id);
 
-  const blocker = await getAccountDeletionBlocker(membership);
+  const blocker = await getAccountDeletionBlocker(user.id);
 
   if (blocker) {
     return { error: blocker };
   }
+
+  // Get ALL memberships before transaction for seat sync after
+  const allMemberships = await db.teamMember.findMany({
+    where: { userId: user.id },
+    select: { teamId: true },
+  });
 
   await db.$transaction(async (tx) => {
     await createActivityLog({
@@ -49,18 +55,24 @@ export async function deleteAccount(user: DeleteAccountUser) {
       where: { identifier: user.email },
     });
 
-    if (membership?.teamId) {
-      await tx.teamMember.deleteMany({
-        where: {
-          userId: user.id,
-          teamId: membership.teamId,
-        },
-      });
-    }
+    // Delete ALL memberships, not just the active team
+    await tx.teamMember.deleteMany({
+      where: { userId: user.id },
+    });
+
+    // Cancel all pending invitations sent by this user
+    await tx.invitation.updateMany({
+      where: {
+        invitedBy: user.id,
+        status: "PENDING",
+      },
+      data: { status: "CANCELED" },
+    });
   });
 
-  if (membership?.teamId) {
-    await syncSeatQuantity(membership.teamId);
+  // Sync seat quantity for ALL affected teams
+  for (const m of allMemberships) {
+    await syncSeatQuantity(m.teamId);
   }
 
   return { success: "Account deleted successfully." };

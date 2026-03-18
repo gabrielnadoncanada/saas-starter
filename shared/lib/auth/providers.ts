@@ -5,6 +5,13 @@ import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import { Resend } from "resend";
 import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
+import { createRateLimiter } from "@/shared/lib/rate-limit/in-memory-rate-limiter";
+
+// Rate limit: max 3 magic links per email per 15 minutes
+const magicLinkRateLimiter = createRateLimiter({
+  maxRequests: 3,
+  windowMs: 15 * 60 * 1000,
+});
 
 /**
  * Controls whether OAuth providers allow automatic account linking
@@ -12,15 +19,14 @@ import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
  * "user@example.com" will be linked to an existing account that was
  * created via GitHub (or magic link) with the same email.
  *
- * Security note: This is safe only because both Google and GitHub
- * return verified email addresses. If you add a provider that does
- * NOT guarantee email verification, set this to false or add an
- * email-verified check in the signIn callback.
+ * Security note: Disabled by default. Only enable if all configured
+ * OAuth providers guarantee email verification (Google and GitHub do).
+ * The signIn callback also checks `email_verified` from the provider profile.
  *
- * Set ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING=false in .env to disable.
+ * Set ALLOW_EMAIL_ACCOUNT_LINKING=true in .env to enable.
  */
 const allowEmailAccountLinking =
-  process.env.ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING !== "false";
+  process.env.ALLOW_EMAIL_ACCOUNT_LINKING === "true";
 
 const oauthProviders = [
   {
@@ -85,7 +91,16 @@ export function getAuthProviders() {
       ResendProvider({
         apiKey: process.env.RESEND_API_KEY,
         from: process.env.EMAIL_FROM,
+        maxAge: 10 * 60, // Magic link valid for 10 minutes
         async sendVerificationRequest({ identifier: email, url }) {
+          // Rate limit by email address
+          const rateLimitResult = magicLinkRateLimiter.check(
+            `magic-link:${email.toLowerCase()}`,
+          );
+          if (!rateLimitResult.allowed) {
+            throw new Error("Too many sign-in attempts. Please try again later.");
+          }
+
           const resend = new Resend(process.env.RESEND_API_KEY);
 
           const { error } = await resend.emails.send({

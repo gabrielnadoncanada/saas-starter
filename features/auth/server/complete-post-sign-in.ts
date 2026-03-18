@@ -20,15 +20,15 @@ export async function completePostSignIn({
     return ensureUserWorkspace(userId, email);
   }
 
-  const invitationId = Number(inviteId);
-
-  if (!Number.isInteger(invitationId) || invitationId <= 0) {
+  // inviteId is now a UUID token (not a sequential numeric ID)
+  const inviteToken = inviteId.trim();
+  if (!inviteToken || inviteToken.length > 36) {
     return ensureUserWorkspace(userId, email);
   }
 
   const invitation = await db.invitation.findFirst({
     where: {
-      id: invitationId,
+      token: inviteToken,
       email,
       status: "PENDING",
     },
@@ -38,29 +38,41 @@ export async function completePostSignIn({
     return ensureUserWorkspace(userId, email);
   }
 
-  const invitedTeam = await db.team.findUnique({
-    where: { id: invitation.teamId },
-    select: {
-      planId: true,
-      planName: true,
-      subscriptionStatus: true,
-      _count: {
-        select: {
-          teamMembers: true,
-        },
-      },
-    },
-  });
-
-  if (!invitedTeam) {
-    throw new Error("Invited team not found.");
+  // Check invitation expiry
+  if (invitation.expiresAt && invitation.expiresAt < new Date()) {
+    await db.invitation.update({
+      where: { id: invitation.id },
+      data: { status: "EXPIRED" },
+    });
+    return ensureUserWorkspace(userId, email);
   }
 
-  const invitedTeamPlan = resolveTeamPlan(invitedTeam);
-  assertCapability(invitedTeamPlan, "team.invite");
-  assertLimit(invitedTeamPlan, "teamMembers", invitedTeam._count.teamMembers);
-
   await db.$transaction(async (tx) => {
+    // Lock the team row to prevent race conditions on seat limits
+    await tx.$queryRaw`SELECT id FROM "Team" WHERE id = ${invitation.teamId} FOR UPDATE`;
+
+    const invitedTeam = await tx.team.findUnique({
+      where: { id: invitation.teamId },
+      select: {
+        planId: true,
+        planName: true,
+        subscriptionStatus: true,
+        _count: {
+          select: {
+            teamMembers: true,
+          },
+        },
+      },
+    });
+
+    if (!invitedTeam) {
+      throw new Error("Invited team not found.");
+    }
+
+    const invitedTeamPlan = resolveTeamPlan(invitedTeam);
+    assertCapability(invitedTeamPlan, "team.invite");
+    assertLimit(invitedTeamPlan, "teamMembers", invitedTeam._count.teamMembers);
+
     const existingMembership = await tx.teamMember.findFirst({
       where: {
         userId,

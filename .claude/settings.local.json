@@ -9,7 +9,9 @@
       "Bash(cat:*)",
       "Bash(npx prisma:*)",
       "Bash(pnpm test:*)",
-      "Bash(grep -E \"\\\\.\\(tsx\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx\\)$\")",
+      "Bash(xargs head:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }

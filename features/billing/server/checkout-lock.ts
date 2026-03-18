@@ -3,7 +3,7 @@ import type { Prisma } from "@prisma/client";
 import { isTerminalStripeSubscriptionStatus } from "@/features/billing/plans";
 import { db as defaultDb } from "@/shared/lib/db/prisma";
 
-const CHECKOUT_LOCK_WINDOW_MS = 30 * 60 * 1000;
+const CHECKOUT_LOCK_WINDOW_MS = 60 * 60 * 1000; // 60 minutes
 
 type CheckoutLockDeps = {
   db: Pick<typeof defaultDb, "$transaction">;

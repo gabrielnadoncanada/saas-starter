@@ -5,6 +5,8 @@ import {
   listAssistantConversations,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/conversations";
+import { getTeamPlan, assertCapability } from "@/features/billing/guards";
+import { UpgradeRequiredError } from "@/features/billing/errors";
 
 function getScopeErrorResponse(scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>) {
   if (scope.kind === "unauthorized") {
@@ -14,11 +16,35 @@ function getScopeErrorResponse(scope: Awaited<ReturnType<typeof resolveAssistant
   return new Response("Team not found", { status: 403 });
 }
 
+async function assertAssistantAccess() {
+  const teamPlan = await getTeamPlan();
+  if (!teamPlan) {
+    return new Response("Team not found", { status: 403 });
+  }
+
+  try {
+    assertCapability(teamPlan.planId, "ai.assistant");
+  } catch (error) {
+    if (error instanceof UpgradeRequiredError) {
+      return Response.json(
+        { error: error.message, code: "UPGRADE_REQUIRED" },
+        { status: 403 },
+      );
+    }
+    throw error;
+  }
+
+  return null;
+}
+
 export async function GET() {
   const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
+
+  const planError = await assertAssistantAccess();
+  if (planError) return planError;
 
   const conversations = await listAssistantConversations();
   return Response.json(conversations);
@@ -29,6 +55,9 @@ export async function POST(req: Request) {
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
+
+  const planError = await assertAssistantAccess();
+  if (planError) return planError;
 
   const body = (await req.json()) as { messages?: UIMessage[] };
   if (!Array.isArray(body.messages) || body.messages.length === 0) {

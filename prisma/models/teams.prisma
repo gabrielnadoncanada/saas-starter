@@ -82,11 +82,13 @@ model ActivityLog {
 
 model Invitation {
   id        Int              @id @default(autoincrement())
+  token     String           @unique @default(uuid()) @db.VarChar(36)
   teamId    Int
   email     String           @db.VarChar(255)
   role      TeamRole
   invitedBy Int
   invitedAt DateTime         @default(now())
+  expiresAt DateTime?
   status    InvitationStatus @default(PENDING)
 
   team    Team @relation(fields: [teamId], references: [id], onDelete: Cascade)

@@ -2,7 +2,17 @@ import type { NextAuthConfig } from "next-auth";
 import { getActiveAuthUserById } from "@/shared/lib/auth/active-user";
 
 export const authCallbacks: NextAuthConfig["callbacks"] = {
-  async signIn({ user }) {
+  async signIn({ user, account, profile }) {
+    // Reject OAuth providers that return unverified emails
+    if (account?.provider && account.provider !== "resend") {
+      const emailVerified =
+        (profile as Record<string, unknown>)?.email_verified ??
+        (profile as Record<string, unknown>)?.verified_email;
+      if (emailVerified === false) {
+        return false;
+      }
+    }
+
     const userId = Number(user.id);
 
     if (!Number.isInteger(userId) || userId <= 0) {

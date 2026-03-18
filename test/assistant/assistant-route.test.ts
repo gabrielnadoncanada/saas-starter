@@ -121,11 +121,25 @@ describe("POST /api/assistant", () => {
     expect(streamText).not.toHaveBeenCalled();
   });
 
+  it("returns 400 when messages are missing", async () => {
+    const response = await POST(
+      new Request("http://localhost/api/assistant", {
+        method: "POST",
+        body: JSON.stringify({}),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(streamText).not.toHaveBeenCalled();
+  });
+
   it("consumes AI usage before a successful streamed response", async () => {
     const response = await POST(
       new Request("http://localhost/api/assistant", {
         method: "POST",
-        body: JSON.stringify({ messages: [] }),
+        body: JSON.stringify({
+          messages: [{ id: "1", role: "user", parts: [{ type: "text", text: "Hello" }] }],
+        }),
       }),
     );
 

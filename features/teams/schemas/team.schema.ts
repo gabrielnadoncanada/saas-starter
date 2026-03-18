@@ -6,7 +6,7 @@ export const removeTeamMemberSchema = z.object({
 
 export const inviteTeamMemberSchema = z.object({
   email: z.string().email('Invalid email address'),
-  role: z.enum(['MEMBER', 'OWNER'])
+  role: z.enum(['MEMBER', 'ADMIN'])
 });
 
 export const invitationIdSchema = z.object({

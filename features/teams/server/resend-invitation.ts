@@ -37,7 +37,7 @@ export async function resendInvitation({
       role: invitation.role,
       inviterName: user.name || user.email,
       teamName: invitation.team.name,
-      invitationId: invitation.id,
+      invitationToken: invitation.token,
     });
   } catch {
     return { error: "Failed to send email" };

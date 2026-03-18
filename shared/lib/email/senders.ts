@@ -14,24 +14,24 @@ export async function sendTeamInvitationEmail(input: {
   role: string;
   inviterName: string;
   teamName: string;
-  invitationId: number;
+  invitationToken: string;
 }) {
   const payload = buildTeamInvitationEmail(input);
 
   try {
     const result = await sendEmail(payload, {
-      idempotencyKey: `team-invitation/${input.invitationId}`,
+      idempotencyKey: `team-invitation/${input.invitationToken}`,
     });
 
     logEmailResult("team-invitation.sent", {
       email: input.email,
-      invitationId: input.invitationId,
+      invitationToken: input.invitationToken,
       resendEmailId: result.id,
     });
   } catch (error) {
     logEmailError("team-invitation.failed", {
       email: input.email,
-      invitationId: input.invitationId,
+      invitationToken: input.invitationToken,
       error: error instanceof Error ? error.message : "Unknown error",
     });
     throw error;

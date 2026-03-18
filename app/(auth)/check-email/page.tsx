@@ -25,13 +25,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
       <AuthCard
         title="Check your email"
         contentClassName="space-y-3"
-        description={
-          <>
-            {email
-              ? `We sent a magic sign-in link to ${email}.`
-              : 'We sent a magic sign-in link to your email address.'}
-          </>
-        }
+        description="We sent a magic sign-in link to your email address."
       >
         <p className="text-sm text-muted-foreground">
           Open the email and click the link to complete sign-in.

@@ -1,7 +1,9 @@
+import { cache } from "react";
+
 import { auth } from "@/auth";
 import { db } from "@/shared/lib/db/prisma";
 
-export async function getCurrentUser() {
+export const getCurrentUser = cache(async () => {
   const session = await auth();
   const userId = Number(session?.user?.id);
 
@@ -15,4 +17,4 @@ export async function getCurrentUser() {
       deletedAt: null,
     },
   });
-}
+});

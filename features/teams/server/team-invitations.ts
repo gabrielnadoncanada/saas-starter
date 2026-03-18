@@ -86,6 +86,8 @@ async function createInvitationRecord(input: InviteTeamMemberInput) {
       } satisfies InviteTeamMemberResult;
     }
 
+    const INVITATION_EXPIRY_DAYS = 7;
+
     const invitation = await tx.invitation.create({
       data: {
         teamId: input.teamId,
@@ -93,6 +95,9 @@ async function createInvitationRecord(input: InviteTeamMemberInput) {
         role: input.role,
         invitedBy: input.inviter.id,
         status: "PENDING",
+        expiresAt: new Date(
+          Date.now() + INVITATION_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
+        ),
       },
     });
 
@@ -105,13 +110,13 @@ async function createInvitationRecord(input: InviteTeamMemberInput) {
       },
     });
 
-    return { invitationId: invitation.id, teamName: team.name };
+    return { invitationToken: invitation.token, teamName: team.name };
   });
 }
 
 async function sendInvitationEmail(
   input: InviteTeamMemberInput,
-  invitationId: number,
+  invitationToken: string,
   teamName: string,
 ): Promise<InviteTeamMemberResult> {
   try {
@@ -120,12 +125,12 @@ async function sendInvitationEmail(
       role: input.role,
       inviterName: input.inviter.name || input.inviter.email,
       teamName,
-      invitationId,
+      invitationToken,
     });
   } catch (error) {
     console.error("[team:invitation.email-failed]", {
       email: input.email,
-      invitationId,
+      invitationToken,
       error: error instanceof Error ? error.message : "Unknown error",
     });
 
@@ -145,7 +150,7 @@ export async function inviteTeamMemberToTeam(input: InviteTeamMemberInput) {
     return result;
   }
 
-  return sendInvitationEmail(input, result.invitationId, result.teamName);
+  return sendInvitationEmail(input, result.invitationToken, result.teamName);
 }
 
 export async function listPendingInvitationsForCurrentTeam() {

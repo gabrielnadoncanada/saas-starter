@@ -10,12 +10,22 @@ export const authConfig = {
   adapter: PrismaAdapter(db),
   session: {
     strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours (instead of default 30 days)
+    updateAge: 60 * 60, // Refresh every hour
   },
   pages: {
     signIn: "/sign-in",
   },
   providers: getAuthProviders(),
-  callbacks: authCallbacks,
+  callbacks: {
+    ...authCallbacks,
+    async redirect({ url, baseUrl }) {
+      // Prevent open redirect attacks
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
+  },
   events: authEvents,
 } satisfies NextAuthConfig;
 

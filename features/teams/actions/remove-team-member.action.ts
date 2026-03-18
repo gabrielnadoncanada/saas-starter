@@ -20,6 +20,46 @@ export const removeTeamMemberAction = validatedActionWithUser<
       return guard;
     }
 
+    // Load the target member to check role and prevent dangerous removals
+    const targetMember = await db.teamMember.findFirst({
+      where: {
+        id: memberId,
+        teamId: guard.teamId,
+      },
+      select: { id: true, userId: true, role: true },
+    });
+
+    if (!targetMember) {
+      return { error: "Team member not found." };
+    }
+
+    // Prevent removing the last member of a team
+    const memberCount = await db.teamMember.count({
+      where: { teamId: guard.teamId },
+    });
+
+    if (memberCount <= 1) {
+      return { error: "Cannot remove the last member of a team." };
+    }
+
+    // If the target is an OWNER, ensure another OWNER exists
+    if (targetMember.role === "OWNER") {
+      const otherOwnerCount = await db.teamMember.count({
+        where: {
+          teamId: guard.teamId,
+          role: "OWNER",
+          id: { not: targetMember.id },
+        },
+      });
+
+      if (otherOwnerCount === 0) {
+        return {
+          error:
+            "Cannot remove the sole owner. Transfer ownership to another member first.",
+        };
+      }
+    }
+
     await db.teamMember.deleteMany({
       where: {
         id: memberId,

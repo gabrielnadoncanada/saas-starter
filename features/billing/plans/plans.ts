@@ -77,7 +77,7 @@ export const plans: Record<PlanId, Plan> = {
 };
 
 export function getPlan(planId: PlanId): Plan {
-  return plans[planId];
+  return plans[planId] ?? plans.free;
 }
 
 export function isPlanId(value: string): value is PlanId {
