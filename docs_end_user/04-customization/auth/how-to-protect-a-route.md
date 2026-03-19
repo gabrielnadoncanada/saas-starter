@@ -6,18 +6,18 @@ Require authentication for a route or route prefix.
 
 ## Files to Edit
 
-- `middleware.ts`
+- `proxy.ts`
 - `shared/constants/routes.ts`
 
 ## Steps
 
 ### Step 1 - Decide whether the route should be protected by prefix
 
-The current middleware protects everything starting with `/dashboard`.
+The current proxy protects everything starting with `/dashboard`.
 
 ### Step 2 - Update the protection rule
 
-Edit `middleware.ts` and extend the `isProtectedRoute` check.
+Edit `proxy.ts` and extend the matcher or protection logic.
 
 ### Step 3 - Redirect unauthenticated users to the right page
 
@@ -32,8 +32,8 @@ If you add `/app`, a simple prefix-based check is usually enough:
 
 ## Common Mistakes
 
-- Protecting a route in the UI only, without middleware
-- Forgetting that middleware runs by path prefix
+- Protecting a route in the UI only, without proxy or server-side checks
+- Forgetting that proxy runs by path prefix
 
 ## Complexity Scorecard
 

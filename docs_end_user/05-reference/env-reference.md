@@ -9,8 +9,8 @@ AUTH_SECRET=
 ```
 
 - `POSTGRES_URL`: PostgreSQL connection string used by Prisma
-- `BASE_URL`: public app URL used by email and auth-related links
-- `AUTH_SECRET`: session and auth secret
+- `BASE_URL`: public app URL used by Better Auth, auth email, and Stripe redirects
+- `AUTH_SECRET`: Better Auth secret for signing sessions and auth tokens
 
 ## Stripe
 
@@ -39,15 +39,18 @@ GROQ_API_KEY=
 ```env
 RESEND_API_KEY=
 EMAIL_FROM=
+EMAIL_REPLY_TO=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
+ALLOW_EMAIL_ACCOUNT_LINKING=true
 ```
 
-- `RESEND_API_KEY` and `EMAIL_FROM`: enable magic-link auth and shared app email
+- `RESEND_API_KEY` and `EMAIL_FROM`: enable auth email and shared app email
 - `EMAIL_REPLY_TO`: optional reply-to address for app email
 - Google and GitHub pairs: enable those OAuth buttons
+- `ALLOW_EMAIL_ACCOUNT_LINKING`: enables trusted provider account linking by email
 
 ## Related Docs
 

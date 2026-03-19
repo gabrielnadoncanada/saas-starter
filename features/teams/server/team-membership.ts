@@ -17,7 +17,7 @@ function pickTeamMembership(
   );
 }
 
-export async function listTeamsForUser(userId: number) {
+export async function listTeamsForUser(userId: string) {
   const memberships = await db.teamMember.findMany({
     where: { userId },
     orderBy: { joinedAt: "asc" },
@@ -39,7 +39,7 @@ export async function listTeamsForUser(userId: number) {
   }));
 }
 
-export async function getUserTeamMembership(userId: number) {
+export async function getUserTeamMembership(userId: string) {
   const [user, memberships, activeTeamId] = await Promise.all([
     db.user.findUnique({
       where: { id: userId },

@@ -20,7 +20,7 @@ export function isTeamRoleError(
 }
 
 export async function requireTeamRole(
-  userId: number,
+  userId: string,
   allowedRoles: TeamRole[],
 ): Promise<RequireTeamRoleResult> {
   const membership = await getUserTeamMembership(userId);

@@ -12,9 +12,9 @@ import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import {
   OAUTH_PROVIDER_LABELS,
-  getEnabledOAuthProviderIds
+  getEnabledOAuthProviderIds,
+  hasMagicLinkProvider,
 } from '@/shared/lib/auth/oauth-config';
-import { hasMagicLinkProvider } from '@/shared/lib/auth/providers';
 import { ContentSection } from '@/features/account/components/settings/ContentSection';
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -83,7 +83,7 @@ export default async function AuthenticationPage({ searchParams }: PageProps) {
     >
       <>
         <div className="mb-6">
-          <PasswordSettingsCard hasPassword={Boolean(user.passwordHash)} />
+          <PasswordSettingsCard hasPassword={linkedAccounts.hasPassword} />
         </div>
 
         <LinkedAccountsCard

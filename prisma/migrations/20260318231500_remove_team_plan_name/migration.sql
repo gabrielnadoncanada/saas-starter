@@ -1,2 +1,0 @@
-ALTER TABLE "Team"
-DROP COLUMN "planName";

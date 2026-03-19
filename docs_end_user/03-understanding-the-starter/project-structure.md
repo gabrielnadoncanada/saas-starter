@@ -54,7 +54,7 @@ Use this for:
 
 ## Fast Edit Map
 
-- change auth providers: `shared/lib/auth/providers.ts`
+- change auth providers: `shared/lib/auth/index.ts` and `shared/lib/auth/oauth-config.ts`
 - change sign-in page copy or layout: `app/(auth)/sign-in/page.tsx`
 - change dashboard nav: `shared/components/navigation/config/sidebar-data.ts`
 - change pricing page: `features/billing/components/PricingSection.tsx`

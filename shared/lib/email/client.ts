@@ -14,10 +14,15 @@ function getResendClient() {
 
 export async function sendEmail(
   payload: EmailPayload,
-  options: SendEmailOptions,
+  options: SendEmailOptions = {},
 ) {
   const config = getEmailConfig();
   const resend = getResendClient();
+
+  const headers: Record<string, string> = {};
+  if (options.idempotencyKey) {
+    headers["X-Idempotency-Key"] = options.idempotencyKey;
+  }
 
   const { data, error } = await resend.emails.send({
     from: config.from,
@@ -27,9 +32,7 @@ export async function sendEmail(
     text: payload.text,
     replyTo: payload.replyTo ?? config.replyTo,
     tags: payload.tags,
-    headers: {
-      "X-Idempotency-Key": options.idempotencyKey,
-    },
+    headers,
   });
 
   if (error) {

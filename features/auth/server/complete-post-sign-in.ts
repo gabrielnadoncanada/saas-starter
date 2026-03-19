@@ -6,7 +6,7 @@ import { db } from "@/shared/lib/db/prisma";
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
 
 type CompletePostSignInParams = {
-  userId: number;
+  userId: string;
   email: string;
   inviteId?: string | null;
 };

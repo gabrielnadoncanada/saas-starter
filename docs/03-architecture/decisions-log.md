@@ -1,6 +1,6 @@
 # Decisions Log
 
-## 2026-03-15 — Optimize for buyer value over architectural purity
+## 2026-03-15 - Optimize for buyer value over architectural purity
 ### Decision
 Default to pragmatic structure and commercially legible code rather than advanced abstractions.
 
@@ -16,7 +16,7 @@ Engineering choices must be justified by buyer value, not elegance alone.
 
 ---
 
-## 2026-03-15 — Position around launch speed and monetization readiness
+## 2026-03-15 - Position around launch speed and monetization readiness
 ### Decision
 Frame the starter as a monetization-ready SaaS foundation rather than a generic modern stack template.
 
@@ -32,7 +32,7 @@ The feature set and messaging must reinforce auth, billing, onboarding, dashboar
 
 ---
 
-## 2026-03-15 — Lock pricing floor at 149 USD
+## 2026-03-15 - Lock pricing floor at 149 USD
 ### Decision
 Do not price the product below 149 USD.
 
@@ -48,7 +48,7 @@ The product, docs, and UI quality must support premium perception from the first
 
 ---
 
-## 2026-03-15 — Adopt `nextjs-saas-structure` as the default structural standard
+## 2026-03-15 - Adopt `nextjs-saas-structure` as the default structural standard
 ### Decision
 Use `nextjs-saas-structure` as the default reference for folder shape, code placement, and server/client boundaries.
 
@@ -64,7 +64,7 @@ Structure decisions should default to thin `app/`, feature-owned logic, shared U
 
 ---
 
-## 2026-03-15 — Adopt `starter-buyer-fit` as the default abstraction filter
+## 2026-03-15 - Adopt `starter-buyer-fit` as the default abstraction filter
 ### Decision
 Use `starter-buyer-fit` as the standard for judging whether a technical decision is appropriate for the target buyer.
 
@@ -80,7 +80,7 @@ Patterns such as repositories, dependency injection, and extra wrapper layers re
 
 ---
 
-## 2026-03-15 — Keep workspace foundation in V1
+## 2026-03-15 - Keep workspace foundation in V1
 ### Decision
 Include a base workspace or team foundation in V1.
 
@@ -96,9 +96,9 @@ The V1 build must include a minimal but clear workspace model without drifting i
 
 ---
 
-## 2026-03-15 — Correct the documented stack baseline to match the repository
+## 2026-03-15 - Correct the documented stack baseline to match the repository
 ### Decision
-Treat the current starter baseline as a Next.js 16 and React 19 codebase with Prisma, Stripe, Tailwind 4, and NextAuth v5 beta.
+Treat the current starter baseline as a Next.js 16 and React 19 codebase with Prisma, Stripe, Tailwind 4, and Better Auth.
 
 ### Why
 Outdated stack claims reduce trust and lead to wrong product, build, and messaging decisions.

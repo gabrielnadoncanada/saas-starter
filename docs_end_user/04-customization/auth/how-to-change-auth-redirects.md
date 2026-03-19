@@ -9,7 +9,7 @@ Change where users go before sign-in, after sign-in, or after a deferred checkou
 - `features/auth/utils/auth-flow.ts`
 - `app/post-sign-in/page.tsx`
 - `features/billing/actions/checkout.action.ts`
-- `middleware.ts`
+- `proxy.ts`
 
 ## Steps
 
@@ -29,7 +29,7 @@ Edit `app/post-sign-in/page.tsx`. That page currently:
 
 ### Step 3 - Change where protected users are sent
 
-If you want unauthenticated users to land on a different auth page, edit `middleware.ts`.
+If you want unauthenticated users to land on a different auth page, edit `proxy.ts`.
 
 ### Step 4 - Change checkout-specific auth behavior
 

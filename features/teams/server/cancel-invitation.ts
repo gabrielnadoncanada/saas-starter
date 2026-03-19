@@ -3,7 +3,7 @@ import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/requir
 
 type CancelInvitationParams = {
   invitationId: number;
-  userId: number;
+  userId: string;
 };
 
 export async function cancelInvitation({

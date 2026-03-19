@@ -24,13 +24,13 @@
 
 ## API
 
-- `/api/auth/[...nextauth]`
+- `/api/auth/[...all]`
 - `/api/stripe/checkout`
 - `/api/stripe/webhook`
 
 ## Protected Area
 
-`middleware.ts` currently protects every route starting with `/dashboard`.
+`proxy.ts` currently protects every route starting with `/dashboard`.
 
 ## Source Of Truth
 

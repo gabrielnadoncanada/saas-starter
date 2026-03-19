@@ -1,2 +1,0 @@
--- Placeholder migration file restored so Prisma migration tooling can run.
--- No schema changes were recorded for this migration.

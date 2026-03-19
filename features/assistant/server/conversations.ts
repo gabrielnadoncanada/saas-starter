@@ -18,7 +18,7 @@ const PREVIEW_MAX_LENGTH = 96;
 type ConversationScope =
   | { kind: "unauthorized" }
   | { kind: "forbidden" }
-  | { kind: "ok"; userId: number; teamId: number };
+  | { kind: "ok"; userId: string; teamId: number };
 
 function normalizeText(value: string) {
   return value.replace(/\s+/g, " ").trim();

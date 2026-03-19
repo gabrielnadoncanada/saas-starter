@@ -49,7 +49,7 @@ model Team {
 
 model TeamMember {
   id       Int      @id @default(autoincrement())
-  userId   Int
+  userId   String
   teamId   Int
   role     TeamRole
   joinedAt DateTime @default(now())
@@ -65,7 +65,7 @@ model TeamMember {
 model ActivityLog {
   id        Int          @id @default(autoincrement())
   teamId    Int?
-  userId    Int?
+  userId    String?
   action    ActivityType
   timestamp DateTime     @default(now())
   ipAddress String?      @db.VarChar(45)
@@ -85,7 +85,7 @@ model Invitation {
   teamId    Int
   email     String           @db.VarChar(255)
   role      TeamRole
-  invitedBy Int
+  invitedBy String
   invitedAt DateTime         @default(now())
   expiresAt DateTime?
   status    InvitationStatus @default(PENDING)

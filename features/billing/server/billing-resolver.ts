@@ -16,11 +16,21 @@ type ResolvedStripePrice = {
 
 const DEFAULT_PLAN_ID: PlanId = "free";
 
+function normalizeBillingInterval(
+  interval: keyof Plan["prices"],
+): BillingInterval {
+  if (interval === "oneTime") {
+    return "one_time";
+  }
+
+  return interval === "monthly" ? "month" : "year";
+}
+
 const configuredStripePrices = Object.values(plans).flatMap((plan) =>
   Object.entries(plan.prices)
     .filter((entry): entry is [keyof Plan["prices"], BillingPrice] => Boolean(entry[1]))
     .map(([interval, price]) => ({
-      interval,
+      interval: normalizeBillingInterval(interval),
       priceId: price.priceId,
       planId: plan.id,
       pricingModel: interval === "oneTime" ? "one_time" : plan.pricingModel,
@@ -29,10 +39,8 @@ const configuredStripePrices = Object.values(plans).flatMap((plan) =>
 
 const stripePriceToPlan = configuredStripePrices.reduce<Record<string, ResolvedStripePrice>>(
   (accumulator, entry) => {
-    const interval = entry.interval === "oneTime" ? "one_time" : entry.interval;
-
     accumulator[entry.priceId] = {
-      interval,
+      interval: entry.interval,
       planId: entry.planId,
       pricingModel: entry.pricingModel,
     };

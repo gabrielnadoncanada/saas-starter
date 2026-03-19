@@ -1,5 +1,5 @@
 import { ActivityType } from "@/shared/lib/db/enums";
-import { hasMagicLinkProvider } from "@/shared/lib/auth/providers";
+import { hasMagicLinkProvider } from "@/shared/lib/auth/oauth-config";
 
 import { createActivityLog } from "@/shared/lib/activity-log";
 import {
@@ -14,39 +14,38 @@ const ALL_OAUTH_PROVIDER_IDS = Object.keys(
 ) as OAuthProviderId[];
 
 export async function getLinkedAccountsOverview(
-  userId: number,
+  userId: string,
   oauthProviders: OAuthProviderId[],
 ) {
-  const [accounts, user] = await Promise.all([
+  const [accounts, credentialAccount] = await Promise.all([
     db.account.findMany({
       where: {
         userId,
-        provider: { in: oauthProviders },
+        providerId: { in: oauthProviders },
       },
       select: {
-        provider: true,
+        providerId: true,
         createdAt: true,
       },
     }),
-    db.user.findUnique({
-      where: { id: userId },
-      select: {
-        passwordHash: true,
-      },
+    db.account.findFirst({
+      where: { userId, providerId: "credential" },
+      select: { id: true },
     }),
   ]);
 
   const linkedProviders = new Map(
     accounts.map((account) => [
-      account.provider as OAuthProviderId,
+      account.providerId as OAuthProviderId,
       account.createdAt,
     ]),
   );
 
   const linkedCount = accounts.length;
-  const hasFallbackMethod = Boolean(user?.passwordHash) || hasMagicLinkProvider();
+  const hasFallbackMethod = Boolean(credentialAccount) || hasMagicLinkProvider();
 
   return {
+    hasPassword: Boolean(credentialAccount),
     providers: oauthProviders.map((provider) => {
       const linkedAt = linkedProviders.get(provider) ?? null;
       const isLinked = linkedAt !== null;
@@ -62,34 +61,32 @@ export async function getLinkedAccountsOverview(
 }
 
 type UnlinkOAuthAccountParams = {
-  userId: number;
+  userId: string;
   provider: OAuthProviderId;
 };
 
 export async function unlinkOAuthAccountForUser(
   params: UnlinkOAuthAccountParams,
 ) {
-  const [linkedAccounts, user] = await Promise.all([
+  const [linkedAccounts, credentialAccount] = await Promise.all([
     db.account.findMany({
       where: {
         userId: params.userId,
-        provider: { in: ALL_OAUTH_PROVIDER_IDS },
+        providerId: { in: ALL_OAUTH_PROVIDER_IDS },
       },
       select: {
         id: true,
-        provider: true,
+        providerId: true,
       },
     }),
-    db.user.findUnique({
-      where: { id: params.userId },
-      select: {
-        passwordHash: true,
-      },
+    db.account.findFirst({
+      where: { userId: params.userId, providerId: "credential" },
+      select: { id: true },
     }),
   ]);
 
   const targetAccount = linkedAccounts.find(
-    (account) => account.provider === params.provider,
+    (account) => account.providerId === params.provider,
   );
 
   if (!targetAccount) {
@@ -97,7 +94,7 @@ export async function unlinkOAuthAccountForUser(
   }
 
   // Block unlink if this is the last linked account — prevents lockout
-  const hasFallbackMethod = Boolean(user?.passwordHash) || hasMagicLinkProvider();
+  const hasFallbackMethod = Boolean(credentialAccount) || hasMagicLinkProvider();
 
   if (linkedAccounts.length <= 1 && !hasFallbackMethod) {
     return { status: "blocked" as const };

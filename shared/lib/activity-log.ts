@@ -6,7 +6,7 @@ type ActivityLogClient = Pick<typeof db, "activityLog">;
 type CreateActivityLogInput = {
   client?: ActivityLogClient;
   teamId?: number | null;
-  userId: number;
+  userId: string;
   action: ActivityType;
   ipAddress?: string;
 };

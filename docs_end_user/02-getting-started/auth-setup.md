@@ -6,10 +6,10 @@ Configure sign-in so you can create an account, reach the dashboard, and test th
 
 ## What The Starter Uses
 
-- NextAuth in `auth.ts`
-- route handlers in `app/api/auth/[...nextauth]/route.ts`
-- provider setup in `shared/lib/auth/providers.ts`
-- route protection in `middleware.ts`
+- Better Auth in `shared/lib/auth/index.ts`
+- route handlers in `app/api/auth/[...all]/route.ts`
+- auth method visibility in `shared/lib/auth/oauth-config.ts`
+- route protection in `proxy.ts`
 - auth pages in `app/(auth)/sign-in/page.tsx` and `app/(auth)/sign-up/page.tsx`
 - post-sign-in team provisioning in `app/post-sign-in/page.tsx`
 
@@ -17,13 +17,14 @@ Configure sign-in so you can create an account, reach the dashboard, and test th
 
 You can enable:
 
+- email/password
 - magic link with Resend
 - Google OAuth
 - GitHub OAuth
 
 If no method is configured, the sign-in and sign-up pages load but show that no method is available.
 
-## Magic Link Setup
+## Email And Magic Link Setup
 
 Add these variables:
 
@@ -32,7 +33,7 @@ RESEND_API_KEY=re_...
 EMAIL_FROM=Acme <login@example.com>
 ```
 
-Once both are present, the auth form enables the email link flow.
+Once both are present, the auth UI can send verification, reset, and magic-link emails.
 
 ## Google Setup
 
@@ -70,7 +71,7 @@ Replace the domain for production.
 
 ## How Protection Works
 
-The middleware protects all routes that start with `/dashboard`. If a user is not authenticated, they are redirected to `/sign-in`.
+The proxy protects all routes that start with `/dashboard`. If a user is not authenticated, they are redirected to `/sign-in`.
 
 ## What Happens After Sign-In
 
@@ -85,7 +86,7 @@ After a successful auth flow, the app redirects to `/post-sign-in`. That page:
 ## Test Checklist
 
 1. Open `/sign-in`
-2. Confirm your enabled provider buttons or magic-link form are visible
+2. Confirm your enabled auth methods are visible
 3. Sign in
 4. Confirm you land on `/dashboard`
 5. Open `/dashboard/settings/authentication`
@@ -94,7 +95,7 @@ After a successful auth flow, the app redirects to `/post-sign-in`. That page:
 ## Common Mistakes
 
 - Setting provider keys but forgetting the callback URL in Google or GitHub
-- Expecting magic link to work without setting `EMAIL_FROM`
+- Expecting email-based auth to work without setting `EMAIL_FROM`
 - Forgetting to set `AUTH_SECRET`
 
 ## Related Docs

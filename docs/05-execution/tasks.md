@@ -6,7 +6,7 @@ Track the live execution backlog for turning the starter into a sellable product
 ## Current priorities
 ### P1
 - finalize `02-product/v1-blueprint.md`
-- verify auth strategy for Next.js 16 + NextAuth v5 beta
+- verify auth strategy for Next.js 16 + Better Auth
 - confirm Prisma schema direction for workspace foundation
 - define Starter vs Pro split with explicit feature table
 - update public-facing copy to match the real stack baseline

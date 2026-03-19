@@ -7,7 +7,7 @@ import { getAccountDeletionBlocker } from "@/features/teams/server/account-delet
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
 export type DeleteAccountUser = {
-  id: number;
+  id: string;
   email: string;
 };
 
@@ -49,10 +49,6 @@ export async function deleteAccount(user: DeleteAccountUser) {
 
     await tx.session.deleteMany({
       where: { userId: user.id },
-    });
-
-    await tx.verificationToken.deleteMany({
-      where: { identifier: user.email },
     });
 
     // Delete ALL memberships, not just the active team

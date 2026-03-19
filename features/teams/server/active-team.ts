@@ -12,7 +12,7 @@ export async function getActiveTeamId() {
   return Number.isInteger(value) && value > 0 ? value : null
 }
 
-export async function setActiveTeamId(userId: number, teamId: number) {
+export async function setActiveTeamId(userId: string, teamId: number) {
   const membership = await db.teamMember.findFirst({
     where: { userId, teamId },
     select: { id: true },

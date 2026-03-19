@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { AuthCard } from "@/features/auth/components/AuthCard";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm";
 import { routes } from "@/shared/constants/routes";
 
@@ -14,21 +20,27 @@ function getSingleValue(value: string | string[] | undefined) {
 export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   const token = getSingleValue((await searchParams).token)?.trim();
 
-  if (!token) {
-    return (
-      <AuthCard title="Reset password" description="This reset link is invalid or incomplete.">
-        <p className="text-sm text-muted-foreground">
-          <Link href={routes.auth.forgotPassword} className="underline underline-offset-4">
-            Request a new reset link
-          </Link>
-        </p>
-      </AuthCard>
-    );
-  }
-
   return (
-    <AuthCard title="Reset password" description="Choose a new password for your account.">
-      <ResetPasswordForm token={token} />
-    </AuthCard>
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Reset password</CardTitle>
+        <CardDescription>
+          {token
+            ? "Choose a new password for your account."
+            : "This reset link is invalid or incomplete."}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {token ? (
+          <ResetPasswordForm token={token} />
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            <Link href={routes.auth.forgotPassword} className="underline underline-offset-4">
+              Request a new reset link
+            </Link>
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }

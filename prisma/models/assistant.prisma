@@ -1,7 +1,7 @@
 model AssistantConversation {
   id            String   @id @default(cuid())
   teamId        Int
-  userId        Int
+  userId        String
   title         String   @db.VarChar(120)
   messagesJson  Json
   lastMessageAt DateTime

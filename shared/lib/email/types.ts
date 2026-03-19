@@ -15,5 +15,5 @@ export type EmailPayload = {
 };
 
 export type SendEmailOptions = {
-  idempotencyKey: string;
+  idempotencyKey?: string;
 };

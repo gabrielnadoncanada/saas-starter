@@ -27,9 +27,9 @@ If you keep that model in mind, most changes are easy to locate.
 
 1. The user opens `/sign-in`
 2. `app/(auth)/sign-in/page.tsx` renders the auth UI
-3. `auth.ts` configures NextAuth
-4. `shared/lib/auth/providers.ts` decides which providers are enabled
-5. `middleware.ts` protects `/dashboard`
+3. `shared/lib/auth/index.ts` configures Better Auth
+4. `shared/lib/auth/oauth-config.ts` decides which auth methods are enabled
+5. `proxy.ts` protects `/dashboard`
 6. `app/post-sign-in/page.tsx` provisions or resumes the user flow
 
 ## Example Flow: Pricing To Stripe

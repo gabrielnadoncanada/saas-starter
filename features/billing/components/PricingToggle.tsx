@@ -13,8 +13,8 @@ type PricePlan = {
   description: string | null;
   features: string[];
   pricingModel: PricingModel;
-  monthly: { priceId: string; unitAmount: number; trialDays: number } | null;
-  yearly: { priceId: string; unitAmount: number; trialDays: number } | null;
+  monthly: { priceId: string; unitAmount: number; trialDays?: number } | null;
+  yearly: { priceId: string; unitAmount: number; trialDays?: number } | null;
   oneTime: { priceId: string; unitAmount: number } | null;
 };
 
@@ -166,7 +166,7 @@ export function PricingToggle({ plans, hasYearlyPrices }: PricingToggleProps) {
               interval={
                 billingInterval === 'year' && plan.yearly ? 'year' : 'month'
               }
-              trialDays={activePrice.trialDays}
+              trialDays={activePrice.trialDays ?? null}
               features={plan.features}
               priceId={activePrice.priceId}
               pricingModel={plan.pricingModel}

@@ -1,55 +1,73 @@
-import { Suspense } from 'react';
-import { SignUpMethods } from '@/features/auth/components/SignUpMethods';
-import { getEnabledOAuthProviderIds } from '@/shared/lib/auth/oauth-config';
-import { hasMagicLinkProvider } from '@/shared/lib/auth/providers';
-import { AuthCard } from '@/features/auth/components/AuthCard';
-import Link from 'next/link';
-import { routes } from '@/shared/constants/routes';
-import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
+import Link from "next/link";
+import { SignUpForm } from "@/features/auth/components/SignUpForm";
+import { getAuthFlowParams } from "@/features/auth/utils/auth-flow";
+import {
+  getEnabledOAuthProviderIds,
+  hasMagicLinkProvider,
+} from "@/shared/lib/auth/oauth-config";
+import { routes } from "@/shared/constants/routes";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 
 type SignUpPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function SignUpPage({ searchParams }: SignUpPageProps) {
+  const authFlow = getAuthFlowParams(await searchParams);
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
-  const authFlow = getAuthFlowParams(await searchParams);
 
   return (
-    <Suspense>
-      <AuthCard
-        title="Create an account"
-        contentClassName="space-y-3"
-        description={(
-          <>
-            <span className="whitespace-nowrap">Already have an account?{" "}
-              <Link href={routes.auth.login} className="underline underline-offset-4 hover:text-primary">
-                Sign In
-              </Link>
-            </span>
-          </>
-        )}
-        footer={(
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            By creating an account, you agree to our{" "}
-            <a href="/terms" className="underline underline-offset-4 hover:text-primary">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="/privacy" className="underline underline-offset-4 hover:text-primary">
-              Privacy Policy
-            </a>
-            .
-          </p>
-        )}
-      >
-        <SignUpMethods
+    <Card className="gap-4">
+      <CardHeader>
+        <CardTitle className="text-lg tracking-tight">
+          Create an account
+        </CardTitle>
+        <CardDescription>
+          Already have an account?{" "}
+          <Link
+            href={routes.auth.login}
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Sign in
+          </Link>
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-3">
+        <SignUpForm
           {...authFlow}
           oauthProviders={oauthProviders}
           allowMagicLink={allowMagicLink}
         />
-      </AuthCard>
-    </Suspense>
+      </CardContent>
+
+      <CardFooter>
+        <p className="w-full text-center text-sm text-muted-foreground">
+          By creating an account, you agree to our{" "}
+          <Link
+            href="/terms"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/privacy"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </CardFooter>
+    </Card>
   );
 }

@@ -12,7 +12,7 @@ export async function getCurrentTeam() {
   return getTeamForUser(user.id);
 }
 
-export async function getTeamForUser(userId: number) {
+export async function getTeamForUser(userId: string) {
   const activeTeamId = await getActiveTeamId();
   const memberships = await db.teamMember.findMany({
     where: { userId },

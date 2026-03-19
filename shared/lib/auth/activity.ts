@@ -2,7 +2,7 @@ import { ActivityType } from "@/shared/lib/db/enums";
 import { createActivityLog } from "@/shared/lib/activity-log";
 
 async function createAuthActivity(
-  userId: number,
+  userId: string,
   action: ActivityType,
   ipAddress = "",
 ) {
@@ -13,12 +13,12 @@ async function createAuthActivity(
   });
 }
 
-export async function logUserSignIn(userId: number, ipAddress = "") {
+export async function logUserSignIn(userId: string, ipAddress = "") {
   await createAuthActivity(userId, ActivityType.SIGN_IN, ipAddress);
 }
 
 export async function logLinkedAuthProvider(
-  userId: number,
+  userId: string,
   action: "LINK_AUTH_PROVIDER" | "UNLINK_AUTH_PROVIDER",
   ipAddress = "",
 ) {

@@ -2,7 +2,7 @@ export type TeamMemberView = {
   id: number;
   role: 'OWNER' | 'ADMIN' | 'MEMBER';
   user: {
-    id: number;
+    id: string;
     name: string | null;
     email: string;
   };

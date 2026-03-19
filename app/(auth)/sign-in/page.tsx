@@ -1,59 +1,71 @@
-import { Suspense } from 'react';
-import { SignInMethods } from '@/features/auth/components/SignInMethods';
-import { getEnabledOAuthProviderIds } from '@/shared/lib/auth/oauth-config';
-import { hasMagicLinkProvider } from '@/shared/lib/auth/providers';
-import { AuthCard } from '@/features/auth/components/AuthCard';
-import Link from 'next/link';
-import { routes } from '@/shared/constants/routes';
-import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
+import Link from "next/link";
+import { SignInForm } from "@/features/auth/components/SignInForm";
+import { getAuthFlowParams } from "@/features/auth/utils/auth-flow";
+import {
+  getEnabledOAuthProviderIds,
+  hasMagicLinkProvider,
+} from "@/shared/lib/auth/oauth-config";
+import { routes } from "@/shared/constants/routes";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 
 type SignInPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
+  const authFlow = getAuthFlowParams(await searchParams);
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
-  const hasProviderChoice = allowMagicLink || oauthProviders.length > 0;
-  const authFlow = getAuthFlowParams(await searchParams);
 
   return (
-    <Suspense>
-      <AuthCard
-        title="Sign in"
-        contentClassName="space-y-3"
-        description={(
-          <>
+    <Card className="gap-4">
+      <CardHeader>
+        <CardTitle className="text-lg tracking-tight">Sign in</CardTitle>
+        <CardDescription>
+          Don&apos;t have an account?{" "}
+          <Link
+            href={routes.auth.signup}
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Sign up
+          </Link>
+        </CardDescription>
+      </CardHeader>
 
-            Don&apos;t have an account?{" "}
-            <Link
-              href={routes.auth.signup}
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Sign up
-            </Link>
-          </>
-        )}
-        footer={(
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            By clicking sign in, you agree to our{" "}
-            <a href="/terms" className="underline underline-offset-4 hover:text-primary">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="/privacy" className="underline underline-offset-4 hover:text-primary">
-              Privacy Policy
-            </a>
-            .
-          </p>
-        )}
-      >
-        <SignInMethods
+      <CardContent className="space-y-3">
+        <SignInForm
           {...authFlow}
           oauthProviders={oauthProviders}
           allowMagicLink={allowMagicLink}
         />
-      </AuthCard>
-    </Suspense>
+      </CardContent>
+
+      <CardFooter>
+        <p className="w-full text-center text-sm text-muted-foreground">
+          By clicking sign in, you agree to our{" "}
+          <Link
+            href="/terms"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/privacy"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </CardFooter>
+    </Card>
   );
 }

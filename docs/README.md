@@ -14,25 +14,25 @@ This documentation system is the operating system for the SaaS starter product. 
 ## Document map
 
 ### 01-strategy
-- `vision.md` — why this product exists, the market problem, the positioning, and strategic constraints.
-- `ideal-customer-profile.md` — who the product is for, what they want, what blocks them, and what makes them buy.
+- `vision.md` - why this product exists, the market problem, the positioning, and strategic constraints.
+- `ideal-customer-profile.md` - who the product is for, what they want, what blocks them, and what makes them buy.
 
 ### 02-product
-- `value-proposition.md` — the commercial value delivered, differentiators, alternatives, and buyer outcomes.
-- `mvp-scope.md` — what is in V1, what is explicitly out of scope, and how feature decisions are made.
-- `v1-blueprint.md` — the official build blueprint for the sellable V1, including modules, sequencing, and tier split.
+- `value-proposition.md` - the commercial value delivered, differentiators, alternatives, and buyer outcomes.
+- `mvp-scope.md` - what is in V1, what is explicitly out of scope, and how feature decisions are made.
+- `v1-blueprint.md` - the official build blueprint for the sellable V1, including modules, sequencing, and tier split.
 
 ### 03-architecture
-- `technical-architecture.md` — stack, conventions, system boundaries, and non-negotiable engineering principles.
-- `decisions-log.md` — lightweight architecture and product decision records.
+- `technical-architecture.md` - stack, conventions, system boundaries, and non-negotiable engineering principles.
+- `decisions-log.md` - lightweight architecture and product decision records.
 
 ### 04-marketing-sales
-- `offer.md` — packaging, pricing direction, licensing, support, and commercial framing.
-- `messaging.md` — positioning language, headlines, proof angles, objections, and voice.
+- `offer.md` - packaging, pricing direction, licensing, support, and commercial framing.
+- `messaging.md` - positioning language, headlines, proof angles, objections, and voice.
 
 ### 05-execution
-- `roadmap.md` — phased execution plan, milestones, dependencies, and risks.
-- `tasks.md` — live backlog of next actions.
+- `roadmap.md` - phased execution plan, milestones, dependencies, and risks.
+- `tasks.md` - live backlog of next actions.
 
 ### 99-reference
 - reserved for glossaries, templates, prompts, naming conventions, screenshots, reusable references, and extracted standards from skills when needed.
@@ -65,5 +65,5 @@ This documentation system is the operating system for the SaaS starter product. 
 - Structural standard locked to `nextjs-saas-structure`.
 - Buyer-fit standard locked to `starter-buyer-fit`.
 - Product direction narrowed to an AI-native but pragmatic Next.js SaaS starter for solo founders and small technical teams.
-- Stack baseline corrected to the current repository reality: Next.js 16, React 19, Prisma, Stripe, Tailwind 4, and NextAuth v5 beta.
+- Stack baseline corrected to the current repository reality: Next.js 16, React 19, Prisma, Stripe, Tailwind 4, and Better Auth.
 - Next step: turn the V1 blueprint into a build sequence and update the public-facing sales assets.

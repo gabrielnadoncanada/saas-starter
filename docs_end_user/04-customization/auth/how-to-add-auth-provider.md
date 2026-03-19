@@ -6,38 +6,30 @@ Add a new sign-in provider to the starter.
 
 ## Audience
 
-This guide is for buyers adding another NextAuth provider beyond the current set: Resend magic link, Google, and GitHub.
+This guide is for buyers adding another Better Auth provider beyond the current set: email/password, Resend magic link, Google, and GitHub.
 
 ## Files to Edit
 
-- `shared/lib/auth/providers.ts`
-- `shared/lib/auth/providers.ts` environment checks and labels
+- `shared/lib/auth/index.ts`
+- `shared/lib/auth/oauth-config.ts`
 - `.env`
 - provider dashboard callback URL settings
 
 ## Steps
 
-### Step 1 - Add the provider import
+### Step 1 - Add the provider configuration
 
-Import the provider in `shared/lib/auth/providers.ts`.
+Add the provider to the `socialProviders` object in `shared/lib/auth/index.ts`.
 
-### Step 2 - Add the env-based enable check
+### Step 2 - Add the env-based enable check and labels
 
-Follow the current pattern: only push the provider into `getAuthProviders()` when the required env vars exist.
+Follow the current pattern in `shared/lib/auth/oauth-config.ts` so the provider only appears when its env vars are present.
 
-### Step 3 - Add a display label if it is OAuth
-
-Add the provider id to `OAUTH_PROVIDER_LABELS` if you want it to appear in linked-account settings.
-
-### Step 4 - Add the provider configuration
-
-Push the provider into the `providers` array returned by `getAuthProviders()`.
-
-### Step 5 - Add the new env vars
+### Step 3 - Add the new env vars
 
 Put the provider keys into `.env`.
 
-### Step 6 - Configure the callback URL
+### Step 4 - Configure the callback URL
 
 Set the provider dashboard callback to:
 
@@ -53,7 +45,7 @@ http://localhost:3000/api/auth/callback/<provider-id>
 
 ## Complexity Note
 
-This task is currently good, not perfect. Adding a provider is mostly local to `shared/lib/auth/providers.ts`, but linked-account support assumes OAuth providers are explicitly labeled there too.
+This task is currently good, not perfect. Adding a provider is mostly local to `shared/lib/auth/index.ts` and `shared/lib/auth/oauth-config.ts`, but linked-account support still assumes OAuth providers are explicitly labeled there too.
 
 ## Related Documents
 

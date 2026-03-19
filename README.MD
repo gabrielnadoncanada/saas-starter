@@ -1,6 +1,6 @@
 # SaaS Starter
 
-A production-ready Next.js SaaS starter with authentication, Stripe billing, plan gating, team management, and a polished dashboard — built for technical founders and small teams who want to ship fast.
+A production-ready Next.js SaaS starter with authentication, Stripe billing, plan gating, team management, and a polished dashboard built for technical founders and small teams who want to ship fast.
 
 ## Who is this for
 
@@ -10,15 +10,15 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 
 ## What's included
 
-- **Authentication** — Magic link, Google, and GitHub OAuth via NextAuth v5. Account linking, session management, and soft delete built in.
-- **Stripe billing** — Subscriptions (flat and per-seat), one-time payments, checkout, customer portal, and webhook handling.
-- **Plan gating** — Capability-based feature flags and usage limits (monthly quotas, team member caps). Single source of truth in one config file.
-- **Team management** — Multi-team support with roles (Owner, Admin, Member), invitations, and cookie-based team switching.
-- **Dashboard shell** — Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
-- **Tasks CRUD example** — Full working feature with TanStack Table (sort, filter, paginate, bulk actions), server actions, Zod validation, and plan-gated creation.
-- **Activity logging** — Audit trail for sign-ins, account changes, team actions, and provider linking.
-- **Email** — Resend integration with React Email templates for magic links and team invitations.
-- **Documentation** — 72 docs including 31 step-by-step customization guides covering auth, billing, branding, dashboard, data model, and workspace changes.
+- **Authentication** - Better Auth with database sessions, email/password, magic link, Google, and GitHub OAuth. Account linking, session management, and soft delete built in.
+- **Stripe billing** - Subscriptions (flat and per-seat), one-time payments, checkout, customer portal, and webhook handling.
+- **Plan gating** - Capability-based feature flags and usage limits (monthly quotas, team member caps). Single source of truth in one config file.
+- **Team management** - Multi-team support with roles (Owner, Admin, Member), invitations, and cookie-based team switching.
+- **Dashboard shell** - Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
+- **Tasks CRUD example** - Full working feature with TanStack Table (sort, filter, paginate, bulk actions), server actions, Zod validation, and plan-gated creation.
+- **Activity logging** - Audit trail for sign-ins, account changes, team actions, and provider linking.
+- **Email** - Resend integration with React Email templates for auth emails and team invitations.
+- **Documentation** - 72 docs including 31 step-by-step customization guides covering auth, billing, branding, dashboard, data model, and workspace changes.
 
 ## Tech stack
 
@@ -27,7 +27,7 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript (strict) |
 | UI | Tailwind CSS 4, shadcn/ui, Radix UI |
-| Auth | NextAuth v5 (beta) |
+| Auth | Better Auth |
 | Database | PostgreSQL, Prisma ORM |
 | Payments | Stripe |
 | Email | Resend, React Email |
@@ -65,11 +65,11 @@ Copy `.env.example` and configure:
 | Variable | Purpose |
 |---|---|
 | `POSTGRES_URL` | PostgreSQL connection string |
-| `AUTH_SECRET` | NextAuth session secret |
+| `AUTH_SECRET` | Better Auth secret for signing sessions and auth tokens |
 | `STRIPE_SECRET_KEY` | Stripe API key |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signature secret |
 | `BASE_URL` | Your app URL (`http://localhost:3000` locally) |
-| `RESEND_API_KEY` | Resend email API key (for magic links) |
+| `RESEND_API_KEY` | Resend email API key (for magic links and auth email) |
 | `EMAIL_FROM` | Sender address for transactional emails |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional) |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional) |
@@ -96,29 +96,29 @@ Three pricing models are supported out of the box: flat-rate subscriptions, per-
 ## Project structure
 
 ```
-app/                → Routes and layouts (thin — delegates to features)
-features/           → Product code organized by domain
-  auth/             → Sign-in, sign-up, post-sign-in, OAuth
-  billing/          → Plans, guards, checkout, webhooks, usage tracking
-  tasks/            → CRUD example with plan gating
-  teams/            → Team management, invitations, roles
-  account/          → Profile, settings, account deletion
-shared/             → Cross-feature infrastructure
-  components/       → UI components, layout, navigation
-  lib/              → Auth, database, email, Stripe clients
-  hooks/            → Reusable React hooks
-  constants/        → Routes, terminology
-prisma/             → Schema, migrations, seed
-docs_end_user/      → Setup, customization, and reference guides
+app/                -> Routes and layouts (thin - delegates to features)
+features/           -> Product code organized by domain
+  auth/             -> Sign-in, sign-up, post-sign-in, OAuth
+  billing/          -> Plans, guards, checkout, webhooks, usage tracking
+  tasks/            -> CRUD example with plan gating
+  teams/            -> Team management, invitations, roles
+  account/          -> Profile, settings, account deletion
+shared/             -> Cross-feature infrastructure
+  components/       -> UI components, layout, navigation
+  lib/              -> Auth, database, email, Stripe clients
+  hooks/            -> Reusable React hooks
+  constants/        -> Routes, terminology
+prisma/             -> Schema, migrations, seed
+docs_end_user/      -> Setup, customization, and reference guides
 ```
 
 ## Why this starter
 
-- **Launch faster** — Auth, billing, teams, and a dashboard shell are already wired together. Start building your product features on day one.
-- **Understand quickly** — Feature-organized code, thin routes, and short files. No custom frameworks to learn.
-- **Modify safely** — Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
-- **Customize freely** — 31 customization guides cover common changes: rename teams, add auth providers, change plans, rebrand the UI.
-- **Modern defaults** — Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
+- **Launch faster** - Auth, billing, teams, and a dashboard shell are already wired together. Start building your product features on day one.
+- **Understand quickly** - Feature-organized code, thin routes, and short files. No custom frameworks to learn.
+- **Modify safely** - Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
+- **Customize freely** - 31 customization guides cover common changes: rename teams, add auth providers, change plans, rebrand the UI.
+- **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
 
 ## Documentation
 

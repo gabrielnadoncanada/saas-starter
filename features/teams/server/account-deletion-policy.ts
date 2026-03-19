@@ -13,7 +13,7 @@ function hasActiveSubscription(team: {
   );
 }
 
-export async function getAccountDeletionBlocker(userId: number) {
+export async function getAccountDeletionBlocker(userId: string) {
   // Check ALL teams where this user is OWNER
   const ownedTeams = await db.teamMember.findMany({
     where: { userId, role: "OWNER" },

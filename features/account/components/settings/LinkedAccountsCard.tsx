@@ -1,8 +1,8 @@
 'use client';
 
 import { format, parseISO } from 'date-fns';
-import { signIn } from 'next-auth/react';
 import { useActionState, useState } from 'react';
+import { authClient } from '@/shared/lib/auth/auth-client';
 
 import { OAuthProviderIcon } from '@/features/auth/components/OAuthProviderIcon';
 import { Badge } from '@/shared/components/ui/badge';
@@ -62,8 +62,9 @@ export function LinkedAccountsCard({
   async function handleLinkAccount(provider: LinkedProviderOverview['provider']) {
     setLinkingProvider(provider);
 
-    await signIn(provider, {
-      redirectTo: `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`
+    await authClient.signIn.social({
+      provider,
+      callbackURL: `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`
     });
 
     setLinkingProvider(null);

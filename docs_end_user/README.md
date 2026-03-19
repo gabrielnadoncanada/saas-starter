@@ -50,7 +50,7 @@ Start here based on the job:
 At the time of writing, the repo gives you:
 
 - Next.js 16 App Router
-- NextAuth-based sign-in and sign-up pages
+- Better Auth-based sign-in and sign-up pages
 - PostgreSQL with Prisma
 - Stripe checkout and subscription webhook handling
 - Plan gating system with capabilities, usage limits, and guards

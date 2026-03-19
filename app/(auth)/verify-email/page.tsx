@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { AuthCard } from "@/features/auth/components/AuthCard";
-import { verifyEmailAddress } from "@/features/auth/server/verify-email";
-import { buildAuthHref, getAuthFlowParams } from "@/features/auth/utils/auth-flow";
 import { routes } from "@/shared/constants/routes";
 
 type VerifyEmailPageProps = {
@@ -14,12 +12,16 @@ function getSingleValue(value: string | string[] | undefined) {
 
 export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageProps) {
   const resolvedSearchParams = await searchParams;
-  const token = getSingleValue(resolvedSearchParams.token)?.trim();
-  const signInHref = buildAuthHref(routes.auth.login, getAuthFlowParams(resolvedSearchParams));
+  const error = getSingleValue(resolvedSearchParams.error);
 
-  if (!token) {
+  // Better Auth handles verification at /api/auth/verify-email and redirects here.
+  // If there's an error parameter, verification failed.
+  if (error) {
     return (
-      <AuthCard title="Verify email" description="This verification link is invalid or incomplete.">
+      <AuthCard
+        title="Verification failed"
+        description="This verification link is invalid or has expired."
+      >
         <Link href={routes.auth.signup} className="text-sm underline underline-offset-4">
           Back to sign up
         </Link>
@@ -27,18 +29,12 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
     );
   }
 
-  const result = await verifyEmailAddress(token);
-
   return (
     <AuthCard
-      title={result.status === "verified" ? "Email verified" : "Verification failed"}
-      description={
-        result.status === "verified"
-          ? "Your email address is now confirmed. You can sign in with your password."
-          : "This verification link is invalid or has expired."
-      }
+      title="Email verified"
+      description="Your email address is now confirmed. You can sign in."
     >
-      <Link href={signInHref} className="text-sm underline underline-offset-4">
+      <Link href={routes.auth.login} className="text-sm underline underline-offset-4">
         Go to sign in
       </Link>
     </AuthCard>

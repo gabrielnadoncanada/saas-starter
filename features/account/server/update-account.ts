@@ -6,7 +6,7 @@ import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 import type { UpdateAccountActionState } from "@/features/account/types/account.types";
 
 type UpdateAccountParams = {
-  userId: number;
+  userId: string;
   name: string;
   phoneNumber: string | null;
 };

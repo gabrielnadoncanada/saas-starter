@@ -1,8 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { signOut } from 'next-auth/react'
 import { useState } from 'react'
+import { authClient } from '@/shared/lib/auth/auth-client'
 
 import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog'
 import { routes } from '@/shared/constants/routes'
@@ -30,7 +30,7 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`
 
     try {
-      await signOut({ redirect: false })
+      await authClient.signOut()
       router.push(buildSignInRedirectHref(currentPath))
       router.refresh()
     } finally {

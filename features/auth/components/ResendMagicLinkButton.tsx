@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { authClient } from '@/shared/lib/auth/auth-client';
 
 import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
 import type { AuthRedirect } from '@/features/auth/utils/auth-flow';
@@ -29,10 +29,9 @@ export function ResendMagicLinkButton({
     try {
       setIsPending(true);
 
-      const result = await signIn('resend', {
+      const { error } = await authClient.signIn.magicLink({
         email: email.trim().toLowerCase(),
-        redirect: false,
-        redirectTo: getPostSignInCallbackUrl({
+        callbackURL: getPostSignInCallbackUrl({
           redirect,
           priceId,
           pricingModel,
@@ -40,7 +39,7 @@ export function ResendMagicLinkButton({
         })
       });
 
-      if (result?.error) {
+      if (error) {
         throw new Error('Unable to send a new sign-in link. Please try again.');
       }
 

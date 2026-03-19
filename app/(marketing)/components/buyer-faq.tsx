@@ -57,7 +57,7 @@ const faqs = [
   {
     question: 'What tech stack does this use?',
     answer:
-      'Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS 4, shadcn/ui, Prisma ORM, PostgreSQL, Stripe, NextAuth v5, Resend for email, the Vercel AI SDK for the assistant module, Vitest for testing, Zod for validation, and TanStack React Table.',
+      'Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS 4, shadcn/ui, Prisma ORM, PostgreSQL, Stripe, Better Auth, Resend for email, the Vercel AI SDK for the assistant module, Vitest for testing, Zod for validation, and TanStack React Table.',
   },
   {
     question: 'How long does setup take?',

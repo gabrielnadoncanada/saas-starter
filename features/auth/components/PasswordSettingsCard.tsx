@@ -1,30 +1,83 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { updatePasswordAction } from "@/features/auth/actions/update-password.action";
-import type { UpdatePasswordActionState } from "@/features/auth/types/credentials-auth.types";
+import { toast } from "sonner";
+import { authClient } from "@/shared/lib/auth/auth-client";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/components/ui/field";
-import { getFieldState } from "@/shared/lib/get-field-state";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
 
 type PasswordSettingsCardProps = {
   hasPassword: boolean;
 };
 
 export function PasswordSettingsCard({ hasPassword }: PasswordSettingsCardProps) {
-  const [state, formAction, isPending] = useActionState<UpdatePasswordActionState, FormData>(
-    updatePasswordAction,
-    {},
-  );
-  const currentPasswordField = getFieldState(state, "currentPassword");
-  const newPasswordField = getFieldState(state, "newPassword");
-  const confirmPasswordField = getFieldState(state, "confirmPassword");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPasswordError, setCurrentPasswordError] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
-  useFormActionToasts(state);
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setCurrentPasswordError("");
+    setNewPasswordError("");
+    setConfirmPasswordError("");
+
+    if (hasPassword && !currentPassword) {
+      setCurrentPasswordError("Current password is required.");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setNewPasswordError("Password must be at least 8 characters.");
+      return;
+    }
+    if (!/[A-Za-z]/.test(newPassword)) {
+      setNewPasswordError("Password must include at least one letter.");
+      return;
+    }
+    if (!/[0-9]/.test(newPassword)) {
+      setNewPasswordError("Password must include at least one number.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      return;
+    }
+
+    setIsPending(true);
+
+    try {
+      const { error } = hasPassword
+        ? await authClient.changePassword({ currentPassword, newPassword })
+        : await authClient.$fetch<{ status: boolean }>("/set-password", {
+            method: "POST",
+            body: { newPassword },
+          });
+
+      if (error) {
+        if (error.message?.toLowerCase().includes("current") || error.message?.toLowerCase().includes("incorrect")) {
+          setCurrentPasswordError("Current password is incorrect.");
+        } else {
+          toast.error(error.message ?? "Unable to update password.");
+        }
+        return;
+      }
+
+      toast.success(hasPassword ? "Password updated successfully." : "Password created successfully.");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch {
+      toast.error("Unable to update password. Please try again.");
+    } finally {
+      setIsPending(false);
+    }
+  }
 
   return (
     <Card>
@@ -32,36 +85,56 @@ export function PasswordSettingsCard({ hasPassword }: PasswordSettingsCardProps)
         <CardTitle>{hasPassword ? "Change password" : "Create a password"}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={formAction} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <FieldGroup className="space-y-4">
             {hasPassword ? (
-              <Field data-invalid={currentPasswordField.invalid}>
+              <Field data-invalid={Boolean(currentPasswordError)}>
                 <FieldLabel htmlFor="current-password">Current password</FieldLabel>
                 <PasswordInput
                   id="current-password"
                   name="currentPassword"
-                  aria-invalid={currentPasswordField.invalid}
+                  value={currentPassword}
+                  onChange={(event) => {
+                    setCurrentPassword(event.target.value);
+                    if (currentPasswordError) setCurrentPasswordError("");
+                  }}
+                  aria-invalid={Boolean(currentPasswordError)}
                   required
                 />
-                <FieldError>{currentPasswordField.error}</FieldError>
+                <FieldError>{currentPasswordError}</FieldError>
               </Field>
             ) : null}
 
-            <Field data-invalid={newPasswordField.invalid}>
+            <Field data-invalid={Boolean(newPasswordError)}>
               <FieldLabel htmlFor="new-password">New password</FieldLabel>
-              <PasswordInput id="new-password" name="newPassword" aria-invalid={newPasswordField.invalid} required />
-              <FieldError>{newPasswordField.error}</FieldError>
+              <PasswordInput
+                id="new-password"
+                name="newPassword"
+                value={newPassword}
+                onChange={(event) => {
+                  setNewPassword(event.target.value);
+                  if (newPasswordError) setNewPasswordError("");
+                }}
+                aria-invalid={Boolean(newPasswordError)}
+                required
+              />
+              <FieldError>{newPasswordError}</FieldError>
             </Field>
 
-            <Field data-invalid={confirmPasswordField.invalid}>
+            <Field data-invalid={Boolean(confirmPasswordError)}>
               <FieldLabel htmlFor="confirm-password">Confirm new password</FieldLabel>
               <PasswordInput
                 id="confirm-password"
                 name="confirmPassword"
-                aria-invalid={confirmPasswordField.invalid}
+                value={confirmPassword}
+                onChange={(event) => {
+                  setConfirmPassword(event.target.value);
+                  if (confirmPasswordError) setConfirmPasswordError("");
+                }}
+                aria-invalid={Boolean(confirmPasswordError)}
                 required
               />
-              <FieldError>{confirmPasswordField.error}</FieldError>
+              <FieldError>{confirmPasswordError}</FieldError>
             </Field>
           </FieldGroup>
 

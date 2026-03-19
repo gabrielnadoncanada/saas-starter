@@ -1,7 +1,7 @@
 import { ActivityType } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 
-export async function ensureUserWorkspace(userId: number, email: string) {
+export async function ensureUserWorkspace(userId: string, email: string) {
   const existingTeamMember = await db.teamMember.findFirst({
     where: { userId },
     select: { teamId: true },

@@ -8,8 +8,8 @@ This guide explains which variables matter first and which parts of the starter 
 
 - `.env.example`
 - `shared/lib/db/prisma.ts`
-- `auth.ts`
-- `shared/lib/auth/providers.ts`
+- `shared/lib/auth/index.ts`
+- `shared/lib/auth/oauth-config.ts`
 - `shared/lib/email/config.ts`
 - `shared/lib/stripe/client.ts`
 - `app/api/stripe/webhook/route.ts`
@@ -46,13 +46,12 @@ GROQ_API_KEY=
 
 ## Auth Variables
 
-### Magic link with Resend
-
-The auth provider code currently checks:
+### Email and magic link
 
 ```env
 RESEND_API_KEY=re_...
 EMAIL_FROM=Acme <login@example.com>
+EMAIL_REPLY_TO=
 ```
 
 ### Social login
@@ -62,17 +61,14 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
+ALLOW_EMAIL_ACCOUNT_LINKING=true
 ```
 
 If a provider pair is missing, that provider simply does not appear on the sign-in page.
 
 ## App Email Variables
 
-The same `RESEND_API_KEY` and `EMAIL_FROM` variables are shared by both magic-link auth and app email sending. You can also set an optional reply-to address:
-
-```env
-EMAIL_REPLY_TO=
-```
+The same `RESEND_API_KEY` and `EMAIL_FROM` variables are shared by auth email and app email sending.
 
 ## Base URL
 
@@ -81,7 +77,7 @@ EMAIL_REPLY_TO=
 - local: `http://localhost:3000`
 - production: your real domain
 
-It is used by email-related flows and should be updated before deployment.
+It is used by Better Auth, auth email flows, and Stripe redirects.
 
 ## Validation Checklist
 

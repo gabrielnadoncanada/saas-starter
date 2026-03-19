@@ -19,13 +19,13 @@ This section reflects the actual repository baseline and should be updated whene
 - TypeScript
 - Tailwind CSS 4
 - shadcn/ui
-- NextAuth v5 beta
+- Better Auth
 - Prisma
 - Stripe
 - Vercel-first deployment assumptions
 
 ## Why this matters commercially
-The starter is not selling “modern for modern’s sake”. It is selling a current, credible foundation. The stack must therefore be both:
+The starter is not selling "modern for modern's sake". It is selling a current, credible foundation. The stack must therefore be both:
 - modern enough to feel premium,
 - stable and understandable enough to avoid buyer anxiety.
 
@@ -112,6 +112,6 @@ At minimum, docs must clearly explain:
 - where to customize key UI and product flows.
 
 ## Open architecture questions
-- Keep NextAuth as the long-term auth baseline or evaluate a simpler auth path?
-- Is Prisma still the best fit for the starter’s buyer and hosting assumptions?
+- Is Better Auth the right long-term auth baseline for the starter?
+- Is Prisma still the best fit for the starter's buyer and hosting assumptions?
 - Which AI-facing surface belongs in the core product versus optional modules?

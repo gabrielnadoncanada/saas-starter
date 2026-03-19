@@ -90,7 +90,7 @@ export default function HomePage() {
               "Prisma",
               "PostgreSQL",
               "Stripe",
-              "NextAuth v5",
+              "Better Auth",
               "Resend",
             ].map((tech) => (
               <span key={tech} className="font-medium text-foreground">

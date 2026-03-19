@@ -38,3 +38,7 @@ export function getEnabledOAuthProviderIds(): OAuthProviderId[] {
     .filter((provider) => provider.isEnabled())
     .map((provider) => provider.id);
 }
+
+export function hasMagicLinkProvider() {
+  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+}

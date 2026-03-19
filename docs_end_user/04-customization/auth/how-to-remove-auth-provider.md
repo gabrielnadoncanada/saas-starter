@@ -6,14 +6,15 @@ Remove a sign-in method you do not want to support.
 
 ## Files to Edit
 
-- `shared/lib/auth/providers.ts`
+- `shared/lib/auth/index.ts`
+- `shared/lib/auth/oauth-config.ts`
 - `.env`
 
 ## Steps
 
-### Step 1 - Remove the provider from the enabled list
+### Step 1 - Remove the provider from the auth config
 
-Delete the provider import and the provider registration from `shared/lib/auth/providers.ts`.
+Delete the provider from `shared/lib/auth/index.ts` and remove its visibility config from `shared/lib/auth/oauth-config.ts`.
 
 ### Step 2 - Remove its linked-account label if needed
 
