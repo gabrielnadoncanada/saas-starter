@@ -1,61 +1,62 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import {
-  resolvePlanFromStripeName,
-  resolvePlanFromStripeProduct,
-} from "@/features/billing/plans/stripe-map";
-import { resolvePricingModel } from "@/features/billing/plans/pricing-model";
+process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
+process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
+process.env.STRIPE_PRICE_PRO_LIFETIME = "price_pro_lifetime";
+process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
+process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
-describe("resolvePlanFromStripeName", () => {
-  it("maps known Stripe product names to plan IDs", () => {
-    expect(resolvePlanFromStripeName("Base")).toBe("pro");
-    expect(resolvePlanFromStripeName("Pro")).toBe("pro");
-    expect(resolvePlanFromStripeName("Plus")).toBe("team");
-    expect(resolvePlanFromStripeName("Team")).toBe("team");
+const {
+  plans,
+} = await import("@/features/billing/config/billing.config");
+
+const {
+  getConfiguredStripePriceIds,
+  resolvePlanFromStripePriceId,
+  resolvePricingModelFromStripePriceId,
+} = await import("@/features/billing/server/billing-resolver");
+
+describe("configured Stripe price resolution", () => {
+  it("keeps Stripe prices in the billing config", () => {
+    expect(plans.pro.prices.monthly?.priceId).toBe("price_pro_monthly");
+    expect(plans.team.prices.monthly?.priceId).toBe("price_team_monthly");
   });
 
-  it("falls back to free for unknown names", () => {
-    expect(resolvePlanFromStripeName("Enterprise")).toBe("free");
-    expect(resolvePlanFromStripeName("")).toBe("free");
+  it("exposes configured Stripe price ids from the billing config", () => {
+    expect(getConfiguredStripePriceIds()).toEqual([
+      "price_pro_monthly",
+      "price_pro_yearly",
+      "price_pro_lifetime",
+      "price_team_monthly",
+      "price_team_yearly",
+    ]);
   });
 
-  it("falls back to free for null/undefined", () => {
-    expect(resolvePlanFromStripeName(null)).toBe("free");
-    expect(resolvePlanFromStripeName(undefined)).toBe("free");
+  it("maps configured Stripe price ids to internal plan ids", () => {
+    expect(resolvePlanFromStripePriceId("price_pro_monthly")).toBe("pro");
+    expect(resolvePlanFromStripePriceId("price_pro_yearly")).toBe("pro");
+    expect(resolvePlanFromStripePriceId("price_pro_lifetime")).toBe("pro");
+    expect(resolvePlanFromStripePriceId("price_team_monthly")).toBe("team");
+    expect(resolvePlanFromStripePriceId("price_team_yearly")).toBe("team");
   });
 
-  it("normalizes case and surrounding whitespace", () => {
-    expect(resolvePlanFromStripeName(" pro ")).toBe("pro");
-    expect(resolvePlanFromStripeName("TEAM")).toBe("team");
-  });
-});
-
-describe("resolvePlanFromStripeProduct", () => {
-  it("prefers stable metadata plan IDs", () => {
-    expect(
-      resolvePlanFromStripeProduct({
-        name: "Totally Custom Name",
-        metadata: { plan_id: "team" },
-      }),
-    ).toBe("team");
-  });
-});
-
-describe("resolvePricingModel", () => {
-  it("resolves valid pricing models from metadata", () => {
-    expect(resolvePricingModel({ pricing_model: "flat" })).toBe("flat");
-    expect(resolvePricingModel({ pricing_model: "per_seat" })).toBe("per_seat");
-    expect(resolvePricingModel({ pricing_model: "one_time" })).toBe("one_time");
+  it("falls back to free for unknown or missing price ids", () => {
+    expect(resolvePlanFromStripePriceId("price_unknown")).toBe("free");
+    expect(resolvePlanFromStripePriceId("")).toBe("free");
+    expect(resolvePlanFromStripePriceId(null)).toBe("free");
+    expect(resolvePlanFromStripePriceId(undefined)).toBe("free");
   });
 
-  it("defaults to flat for missing metadata", () => {
-    expect(resolvePricingModel(null)).toBe("flat");
-    expect(resolvePricingModel(undefined)).toBe("flat");
-    expect(resolvePricingModel({})).toBe("flat");
+  it("resolves pricing model from configured Stripe price ids", () => {
+    expect(resolvePricingModelFromStripePriceId("price_pro_monthly")).toBe("flat");
+    expect(resolvePricingModelFromStripePriceId("price_pro_yearly")).toBe("flat");
+    expect(resolvePricingModelFromStripePriceId("price_pro_lifetime")).toBe("one_time");
+    expect(resolvePricingModelFromStripePriceId("price_team_monthly")).toBe("per_seat");
+    expect(resolvePricingModelFromStripePriceId("price_team_yearly")).toBe("per_seat");
   });
 
-  it("defaults to flat for invalid values", () => {
-    expect(resolvePricingModel({ pricing_model: "monthly" })).toBe("flat");
-    expect(resolvePricingModel({ pricing_model: "" })).toBe("flat");
+  it("defaults pricing model to flat for unknown price ids", () => {
+    expect(resolvePricingModelFromStripePriceId("price_unknown")).toBe("flat");
+    expect(resolvePricingModelFromStripePriceId(null)).toBe("flat");
   });
 });

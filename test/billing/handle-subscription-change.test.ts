@@ -9,6 +9,12 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   db: {},
 }));
 
+process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
+process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
+process.env.STRIPE_PRICE_PRO_LIFETIME = "price_pro_lifetime";
+process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
+process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
+
 const { handleSubscriptionChange } = await import(
   "@/features/billing/server/handle-subscription-change"
 );
@@ -43,7 +49,6 @@ describe("handleSubscriptionChange", () => {
         findFirst: vi.fn().mockResolvedValue({
           id: 1,
           planId: null,
-          planName: "Legacy Pro",
           pricingModel: "flat",
           stripeProductId: "prod_old",
         }),
@@ -57,7 +62,7 @@ describe("handleSubscriptionChange", () => {
       customer: "cus_1",
       status: "active",
       items: {
-        data: [{ price: { product: "prod_1" } }],
+        data: [{ price: { id: "price_pro_monthly", product: "prod_1" } }],
       },
     } as unknown as Stripe.Subscription;
 
@@ -69,7 +74,6 @@ describe("handleSubscriptionChange", () => {
         planId: "pro",
         stripeSubscriptionId: "sub_1",
         stripeProductId: "prod_1",
-        planName: "Pro",
         subscriptionStatus: "active",
         pricingModel: "flat",
       },
@@ -82,7 +86,6 @@ describe("handleSubscriptionChange", () => {
         findFirst: vi.fn().mockResolvedValue({
           id: 1,
           planId: "pro",
-          planName: "Pro",
           pricingModel: "flat",
           stripeProductId: "prod_1",
         }),
@@ -105,7 +108,6 @@ describe("handleSubscriptionChange", () => {
         planId: null,
         stripeSubscriptionId: null,
         stripeProductId: null,
-        planName: null,
         subscriptionStatus: "canceled",
         pricingModel: null,
       },
@@ -118,7 +120,6 @@ describe("handleSubscriptionChange", () => {
         findFirst: vi.fn().mockResolvedValue({
           id: 9,
           planId: "pro",
-          planName: "Pro",
           pricingModel: "flat",
           stripeProductId: "prod_existing",
         }),
@@ -132,7 +133,7 @@ describe("handleSubscriptionChange", () => {
       customer: "cus_9",
       status: "past_due",
       items: {
-        data: [{ price: { product: "prod_1" } }],
+        data: [{ price: { id: "price_pro_monthly", product: "prod_1" } }],
       },
     } as unknown as Stripe.Subscription;
 
@@ -144,7 +145,6 @@ describe("handleSubscriptionChange", () => {
         planId: "pro",
         stripeSubscriptionId: "sub_9",
         stripeProductId: "prod_1",
-        planName: "Pro",
         subscriptionStatus: "past_due",
         pricingModel: "flat",
       },
@@ -157,7 +157,6 @@ describe("handleSubscriptionChange", () => {
         findFirst: vi.fn().mockResolvedValue({
           id: 1,
           planId: "pro",
-          planName: "Lifetime",
           pricingModel: "one_time",
           stripeProductId: "prod_lt",
         }),
@@ -169,7 +168,7 @@ describe("handleSubscriptionChange", () => {
       id: "sub_1",
       customer: "cus_1",
       status: "active",
-      items: { data: [{ price: { product: "prod_1" } }] },
+      items: { data: [{ price: { id: "price_pro_monthly", product: "prod_1" } }] },
     } as unknown as Stripe.Subscription;
 
     await handleSubscriptionChange(subscription, { db, stripe: mockStripe() });

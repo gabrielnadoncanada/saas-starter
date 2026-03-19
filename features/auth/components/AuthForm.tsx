@@ -14,7 +14,7 @@ import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
 import { Button } from '@/shared/components/ui/button';
 import { routes } from '@/shared/constants/routes';
 import { useToastMessage } from '@/shared/hooks/useToastMessage';
-import type { OAuthProviderId } from '@/shared/lib/auth/providers';
+import type { OAuthProviderId } from '@/shared/lib/auth/oauth-config';
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   OAuthAccountNotLinked:
@@ -157,6 +157,15 @@ export function AuthForm({
         </div>
       ) : null}
 
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t" />
+        </div>
+
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-background px-2 text-muted-foreground text-uppercase">Or continue with</span>
+        </div>
+      </div>
       <OAuthButtons
         providers={oauthProviders}
         pendingProvider={pendingProvider}

@@ -19,7 +19,6 @@ const emailSchema = z.string().trim().email("Enter a valid email address.");
 
 export const signUpWithPasswordSchema = authFlowSchema
   .extend({
-    name: z.string().trim().min(1, "Name is required.").max(100, "Name is too long."),
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string(),

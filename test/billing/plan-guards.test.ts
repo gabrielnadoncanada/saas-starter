@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { plans, getPlan, isPlanId } from "@/features/billing/plans/plans";
+import { plans, getPlan, isPlanId } from "@/features/billing/config/billing.config";
 import { hasCapability } from "@/features/billing/guards/has-capability";
 import { assertCapability } from "@/features/billing/guards/assert-capability";
 import { getPlanLimit } from "@/features/billing/guards/get-plan-limit";

@@ -10,7 +10,6 @@ export type TeamMemberView = {
 
 export type TeamView = {
   id: number;
-  planName: string | null;
   subscriptionStatus: string | null;
   teamMembers: TeamMemberView[];
 };

@@ -68,7 +68,7 @@ Billing data is stored on `Team`:
 - `stripeCustomerId`
 - `stripeSubscriptionId`
 - `stripeProductId`
-- `planName`
+- `planId`
 - `subscriptionStatus`
 
 ## Common Mistakes

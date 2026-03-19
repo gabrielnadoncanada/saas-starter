@@ -7,6 +7,7 @@ import { PendingInvitationsPanel } from '@/features/teams/components/PendingInvi
 import { TeamMembersPanel } from '@/features/teams/components/TeamMembersPanel';
 import { getCurrentTeam } from '@/features/teams/server/current-team';
 import { listPendingInvitationsForCurrentTeam } from '@/features/teams/server/team-invitations';
+import { getPlan, resolveTeamPlan } from '@/features/billing/plans';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 
 function getSubscriptionLabel(subscriptionStatus: string | null) {
@@ -37,6 +38,7 @@ export async function TeamSettingsPage() {
   const user = await getCurrentUser();
   const team = await getCurrentTeam();
   const invitations = await listPendingInvitationsForCurrentTeam();
+  const plan = getPlan(resolveTeamPlan(team));
   const isOwner =
     !!team?.teamMembers.some((member) => member.user.id === user?.id && member.role === 'OWNER');
 
@@ -44,7 +46,7 @@ export async function TeamSettingsPage() {
     <>
       <Item variant="outline" className="mb-8">
         <ItemContent>
-          <ItemTitle>Current Plan: {team?.planName || 'Free'}</ItemTitle>
+          <ItemTitle>Current Plan: {plan.name}</ItemTitle>
           <ItemDescription>{getSubscriptionLabel(team?.subscriptionStatus ?? null)}</ItemDescription>
         </ItemContent>
         <ItemActions>

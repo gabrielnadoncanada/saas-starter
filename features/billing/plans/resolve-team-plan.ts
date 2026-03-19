@@ -1,10 +1,8 @@
-import type { PlanId } from "./plans";
-import { resolvePlanFromStripeName } from "./stripe-map";
+import type { PlanId } from "../config/billing.config";
 import { hasPlanAccess } from "./subscription-status";
 
 type TeamBillingSnapshot = {
   planId: string | null;
-  planName: string | null;
   subscriptionStatus: string | null;
 };
 
@@ -17,5 +15,5 @@ export function resolveTeamPlan(team: TeamBillingSnapshot | null | undefined): P
     return team.planId;
   }
 
-  return resolvePlanFromStripeName(team.planName);
+  return "free";
 }

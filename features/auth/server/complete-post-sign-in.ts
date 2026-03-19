@@ -55,7 +55,6 @@ export async function completePostSignIn({
       where: { id: invitation.teamId },
       select: {
         planId: true,
-        planName: true,
         subscriptionStatus: true,
         _count: {
           select: {

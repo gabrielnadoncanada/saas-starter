@@ -6,20 +6,20 @@ Offer a no-payment entry plan without sending the user through Stripe checkout.
 
 ## Current State
 
-The starter ships with a `free` plan already defined in `features/billing/plans/plans.ts`. When a team has no Stripe subscription, `resolvePlanFromStripeName(null)` returns `"free"` automatically.
+The starter ships with a `free` plan already defined in `features/billing/config/billing.config.ts`. When a team has no active configured Stripe price, the guards resolve access to `"free"` automatically.
 
 The free plan is **the default**. No code change is needed to have it work.
 
 ## Files to Edit
 
-- `features/billing/plans/plans.ts` — adjust free plan capabilities and limits
-- `features/billing/components/PricingSection.tsx` — optionally add a free-plan card
+- `features/billing/config/billing.config.ts` - adjust free plan capabilities and limits
+- `features/billing/components/PricingSection.tsx` - optionally add a free-plan card
 
 ## Steps
 
-### Step 1 — Customize the free plan
+### Step 1 - Customize the free plan
 
-Edit the `free` entry in `features/billing/plans/plans.ts`:
+Edit the `free` entry in `features/billing/config/billing.config.ts`:
 
 ```ts
 free: {
@@ -30,23 +30,27 @@ free: {
     tasksPerMonth: 10,
     teamMembers: 1,
     storageMb: 100,
+    aiRequestsPerMonth: 0,
+    emailSyncsPerMonth: 0,
   },
+  pricingModel: "flat",
+  stripePrices: {},
 },
 ```
 
 Add or remove capabilities and adjust limits to match your product.
 
-### Step 2 — Optionally show a free-plan card on the pricing page
+### Step 2 - Optionally show a free-plan card on the pricing page
 
 If you want a visible "Free" tier on your pricing page, add a card in `PricingSection.tsx` that links to `/sign-up` instead of submitting to Stripe checkout.
 
-### Step 3 — Test the gating
+### Step 3 - Test the gating
 
 Sign in without a Stripe subscription. The guards will resolve your plan to `free` and enforce the capabilities and limits you defined.
 
 ## How It Works
 
-When `team.planName` is `null` (no Stripe subscription), `resolvePlanFromStripeName()` returns `"free"`. The guards then check the `free` plan's capabilities and limits. No special database state is needed.
+When a team has no active paid plan, the guards resolve the team to `free`. The guards then check the `free` plan's capabilities and limits. No special database state is needed.
 
 ## Common Mistakes
 

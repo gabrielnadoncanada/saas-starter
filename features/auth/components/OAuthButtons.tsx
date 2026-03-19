@@ -2,7 +2,7 @@ import { Button } from '@/shared/components/ui/button';
 import {
   getOAuthProviderConfig,
   type OAuthProviderId
-} from '@/shared/lib/auth/providers';
+} from '@/shared/lib/auth/oauth-config';
 import { OAuthProviderIcon } from '@/features/auth/components/OAuthProviderIcon';
 
 type OAuthButtonsProps = {
@@ -22,16 +22,6 @@ export function OAuthButtons({
 
   return (
     <div className="space-y-3">
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t" />
-        </div>
-
-        <div className="relative flex justify-center text-sm">
-          <span className="bg-background px-2 text-muted-foreground text-uppercase">Or continue with</span>
-        </div>
-      </div>
-
       {providers.map((provider) => {
         const isPending = pendingProvider === provider;
         const providerConfig = getOAuthProviderConfig(provider);

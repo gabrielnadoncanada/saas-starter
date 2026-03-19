@@ -23,7 +23,7 @@ import type {
   SecuritySettingsFeedback
 } from '@/features/account/types/account.types';
 import { routes } from '@/shared/constants/routes';
-import { getOAuthProviderConfig } from '@/shared/lib/auth/providers';
+import { getOAuthProviderConfig } from '@/shared/lib/auth/oauth-config';
 import { getFieldState } from '@/shared/lib/get-field-state';
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { useToastMessage } from '@/shared/hooks/useToastMessage';

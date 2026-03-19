@@ -244,3 +244,54 @@ Problem:
 Prefer:
 - optimize for clarity, speed, and maintainability
 - let abstraction follow actual complexity
+
+---
+
+## 12. `config/` files that are not really config
+
+Bad:
+
+```txt
+features/
+  billing/
+    config/
+      billing.config.ts
+```
+
+```ts
+export async function loadBillingConfig() {
+  const products = await stripe.products.list();
+  return products.map(/* ... */);
+}
+```
+
+Problem:
+- config becomes runtime orchestration
+- file stops being predictable to edit
+- mixes static definitions with external API work
+
+Prefer:
+- keep editable definitions in `config/`
+- move API calls, DB access, and side effects to `server/`
+
+---
+
+## 13. App-wide config hidden in a feature
+
+Bad:
+
+```txt
+features/
+  billing/
+    config/
+      navigation.config.ts
+```
+
+Problem:
+- ownership is misleading
+- unrelated features depend on one feature folder
+- future edits become harder to reason about
+
+Prefer:
+- move app-wide config to `shared/config/`
+- keep feature `config/` scoped to one domain

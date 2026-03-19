@@ -31,13 +31,14 @@ shared/
   components/
     ui/
     app/
+  config/
   lib/
   constants/
   hooks/
   types/
 ```
 
-`shared/constants/`, `shared/hooks/`, and `shared/types/` are optional. Use them only when they add real clarity.
+`shared/config/`, `shared/constants/`, `shared/hooks/`, and `shared/types/` are optional. Use them only when they add real clarity.
 
 ## Folder responsibilities
 
@@ -57,6 +58,7 @@ features/
   <feature>/
     actions/
     components/
+    config/
     server/
     schemas/
     utils/
@@ -73,6 +75,7 @@ Typical responsibilities:
 
 - `shared/components/ui/` = base or design-system UI
 - `shared/components/app/` = reusable app-level components
+- `shared/config/` = app-wide configuration objects and configuration helpers
 - `shared/lib/` = technical infrastructure and cross-feature helpers
 - `shared/constants/` = app-level constants
 - `shared/hooks/` = app-wide reusable React hooks
@@ -118,6 +121,67 @@ Examples:
 - `features/auth/server/delete-account.ts`
 - `features/billing/server/create-checkout-session.ts`
 
+## Config folders
+
+Use a `config/` folder when a domain or the whole app has a small number of explicit configuration files that developers are expected to edit directly.
+
+Good reasons to add `config/`:
+
+- pricing plans and billing definitions
+- navigation definitions
+- role or permission matrices
+- feature flags with app-defined defaults
+- product-facing option lists that drive behavior in multiple places
+
+Do not add `config/` just because a file exports an object.
+
+Do not create `config/` for:
+
+- environment variable parsing
+- SDK client setup
+- database clients
+- one-off constants
+- business logic disguised as data
+
+Use `shared/config/` when the configuration is app-wide and not owned by one feature.
+
+Examples:
+
+- `shared/config/navigation.config.ts`
+- `shared/config/app-shell.config.ts`
+- `shared/config/marketing.config.ts`
+
+Use `features/<feature>/config/` when the configuration belongs to a single domain and would disappear with that feature.
+
+Examples:
+
+- `features/billing/config/billing.config.ts`
+- `features/teams/config/roles.config.ts`
+- `features/inbox/config/inbox-navigation.config.ts`
+
+## Config ownership rule
+
+Put a config file in `features/<feature>/config/` when:
+
+- it defines business-facing options for one feature
+- its values are meaningful mainly inside that feature
+- changing it primarily changes one feature's behavior
+
+Put a config file in `shared/config/` when:
+
+- multiple unrelated features depend on it
+- it defines app-wide structure or conventions
+- it is still meaningful even if one feature is removed
+
+If the file mixes app-wide concerns and one feature's business rules, split it.
+
+Example:
+
+- billing plans -> `features/billing/config/`
+- app navigation used across dashboard areas -> `shared/config/`
+- auth provider labels used only in auth screens -> `features/auth/config/`
+- auth library initialization -> `shared/lib/`, not `shared/config/`
+
 ## Boundaries
 
 Use these defaults:
@@ -125,7 +189,9 @@ Use these defaults:
 - route files and route composition -> `app/`
 - domain-owned product logic -> `features/<feature>/`
 - app-wide shared code -> `shared/`
+- app-wide configuration objects -> `shared/config/`
 - feature-specific server-only code -> `features/<feature>/server/`
+- feature-specific configuration objects -> `features/<feature>/config/`
 - feature-specific pure helpers -> `features/<feature>/utils/`
 - feature-specific UI -> `features/<feature>/components/`
 
@@ -150,6 +216,7 @@ Default recommendation:
 - route files in `app/` keep Next.js names: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`
 - do not name feature components `XxxPage.tsx`
 - prefer `XxxSection.tsx`, `XxxPanel.tsx`, `XxxForm.tsx`, `XxxCard.tsx`
+- config files -> `xyz.config.ts`
 - components -> `PascalCase.tsx`
 - hooks -> `useXxx.ts`
 - schemas -> `domain.schema.ts`
@@ -157,12 +224,64 @@ Default recommendation:
 - mappers -> `domain.mapper.ts`
 - actions -> `do-something.action.ts`
 
+For config naming:
+
+- prefer singular names when the file represents one cohesive domain config
+- prefer descriptive names over generic `index.ts`
+- avoid `settings.ts`, `data.ts`, or `options.ts` unless the meaning is obvious
+
+Good:
+
+- `billing.config.ts`
+- `navigation.config.ts`
+- `roles.config.ts`
+- `plans.config.ts`
+
+Bad:
+
+- `billing.ts`
+- `config.ts`
+- `stuff.ts`
+- `app-settings.ts` when it is really feature config
+
+## What config files should contain
+
+A config file should usually contain:
+
+- static or near-static configuration objects
+- typed keys and narrow helper types
+- small normalization helpers directly tied to that config
+- comments that clarify editing intent when needed
+
+Good examples:
+
+- billing plan definitions
+- route group navigation items
+- plan capability matrices
+- provider labels and supported options
+
+A config file should usually not contain:
+
+- database queries
+- framework request handling
+- Stripe, Prisma, or auth client initialization
+- mutations, transactions, or side effects
+- large validation workflows
+- feature orchestration logic
+- hidden business rules that should live in `server/`
+
+If a config file needs async work, external API calls, or runtime mutation to make sense, it is probably not config.
+
+Keep config files explicit and readable. A buyer should be able to open the file and understand what can be changed without tracing a workflow first.
+
 ## Core rules
 
 - keep the structure simple
 - keep `app/` thin
 - keep business logic in `features/`
 - keep app-wide reusable code in root `shared/`
+- keep app-wide configuration in `shared/config/`
+- keep feature-owned configuration in `features/<feature>/config/`
 - keep shared UI generic
 - keep server actions thin
 - keep Prisma and feature workflows in `server/` by default

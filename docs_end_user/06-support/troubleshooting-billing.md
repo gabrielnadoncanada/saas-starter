@@ -28,4 +28,4 @@ Then verify:
 
 ## Team plan labels are empty
 
-Plan state is stored on the `Team` model. If the webhook is not processed, `planName` and `subscriptionStatus` stay empty.
+Plan state is stored on the `Team` model. If the webhook is not processed, `planId` and `subscriptionStatus` stay empty.

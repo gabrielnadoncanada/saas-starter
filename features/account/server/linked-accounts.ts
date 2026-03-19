@@ -5,7 +5,7 @@ import { createActivityLog } from "@/shared/lib/activity-log";
 import {
   OAUTH_PROVIDER_LABELS,
   type OAuthProviderId,
-} from "@/shared/lib/auth/providers";
+} from "@/shared/lib/auth/oauth-config";
 import { db } from "@/shared/lib/db/prisma";
 import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 

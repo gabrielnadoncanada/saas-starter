@@ -6,15 +6,14 @@ Add a new billing plan (e.g. "Enterprise") to the starter.
 
 ## Files to Edit
 
-- `features/billing/plans/plans.ts` — define the plan
-- `features/billing/plans/stripe-map.ts` — map Stripe product name to plan ID
-- Stripe Dashboard — create the product and price
+- `features/billing/config/billing.config.ts` - define the plan, its Stripe aliases, and its capabilities and limits
+- Stripe Dashboard - create the product and price
 
 ## Steps
 
-### Step 1 — Define the plan
+### Step 1 - Define the plan
 
-Add a new entry to the `plans` object in `features/billing/plans/plans.ts`:
+Add a new entry to the `plans` object in `features/billing/config/billing.config.ts`:
 
 ```ts
 export type PlanId = "free" | "pro" | "team" | "enterprise";
@@ -37,36 +36,41 @@ export const plans: Record<PlanId, Plan> = {
       tasksPerMonth: Infinity,
       teamMembers: Infinity,
       storageMb: 500000,
+      aiRequestsPerMonth: 5000,
+      emailSyncsPerMonth: 1000,
+    },
+    pricingModel: "flat",
+    stripePrices: {
+      monthly: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY!,
+      yearly: process.env.STRIPE_PRICE_ENTERPRISE_YEARLY!,
     },
   },
 };
 ```
 
-### Step 2 — Create the Stripe product
+### Step 2 - Create the Stripe product
 
-In your Stripe Dashboard, create a new product (e.g. named "Enterprise") with a recurring price.
+In your Stripe Dashboard, create a new product (for example named "Enterprise") with a recurring price.
 
-### Step 3 — Map Stripe to internal plan
+### Step 3 - Add the Stripe price env vars
 
-Add the mapping in `features/billing/plans/stripe-map.ts`:
+Add the matching price IDs to your env file:
 
 ```ts
-const stripeProductToPlan: Record<string, PlanId> = {
-  // ...existing mappings...
-  Enterprise: "enterprise",
-};
+STRIPE_PRICE_ENTERPRISE_MONTHLY=price_...
+STRIPE_PRICE_ENTERPRISE_YEARLY=price_...
 ```
 
-The key must match the Stripe product name exactly.
+The config now resolves plans from price IDs, not product names.
 
-### Step 4 — Done
+### Step 4 - Done
 
 That's it. The guards, usage tracking, and UI components will automatically use the new plan's capabilities and limits.
 
 ## Common Mistakes
 
 - Forgetting to add the plan ID to the `PlanId` type union
-- Mismatching the Stripe product name in `stripe-map.ts`
+- Forgetting to add the Stripe price env vars used by the plan config
 
 ## Complexity Scorecard
 

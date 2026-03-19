@@ -101,6 +101,41 @@ Do not create many tiny type files if a feature only has a few shared contracts.
 
 ---
 
+## Config
+
+Use descriptive kebab-case or domain names with `.config.ts`.
+
+Examples:
+- `billing.config.ts`
+- `navigation.config.ts`
+- `roles.config.ts`
+- `marketing.config.ts`
+
+Use config files for editable configuration objects, not for workflows.
+
+Prefer:
+- one cohesive config file per domain concern
+- names that tell the developer exactly what can be changed
+- `features/<feature>/config/` for feature-owned config
+- `shared/config/` for app-wide config
+
+Avoid:
+- `config.ts`
+- `settings.ts`
+- `options.ts`
+- `billing.ts` when the file is really configuration
+
+Do not put these in `.config.ts` files:
+- database queries
+- SDK client initialization
+- request handlers
+- mutations or side effects
+- orchestration logic
+
+If the file needs async work or runtime effects, it probably belongs in `server/` or `shared/lib/`, not in `config/`.
+
+---
+
 ## Hooks
 
 Use `useXxx.ts`.

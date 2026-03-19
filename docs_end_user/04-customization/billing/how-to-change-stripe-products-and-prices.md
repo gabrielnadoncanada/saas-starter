@@ -6,58 +6,59 @@ Replace the starter's default Stripe catalog with your own plans.
 
 ## How It Works
 
-The pricing page dynamically reads all active products and prices from Stripe via `features/billing/server/stripe-catalog.ts`. You do not hardcode plan names or prices in the UI.
+The pricing page now reads plan names, features, and display prices from `features/billing/config/billing.config.ts`. Stripe is used for checkout and webhook confirmation, not for building the pricing page UI.
 
-The mapping from Stripe product names to internal plan IDs lives in `features/billing/plans/stripe-map.ts`. This is how the app knows which capabilities and limits to grant.
+The mapping from Stripe price IDs to internal plan IDs lives in `features/billing/config/billing.config.ts`. This is how the app knows which capabilities and limits to grant.
 
 ## Files to Edit
 
-- Stripe Dashboard — create or rename products and prices
-- `features/billing/plans/stripe-map.ts` — map your Stripe product names to internal plan IDs
-- `features/billing/plans/plans.ts` — define capabilities and limits for each plan (if adding a new plan)
+- Stripe Dashboard - create or rename products and prices
+- `features/billing/config/billing.config.ts` - map Stripe price IDs, define plan capabilities, and set limits
 
 ## Steps
 
-### Step 1 — Create products in Stripe
+### Step 1 - Create products in Stripe
 
-In your Stripe Dashboard, create products with recurring prices. Set the product name to something meaningful (e.g. "Starter", "Growth", "Enterprise").
+In your Stripe Dashboard, create products with recurring prices. Set the product name to something meaningful (for example "Starter", "Growth", "Enterprise").
 
 To show features on the pricing page, add a `features` key to the product's metadata with a comma-separated list:
 
-```
+```txt
 features: Unlimited tasks, 10 team members, Priority support
 ```
 
-### Step 2 — Map Stripe product names to plan IDs
+### Step 2 - Map Stripe price IDs to plan IDs
 
-Edit `features/billing/plans/stripe-map.ts`:
+Edit the relevant plan in `features/billing/config/billing.config.ts`:
 
 ```ts
-const stripeProductToPlan: Record<string, PlanId> = {
-  Starter: "free",
-  Growth: "pro",
-  Enterprise: "team",
-};
+pro: {
+  // ...
+  stripePrices: {
+    monthly: process.env.STRIPE_PRICE_PRO_MONTHLY!,
+    yearly: process.env.STRIPE_PRICE_PRO_YEARLY!,
+  },
+}
 ```
 
-The key must match the Stripe product name exactly.
+These configured price IDs are the source of truth for checkout and plan resolution.
 
-### Step 3 — Add monthly and yearly prices (optional)
+### Step 3 - Add monthly and yearly prices (optional)
 
-If a product has both a monthly and a yearly price in Stripe, the pricing page will automatically show a monthly/yearly toggle. No code change needed.
+If a product has both a monthly and a yearly price in Stripe, the pricing page will automatically show a monthly/yearly toggle. No code change is needed.
 
-### Step 4 — Update plan capabilities and limits
+### Step 4 - Update plan capabilities and limits
 
-If you added a new plan ID, define it in `features/billing/plans/plans.ts`. See `how-to-add-a-new-plan.md`.
+If you added a new plan ID, define it in `features/billing/config/billing.config.ts`. See `how-to-add-a-new-plan.md`.
 
-### Step 5 — Done
+### Step 5 - Done
 
 The pricing page renders dynamically from Stripe. Product names, prices, and features update automatically.
 
 ## Common Mistakes
 
-- Mismatching the Stripe product name in `stripe-map.ts` (case-sensitive)
-- Forgetting to add the plan ID to `PlanId` type union when creating a new plan
+- Forgetting to add the Stripe price IDs in `billing.config.ts`
+- Forgetting to add the plan ID to `PlanId` when creating a new plan
 - Setting a product as inactive in Stripe without realizing it will disappear from the pricing page
 
 ## Complexity Scorecard

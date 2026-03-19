@@ -78,14 +78,14 @@ See the [full environment reference](docs_end_user/02-getting-started/environmen
 
 ## How billing works
 
-Plans are defined in a single config file (`features/billing/plans/plans.ts`). Stripe manages subscriptions and payments. The app manages what each plan gives access to.
+Plans are defined in a single config file (`features/billing/config/billing.config.ts`). Stripe price IDs from env select the checkout targets. The app manages what each plan gives access to.
 
 ```
 Stripe decides which plan is active.
 Your config decides what that plan gives.
 ```
 
-**To add a plan:** Create the product in Stripe, map its name in `stripe-map.ts`, define capabilities and limits in `plans.ts`.
+**To add a plan:** Create the prices in Stripe, add their `STRIPE_PRICE_*` env vars, then define capabilities, limits, and pricing behavior in `billing.config.ts`.
 
 **To gate a feature:** Call `assertCapability(planId, "your.capability")` in your server action.
 

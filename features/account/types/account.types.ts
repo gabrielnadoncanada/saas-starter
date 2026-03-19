@@ -1,4 +1,4 @@
-import type { OAuthProviderId } from "@/shared/lib/auth/providers";
+import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
 import type { DeleteAccountInput } from "@/features/account/schemas/account.schema";
 

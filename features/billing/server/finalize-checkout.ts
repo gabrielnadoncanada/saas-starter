@@ -3,8 +3,8 @@ import type { Prisma } from "@prisma/client";
 
 import {
   isTerminalStripeSubscriptionStatus,
-  resolvePlanFromStripeProduct,
-  resolvePricingModel,
+  resolvePlanFromStripePriceId,
+  resolvePricingModelFromStripePriceId,
 } from "@/features/billing/plans";
 import { releaseCheckoutForTeam } from "@/features/billing/server/checkout-lock";
 import { syncSeatQuantity } from "@/features/billing/server/sync-seat-quantity";
@@ -111,21 +111,21 @@ export async function finalizeCheckoutSession(
     );
 
     const firstItem = lineItems.data[0];
+    const priceId = firstItem?.price?.id;
     const product = firstItem?.price?.product as Stripe.Product | undefined;
 
-    if (!product) {
-      throw new Error("No product found for this payment session.");
+    if (!product || !priceId) {
+      throw new Error("No configured price found for this payment session.");
     }
 
     const wasProcessed = await runOnce(async (tx) => {
       await tx.team.update({
         where: { id: teamId },
         data: {
-          planId: resolvePlanFromStripeProduct(product),
+          planId: resolvePlanFromStripePriceId(priceId),
           stripeCustomerId: customerId,
           stripeSubscriptionId: null,
           stripeProductId: product.id,
-          planName: product.name,
           subscriptionStatus: "lifetime",
           pricingModel: "one_time",
           pendingCheckoutPriceId: null,
@@ -161,12 +161,13 @@ export async function finalizeCheckoutSession(
     throw new Error("No plan found for this subscription.");
   }
 
+  const planPriceId = plan.id;
   const product = plan.product as Stripe.Product;
-  if (!product.id) {
+  if (!product.id || !planPriceId) {
     throw new Error("No product ID found for this subscription.");
   }
 
-  const pricingModel = resolvePricingModel(product.metadata);
+  const pricingModel = resolvePricingModelFromStripePriceId(planPriceId);
 
   const wasProcessed = await runOnce(async (tx, lockedTeam) => {
     if (hasConflictingActiveSubscription(lockedTeam, subscriptionId)) {
@@ -176,11 +177,10 @@ export async function finalizeCheckoutSession(
     await tx.team.update({
       where: { id: teamId },
       data: {
-        planId: resolvePlanFromStripeProduct(product),
+        planId: resolvePlanFromStripePriceId(planPriceId),
         stripeCustomerId: customerId,
         stripeSubscriptionId: subscriptionId,
         stripeProductId: product.id,
-        planName: product.name,
         subscriptionStatus: subscription.status,
         pricingModel,
       },

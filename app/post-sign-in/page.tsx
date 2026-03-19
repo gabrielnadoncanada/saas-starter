@@ -7,7 +7,7 @@ import {
   clearCheckoutReservation,
   reserveCheckoutForTeam,
 } from '@/features/billing/server/checkout-lock';
-import { getStripePrices } from '@/features/billing/server/stripe-catalog';
+import { isConfiguredStripePriceId } from '@/features/billing/plans';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
@@ -66,11 +66,7 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
       redirect(routes.app.dashboard);
     }
 
-    // Validate that the priceId is in the Stripe catalog (prevent arbitrary price injection)
-    const allowedPrices = await getStripePrices();
-    const isAllowedPrice = allowedPrices.some((p) => p.id === priceId);
-
-    if (!isAllowedPrice) {
+    if (!isConfiguredStripePriceId(priceId)) {
       redirect(routes.app.dashboard);
     }
 

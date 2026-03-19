@@ -1,6 +1,6 @@
 import type { Stripe } from "stripe";
 
-import { resolvePricingModel } from "@/features/billing/plans";
+import { resolvePricingModelFromStripePriceId } from "@/features/billing/plans";
 import { routes } from "@/shared/constants/routes";
 import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
 
@@ -32,7 +32,7 @@ export async function createCheckoutSession(
     throw new Error("Selected Stripe product is invalid.");
   }
 
-  const pricingModel = resolvePricingModel(price.product.metadata);
+  const pricingModel = resolvePricingModelFromStripePriceId(params.priceId);
   const quantity = pricingModel === "per_seat" ? Math.max(1, params.seatQuantity) : 1;
   const commonParams: Stripe.Checkout.SessionCreateParams = {
     payment_method_types: ["card"],

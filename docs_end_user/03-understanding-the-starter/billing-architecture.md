@@ -11,22 +11,19 @@ Stripe decides *which* plan is active. The app decides *what that plan unlocks*.
 
 ## How Plan State Flows
 
-```
+```txt
 Stripe checkout / webhook
-  → team.planName synced to DB
-    → resolvePlanFromStripeName() maps to PlanId
-      → plans.ts defines capabilities + limits
-        → guards enforce access
+  -> Stripe price id synced to app state
+    -> resolvePlanFromStripePriceId() maps to PlanId
+      -> billing.config.ts defines capabilities + limits
+        -> guards enforce access
 ```
 
 ## Key Files
 
 | File | Role |
 |------|------|
-| `features/billing/plans/plans.ts` | Single source of truth for plan definitions |
-| `features/billing/plans/capabilities.ts` | Typed list of all gatable features |
-| `features/billing/plans/limits.ts` | Typed list of all usage limits |
-| `features/billing/plans/stripe-map.ts` | Maps Stripe product names to internal plan IDs |
+| `features/billing/config/billing.config.ts` | Single source of truth for plans, capabilities, limits, configured Stripe price IDs, and pricing models |
 | `features/billing/guards/` | Backend + frontend guard functions |
 | `features/billing/usage/usage-service.ts` | Tracks and queries usage (e.g. tasks created this month) |
 | `features/billing/errors/` | Typed errors: `UpgradeRequiredError`, `LimitReachedError` |
@@ -34,22 +31,29 @@ Stripe checkout / webhook
 
 ## Plan Definitions
 
-Plans are defined in `features/billing/plans/plans.ts`. Each plan has:
+Plans are defined in `features/billing/config/billing.config.ts`. Each plan has:
 
-- `id` — internal key (`free`, `pro`, `team`)
-- `name` — display name
-- `capabilities` — list of features the plan unlocks
-- `limits` — usage quotas (tasks per month, team members, etc.)
+- `id` - internal key (`free`, `pro`, `team`)
+- `name` - display name
+- `capabilities` - list of features the plan unlocks
+- `limits` - usage quotas (tasks per month, team members, etc.)
+- `stripePrices` - configured Stripe price IDs for monthly, yearly, or one-time checkout
+
+The same file also defines:
+
+- the allowed capability keys
+- the allowed limit keys
+- the supported pricing models
 
 ## Stripe Integration
 
 The Stripe integration lives in `features/billing/server/`:
 
 - **Checkout**: creates a Stripe checkout session with trial
-- **Webhooks**: sync subscription status to `team.planName` and `team.subscriptionStatus`
+- **Webhooks**: sync `team.planId` and `team.subscriptionStatus`
 - **Customer portal**: lets users manage their subscription via Stripe
 
-The `stripe-map.ts` file bridges Stripe product names to internal plan IDs. This is the only file where Stripe naming touches plan logic.
+Configured Stripe price IDs and pricing model defaults live in `features/billing/config/billing.config.ts`. That keeps the billing shape editable in one place.
 
 ## Gating
 
@@ -75,17 +79,16 @@ assertLimit(planId, "tasksPerMonth", usage) // throws LimitReachedError
 
 ## Usage Tracking
 
-Usage is tracked via the `UsageRecord` table. The service provides:
+Usage is tracked via the `UsageCounter` table. The service provides:
 
-- `recordUsage(teamId, limitKey)` — log an event after a successful action
-- `getMonthlyUsage(teamId, limitKey)` — count events this calendar month
-- `getTotalUsage(teamId, limitKey)` — count all-time events
+- `consumeMonthlyUsage(teamId, limitKey, planId)` - atomically reserves one unit of monthly usage
+- `getMonthlyUsage(teamId, limitKey)` - reads usage for the current calendar month
 
 ## UI Components
 
-- `<UpgradeCard>` — shows "upgrade required" with a link to pricing
-- `<PlanBadge>` — displays the current plan as a badge
-- `<UsageMeter>` — progress bar showing usage vs. limit
+- `<UpgradeCard>` - shows "upgrade required" with a link to pricing
+- `<PlanBadge>` - displays the current plan as a badge
+- `<UsageMeter>` - progress bar showing usage vs. limit
 
 ## Related Documents
 

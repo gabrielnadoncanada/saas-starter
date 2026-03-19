@@ -50,7 +50,6 @@ export async function signUpWithPassword(
       ? await db.user.update({
           where: { id: existingUser.id },
           data: {
-            name: input.name,
             passwordHash,
             passwordUpdatedAt: new Date(),
           },
@@ -60,7 +59,6 @@ export async function signUpWithPassword(
         })
       : await db.user.create({
           data: {
-            name: input.name,
             email,
             passwordHash,
             passwordUpdatedAt: new Date(),

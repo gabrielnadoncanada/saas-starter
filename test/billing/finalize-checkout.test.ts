@@ -12,6 +12,12 @@ vi.mock("@/features/billing/server/sync-seat-quantity", () => ({
   syncSeatQuantity: vi.fn(),
 }));
 
+process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
+process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
+process.env.STRIPE_PRICE_PRO_LIFETIME = "price_pro_lifetime";
+process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
+process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
+
 const { finalizeCheckoutSession } = await import(
   "@/features/billing/server/finalize-checkout"
 );
@@ -80,10 +86,11 @@ describe("finalizeCheckoutSession", () => {
           data: [
             {
               price: {
+                id: "price_pro_lifetime",
                 product: {
                   id: "prod_lt",
                   name: "Lifetime",
-                  metadata: { plan_id: "pro" },
+                  metadata: {},
                 },
               },
             },
@@ -101,7 +108,6 @@ describe("finalizeCheckoutSession", () => {
         stripeCustomerId: "cus_1",
         stripeSubscriptionId: null,
         stripeProductId: "prod_lt",
-        planName: "Lifetime",
         subscriptionStatus: "lifetime",
         pricingModel: "one_time",
         pendingCheckoutPriceId: null,
@@ -133,10 +139,11 @@ describe("finalizeCheckoutSession", () => {
             data: [
               {
                 price: {
+                  id: "price_pro_monthly",
                   product: {
                     id: "prod_pro",
                     name: "Pro",
-                    metadata: { pricing_model: "flat" },
+                    metadata: {},
                   },
                 },
               },
@@ -155,7 +162,6 @@ describe("finalizeCheckoutSession", () => {
         stripeCustomerId: "cus_2",
         stripeSubscriptionId: "sub_abc",
         stripeProductId: "prod_pro",
-        planName: "Pro",
         subscriptionStatus: "trialing",
         pricingModel: "flat",
       },
@@ -186,10 +192,11 @@ describe("finalizeCheckoutSession", () => {
             data: [
               {
                 price: {
+                  id: "price_team_monthly",
                   product: {
                     id: "prod_team",
                     name: "Team",
-                    metadata: { pricing_model: "per_seat" },
+                    metadata: {},
                   },
                 },
               },
@@ -230,10 +237,11 @@ describe("finalizeCheckoutSession", () => {
             data: [
               {
                 price: {
+                  id: "price_pro_monthly",
                   product: {
                     id: "prod_dup",
                     name: "Pro",
-                    metadata: { plan_id: "pro", pricing_model: "flat" },
+                    metadata: {},
                   },
                 },
               },

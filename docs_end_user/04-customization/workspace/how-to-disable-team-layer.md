@@ -37,7 +37,7 @@ This is a structural refactor, not a configuration toggle.
 
 ### Phase 1 — Move billing to the User model
 
-1. Add Stripe fields (`stripeCustomerId`, `stripeSubscriptionId`, `stripeProductId`, `planName`, `subscriptionStatus`) to the `User` model in `prisma/models/users.prisma`
+1. Add Stripe fields (`stripeCustomerId`, `stripeSubscriptionId`, `stripeProductId`, `planId`, `subscriptionStatus`) to the `User` model in `prisma/models/users.prisma`
 2. Update `features/billing/server/finalize-checkout.ts` to write billing fields to `User` instead of `Team`
 3. Update `features/billing/server/handle-subscription-change.ts` to find and update the `User` by `stripeCustomerId`
 4. Update `features/billing/actions/checkout.action.ts` to read `user.stripeCustomerId` instead of `team.stripeCustomerId`

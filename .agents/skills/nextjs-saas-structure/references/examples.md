@@ -11,6 +11,7 @@ shared/
   components/
     ui/
     app/
+  config/
   lib/
   hooks/
   types/
@@ -23,8 +24,9 @@ Notes:
 - `features/` holds domain code
 - `shared/components/ui/` is base UI
 - `shared/components/app/` is app-level reusable UI
+- `shared/config/` is app-wide editable configuration
 - `shared/lib/` is shared technical infrastructure
-- `shared/hooks/`, `shared/types/`, and `shared/constants/` are optional
+- `shared/hooks/`, `shared/types/`, `shared/constants/`, and `shared/config/` are optional
 
 ---
 
@@ -37,6 +39,7 @@ features/
   invoices/
     actions/
     components/
+    config/
     server/
     schemas/
     utils/
@@ -47,6 +50,7 @@ Meaning:
 
 - `actions/` -> server actions
 - `components/` -> feature UI
+- `config/` -> feature-owned editable configuration
 - `server/` -> server-only data and feature logic
 - `schemas/` -> zod validation
 - `utils/` -> pure feature helpers
@@ -209,3 +213,51 @@ Good candidates:
 - formatting helpers scoped to one feature
 - small pure mappers
 - feature-local helper functions with no DB or framework coupling
+
+---
+
+## 9. Good use of feature `config/`
+
+```txt
+features/
+  billing/
+    config/
+      billing.config.ts
+    server/
+      create-checkout-session.ts
+      handle-subscription-change.ts
+```
+
+Use feature `config/` for explicit domain configuration that a developer is likely to edit directly.
+
+Good candidates:
+
+- plan definitions
+- capability matrices
+- role definitions for one feature
+- feature navigation sections
+
+Keep workflows and side effects in `server/`, not in `config/`.
+
+---
+
+## 10. Good use of `shared/config/`
+
+```txt
+shared/
+  config/
+    navigation.config.ts
+    marketing.config.ts
+  lib/
+    auth/
+    db/
+```
+
+Use `shared/config/` for app-wide configuration that is not owned by a single feature.
+
+Good candidates:
+
+- dashboard navigation
+- marketing site sections
+- app shell menus
+- global product labels used across multiple features

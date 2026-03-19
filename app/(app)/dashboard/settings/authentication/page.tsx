@@ -11,10 +11,10 @@ import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import {
-  getEnabledOAuthProviderIds,
-  hasMagicLinkProvider,
-  OAUTH_PROVIDER_LABELS
-} from '@/shared/lib/auth/providers';
+  OAUTH_PROVIDER_LABELS,
+  getEnabledOAuthProviderIds
+} from '@/shared/lib/auth/oauth-config';
+import { hasMagicLinkProvider } from '@/shared/lib/auth/providers';
 import { ContentSection } from '@/features/account/components/settings/ContentSection';
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {

@@ -1,5 +1,6 @@
+import "server-only";
+
 import { createElement } from "react";
-import { z } from "zod";
 import ResendProvider from "next-auth/providers/resend";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -8,6 +9,7 @@ import { Resend } from "resend";
 import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
 import { createRateLimiter } from "@/shared/lib/rate-limit/in-memory-rate-limiter";
 import { authenticatePasswordCredentials } from "@/features/auth/server/credentials-user";
+import { getOAuthProviderConfig } from "@/shared/lib/auth/oauth-config";
 
 // Rate limit: max 3 magic links per email per 15 minutes
 const magicLinkRateLimiter = createRateLimiter({
@@ -30,59 +32,8 @@ const magicLinkRateLimiter = createRateLimiter({
 const allowEmailAccountLinking =
   process.env.ALLOW_EMAIL_ACCOUNT_LINKING === "true";
 
-const oauthProviders = [
-  {
-    id: "google",
-    label: "Google",
-    authButtonLabel: "Continue with Google",
-    isEnabled: () =>
-      Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
-    createProvider: () =>
-      GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID!,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        allowDangerousEmailAccountLinking: allowEmailAccountLinking,
-      }),
-  },
-  {
-    id: "github",
-    label: "GitHub",
-    authButtonLabel: "Continue with GitHub",
-    isEnabled: () =>
-      Boolean(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
-    createProvider: () =>
-      GitHubProvider({
-        clientId: process.env.GITHUB_CLIENT_ID!,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-        allowDangerousEmailAccountLinking: allowEmailAccountLinking,
-      }),
-  },
-] as const;
-
-export const OAUTH_PROVIDER_IDS = oauthProviders.map(
-  (provider) => provider.id,
-) as [OAuthProviderId, ...OAuthProviderId[]];
-
-export type OAuthProviderId = (typeof oauthProviders)[number]["id"];
-
-export const OAUTH_PROVIDER_LABELS = Object.fromEntries(
-  oauthProviders.map((provider) => [provider.id, provider.label]),
-) as Record<OAuthProviderId, string>;
-
-export const oauthProviderIdSchema = z.enum(OAUTH_PROVIDER_IDS);
-
-export function getOAuthProviderConfig(providerId: OAuthProviderId) {
-  return oauthProviders.find((provider) => provider.id === providerId)!;
-}
-
 export function hasMagicLinkProvider() {
   return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
-}
-
-export function getEnabledOAuthProviderIds(): OAuthProviderId[] {
-  return oauthProviders
-    .filter((provider) => provider.isEnabled())
-    .map((provider) => provider.id);
 }
 
 export function getAuthProviders() {
@@ -136,8 +87,24 @@ export function getAuthProviders() {
       })
       ]
       : []),
-    ...oauthProviders
-      .filter((provider) => provider.isEnabled())
-      .map((provider) => provider.createProvider()),
+    ...[
+      "google",
+      "github",
+    ].filter((providerId) => getOAuthProviderConfig(providerId as "google" | "github").isEnabled())
+      .map((providerId) => {
+        if (providerId === "google") {
+          return GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            allowDangerousEmailAccountLinking: allowEmailAccountLinking,
+          });
+        }
+
+        return GitHubProvider({
+          clientId: process.env.GITHUB_CLIENT_ID!,
+          clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+          allowDangerousEmailAccountLinking: allowEmailAccountLinking,
+        });
+      }),
   ];
 }

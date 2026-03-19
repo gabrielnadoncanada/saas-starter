@@ -1,13 +1,27 @@
-export { capabilities, type Capability } from "./capabilities";
-export { limitKeys, type LimitKey } from "./limits";
-export { plans, getPlan, isPlanId, type PlanId, type Plan } from "./plans";
-export { resolvePlanFromStripeName, resolvePlanFromStripeProduct } from "./stripe-map";
+export {
+  capabilities,
+  getPlan,
+  limitKeys,
+  plans,
+  type BillingInterval,
+  type BillingPrice,
+  type BillingPrices,
+  type Capability,
+  type LimitKey,
+  type Plan,
+  type PlanId,
+  type PricingModel,
+} from "../config/billing.config";
+export {
+  getConfiguredStripePriceIds,
+  getPlanDisplayName,
+  getPricingPlans,
+  isConfiguredStripePriceId,
+  resolvePlanFromStripePriceId,
+  resolvePricingModelFromStripePriceId,
+} from "../server/billing-resolver";
 export { resolveTeamPlan } from "./resolve-team-plan";
 export {
   hasPlanAccess,
   isTerminalStripeSubscriptionStatus,
 } from "./subscription-status";
-export {
-  resolvePricingModel,
-  type PricingModel,
-} from "./pricing-model";

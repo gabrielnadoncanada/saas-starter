@@ -4,6 +4,12 @@ vi.mock("@/shared/lib/stripe/client", () => ({
   stripe: {},
 }));
 
+process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro";
+process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
+process.env.STRIPE_PRICE_PRO_LIFETIME = "price_lifetime";
+process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team";
+process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
+
 const { createCheckoutSession } = await import(
   "@/features/billing/server/create-checkout-session"
 );

@@ -33,7 +33,6 @@ model Team {
   stripeSubscriptionId     String?   @unique
   stripeProductId          String?
   planId                   String?   @db.VarChar(20)
-  planName                 String?   @db.VarChar(50)
   subscriptionStatus       String?   @db.VarChar(20)
   pricingModel             String?   @db.VarChar(20)
   pendingCheckoutPriceId   String?   @db.VarChar(255)

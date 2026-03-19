@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-import type { OAuthProviderId } from "@/shared/lib/auth/providers";
+import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
 type OAuthProviderIconProps = SVGProps<SVGSVGElement> & {
   provider: OAuthProviderId;

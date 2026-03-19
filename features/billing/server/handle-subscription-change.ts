@@ -2,8 +2,8 @@ import Stripe from "stripe";
 
 import {
   isTerminalStripeSubscriptionStatus,
-  resolvePlanFromStripeProduct,
-  resolvePricingModel,
+  resolvePlanFromStripePriceId,
+  resolvePricingModelFromStripePriceId,
 } from "@/features/billing/plans";
 import { db as defaultDb } from "@/shared/lib/db/prisma";
 import { stripe as defaultStripe } from "@/shared/lib/stripe/client";
@@ -54,18 +54,17 @@ export async function handleSubscriptionChange(
   }
 
   const price = subscription.items.data[0]?.price;
+  const priceId = price?.id;
   const productId =
     typeof price?.product === "string" ? price.product : price?.product?.id;
 
-  let planName = team.planName;
   let planId = team.planId;
   let pricingModel = team.pricingModel;
 
   if (productId) {
-    const product = await deps.stripe.products.retrieve(productId);
-    planName = product.name;
-    planId = resolvePlanFromStripeProduct(product);
-    pricingModel = resolvePricingModel(product.metadata);
+    await deps.stripe.products.retrieve(productId);
+    planId = resolvePlanFromStripePriceId(priceId);
+    pricingModel = resolvePricingModelFromStripePriceId(priceId);
   }
 
   const shouldClear = shouldClearBillingState(subscription);
@@ -76,7 +75,6 @@ export async function handleSubscriptionChange(
       planId: shouldClear ? null : planId,
       stripeSubscriptionId: shouldClear ? null : subscriptionId,
       stripeProductId: shouldClear ? null : (productId ?? team.stripeProductId),
-      planName: shouldClear ? null : planName,
       subscriptionStatus: status,
       pricingModel: shouldClear ? null : pricingModel,
     },

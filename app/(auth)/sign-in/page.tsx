@@ -1,11 +1,10 @@
 import { Suspense } from 'react';
-import { AuthForm } from '@/features/auth/components/AuthForm';
-import { PasswordSignInForm } from '@/features/auth/components/PasswordSignInForm';
-import { getEnabledOAuthProviderIds, hasMagicLinkProvider } from '@/shared/lib/auth/providers';
+import { SignInMethods } from '@/features/auth/components/SignInMethods';
+import { getEnabledOAuthProviderIds } from '@/shared/lib/auth/oauth-config';
+import { hasMagicLinkProvider } from '@/shared/lib/auth/providers';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import Link from 'next/link';
 import { routes } from '@/shared/constants/routes';
-import { Separator } from '@/shared/components/ui/separator';
 import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
 
 type SignInPageProps = {
@@ -25,11 +24,8 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         contentClassName="space-y-3"
         description={(
           <>
-            {hasProviderChoice
-              ? 'Use your password, an email link, or a connected provider to access your account.'
-              : 'Use your password to access your account.'}
 
-            &nbsp;Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href={routes.auth.signup}
               className="underline underline-offset-4 hover:text-primary"
@@ -52,18 +48,11 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           </p>
         )}
       >
-        <div className="space-y-6">
-          <PasswordSignInForm {...authFlow} />
-          {hasProviderChoice ? (
-            <>
-              <Separator />
-              <AuthForm
-                oauthProviders={oauthProviders}
-                allowMagicLink={allowMagicLink}
-              />
-            </>
-          ) : null}
-        </div>
+        <SignInMethods
+          {...authFlow}
+          oauthProviders={oauthProviders}
+          allowMagicLink={allowMagicLink}
+        />
       </AuthCard>
     </Suspense>
   );
