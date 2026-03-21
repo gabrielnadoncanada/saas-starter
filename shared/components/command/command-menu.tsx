@@ -16,7 +16,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/shared/components/ui/command'
-import { useSearch } from '@/shared/components/command/SearchProvider'
+import { useSearch } from '@/shared/components/command/search-provider'
 import { useTheme } from "next-themes"
 import type { SidebarNavGroup } from '@/shared/components/navigation/sidebar-types'
 

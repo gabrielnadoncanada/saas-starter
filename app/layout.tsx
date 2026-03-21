@@ -1,7 +1,7 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/shared/components/app/ThemeProvider';
+import { ThemeProvider } from '@/shared/components/app/theme-provider';
 import { Toaster } from '@/shared/components/ui/sonner';
 
 export const metadata: Metadata = {

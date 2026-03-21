@@ -1,7 +1,7 @@
 
-import { Main } from '@/shared/components/layout/shell/Main';
+import { Main } from '@/shared/components/layout/shell/main';
 import { Separator } from '@/shared/components/ui/separator';
-import { SidebarNav } from '@/features/account/components/settings/SidebarNav';
+import { SidebarNav } from '@/features/account/components/settings/sidebar-nav';
 
 
 export default function DashboardLayout({

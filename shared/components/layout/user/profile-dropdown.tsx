@@ -14,9 +14,9 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 import { routes } from '@/shared/constants/routes'
-import { SignOutDialog } from '@/features/auth/components/session/SignOutDialog'
+import { SignOutDialog } from '@/features/auth/components/session/sign-out-dialog'
 import Link from 'next/link'
-import { useUser } from '@/shared/components/providers/UserProvider'
+import { useUser } from '@/shared/components/providers/user-provider'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()

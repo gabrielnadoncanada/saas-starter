@@ -10,7 +10,7 @@ import {
 } from "@/features/auth/schemas/password-step.schema";
 import { normalizeEmail } from "@/features/auth/utils/normalize-email";
 import { authClient } from "@/shared/lib/auth/auth-client";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
+import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { routes } from "@/shared/constants/routes";

@@ -10,12 +10,12 @@ import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
+} from "@/shared/components/ai-elements/conversation";
 import {
   Message,
   MessageContent,
   MessageResponse,
-} from "@/components/ai-elements/message";
+} from "@/shared/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
@@ -25,15 +25,15 @@ import {
   PromptInputTextarea,
   PromptInputTools,
   type PromptInputMessage,
-} from "@/components/ai-elements/prompt-input";
+} from "@/shared/components/ai-elements/prompt-input";
 import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
 } from "@/features/assistant/client/conversations";
-import { AssistantEmptyState } from "@/features/assistant/components/AssistantEmptyState";
-import { AssistantErrorState } from "@/features/assistant/components/AssistantErrorState";
-import { AssistantModelSelector } from "@/features/assistant/components/AssistantModelSelector";
-import { AssistantToolResult } from "@/features/assistant/components/AssistantToolResult";
+import { AssistantEmptyState } from "@/features/assistant/components/assistant-empty-state";
+import { AssistantErrorState } from "@/features/assistant/components/assistant-error-state";
+import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
+import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
 import { assistantModels } from "@/features/assistant/models";
 import type { AssistantConversation } from "@/features/assistant/types";
 import { Spinner } from "@/shared/components/ui/spinner";

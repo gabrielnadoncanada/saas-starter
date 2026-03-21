@@ -29,7 +29,7 @@ import {
   SheetTitle,
 } from '@/shared/components/ui/sheet';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { useTasks } from './TasksProvider';
+import { useTasks } from './tasks-provider';
 
 type TaskUpdateDrawerProps = {
   task: Task;

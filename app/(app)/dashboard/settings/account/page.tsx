@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
 
-import { DeleteAccountCard } from '@/features/account/components/settings/DeleteAccountCard';
-import { GeneralSettingsForm } from '@/features/account/components/settings/GeneralSettingsForm';
-import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
+import { DeleteAccountCard } from '@/features/account/components/settings/delete-account-card';
+import { GeneralSettingsForm } from '@/features/account/components/settings/general-settings-form';
+import { SettingsPageHeader } from '@/shared/components/app/settings-page-header';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
-import { ContentSection } from '@/features/account/components/settings/ContentSection';
+import { ContentSection } from '@/features/account/components/settings/content-section';
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();

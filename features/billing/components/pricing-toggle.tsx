@@ -5,7 +5,7 @@ import { Check } from 'lucide-react';
 
 import type { PricingModel } from '@/features/billing/plans';
 import { checkoutAction } from '@/features/billing/actions/checkout.action';
-import { SubmitPricingButton } from '@/features/billing/components/SubmitPricingButton';
+import { SubmitPricingButton } from '@/features/billing/components/submit-pricing-button';
 
 type PricePlan = {
   productId: string;

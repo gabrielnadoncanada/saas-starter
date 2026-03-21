@@ -6,8 +6,8 @@ import { deleteTaskAction } from '@/features/tasks/actions/delete-task.action';
 import type { DeleteTaskActionState } from '@/features/tasks/types/task-action.types';
 import type { Task } from '@/features/tasks/types/task.types';
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
-import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog';
-import { useTasks } from './TasksProvider';
+import { ConfirmDialog } from '@/shared/components/dialogs/confirm-dialog';
+import { useTasks } from './tasks-provider';
 
 type TasksDeleteDialogProps = {
   task: Task;

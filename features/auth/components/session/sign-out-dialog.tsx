@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { authClient } from '@/shared/lib/auth/auth-client'
 
-import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog'
+import { ConfirmDialog } from '@/shared/components/dialogs/confirm-dialog'
 import { routes } from '@/shared/constants/routes'
 
 interface SignOutDialogProps {

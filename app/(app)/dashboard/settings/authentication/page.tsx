@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation';
 
-import { PasswordSettingsCard } from '@/features/auth/components/password/PasswordSettingsCard';
-import { LinkedAccountsCard } from '@/features/account/components/settings/LinkedAccountsCard';
+import { PasswordSettingsCard } from '@/features/auth/components/password/password-settings-card';
+import { LinkedAccountsCard } from '@/features/account/components/settings/linked-accounts-card';
 import { getLinkedAccountsOverview } from '@/features/account/server/linked-accounts';
 import type {
   LinkedProviderOverview,
   SecuritySettingsFeedback
 } from '@/features/account/types/account.types';
-import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/app/settings-page-header';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import {
@@ -15,7 +15,7 @@ import {
   getEnabledOAuthProviderIds,
   hasMagicLinkProvider,
 } from '@/shared/lib/auth/oauth-config';
-import { ContentSection } from '@/features/account/components/settings/ContentSection';
+import { ContentSection } from '@/features/account/components/settings/content-section';
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   OAuthAccountNotLinked: 'Unable to link this provider. Try a different sign-in method.',

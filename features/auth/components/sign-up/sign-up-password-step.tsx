@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { AuthEmailSummary } from "@/features/auth/components/shared/AuthEmailSummary";
+import { AuthEmailSummary } from "@/features/auth/components/shared/auth-email-summary";
 import {
   signUpPasswordDefaultValues,
   signUpPasswordSchema,
@@ -12,7 +12,7 @@ import {
 } from "@/features/auth/schemas/sign-up.schema";
 import { normalizeEmail } from "@/features/auth/utils/normalize-email";
 import { authClient } from "@/shared/lib/auth/auth-client";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
+import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { ResendMagicLinkButton } from '@/features/auth/components/oauth/ResendMagicLinkButton';
+import { ResendMagicLinkButton } from '@/features/auth/components/oauth/resend-magic-link-button';
 import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
 import { routes } from '@/shared/constants/routes';
 

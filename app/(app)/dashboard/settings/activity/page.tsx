@@ -7,11 +7,11 @@ import {
   emptyActivityIcon,
   formatActivityAction,
 } from '@/features/account/ui/activity-display';
-import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/app/settings-page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
-import { ContentSection } from '@/features/account/components/settings/ContentSection';
+import { ContentSection } from '@/features/account/components/settings/content-section';
 
 export default async function ActivityPage() {
   const user = await getCurrentUser();

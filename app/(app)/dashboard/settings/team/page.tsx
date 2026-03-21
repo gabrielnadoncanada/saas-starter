@@ -1,5 +1,5 @@
-import { TeamSettingsPage } from '@/features/teams/components/TeamSettingsPage';
-import { ContentSection } from '@/features/account/components/settings/ContentSection';
+import { TeamSettingsPage } from '@/features/teams/components/team-settings-page';
+import { ContentSection } from '@/features/account/components/settings/content-section';
 import { terminology } from '@/shared/constants/terminology';
 
 export default function SettingsPage() {

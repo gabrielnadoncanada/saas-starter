@@ -14,7 +14,7 @@ import {
 } from '@/shared/components/ui/dropdown-menu';
 
 import type { Task } from '../types/task.types';
-import { useTasks } from './TasksProvider';
+import { useTasks } from './tasks-provider';
 
 type DataTableRowActionsProps = {
   row: Row<Task>;

@@ -12,7 +12,7 @@ import type {
   BulkUpdateTaskStatusActionState,
 } from '@/features/tasks/types/task-action.types';
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
-import { ConfirmDialog } from '@/shared/components/dialogs/ConfirmDialog';
+import { ConfirmDialog } from '@/shared/components/dialogs/confirm-dialog';
 import { DataTableBulkActions as BulkActionsToolbar } from '@/shared/components/data-table';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -24,7 +24,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/components/ui/tooltip';
 
 import type { Task } from '../types/task.types';
-import { useTasks } from './TasksProvider';
+import { useTasks } from './tasks-provider';
 
 type DataTableBulkActionsProps = {
   table: Table<Task>;

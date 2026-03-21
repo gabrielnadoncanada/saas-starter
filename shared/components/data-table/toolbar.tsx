@@ -2,8 +2,8 @@ import { XIcon } from 'lucide-react'
 import { type Table } from '@tanstack/react-table'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
-import { DataTableFacetedFilter } from './FacetedFilter'
-import { DataTableViewOptions } from './ViewOptions'
+import { DataTableFacetedFilter } from './faceted-filter'
+import { DataTableViewOptions } from './view-options'
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>

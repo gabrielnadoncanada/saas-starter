@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2, Mail } from "lucide-react";
-import { OAuthButtons } from "@/features/auth/components/oauth/OAuthButtons";
+import { OAuthButtons } from "@/features/auth/components/oauth/oauth-buttons";
 import { Button } from "@/shared/components/ui/button";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 

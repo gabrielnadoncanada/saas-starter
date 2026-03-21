@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Sparkles, Users } from 'lucide-react';
 import { getCurrentTeam } from '@/features/teams/server/current-team';
 import { listCurrentTeamTasks } from '@/features/tasks/server/tasks';
-import { Main } from '@/shared/components/layout/shell/Main';
+import { Main } from '@/shared/components/layout/shell/main';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -15,9 +15,9 @@ import { routes } from '@/shared/constants/routes';
 import { resolveTeamPlan, getPlan } from '@/features/billing/plans';
 import { hasCapability, checkLimit } from '@/features/billing/guards';
 import { getMonthlyUsage } from '@/features/billing/usage';
-import { UsageMeter } from '@/features/billing/components/UsageMeter';
-import { PlanBadge } from '@/features/billing/components/PlanBadge';
-import { UpgradeCard } from '@/features/billing/components/UpgradeCard';
+import { UsageMeter } from '@/features/billing/components/usage-meter';
+import { PlanBadge } from '@/features/billing/components/plan-badge';
+import { UpgradeCard } from '@/features/billing/components/upgrade-card';
 import { terminology } from '@/shared/constants/terminology';
 
 export default async function DashboardPage() {

@@ -8,7 +8,7 @@ import {
   ArtifactDescription,
   ArtifactHeader,
   ArtifactTitle,
-} from "@/components/ai-elements/artifact";
+} from "@/shared/components/ai-elements/artifact";
 import type { CreateInvoiceDraftToolResult } from "@/features/assistant/types";
 import { CopyIcon, DownloadIcon, ReceiptTextIcon } from "lucide-react";
 

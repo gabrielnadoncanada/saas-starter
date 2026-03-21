@@ -5,10 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { ResendVerificationForm } from "@/features/auth/components/oauth/ResendVerificationForm";
-import { AuthSecondaryActions } from "@/features/auth/components/shared/AuthSecondaryActions";
-import { SignInEmailStep } from "@/features/auth/components/sign-in/SignInEmailStep";
-import { SignInPasswordStep } from "@/features/auth/components/sign-in/SignInPasswordStep";
+import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
+import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
+import { SignInEmailStep } from "@/features/auth/components/sign-in/sign-in-email-step";
+import { SignInPasswordStep } from "@/features/auth/components/sign-in/sign-in-password-step";
 import {
   emailStepSchema,
   type EmailStepValues,

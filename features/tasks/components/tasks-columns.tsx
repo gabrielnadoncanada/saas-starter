@@ -6,7 +6,7 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 
 import { labels, priorities, statuses } from '../constants';
 import { type Task } from '../types/task.types';
-import { DataTableRowActions } from './DataTableRowActions';
+import { DataTableRowActions } from './data-table-row-actions';
 
 export const tasksColumns: ColumnDef<Task>[] = [
   {

@@ -11,8 +11,8 @@ import {
   ModelSelectorLogo,
   ModelSelectorName,
   ModelSelectorTrigger,
-} from "@/components/ai-elements/model-selector";
-import { PromptInputButton } from "@/components/ai-elements/prompt-input";
+} from "@/shared/components/ai-elements/model-selector";
+import { PromptInputButton } from "@/shared/components/ai-elements/prompt-input";
 import { assistantModels } from "@/features/assistant/models";
 import { CheckIcon } from "lucide-react";
 

@@ -1,6 +1,6 @@
-export { DataTablePagination } from "./Pagination";
-export { DataTableColumnHeader } from "./ColumnHeader";
-export { DataTableFacetedFilter } from "./FacetedFilter";
-export { DataTableViewOptions } from "./ViewOptions";
-export { DataTableToolbar } from "./Toolbar";
-export { DataTableBulkActions } from "./BulkActions";
+export { DataTablePagination } from "./pagination";
+export { DataTableColumnHeader } from "./column-header";
+export { DataTableFacetedFilter } from "./faceted-filter";
+export { DataTableViewOptions } from "./view-options";
+export { DataTableToolbar } from "./toolbar";
+export { DataTableBulkActions } from "./bulk-actions";

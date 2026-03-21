@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { AuthSecondaryActions } from "@/features/auth/components/shared/AuthSecondaryActions";
-import { SignUpEmailStep } from "@/features/auth/components/sign-up/SignUpEmailStep";
-import { SignUpPasswordStep } from "@/features/auth/components/sign-up/SignUpPasswordStep";
+import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
+import { SignUpEmailStep } from "@/features/auth/components/sign-up/sign-up-email-step";
+import { SignUpPasswordStep } from "@/features/auth/components/sign-up/sign-up-password-step";
 import {
   emailStepSchema,
   type EmailStepValues,

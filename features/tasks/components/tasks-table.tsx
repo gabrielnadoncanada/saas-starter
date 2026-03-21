@@ -27,9 +27,9 @@ import {
 } from '@/shared/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/shared/components/data-table'
 import { priorities, statuses } from '../constants'
-import { DataTableBulkActions } from './DataTableBulkActions'
-import { tasksColumns as columns } from './TasksColumns'
-import { useTasks } from './TasksProvider'
+import { DataTableBulkActions } from './data-table-bulk-actions'
+import { tasksColumns as columns } from './tasks-columns'
+import { useTasks } from './tasks-provider'
 
 type TaskColumnMeta = {
   className?: string

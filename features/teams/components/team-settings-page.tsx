@@ -1,10 +1,10 @@
-import { SettingsPageHeader } from '@/shared/components/app/SettingsPageHeader';
+import { SettingsPageHeader } from '@/shared/components/app/settings-page-header';
 import { Button } from '@/shared/components/ui/button';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/shared/components/ui/item';
 import { customerPortalAction } from '@/features/billing/actions/customer-portal.action';
-import { InviteTeamMemberPanel } from '@/features/teams/components/InviteTeamMemberPanel';
-import { PendingInvitationsPanel } from '@/features/teams/components/PendingInvitationsPanel';
-import { TeamMembersPanel } from '@/features/teams/components/TeamMembersPanel';
+import { InviteTeamMemberPanel } from '@/features/teams/components/invite-team-member-panel';
+import { PendingInvitationsPanel } from '@/features/teams/components/pending-invitations-panel';
+import { TeamMembersPanel } from '@/features/teams/components/team-members-panel';
 import { getCurrentTeam } from '@/features/teams/server/current-team';
 import { listPendingInvitationsForCurrentTeam } from '@/features/teams/server/team-invitations';
 import { getPlan, resolveTeamPlan } from '@/features/billing/plans';

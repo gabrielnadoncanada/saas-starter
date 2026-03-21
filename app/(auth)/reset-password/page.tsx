@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { ResetPasswordForm } from "@/features/auth/components/password/ResetPasswordForm";
+import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 import { routes } from "@/shared/constants/routes";
 
 type ResetPasswordPageProps = {

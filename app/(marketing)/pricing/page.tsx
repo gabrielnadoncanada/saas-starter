@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { PricingSection } from '@/features/billing/components/PricingSection';
-import { FaqSection } from '@/features/billing/components/FaqSection';
+import { PricingSection } from '@/features/billing/components/pricing-section';
+import { FaqSection } from '@/features/billing/components/faq-section';
 
 export const metadata: Metadata = {
   title: 'Pricing',

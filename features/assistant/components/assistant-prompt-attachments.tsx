@@ -5,8 +5,8 @@ import {
   AttachmentPreview,
   AttachmentRemove,
   Attachments,
-} from "@/components/ai-elements/attachments";
-import { usePromptInputAttachments } from "@/components/ai-elements/prompt-input";
+} from "@/shared/components/ai-elements/attachments";
+import { usePromptInputAttachments } from "@/shared/components/ai-elements/prompt-input";
 
 export function AssistantPromptAttachments() {
   const attachments = usePromptInputAttachments();

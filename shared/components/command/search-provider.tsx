@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
-import { CommandMenu } from '@/shared/components/command/CommandMenu';
+import { CommandMenu } from '@/shared/components/command/command-menu';
 
 type SearchContextValue = {
   open: boolean;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ForgotPasswordForm } from "@/features/auth/components/password/ForgotPasswordForm";
+import { ForgotPasswordForm } from "@/features/auth/components/password/forgot-password-form";
 import {
   Card,
   CardContent,

@@ -11,7 +11,7 @@ import {
   type PasswordFormValues,
 } from "@/features/auth/schemas/password-form.schema";
 import { authClient } from "@/shared/lib/auth/auth-client";
-import { PasswordInput } from "@/shared/components/forms/PasswordInput";
+import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/components/ui/field";

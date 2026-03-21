@@ -1,9 +1,9 @@
 import { listCurrentTeamTasks } from '@/features/tasks/server/tasks';
-import { TasksDialogs } from '@/features/tasks/components/TasksDialogs';
-import { TasksPrimaryButtons } from '@/features/tasks/components/TasksPrimaryButtons';
-import { TasksTable } from '@/features/tasks/components/TasksTable';
-import { TasksProvider } from '@/features/tasks/components/TasksProvider';
-import { Main } from '@/shared/components/layout/shell/Main';
+import { TasksDialogs } from '@/features/tasks/components/tasks-dialogs';
+import { TasksPrimaryButtons } from '@/features/tasks/components/tasks-primary-buttons';
+import { TasksTable } from '@/features/tasks/components/tasks-table';
+import { TasksProvider } from '@/features/tasks/components/tasks-provider';
+import { Main } from '@/shared/components/layout/shell/main';
 
 export default async function DashboardTasksPage() {
   const tasks = await listCurrentTeamTasks();

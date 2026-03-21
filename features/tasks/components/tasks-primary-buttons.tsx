@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 
-import { useTasks } from './TasksProvider';
+import { useTasks } from './tasks-provider';
 
 export function TasksPrimaryButtons() {
   const { openCreateDialog } = useTasks();

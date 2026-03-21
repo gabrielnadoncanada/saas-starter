@@ -1,13 +1,13 @@
 import { Sparkles } from "lucide-react";
 
-import { Main } from "@/shared/components/layout/shell/Main";
+import { Main } from "@/shared/components/layout/shell/main";
 import { resolveTeamPlan } from "@/features/billing/plans";
 import { hasCapability, checkLimit } from "@/features/billing/guards";
 import { getMonthlyUsage } from "@/features/billing/usage";
 import { getCurrentTeam } from "@/features/teams/server/current-team";
-import { UsageMeter } from "@/features/billing/components/UsageMeter";
-import { UpgradeCard } from "@/features/billing/components/UpgradeCard";
-import { AssistantWorkspace } from "@/features/assistant/components/AssistantWorkspace";
+import { UsageMeter } from "@/features/billing/components/usage-meter";
+import { UpgradeCard } from "@/features/billing/components/upgrade-card";
+import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import {
   getAssistantConversation,
   listAssistantConversations,

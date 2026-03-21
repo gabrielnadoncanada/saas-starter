@@ -1,8 +1,8 @@
 "use client";
 
-import { AssistantInvoiceArtifact } from "@/features/assistant/components/AssistantInvoiceArtifact";
-import { MessageResponse } from "@/components/ai-elements/message";
-import { Tool, ToolContent, ToolHeader, ToolOutput } from "@/components/ai-elements/tool";
+import { AssistantInvoiceArtifact } from "@/features/assistant/components/assistant-invoice-artifact";
+import { MessageResponse } from "@/shared/components/ai-elements/message";
+import { Tool, ToolContent, ToolHeader, ToolOutput } from "@/shared/components/ai-elements/tool";
 import type {
   AssistantToolFailure,
   CreateInvoiceDraftToolResult,

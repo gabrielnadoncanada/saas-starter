@@ -2,10 +2,10 @@
 
 import { useCallback } from 'react';
 
-import { TaskCreateDrawer } from './TaskCreateDrawer';
-import { TasksDeleteDialog } from './TasksDeleteDialog';
-import { useTasks } from './TasksProvider';
-import { TaskUpdateDrawer } from './TaskUpdateDrawer';
+import { TaskCreateDrawer } from './task-create-drawer';
+import { TasksDeleteDialog } from './tasks-delete-dialog';
+import { useTasks } from './tasks-provider';
+import { TaskUpdateDrawer } from './task-update-drawer';
 
 export function TasksDialogs() {
   const { closeDialog, currentTask, dialog } = useTasks();

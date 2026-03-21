@@ -8,8 +8,8 @@ import {
   fetchAssistantConversation,
   upsertConversationListItem,
 } from "@/features/assistant/client/conversations";
-import { AssistantChat } from "@/features/assistant/components/AssistantChat";
-import { AssistantConversationHistory } from "@/features/assistant/components/AssistantConversationHistory";
+import { AssistantChat } from "@/features/assistant/components/assistant-chat";
+import { AssistantConversationHistory } from "@/features/assistant/components/assistant-conversation-history";
 import type {
   AssistantConversation,
   AssistantConversationListItem,
