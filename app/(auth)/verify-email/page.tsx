@@ -10,16 +10,13 @@ import {
 import { routes } from "@/shared/constants/routes";
 
 type VerifyEmailPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<{
+    error?: string;
+  }>;
 };
 
-function getSingleValue(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
 export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageProps) {
-  const resolvedSearchParams = await searchParams;
-  const error = getSingleValue(resolvedSearchParams.error);
+  const { error } = await searchParams;
 
   // Better Auth handles verification at /api/auth/verify-email and redirects here.
   // If there's an error parameter, verification failed.

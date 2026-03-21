@@ -1,31 +1,32 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import type { PricingModel } from "@/features/billing/plans";
+import { createOrganizationBillingPortalSession } from "@/features/billing/server/better-auth-stripe";
 import { routes } from "@/shared/constants/routes";
-import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
+import {
+  requireOrganizationRole,
+  isOrganizationRoleError,
+} from "@/features/teams/server/require-organization-role";
+import { getCurrentOrganization } from "@/features/teams/server/current-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import { getCurrentTeam } from "@/features/teams/server/current-team";
-import { createCustomerPortalSession } from "@/features/billing/server/customer-portal";
 
 export async function customerPortalAction() {
   const user = await getCurrentUser();
   if (!user) redirect(routes.auth.login);
 
-  const guard = await requireTeamRole(user.id, ["OWNER"]);
-  if (isTeamRoleError(guard)) redirect(routes.app.settingsTeam);
+  const guard = await requireOrganizationRole(user.id, ["owner"]);
+  if (isOrganizationRoleError(guard)) redirect(routes.app.settingsTeam);
 
-  const team = await getCurrentTeam();
-  if (!team?.stripeCustomerId || !team?.stripeProductId) {
+  const organization = await getCurrentOrganization();
+  if (!organization?.stripeCustomerId || !organization?.subscriptionStatus) {
     redirect(routes.marketing.pricing);
   }
 
-  const url = await createCustomerPortalSession({
-    stripeCustomerId: team.stripeCustomerId,
-    pricingModel: team.pricingModel as PricingModel | null,
-    stripeProductId: team.stripeProductId,
-    stripeSubscriptionId: team.stripeSubscriptionId,
+  const url = await createOrganizationBillingPortalSession({
+    organizationId: organization.id,
+    reqHeaders: await headers(),
   });
 
   redirect(url);

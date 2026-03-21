@@ -22,9 +22,9 @@ function isUniqueCodeError(error: unknown) {
   );
 }
 
-async function createTaskCode(teamId: number, client: TaskDbClient) {
+async function createTaskCode(organizationId: string, client: TaskDbClient) {
   const latestTask = await client.task.findFirst({
-    where: { teamId },
+    where: { organizationId },
     orderBy: { id: "desc" },
     select: { code: true },
   });
@@ -34,17 +34,17 @@ async function createTaskCode(teamId: number, client: TaskDbClient) {
 }
 
 async function createTaskRecord(
-  teamId: number,
+  organizationId: string,
   input: CreateTaskInput,
   client: TaskDbClient,
 ): Promise<Task> {
   for (let attempt = 0; attempt < 10; attempt += 1) {
-    const code = await createTaskCode(teamId, client);
+    const code = await createTaskCode(organizationId, client);
 
     try {
       return await client.task.create({
         data: {
-          teamId,
+          organizationId,
           code,
           title: input.title,
           description: input.description || null,
@@ -76,12 +76,12 @@ export async function createTaskForCurrentTeam(
 
   return db.$transaction(async (tx) => {
     await consumeMonthlyUsage(
-      teamPlan.teamId,
+      teamPlan.organizationId,
       "tasksPerMonth",
       teamPlan.planId,
       { db: tx },
     );
 
-    return createTaskRecord(teamPlan.teamId, input, tx);
+    return createTaskRecord(teamPlan.organizationId, input, tx);
   });
 }

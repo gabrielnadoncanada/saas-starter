@@ -10,15 +10,14 @@ import { ResetPasswordForm } from "@/features/auth/components/password/reset-pas
 import { routes } from "@/shared/constants/routes";
 
 type ResetPasswordPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<{
+    token?: string;
+  }>;
 };
 
-function getSingleValue(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
 export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
-  const token = getSingleValue((await searchParams).token)?.trim();
+  const { token: rawToken } = await searchParams;
+  const token = rawToken?.trim();
 
   return (
     <Card className="w-full max-w-md">

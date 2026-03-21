@@ -5,12 +5,12 @@ import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { savePassword } from "@/features/auth/data/auth-requests";
 import {
   createPasswordFormSchema,
   passwordFormDefaultValues,
   type PasswordFormValues,
 } from "@/features/auth/schemas/password-form.schema";
-import { authClient } from "@/shared/lib/auth/auth-client";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
@@ -38,25 +38,18 @@ export function PasswordSettingsCard({ hasPassword }: PasswordSettingsCardProps)
 
   const onSubmit = handleSubmit(async ({ currentPassword, newPassword }) => {
     try {
-      const result = hasPassword
-        ? await authClient.changePassword({ currentPassword, newPassword })
-        : await authClient.$fetch<{ status: boolean }>("/set-password", {
-            method: "POST",
-            body: { newPassword },
-          });
+      const result = await savePassword(hasPassword, newPassword, currentPassword);
 
-      if (result.error) {
-        const message = result.error.message?.toLowerCase() ?? "";
-
-        if (message.includes("current") || message.includes("incorrect")) {
+      if (result.status !== "success") {
+        if (result.status === "incorrect_current_password") {
           setError("currentPassword", {
             type: "server",
-            message: "Current password is incorrect.",
+            message: result.message,
           });
           return;
         }
 
-        toast.error(result.error.message ?? "Unable to update password.");
+        toast.error(result.message);
         return;
       }
 

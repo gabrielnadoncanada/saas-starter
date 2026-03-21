@@ -10,9 +10,6 @@ describe("resolveTeamPlan", () => {
     expect(
       resolveTeamPlan({ planId: "pro", subscriptionStatus: "trialing" }),
     ).toBe("pro");
-    expect(
-      resolveTeamPlan({ planId: "pro", subscriptionStatus: "lifetime" }),
-    ).toBe("pro");
   });
 
   it("downgrades blocked subscription statuses to free access", () => {
@@ -30,7 +27,6 @@ describe("hasPlanAccess", () => {
   it("accepts only active billing statuses", () => {
     expect(hasPlanAccess("active")).toBe(true);
     expect(hasPlanAccess("trialing")).toBe(true);
-    expect(hasPlanAccess("lifetime")).toBe(true);
     expect(hasPlanAccess("past_due")).toBe(false);
     expect(hasPlanAccess("unpaid")).toBe(false);
     expect(hasPlanAccess(null)).toBe(false);

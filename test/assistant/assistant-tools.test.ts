@@ -79,7 +79,7 @@ describe("assistant tools", () => {
     vi.clearAllMocks();
     vi.mocked(getTeamPlan).mockResolvedValue({
       planId: "pro",
-      teamId: 12,
+      organizationId: "12",
       teamName: "Acme",
       subscriptionStatus: "active",
       pricingModel: "flat",
@@ -90,7 +90,7 @@ describe("assistant tools", () => {
   it("blocks reviewInbox when the plan does not include email.sync", async () => {
     vi.mocked(getTeamPlan).mockResolvedValue({
       planId: "free",
-      teamId: 12,
+      organizationId: "12",
       teamName: "Acme",
       subscriptionStatus: null,
       pricingModel: "flat",
@@ -139,7 +139,7 @@ describe("assistant tools", () => {
       expect(result.result.provider).toBe("Demo inbox");
     }
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      12,
+      "12",
       "emailSyncsPerMonth",
       "pro",
     );
@@ -170,7 +170,7 @@ describe("assistant tools", () => {
   it("blocks invoice drafts when the plan does not include invoice.create", async () => {
     vi.mocked(getTeamPlan).mockResolvedValue({
       planId: "free",
-      teamId: 12,
+      organizationId: "12",
       teamName: "Acme",
       subscriptionStatus: null,
       pricingModel: "flat",

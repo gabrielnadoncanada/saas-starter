@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Check } from 'lucide-react';
 
 import type { PricingModel } from '@/features/billing/plans';
@@ -14,13 +13,10 @@ type PricePlan = {
   features: string[];
   pricingModel: PricingModel;
   monthly: { priceId: string; unitAmount: number; trialDays?: number } | null;
-  yearly: { priceId: string; unitAmount: number; trialDays?: number } | null;
-  oneTime: { priceId: string; unitAmount: number } | null;
 };
 
 type PricingToggleProps = {
   plans: PricePlan[];
-  hasYearlyPrices: boolean;
 };
 
 const recurringGridCols: Record<number, string> = {
@@ -48,7 +44,6 @@ function PricingCard({
   pricingModel: PricingModel;
   featured?: boolean;
 }) {
-  const isOneTime = pricingModel === 'one_time';
   const isPerSeat = pricingModel === 'per_seat';
 
   const intervalLabel = isPerSeat
@@ -70,13 +65,11 @@ function PricingCard({
           with {trialDays} day free trial
         </p>
       ) : (
-        <p className="mb-4 text-sm text-muted-foreground">
-          {isOneTime ? 'one-time payment' : '\u00A0'}
-        </p>
+        <p className="mb-4 text-sm text-muted-foreground">{'\u00A0'}</p>
       )}
       <p className="mb-6 text-4xl font-medium text-foreground">
         ${price / 100}{' '}
-        {!isOneTime && interval && (
+        {interval && (
           <span className="text-xl font-normal text-muted-foreground">
             {intervalLabel}
           </span>
@@ -92,110 +85,37 @@ function PricingCard({
       </ul>
       <form action={checkoutAction}>
         <input type="hidden" name="priceId" value={priceId} />
-        <input type="hidden" name="pricingModel" value={pricingModel} />
-        <SubmitPricingButton label={isOneTime ? 'Buy Now' : undefined} />
+        <SubmitPricingButton />
       </form>
     </div>
   );
 }
 
-export function PricingToggle({ plans, hasYearlyPrices }: PricingToggleProps) {
-  const [billingInterval, setBillingInterval] = useState<'month' | 'year'>(
-    'month',
-  );
-
-  const recurringPlans = plans.filter((p) => p.pricingModel !== 'one_time');
-  const oneTimePlans = plans.filter((p) => p.pricingModel === 'one_time');
-
+export function PricingToggle({ plans }: PricingToggleProps) {
   const gridClass =
-    recurringGridCols[Math.min(recurringPlans.length, 3)] ?? recurringGridCols[3];
+    recurringGridCols[Math.min(plans.length, 3)] ?? recurringGridCols[3];
 
-  const oneTimeGridClass =
-    recurringGridCols[Math.min(oneTimePlans.length, 3)] ?? recurringGridCols[3];
-
-  // Feature the second plan when there are 2+ recurring plans (typical: cheapest, then recommended)
-  const featuredIndex = recurringPlans.length >= 2 ? 1 : -1;
+  const featuredIndex = plans.length >= 2 ? 1 : -1;
 
   return (
-    <>
-      {hasYearlyPrices && recurringPlans.length > 0 && (
-        <div className="mb-8 flex items-center justify-center gap-4">
-          <span
-            className={`text-sm font-medium ${billingInterval === 'month' ? 'text-foreground' : 'text-muted-foreground'}`}
-          >
-            Monthly
-          </span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={billingInterval === 'year'}
-            onClick={() =>
-              setBillingInterval((prev) =>
-                prev === 'month' ? 'year' : 'month',
-              )
-            }
-            className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=checked]:bg-orange-500"
-            data-state={billingInterval === 'year' ? 'checked' : 'unchecked'}
-          >
-            <span
-              className={`pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform ${billingInterval === 'year' ? 'translate-x-5' : 'translate-x-0'}`}
-            />
-          </button>
-          <span
-            className={`text-sm font-medium ${billingInterval === 'year' ? 'text-foreground' : 'text-muted-foreground'}`}
-          >
-            Yearly
-          </span>
-        </div>
-      )}
+    <div className={`grid gap-8 ${gridClass}`}>
+      {plans.map((plan, index) => {
+        if (!plan.monthly) return null;
 
-      <div className={`grid gap-8 ${gridClass}`}>
-        {recurringPlans.map((plan, index) => {
-          const activePrice =
-            billingInterval === 'year' && plan.yearly
-              ? plan.yearly
-              : plan.monthly;
-
-          if (!activePrice) return null;
-
-          return (
-            <PricingCard
-              key={plan.productId}
-              name={plan.productName}
-              price={activePrice.unitAmount}
-              interval={
-                billingInterval === 'year' && plan.yearly ? 'year' : 'month'
-              }
-              trialDays={activePrice.trialDays ?? null}
-              features={plan.features}
-              priceId={activePrice.priceId}
-              pricingModel={plan.pricingModel}
-              featured={index === featuredIndex}
-            />
-          );
-        })}
-      </div>
-
-      {oneTimePlans.length > 0 && (
-        <div className={`mt-12 grid gap-8 ${oneTimeGridClass}`}>
-          {oneTimePlans.map((plan) => {
-            if (!plan.oneTime) return null;
-
-            return (
-              <PricingCard
-                key={plan.productId}
-                name={plan.productName}
-                price={plan.oneTime.unitAmount}
-                interval={null}
-                trialDays={null}
-                features={plan.features}
-                priceId={plan.oneTime.priceId}
-                pricingModel={plan.pricingModel}
-              />
-            );
-          })}
-        </div>
-      )}
-    </>
+        return (
+          <PricingCard
+            key={plan.productId}
+            name={plan.productName}
+            price={plan.monthly.unitAmount}
+            interval="month"
+            trialDays={plan.monthly.trialDays ?? null}
+            features={plan.features}
+            priceId={plan.monthly.priceId}
+            pricingModel={plan.pricingModel}
+            featured={index === featuredIndex}
+          />
+        );
+      })}
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { Main } from "@/shared/components/layout/shell/main";
 import { resolveTeamPlan } from "@/features/billing/plans";
 import { hasCapability, checkLimit } from "@/features/billing/guards";
 import { getMonthlyUsage } from "@/features/billing/usage";
-import { getCurrentTeam } from "@/features/teams/server/current-team";
+import { getCurrentOrganization } from "@/features/teams/server/current-organization";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
@@ -22,13 +22,13 @@ type AssistantPageProps = {
 export default async function AssistantPage({
   searchParams,
 }: AssistantPageProps) {
-  const team = await getCurrentTeam();
-  const planId = resolveTeamPlan(team);
+  const organization = await getCurrentOrganization();
+  const planId = resolveTeamPlan(organization);
   const canUseAssistant = hasCapability(planId, "ai.assistant");
   const { conversationId } = await searchParams;
 
-  const aiUsage = team
-    ? await getMonthlyUsage(team.id, "aiRequestsPerMonth")
+  const aiUsage = organization
+    ? await getMonthlyUsage(organization.id, "aiRequestsPerMonth")
     : 0;
   const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
   const initialConversations =

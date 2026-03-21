@@ -47,7 +47,7 @@ export function AiProof() {
 assertCapability(teamPlan.planId, "ai.assistant");
 
 const usage = await getMonthlyUsage(
-  teamPlan.teamId,
+  teamPlan.organizationId,
   "aiRequestsPerMonth"
 );
 assertLimit(teamPlan.planId, "aiRequestsPerMonth", usage);
@@ -58,7 +58,7 @@ const result = streamText({
   model: assistantModel.model,
   tools: assistantTools,
   onFinish: () =>
-    recordUsage(teamPlan.teamId, "aiRequestsPerMonth"),
+    recordUsage(teamPlan.organizationId, "aiRequestsPerMonth"),
 });`}
               </pre>
             </div>
@@ -71,13 +71,13 @@ const result = streamText({
 {`assertCapability(teamPlan.planId, "email.sync");
 
 const usage = await getMonthlyUsage(
-  teamPlan.teamId,
+  teamPlan.organizationId,
   "emailSyncsPerMonth"
 );
 assertLimit(teamPlan.planId, "emailSyncsPerMonth", usage);
 
 const messages = await emailProvider.getRecentMessages();
-await recordUsage(teamPlan.teamId, "emailSyncsPerMonth");`}
+await recordUsage(teamPlan.organizationId, "emailSyncsPerMonth");`}
               </pre>
             </div>
           </div>

@@ -1,15 +1,13 @@
-import { TeamSettingsPage } from '@/features/teams/components/team-settings-page';
+import { OrganizationSettingsPage } from '@/features/teams/components/organization-settings-page';
 import { ContentSection } from '@/features/account/components/settings/content-section';
-import { terminology } from '@/shared/constants/terminology';
 
 export default function SettingsPage() {
   return (
     <ContentSection
-      title={`${terminology.Singular} Settings`}
-      desc={`Manage your ${terminology.singular} settings and invite new members.`}
+      title="Organization Settings"
+      desc="Manage your organization settings and invite new members."
     >
-      <TeamSettingsPage />
+      <OrganizationSettingsPage />
     </ContentSection>
   )
 }
-

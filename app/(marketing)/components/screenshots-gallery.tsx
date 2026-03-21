@@ -35,7 +35,7 @@ const screenshots: Screenshot[] = [
   {
     slot: 'billing',
     src: null,
-    caption: 'Pricing page with monthly/yearly toggle and one-time plans.',
+    caption: 'Pricing page with monthly plans and Stripe-powered subscriptions.',
   },
   {
     slot: 'activity',
@@ -45,7 +45,7 @@ const screenshots: Screenshot[] = [
   {
     slot: 'plan-gate',
     src: null,
-    caption: 'Plan gating in action — upgrade prompts when limits are reached.',
+    caption: 'Plan gating in action - upgrade prompts when limits are reached.',
   },
 ];
 

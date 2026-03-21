@@ -14,7 +14,7 @@ export function TeamInvitationEmail({
   inviterName = "John",
   teamName = "Acme",
   role = "member",
-  invitationUrl = "https://example.com/sign-in?inviteId=1",
+  invitationUrl = "https://example.com/accept-invitation/1",
 }: TeamInvitationEmailProps) {
   return (
     <EmailLayout

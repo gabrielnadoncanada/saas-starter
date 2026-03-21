@@ -13,19 +13,11 @@ CREATE TYPE "TaskLabel" AS ENUM ('FEATURE', 'BUG', 'DOCUMENTATION');
 -- CreateEnum
 CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
 
--- CreateEnum
-CREATE TYPE "ActivityType" AS ENUM ('SIGN_UP', 'SIGN_IN', 'DELETE_ACCOUNT', 'UPDATE_ACCOUNT', 'CREATE_TEAM', 'REMOVE_TEAM_MEMBER', 'INVITE_TEAM_MEMBER', 'ACCEPT_INVITATION', 'LINK_AUTH_PROVIDER', 'UNLINK_AUTH_PROVIDER');
-
--- CreateEnum
-CREATE TYPE "TeamRole" AS ENUM ('OWNER', 'ADMIN', 'MEMBER');
-
--- CreateEnum
-CREATE TYPE "InvitationStatus" AS ENUM ('PENDING', 'ACCEPTED', 'EXPIRED', 'CANCELED');
 
 -- CreateTable
 CREATE TABLE "AssistantConversation" (
     "id" TEXT NOT NULL,
-    "teamId" INTEGER NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "title" VARCHAR(120) NOT NULL,
     "messagesJson" JSONB NOT NULL,
@@ -44,6 +36,7 @@ CREATE TABLE "User" (
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "image" TEXT,
     "platformRole" "PlatformRole" NOT NULL DEFAULT 'USER',
+    "stripeCustomerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -81,6 +74,7 @@ CREATE TABLE "Session" (
     "ipAddress" TEXT,
     "userAgent" TEXT,
     "userId" TEXT NOT NULL,
+    "activeOrganizationId" TEXT,
 
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
@@ -98,9 +92,34 @@ CREATE TABLE "Verification" (
 );
 
 -- CreateTable
+CREATE TABLE "Subscription" (
+    "id" TEXT NOT NULL,
+    "plan" VARCHAR(50) NOT NULL,
+    "referenceId" TEXT NOT NULL,
+    "stripeCustomerId" TEXT,
+    "stripeSubscriptionId" TEXT,
+    "status" VARCHAR(30) NOT NULL DEFAULT 'incomplete',
+    "periodStart" TIMESTAMP(3),
+    "periodEnd" TIMESTAMP(3),
+    "trialStart" TIMESTAMP(3),
+    "trialEnd" TIMESTAMP(3),
+    "cancelAtPeriodEnd" BOOLEAN DEFAULT false,
+    "cancelAt" TIMESTAMP(3),
+    "canceledAt" TIMESTAMP(3),
+    "endedAt" TIMESTAMP(3),
+    "seats" INTEGER,
+    "billingInterval" VARCHAR(20),
+    "stripeScheduleId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Task" (
     "id" SERIAL NOT NULL,
-    "teamId" INTEGER NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "code" VARCHAR(20) NOT NULL,
     "title" VARCHAR(255) NOT NULL,
     "description" TEXT,
@@ -114,65 +133,48 @@ CREATE TABLE "Task" (
 );
 
 -- CreateTable
-CREATE TABLE "Team" (
-    "id" SERIAL NOT NULL,
+CREATE TABLE "Organization" (
+    "id" TEXT NOT NULL,
     "name" VARCHAR(100) NOT NULL,
+    "slug" TEXT,
+    "logo" TEXT,
+    "metadata" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
     "stripeCustomerId" TEXT,
-    "stripeSubscriptionId" TEXT,
-    "stripeProductId" TEXT,
-    "planId" VARCHAR(20),
-    "subscriptionStatus" VARCHAR(20),
-    "pricingModel" VARCHAR(20),
-    "pendingCheckoutPriceId" VARCHAR(255),
-    "pendingCheckoutStartedAt" TIMESTAMP(3),
 
-    CONSTRAINT "Team_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "TeamMember" (
-    "id" SERIAL NOT NULL,
+CREATE TABLE "Member" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "teamId" INTEGER NOT NULL,
-    "role" "TeamRole" NOT NULL,
-    "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "role" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "TeamMember_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ActivityLog" (
-    "id" SERIAL NOT NULL,
-    "teamId" INTEGER,
-    "userId" TEXT,
-    "action" "ActivityType" NOT NULL,
-    "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ipAddress" VARCHAR(45),
-
-    CONSTRAINT "ActivityLog_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Invitation" (
-    "id" SERIAL NOT NULL,
-    "token" VARCHAR(36) NOT NULL,
-    "teamId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "email" VARCHAR(255) NOT NULL,
-    "role" "TeamRole" NOT NULL,
-    "invitedBy" TEXT NOT NULL,
-    "invitedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "expiresAt" TIMESTAMP(3),
-    "status" "InvitationStatus" NOT NULL DEFAULT 'PENDING',
+    "role" TEXT,
+    "status" TEXT NOT NULL,
+    "inviterId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Invitation_pkey" PRIMARY KEY ("id")
 );
 
+
 -- CreateTable
 CREATE TABLE "UsageCounter" (
     "id" SERIAL NOT NULL,
-    "teamId" INTEGER NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "limitKey" VARCHAR(50) NOT NULL,
     "periodStart" TIMESTAMP(3) NOT NULL,
     "count" INTEGER NOT NULL DEFAULT 0,
@@ -182,24 +184,14 @@ CREATE TABLE "UsageCounter" (
     CONSTRAINT "UsageCounter_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "ProcessedStripeCheckout" (
-    "id" SERIAL NOT NULL,
-    "sessionId" VARCHAR(255) NOT NULL,
-    "teamId" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "ProcessedStripeCheckout_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
-CREATE INDEX "AssistantConversation_teamId_userId_lastMessageAt_idx" ON "AssistantConversation"("teamId", "userId", "lastMessageAt" DESC);
+CREATE INDEX "AssistantConversation_organizationId_userId_lastMessageAt_idx" ON "AssistantConversation"("organizationId", "userId", "lastMessageAt" DESC);
 
 -- CreateIndex
 CREATE INDEX "AssistantConversation_userId_idx" ON "AssistantConversation"("userId");
 
 -- CreateIndex
-CREATE INDEX "AssistantConversation_teamId_idx" ON "AssistantConversation"("teamId");
+CREATE INDEX "AssistantConversation_organizationId_idx" ON "AssistantConversation"("organizationId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
@@ -214,7 +206,16 @@ CREATE UNIQUE INDEX "Session_token_key" ON "Session"("token");
 CREATE INDEX "Session_userId_idx" ON "Session"("userId");
 
 -- CreateIndex
-CREATE INDEX "Task_teamId_idx" ON "Task"("teamId");
+CREATE INDEX "Subscription_referenceId_idx" ON "Subscription"("referenceId");
+
+-- CreateIndex
+CREATE INDEX "Subscription_stripeCustomerId_idx" ON "Subscription"("stripeCustomerId");
+
+-- CreateIndex
+CREATE INDEX "Subscription_stripeSubscriptionId_idx" ON "Subscription"("stripeSubscriptionId");
+
+-- CreateIndex
+CREATE INDEX "Task_organizationId_idx" ON "Task"("organizationId");
 
 -- CreateIndex
 CREATE INDEX "Task_status_idx" ON "Task"("status");
@@ -226,67 +227,44 @@ CREATE INDEX "Task_priority_idx" ON "Task"("priority");
 CREATE INDEX "Task_label_idx" ON "Task"("label");
 
 -- CreateIndex
-CREATE INDEX "Task_teamId_status_idx" ON "Task"("teamId", "status");
+CREATE INDEX "Task_organizationId_status_idx" ON "Task"("organizationId", "status");
 
 -- CreateIndex
-CREATE INDEX "Task_teamId_priority_idx" ON "Task"("teamId", "priority");
+CREATE INDEX "Task_organizationId_priority_idx" ON "Task"("organizationId", "priority");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Task_teamId_code_key" ON "Task"("teamId", "code");
+CREATE UNIQUE INDEX "Task_organizationId_code_key" ON "Task"("organizationId", "code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Team_stripeCustomerId_key" ON "Team"("stripeCustomerId");
+CREATE UNIQUE INDEX "Organization_slug_key" ON "Organization"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Team_stripeSubscriptionId_key" ON "Team"("stripeSubscriptionId");
+CREATE UNIQUE INDEX "Organization_stripeCustomerId_key" ON "Organization"("stripeCustomerId");
 
 -- CreateIndex
-CREATE INDEX "TeamMember_userId_idx" ON "TeamMember"("userId");
+CREATE INDEX "Member_userId_idx" ON "Member"("userId");
 
 -- CreateIndex
-CREATE INDEX "TeamMember_teamId_idx" ON "TeamMember"("teamId");
+CREATE INDEX "Member_organizationId_idx" ON "Member"("organizationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "TeamMember_userId_teamId_key" ON "TeamMember"("userId", "teamId");
+CREATE UNIQUE INDEX "Member_organizationId_userId_key" ON "Member"("organizationId", "userId");
 
 -- CreateIndex
-CREATE INDEX "ActivityLog_teamId_idx" ON "ActivityLog"("teamId");
-
--- CreateIndex
-CREATE INDEX "ActivityLog_userId_idx" ON "ActivityLog"("userId");
-
--- CreateIndex
-CREATE INDEX "ActivityLog_action_idx" ON "ActivityLog"("action");
-
--- CreateIndex
-CREATE INDEX "ActivityLog_timestamp_idx" ON "ActivityLog"("timestamp");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Invitation_token_key" ON "Invitation"("token");
-
--- CreateIndex
-CREATE INDEX "Invitation_teamId_idx" ON "Invitation"("teamId");
+CREATE INDEX "Invitation_organizationId_idx" ON "Invitation"("organizationId");
 
 -- CreateIndex
 CREATE INDEX "Invitation_email_idx" ON "Invitation"("email");
 
--- CreateIndex
-CREATE INDEX "Invitation_status_idx" ON "Invitation"("status");
 
 -- CreateIndex
-CREATE INDEX "UsageCounter_teamId_limitKey_idx" ON "UsageCounter"("teamId", "limitKey");
+CREATE INDEX "UsageCounter_organizationId_limitKey_idx" ON "UsageCounter"("organizationId", "limitKey");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UsageCounter_teamId_limitKey_periodStart_key" ON "UsageCounter"("teamId", "limitKey", "periodStart");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ProcessedStripeCheckout_sessionId_key" ON "ProcessedStripeCheckout"("sessionId");
-
--- CreateIndex
-CREATE INDEX "ProcessedStripeCheckout_teamId_idx" ON "ProcessedStripeCheckout"("teamId");
+CREATE UNIQUE INDEX "UsageCounter_organizationId_limitKey_periodStart_key" ON "UsageCounter"("organizationId", "limitKey", "periodStart");
 
 -- AddForeignKey
-ALTER TABLE "AssistantConversation" ADD CONSTRAINT "AssistantConversation_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "AssistantConversation" ADD CONSTRAINT "AssistantConversation_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AssistantConversation" ADD CONSTRAINT "AssistantConversation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -298,28 +276,22 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Task" ADD CONSTRAINT "Task_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Task" ADD CONSTRAINT "Task_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Member" ADD CONSTRAINT "Member_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Member" ADD CONSTRAINT "Member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_inviterId_fkey" FOREIGN KEY ("inviterId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+
 
 -- AddForeignKey
-ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "UsageCounter" ADD CONSTRAINT "UsageCounter_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_invitedBy_fkey" FOREIGN KEY ("invitedBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UsageCounter" ADD CONSTRAINT "UsageCounter_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProcessedStripeCheckout" ADD CONSTRAINT "ProcessedStripeCheckout_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;

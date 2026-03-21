@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { db } from "@/shared/lib/db/prisma";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import { getUserTeamMembership } from "@/features/teams/server/team-membership";
+import { getActiveOrganizationMembership } from "@/features/teams/server/organization-membership";
 import type {
   bulkDeleteTasksSchema,
   bulkUpdateTaskStatusSchema,
@@ -19,37 +19,37 @@ type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;
 type BulkDeleteTasksInput = z.infer<typeof bulkDeleteTasksSchema>;
 type BulkUpdateTaskStatusInput = z.infer<typeof bulkUpdateTaskStatusSchema>;
 
-async function requireCurrentTeamId() {
+async function requireCurrentOrganizationId() {
   const user = await getCurrentUser();
 
   if (!user) {
     throw new Error("User is not authenticated");
   }
 
-  const userWithTeam = await getUserTeamMembership(user.id);
+  const membership = await getActiveOrganizationMembership(user.id);
 
-  if (!userWithTeam?.teamId) {
-    throw new Error("User is not part of a team");
+  if (!membership?.organizationId) {
+    throw new Error("User is not part of an organization");
   }
 
-  return userWithTeam.teamId;
+  return membership.organizationId;
 }
 
 export async function listCurrentTeamTasks() {
-  const teamId = await requireCurrentTeamId();
+  const organizationId = await requireCurrentOrganizationId();
 
   return db.task.findMany({
-    where: { teamId },
+    where: { organizationId },
     orderBy: { createdAt: "desc" },
   });
 }
 
 export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
-  const teamId = await requireCurrentTeamId();
+  const organizationId = await requireCurrentOrganizationId();
   const existingTask = await db.task.findFirst({
     where: {
       id: input.taskId,
-      teamId,
+      organizationId,
     },
     select: { id: true },
   });
@@ -73,12 +73,12 @@ export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
 export async function updateTaskStatusForCurrentTeam(
   input: UpdateTaskStatusInput,
 ) {
-  const teamId = await requireCurrentTeamId();
+  const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.updateMany({
     where: {
       id: input.taskId,
-      teamId,
+      organizationId,
     },
     data: {
       status: input.status,
@@ -93,12 +93,12 @@ export async function updateTaskStatusForCurrentTeam(
 export async function deleteTaskForCurrentTeam(
   taskId: DeleteTaskInput["taskId"],
 ) {
-  const teamId = await requireCurrentTeamId();
+  const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.deleteMany({
     where: {
       id: taskId,
-      teamId,
+      organizationId,
     },
   });
 
@@ -110,12 +110,12 @@ export async function deleteTaskForCurrentTeam(
 export async function bulkUpdateTaskStatusForCurrentTeam(
   input: BulkUpdateTaskStatusInput,
 ) {
-  const teamId = await requireCurrentTeamId();
+  const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.updateMany({
     where: {
       id: { in: input.taskIds },
-      teamId,
+      organizationId,
     },
     data: {
       status: input.status,
@@ -132,12 +132,12 @@ export async function bulkUpdateTaskStatusForCurrentTeam(
 export async function bulkDeleteTasksForCurrentTeam(
   taskIds: BulkDeleteTasksInput["taskIds"],
 ) {
-  const teamId = await requireCurrentTeamId();
+  const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.deleteMany({
     where: {
       id: { in: taskIds },
-      teamId,
+      organizationId,
     },
   });
 

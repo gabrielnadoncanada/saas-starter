@@ -5,12 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { resetPassword } from "@/features/auth/data/auth-requests";
 import {
   resetPasswordDefaultValues,
   resetPasswordSchema,
   type ResetPasswordValues,
 } from "@/features/auth/schemas/password-form.schema";
-import { authClient } from "@/shared/lib/auth/auth-client";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/components/ui/field";
@@ -35,15 +35,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
   const onSubmit = handleSubmit(async ({ newPassword }) => {
     try {
-      const { error } = await authClient.resetPassword({
-        newPassword,
-        token,
-      });
+      const result = await resetPassword(token, newPassword);
 
-      if (error) {
+      if (result.status !== "success") {
         setError("root", {
           type: "server",
-          message: error.message ?? "This reset link is invalid or has expired.",
+          message: result.message,
         });
         return;
       }

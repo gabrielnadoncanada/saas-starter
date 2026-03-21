@@ -122,14 +122,18 @@ async function seed() {
 
   console.log("Initial user ready.");
 
-  let team = await db.team.findFirst({
+  const orgId = "seed-test-org";
+
+  let org = await db.organization.findFirst({
     where: { name: "Test Team" },
   });
 
-  if (!team) {
-    team = await db.team.create({
+  if (!org) {
+    org = await db.organization.create({
       data: {
+        id: orgId,
         name: "Test Team",
+        slug: "test-team",
       },
     });
   }
@@ -142,19 +146,20 @@ async function seed() {
     throw new Error("Seed user not found");
   }
 
-  const existingTeamMember = await db.teamMember.findFirst({
+  const existingMember = await db.member.findFirst({
     where: {
-      teamId: team.id,
+      organizationId: org.id,
       userId: user.id,
     },
   });
 
-  if (!existingTeamMember) {
-    await db.teamMember.create({
+  if (!existingMember) {
+    await db.member.create({
       data: {
-        teamId: team.id,
+        id: crypto.randomUUID(),
+        organizationId: org.id,
         userId: user.id,
-        role: "OWNER",
+        role: "owner",
       },
     });
   }

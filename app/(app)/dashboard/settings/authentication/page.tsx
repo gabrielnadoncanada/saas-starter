@@ -7,13 +7,13 @@ import type {
   LinkedProviderOverview,
   SecuritySettingsFeedback
 } from '@/features/account/types/account.types';
-import { SettingsPageHeader } from '@/shared/components/app/settings-page-header';
 import { routes } from '@/shared/constants/routes';
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import {
   OAUTH_PROVIDER_LABELS,
   getEnabledOAuthProviderIds,
   hasMagicLinkProvider,
+  isOAuthProviderId,
 } from '@/shared/lib/auth/oauth-config';
 import { ContentSection } from '@/features/account/components/settings/content-section';
 
@@ -23,12 +23,12 @@ const OAUTH_ERROR_MESSAGES: Record<string, string> = {
 };
 
 type PageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<{
+    success?: string;
+    provider?: string;
+    error?: string;
+  }>;
 };
-
-function getSingleSearchParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
 
 function mapLinkedProviders(
   providers: Array<{
@@ -53,18 +53,14 @@ export default async function AuthenticationPage({ searchParams }: PageProps) {
     redirect(routes.auth.login);
   }
 
-  const resolvedSearchParams = await searchParams;
+  const { success, provider, error } = await searchParams;
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
-  const linkedAccounts = await getLinkedAccountsOverview(user.id, oauthProviders);
-
-  const success = getSingleSearchParam(resolvedSearchParams.success);
-  const provider = getSingleSearchParam(resolvedSearchParams.provider);
-  const error = getSingleSearchParam(resolvedSearchParams.error);
+  const linkedAccounts = await getLinkedAccountsOverview(oauthProviders);
 
   const providerLabel =
-    provider && provider in OAUTH_PROVIDER_LABELS
-      ? OAUTH_PROVIDER_LABELS[provider as keyof typeof OAUTH_PROVIDER_LABELS]
+    provider && isOAuthProviderId(provider)
+      ? OAUTH_PROVIDER_LABELS[provider]
       : 'Provider';
   const feedback: SecuritySettingsFeedback = {
     error: error ? OAUTH_ERROR_MESSAGES[error] ?? 'Unable to link this provider.' : undefined,

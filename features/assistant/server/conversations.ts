@@ -1,13 +1,13 @@
 import "server-only";
 
 import type { Prisma } from "@prisma/client";
-import type { UIMessage } from "ai";
+import { safeValidateUIMessages, type UIMessage } from "ai";
 
 import type {
   AssistantConversation,
   AssistantConversationListItem,
 } from "@/features/assistant/types";
-import { getCurrentTeam } from "@/features/teams/server/current-team";
+import { getCurrentOrganization } from "@/features/teams/server/current-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -18,7 +18,7 @@ const PREVIEW_MAX_LENGTH = 96;
 type ConversationScope =
   | { kind: "unauthorized" }
   | { kind: "forbidden" }
-  | { kind: "ok"; userId: string; teamId: number };
+  | { kind: "ok"; userId: string; organizationId: string };
 
 function normalizeText(value: string) {
   return value.replace(/\s+/g, " ").trim();
@@ -60,22 +60,28 @@ function getConversationPreview(messages: UIMessage[]) {
 }
 
 function serializeMessages(messages: UIMessage[]): Prisma.InputJsonValue {
-  return JSON.parse(JSON.stringify(messages)) as Prisma.InputJsonValue;
+  return JSON.parse(JSON.stringify(messages));
 }
 
-function parseMessages(messagesJson: Prisma.JsonValue) {
-  return Array.isArray(messagesJson)
-    ? (messagesJson as unknown as UIMessage[])
-    : [];
+async function parseMessages(messagesJson: Prisma.JsonValue) {
+  if (!Array.isArray(messagesJson)) {
+    return [];
+  }
+
+  const result = await safeValidateUIMessages<UIMessage>({
+    messages: messagesJson,
+  });
+
+  return result.success ? result.data : [];
 }
 
-function toConversationListItem(record: {
+async function toConversationListItem(record: {
   id: string;
   title: string;
   messagesJson: Prisma.JsonValue;
   lastMessageAt: Date;
-}): AssistantConversationListItem {
-  const messages = parseMessages(record.messagesJson);
+}): Promise<AssistantConversationListItem> {
+  const messages = await parseMessages(record.messagesJson);
 
   return {
     id: record.id,
@@ -85,13 +91,13 @@ function toConversationListItem(record: {
   };
 }
 
-function toConversation(record: {
+async function toConversation(record: {
   id: string;
   title: string;
   messagesJson: Prisma.JsonValue;
   lastMessageAt: Date;
-}): AssistantConversation {
-  const messages = parseMessages(record.messagesJson);
+}): Promise<AssistantConversation> {
+  const messages = await parseMessages(record.messagesJson);
 
   return {
     id: record.id,
@@ -108,12 +114,12 @@ export async function resolveAssistantConversationScope(): Promise<ConversationS
     return { kind: "unauthorized" };
   }
 
-  const team = await getCurrentTeam();
-  if (!team) {
+  const organization = await getCurrentOrganization();
+  if (!organization) {
     return { kind: "forbidden" };
   }
 
-  return { kind: "ok", userId: user.id, teamId: team.id };
+  return { kind: "ok", userId: user.id, organizationId: organization.id };
 }
 
 export async function listAssistantConversations() {
@@ -123,7 +129,7 @@ export async function listAssistantConversations() {
   }
 
   const records = await db.assistantConversation.findMany({
-    where: { teamId: scope.teamId, userId: scope.userId },
+    where: { organizationId: scope.organizationId, userId: scope.userId },
     orderBy: { lastMessageAt: "desc" },
     select: {
       id: true,
@@ -133,7 +139,7 @@ export async function listAssistantConversations() {
     },
   });
 
-  return records.map(toConversationListItem);
+  return Promise.all(records.map(toConversationListItem));
 }
 
 export async function getAssistantConversation(conversationId: string) {
@@ -143,7 +149,7 @@ export async function getAssistantConversation(conversationId: string) {
   }
 
   const record = await db.assistantConversation.findFirst({
-    where: { id: conversationId, teamId: scope.teamId, userId: scope.userId },
+    where: { id: conversationId, organizationId: scope.organizationId, userId: scope.userId },
     select: {
       id: true,
       title: true,
@@ -163,7 +169,7 @@ export async function createAssistantConversation(messages: UIMessage[]) {
 
   const record = await db.assistantConversation.create({
     data: {
-      teamId: scope.teamId,
+      organizationId: scope.organizationId,
       userId: scope.userId,
       title: getConversationTitle(messages),
       messagesJson: serializeMessages(messages),
@@ -190,7 +196,7 @@ export async function replaceAssistantConversation(
   }
 
   const existing = await db.assistantConversation.findFirst({
-    where: { id: conversationId, teamId: scope.teamId, userId: scope.userId },
+    where: { id: conversationId, organizationId: scope.organizationId, userId: scope.userId },
     select: { id: true },
   });
 
@@ -223,7 +229,7 @@ export async function deleteAssistantConversation(conversationId: string) {
   }
 
   const result = await db.assistantConversation.deleteMany({
-    where: { id: conversationId, teamId: scope.teamId, userId: scope.userId },
+    where: { id: conversationId, organizationId: scope.organizationId, userId: scope.userId },
   });
 
   return result.count > 0;

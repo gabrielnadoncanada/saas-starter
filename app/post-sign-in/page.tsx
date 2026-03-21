@@ -1,100 +1,53 @@
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
-import { createCheckoutSession } from '@/features/billing/server/create-checkout-session';
-import {
-  CheckoutInProgressError,
-  clearCheckoutReservation,
-  reserveCheckoutForTeam,
-} from '@/features/billing/server/checkout-lock';
-import { isConfiguredStripePriceId } from '@/features/billing/plans';
-import { routes } from '@/shared/constants/routes';
-import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
-import { db } from '@/shared/lib/db/prisma';
+import { resumeCheckoutAfterSignIn } from '@/features/billing/server/resume-checkout-after-sign-in';
+import { routes } from '@/shared/constants/routes';
+import { getCallbackURL } from '@/shared/lib/auth/callback-url';
+import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
 
 type PostSignInPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<{
+    redirect?: string;
+    priceId?: string;
+    callbackUrl?: string;
+  }>;
 };
 
 export default async function PostSignInPage({ searchParams }: PostSignInPageProps) {
-  const [user, rawSearchParams] = await Promise.all([getCurrentUser(), searchParams]);
+  const [user, { redirect: authRedirect, priceId, callbackUrl: rawCallbackUrl }] =
+    await Promise.all([getCurrentUser(), searchParams]);
 
   if (!user) {
     redirect(routes.auth.login);
   }
 
-  const { inviteId, redirect: authRedirect, priceId } =
-    getAuthFlowParams(rawSearchParams);
+  const currentUser = user as NonNullable<typeof user>;
+  const callbackUrl = getCallbackURL(rawCallbackUrl);
 
-  const teamId = await completePostSignIn({
-    userId: user.id,
-    email: user.email,
-    inviteId
+  const organizationId = await completePostSignIn({
+    email: currentUser.email,
   });
 
   if (authRedirect === 'checkout' && priceId) {
-    const [team, membership] = await Promise.all([
-      db.team.findUnique({
-        where: { id: teamId },
-        select: {
-          id: true,
-          stripeCustomerId: true,
-          _count: {
-            select: {
-              teamMembers: true,
-            },
-          },
-        },
-      }),
-      db.teamMember.findFirst({
-        where: {
-          teamId,
-          userId: user.id,
-        },
-        select: {
-          role: true,
-        },
-      }),
-    ]);
+    const url = await resumeCheckoutAfterSignIn({
+      organizationId,
+      priceId,
+      reqHeaders: await headers(),
+    });
 
-    if (!team) {
-      throw new Error('Team not found after sign-in provisioning.');
-    }
-
-    if (membership?.role !== 'OWNER') {
+    if (!url) {
       redirect(routes.app.dashboard);
     }
 
-    if (!isConfiguredStripePriceId(priceId)) {
-      redirect(routes.app.dashboard);
-    }
+    redirect(url);
+  }
 
-    try {
-      // Use checkout lock to prevent double checkouts
-      await reserveCheckoutForTeam(team.id, priceId);
-
-      try {
-        const url = await createCheckoutSession({
-          priceId,
-          teamId: team.id,
-          seatQuantity: team._count.teamMembers,
-          stripeCustomerId: team.stripeCustomerId,
-          userEmail: user.email,
-        });
-
-        redirect(url);
-      } catch (error) {
-        await clearCheckoutReservation(team.id);
-        throw error;
-      }
-    } catch (error) {
-      if (error instanceof CheckoutInProgressError) {
-        redirect(routes.app.settingsTeam);
-      }
-      throw error;
-    }
+  if (callbackUrl !== routes.auth.postSignIn) {
+    redirect(callbackUrl);
   }
 
   redirect(routes.app.dashboard);
 }
+

@@ -1,39 +1,24 @@
-import { ActivityType } from "@/shared/lib/db/enums";
+import { headers } from "next/headers";
 
-import { createActivityLog } from "@/shared/lib/activity-log";
-import { db } from "@/shared/lib/db/prisma";
-import { getUserTeamMembership } from "@/features/teams/server/team-membership";
+import { auth } from "@/shared/lib/auth";
 import type { UpdateAccountActionState } from "@/features/account/types/account.types";
 
 type UpdateAccountParams = {
-  userId: string;
   name: string;
   phoneNumber: string | null;
 };
 
 export async function updateAccount({
-  userId,
   name,
   phoneNumber,
 }: UpdateAccountParams): Promise<UpdateAccountActionState> {
-  const userWithTeam = await getUserTeamMembership(userId);
-
-  await db.user.update({
-    where: { id: userId },
-    data: { name, phoneNumber },
+  await auth.api.updateUser({
+    headers: await headers(),
+    body: {
+      name,
+      phoneNumber,
+    },
   });
-
-  if (userWithTeam?.teamId) {
-    try {
-      await createActivityLog({
-        teamId: userWithTeam.teamId,
-        userId,
-        action: ActivityType.UPDATE_ACCOUNT,
-      });
-    } catch {
-      // optional: internal logging
-    }
-  }
 
   return {
     success: "Account updated successfully.",

@@ -2,9 +2,9 @@
 
 import { format, parseISO } from 'date-fns';
 import { useActionState, useState } from 'react';
-import { authClient } from '@/shared/lib/auth/auth-client';
 
 import { OAuthProviderIcon } from '@/features/auth/components/oauth/oauth-provider-icon';
+import { signInWithOAuth } from '@/features/auth/data/auth-requests';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/shared/components/ui/field';
@@ -62,12 +62,14 @@ export function LinkedAccountsCard({
   async function handleLinkAccount(provider: LinkedProviderOverview['provider']) {
     setLinkingProvider(provider);
 
-    await authClient.signIn.social({
-      provider,
-      callbackURL: `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`
-    });
-
-    setLinkingProvider(null);
+    try {
+      await signInWithOAuth(
+        provider,
+        `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`
+      );
+    } finally {
+      setLinkingProvider(null);
+    }
   }
 
   return (

@@ -22,12 +22,17 @@ export const OAUTH_PROVIDER_IDS = oauthProviders.map(
 ) as [OAuthProviderId, ...OAuthProviderId[]];
 
 export type OAuthProviderId = (typeof oauthProviders)[number]["id"];
+const oauthProviderIdSet = new Set<string>(OAUTH_PROVIDER_IDS);
 
 export const OAUTH_PROVIDER_LABELS = Object.fromEntries(
   oauthProviders.map((provider) => [provider.id, provider.label]),
 ) as Record<OAuthProviderId, string>;
 
 export const oauthProviderIdSchema = z.enum(OAUTH_PROVIDER_IDS);
+
+export function isOAuthProviderId(value: string): value is OAuthProviderId {
+  return oauthProviderIdSet.has(value);
+}
 
 export function getOAuthProviderConfig(providerId: OAuthProviderId) {
   return oauthProviders.find((provider) => provider.id === providerId)!;

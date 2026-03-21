@@ -10,7 +10,9 @@ import { SidebarInset, SidebarProvider } from '@/shared/components/ui/sidebar'
 import { TooltipProvider } from '@/shared/components/ui/tooltip'
 import { AppSidebar } from '@/shared/components/layout/shell/app-sidebar'
 import { SkipToMain } from '@/shared/components/a11y/skip-to-main'
+import { ensureActiveOrganization } from '@/features/teams/server/ensure-active-organization'
 import { getCurrentUser } from '@/shared/lib/auth/get-current-user'
+import { ActiveOrganizationProvider } from '@/shared/components/providers/active-organization-provider'
 import { UserProvider } from '@/shared/components/providers/user-provider'
 import { routes } from '@/shared/constants/routes'
 
@@ -22,7 +24,11 @@ export default async function DashboardLayout({
   const cookieStore = await cookies()
   const defaultOpen = cookieStore.get('sidebar_state')?.value !== 'false'
 
-  const user = await getCurrentUser()
+  const [user, activeOrgId] = await Promise.all([
+    getCurrentUser(),
+    ensureActiveOrganization(),
+  ]);
+
   if (!user) {
     redirect(routes.auth.login)
   }
@@ -33,6 +39,7 @@ export default async function DashboardLayout({
   }
 
   return (
+    <ActiveOrganizationProvider organizationId={activeOrgId}>
     <UserProvider user={sidebarUser}>
       <SearchProvider>
         <TooltipProvider>
@@ -59,5 +66,6 @@ export default async function DashboardLayout({
         </TooltipProvider>
       </SearchProvider>
     </UserProvider>
+    </ActiveOrganizationProvider>
   );
 }

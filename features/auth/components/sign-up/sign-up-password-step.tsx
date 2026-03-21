@@ -5,13 +5,12 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { AuthEmailSummary } from "@/features/auth/components/shared/auth-email-summary";
+import { signUpWithEmail } from "@/features/auth/data/auth-requests";
 import {
   signUpPasswordDefaultValues,
   signUpPasswordSchema,
   type SignUpPasswordValues,
 } from "@/features/auth/schemas/sign-up.schema";
-import { normalizeEmail } from "@/features/auth/utils/normalize-email";
-import { authClient } from "@/shared/lib/auth/auth-client";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
@@ -52,22 +51,17 @@ export function SignUpPasswordStep({
     clearErrors();
 
     try {
-      const { error } = await authClient.signUp.email({
-        email: normalizeEmail(email),
-        password,
-        name: "",
-        callbackURL: callbackUrl,
-      });
+      const result = await signUpWithEmail(email, password, callbackUrl);
 
-      if (error) {
-        if (error.message?.toLowerCase().includes("already")) {
-          onEmailTaken("This email is already in use.");
+      if (result.status !== "success") {
+        if (result.status === "email_taken") {
+          onEmailTaken(result.message);
           return;
         }
 
         setError("root", {
           type: "server",
-          message: error.message ?? "Unable to create account.",
+          message: result.message,
         });
         return;
       }

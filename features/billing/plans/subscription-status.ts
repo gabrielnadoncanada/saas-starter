@@ -1,8 +1,17 @@
-const ACTIVE_BILLING_STATUSES = new Set(["active", "trialing", "lifetime"]);
+const ACTIVE_BILLING_STATUSES = new Set(["active", "trialing"]);
 const TERMINAL_STRIPE_SUBSCRIPTION_STATUSES = new Set([
   "canceled",
   "incomplete_expired",
 ]);
+
+export const CURRENT_SUBSCRIPTION_STATUSES = [
+  "active",
+  "trialing",
+  "past_due",
+  "incomplete",
+  "unpaid",
+  "paused",
+] as const;
 
 export function hasPlanAccess(subscriptionStatus: string | null | undefined) {
   if (!subscriptionStatus) {

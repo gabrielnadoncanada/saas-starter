@@ -1,25 +1,14 @@
 model UsageCounter {
-  id          Int      @id @default(autoincrement())
-  teamId      Int
-  limitKey    String   @db.VarChar(50)
-  periodStart DateTime
-  count       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  organizationId String
+  limitKey       String   @db.VarChar(50)
+  periodStart    DateTime
+  count          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  @@unique([teamId, limitKey, periodStart])
-  @@index([teamId, limitKey])
-}
-
-model ProcessedStripeCheckout {
-  id        Int      @id @default(autoincrement())
-  sessionId String   @unique @db.VarChar(255)
-  teamId    Int
-  createdAt DateTime @default(now())
-
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
-
-  @@index([teamId])
+  @@unique([organizationId, limitKey, periodStart])
+  @@index([organizationId, limitKey])
 }

@@ -1,22 +1,13 @@
 import { cache } from "react";
-import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth";
-import { db } from "@/shared/lib/db/prisma";
+import { getAuthSession } from "@/shared/lib/auth/get-session";
 
 export const getCurrentUser = cache(async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getAuthSession();
 
   if (!session?.user?.id) {
     return null;
   }
 
-  return db.user.findFirst({
-    where: {
-      id: session.user.id,
-      deletedAt: null,
-    },
-  });
+  return session.user;
 });

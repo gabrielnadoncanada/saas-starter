@@ -1,69 +1,55 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { buildAuthHref } from "@/features/auth/utils/auth-flow";
-import {
-  CheckoutInProgressError,
-  clearCheckoutReservation,
-  reserveCheckoutForTeam,
-} from "@/features/billing/server/checkout-lock";
+import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
+import { createOrganizationCheckoutSession } from "@/features/billing/server/better-auth-stripe";
 import { isConfiguredStripePriceId } from "@/features/billing/plans";
-import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
+import {
+  requireOrganizationRole,
+  isOrganizationRoleError,
+} from "@/features/teams/server/require-organization-role";
+import { getCurrentOrganization } from "@/features/teams/server/current-organization";
 import { routes } from "@/shared/constants/routes";
+import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import { getCurrentTeam } from "@/features/teams/server/current-team";
-import { createCheckoutSession } from "@/features/billing/server/create-checkout-session";
 
 export async function checkoutAction(formData: FormData) {
   const user = await getCurrentUser();
-  const priceId = formData.get("priceId") as string;
-  const pricingModel = formData.get("pricingModel") as string | null;
+  const rawPriceId = formData.get("priceId");
+  const priceId = typeof rawPriceId === "string" ? rawPriceId : null;
 
   if (!user) {
     redirect(
-      buildAuthHref(routes.auth.login, {
-        redirect: "checkout",
-        priceId,
-        pricingModel,
-      }),
+      buildCallbackURL(
+        routes.auth.login,
+        buildPostSignInCallbackURL({
+          redirect: "checkout",
+          priceId,
+        }),
+      ),
     );
   }
 
-  const guard = await requireTeamRole(user.id, ["OWNER"]);
-  if (isTeamRoleError(guard)) {
+  const guard = await requireOrganizationRole(user.id, ["owner"]);
+  if (isOrganizationRoleError(guard)) {
     redirect(routes.app.settingsTeam);
   }
 
-  const team = await getCurrentTeam();
-  if (!team) throw new Error("Team not found");
+  const organization = await getCurrentOrganization();
+  if (!organization) throw new Error("Organization not found");
 
-  if (!isConfiguredStripePriceId(priceId)) {
+  if (!priceId || !isConfiguredStripePriceId(priceId)) {
     throw new Error("Invalid price selected.");
   }
 
-  try {
-    await reserveCheckoutForTeam(team.id, priceId);
+  const url = await createOrganizationCheckoutSession({
+    organizationId: organization.id,
+    priceId,
+    reqHeaders: await headers(),
+    seatQuantity: organization.members.length,
+  });
 
-    try {
-      const url = await createCheckoutSession({
-        priceId,
-        teamId: team.id,
-        seatQuantity: team.teamMembers.length,
-        stripeCustomerId: team.stripeCustomerId,
-        userEmail: user.email,
-      });
-
-      redirect(url);
-    } catch (error) {
-      await clearCheckoutReservation(team.id);
-      throw error;
-    }
-  } catch (error) {
-    if (error instanceof CheckoutInProgressError) {
-      redirect(routes.app.settingsTeam);
-    }
-
-    throw error;
-  }
+  redirect(url);
 }

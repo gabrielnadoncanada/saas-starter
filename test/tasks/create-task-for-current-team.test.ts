@@ -43,7 +43,7 @@ describe("createTaskForCurrentTeam", () => {
 
     vi.mocked(getTeamPlan).mockResolvedValue({
       planId: "pro",
-      teamId: 12,
+      organizationId: "12",
       teamName: "Acme",
       subscriptionStatus: "active",
       pricingModel: "flat",
@@ -92,7 +92,7 @@ describe("createTaskForCurrentTeam", () => {
 
     expect(db.task.create).not.toHaveBeenCalled();
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      12,
+      "12",
       "tasksPerMonth",
       "pro",
       { db },
@@ -109,14 +109,14 @@ describe("createTaskForCurrentTeam", () => {
 
     expect(assertCapability).toHaveBeenCalledWith("pro", "task.create");
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      12,
+      "12",
       "tasksPerMonth",
       "pro",
       { db },
     );
     expect(db.task.create).toHaveBeenCalledWith({
       data: {
-        teamId: 12,
+        organizationId: "12",
         code: "TASK-42",
         title: "Ship billing fix",
         description: "Close the billing gap",

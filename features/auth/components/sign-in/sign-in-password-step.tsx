@@ -4,12 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { AuthEmailSummary } from "@/features/auth/components/shared/auth-email-summary";
+import { signInWithPassword } from "@/features/auth/data/auth-requests";
 import {
   passwordStepSchema,
   type PasswordStepValues,
 } from "@/features/auth/schemas/password-step.schema";
-import { normalizeEmail } from "@/features/auth/utils/normalize-email";
-import { authClient } from "@/shared/lib/auth/auth-client";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
@@ -55,23 +55,14 @@ export function SignInPasswordStep({
     onVerificationChange(false);
 
     try {
-      const { error } = await authClient.signIn.email({
-        email: normalizeEmail(email),
-        password,
-      });
+      const result = await signInWithPassword(email, password);
 
-      if (error) {
-        const message = error.message?.toLowerCase() ?? "";
-        const requiresVerification =
-          message.includes("email") && message.includes("verif");
-
+      if (result.status !== "success") {
         setError("root", {
           type: "server",
-          message: requiresVerification
-            ? "Verify your email before signing in."
-            : error.message ?? "Invalid email or password.",
+          message: result.message,
         });
-        onVerificationChange(requiresVerification);
+        onVerificationChange(result.status === "verification_required");
         return;
       }
 
@@ -86,21 +77,7 @@ export function SignInPasswordStep({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3 rounded-lg border px-4 py-3">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-foreground">Email</p>
-          <p className="text-sm text-muted-foreground">{email}</p>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-auto px-2 py-1 text-sm"
-          onClick={onChangeEmail}
-        >
-          Change
-        </Button>
-      </div>
+      <AuthEmailSummary email={email} onChange={onChangeEmail} />
 
       <form onSubmit={onSubmit} className="space-y-4">
         <Field data-invalid={Boolean(errors.password)}>

@@ -14,7 +14,7 @@ type UsageDbClient = Pick<typeof db, "usageCounter">;
  * Atomically reserves one unit of monthly usage.
  */
 export async function consumeMonthlyUsage(
-  teamId: number,
+  organizationId: string,
   limitKey: LimitKey,
   planId: PlanId,
   deps: { db: UsageDbClient } = { db },
@@ -24,7 +24,7 @@ export async function consumeMonthlyUsage(
 
   await deps.db.usageCounter.createMany({
     data: {
-      teamId,
+      organizationId,
       limitKey,
       periodStart,
       count: 0,
@@ -34,7 +34,7 @@ export async function consumeMonthlyUsage(
 
   const result = await deps.db.usageCounter.updateMany({
     where: {
-      teamId,
+      organizationId,
       limitKey,
       periodStart,
       count: {
@@ -49,7 +49,7 @@ export async function consumeMonthlyUsage(
   });
 
   if (result.count === 0) {
-    const currentUsage = await getMonthlyUsage(teamId, limitKey, deps);
+    const currentUsage = await getMonthlyUsage(organizationId, limitKey, deps);
     throw new LimitReachedError(
       limitKey,
       limit,
@@ -64,14 +64,14 @@ export async function consumeMonthlyUsage(
  * Use with checkLimit() or assertLimit() to enforce quotas.
  */
 export async function getMonthlyUsage(
-  teamId: number,
+  organizationId: string,
   limitKey: LimitKey,
   deps: { db: UsageDbClient } = { db },
 ): Promise<number> {
   const counter = await deps.db.usageCounter.findUnique({
     where: {
-      teamId_limitKey_periodStart: {
-        teamId,
+      organizationId_limitKey_periodStart: {
+        organizationId,
         limitKey,
         periodStart: getPeriodStart(),
       },

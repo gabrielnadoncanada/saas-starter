@@ -1,54 +1,53 @@
-import { db } from "@/shared/lib/db/prisma";
+import { headers } from "next/headers";
 
-const ACTIVE_STATUSES = ["active", "trialing", "lifetime"] as const;
+import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/better-auth-stripe";
+import { auth } from "@/shared/lib/auth";
 
-function hasActiveSubscription(team: {
-  subscriptionStatus: string | null;
-}) {
+const ACTIVE_STATUSES = ["active", "trialing"] as const;
+
+function hasActiveSubscription(status: string | null | undefined) {
   return (
-    !!team.subscriptionStatus &&
-    ACTIVE_STATUSES.includes(
-      team.subscriptionStatus as (typeof ACTIVE_STATUSES)[number],
-    )
+    !!status &&
+    ACTIVE_STATUSES.includes(status as (typeof ACTIVE_STATUSES)[number])
   );
 }
 
 export async function getAccountDeletionBlocker(userId: string) {
-  // Check ALL teams where this user is OWNER
-  const ownedTeams = await db.teamMember.findMany({
-    where: { userId, role: "OWNER" },
-    include: {
-      team: {
-        select: {
-          id: true,
-          name: true,
-          subscriptionStatus: true,
-          _count: { select: { teamMembers: true } },
-        },
-      },
-    },
-  });
+  const reqHeaders = await headers();
 
-  for (const membership of ownedTeams) {
-    const team = membership.team;
+  const orgs = await auth.api.listOrganizations({ headers: reqHeaders });
 
-    // Check if there's another OWNER in this team
-    const otherOwnerCount = await db.teamMember.count({
-      where: {
-        teamId: team.id,
-        role: "OWNER",
-        userId: { not: userId },
-      },
+  for (const org of orgs ?? []) {
+    const fullOrg = await auth.api.getFullOrganization({
+      query: { organizationId: org.id },
+      headers: reqHeaders,
     });
 
-    // If sole owner and team has other members, block deletion
-    if (otherOwnerCount === 0 && team._count.teamMembers > 1) {
-      return `You are the sole owner of "${team.name}". Transfer ownership before deleting your account.`;
+    if (!fullOrg) continue;
+
+    const members = fullOrg.members ?? [];
+    const userMember = members.find(
+      (m: { userId: string }) => m.userId === userId,
+    );
+
+    if (userMember?.role !== "owner") continue;
+
+    const otherOwnerCount = members.filter(
+      (m: { userId: string; role: string }) =>
+        m.role === "owner" && m.userId !== userId,
+    ).length;
+
+    if (otherOwnerCount === 0 && members.length > 1) {
+      return `You are the sole owner of "${fullOrg.name}". Transfer ownership before deleting your account.`;
     }
 
-    // If sole owner and team has an active subscription, block deletion
-    if (otherOwnerCount === 0 && hasActiveSubscription(team)) {
-      return `Cancel the subscription for "${team.name}" before deleting your account.`;
+    const subscription = await getOrganizationSubscriptionSnapshot(fullOrg.id);
+
+    if (
+      otherOwnerCount === 0 &&
+      hasActiveSubscription(subscription.subscriptionStatus)
+    ) {
+      return `Cancel the subscription for "${fullOrg.name}" before deleting your account.`;
     }
   }
 

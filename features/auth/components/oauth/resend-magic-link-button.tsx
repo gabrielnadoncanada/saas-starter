@@ -3,46 +3,24 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { authClient } from '@/shared/lib/auth/auth-client';
-
-import { getPostSignInCallbackUrl } from '@/features/auth/utils/post-sign-in';
-import type { AuthRedirect } from '@/features/auth/utils/auth-flow';
+import { sendMagicLink } from '@/features/auth/data/auth-requests';
 
 type ResendMagicLinkButtonProps = {
   email: string;
-  redirect?: AuthRedirect | null;
-  priceId?: string | null;
-  pricingModel?: string | null;
-  inviteId?: string | null;
+  callbackUrl?: string | null;
 };
 
 export function ResendMagicLinkButton({
   email,
-  redirect,
-  priceId,
-  pricingModel,
-  inviteId
+  callbackUrl = '/post-sign-in',
 }: ResendMagicLinkButtonProps) {
   const [isPending, setIsPending] = useState(false);
+  const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
 
   async function handleResend() {
     try {
       setIsPending(true);
-
-      const { error } = await authClient.signIn.magicLink({
-        email: email.trim().toLowerCase(),
-        callbackURL: getPostSignInCallbackUrl({
-          redirect,
-          priceId,
-          pricingModel,
-          inviteId
-        })
-      });
-
-      if (error) {
-        throw new Error('Unable to send a new sign-in link. Please try again.');
-      }
-
+      await sendMagicLink(email, nextCallbackUrl);
       toast.success('A new sign-in link has been sent.');
     } catch {
       toast.error('Unable to send a new sign-in link. Please try again.');

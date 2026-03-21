@@ -2,19 +2,18 @@
 
 import { redirect } from "next/navigation";
 
-import { routes } from "@/shared/constants/routes";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
 import { unlinkOAuthAccountForUser } from "@/features/account/server/linked-accounts";
 import { unlinkAuthProviderSchema } from "@/features/account/schemas/account.schema";
+import { routes } from "@/shared/constants/routes";
+import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
 
 export const unlinkAuthProviderAction = validatedActionWithUser<
   typeof unlinkAuthProviderSchema,
   {}
 >(
   unlinkAuthProviderSchema,
-  async ({ provider }, _, user) => {
+  async ({ provider }) => {
     const result = await unlinkOAuthAccountForUser({
-      userId: user.id,
       provider,
     });
 
@@ -33,7 +32,7 @@ export const unlinkAuthProviderAction = validatedActionWithUser<
       };
     }
 
-    redirect(
+    return redirect(
       `${routes.app.settingsAuthentication}?provider=${provider}&success=unlinked`,
     );
   },

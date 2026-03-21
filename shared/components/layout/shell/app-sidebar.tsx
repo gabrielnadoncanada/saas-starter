@@ -8,7 +8,7 @@ import {
   SidebarRail
 } from '@/shared/components/ui/sidebar'
 import { sidebarData } from '@/shared/components/navigation/config/sidebar-data'
-import { TeamSwitcher } from '@/features/teams/components/team-switcher'
+import { OrganizationSwitcher } from '@/features/teams/components/organization-switcher'
 import { NavUser } from '@/shared/components/layout/user/nav-user'
 import { NavGroup } from '@/shared/components/navigation/nav-group'
 import type { SidebarNavGroup } from '@/shared/components/navigation/sidebar-types'
@@ -20,7 +20,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
-        <TeamSwitcher />
+        <OrganizationSwitcher />
       </SidebarHeader>
       <SidebarContent>
         {sidebarData.navGroups.map((props: SidebarNavGroup) => (

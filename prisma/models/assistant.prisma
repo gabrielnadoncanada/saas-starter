@@ -1,17 +1,17 @@
 model AssistantConversation {
-  id            String   @id @default(cuid())
-  teamId        Int
-  userId        String
-  title         String   @db.VarChar(120)
-  messagesJson  Json
-  lastMessageAt DateTime
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  title          String   @db.VarChar(120)
+  messagesJson   Json
+  lastMessageAt  DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([teamId, userId, lastMessageAt(sort: Desc)])
+  @@index([organizationId, userId, lastMessageAt(sort: Desc)])
   @@index([userId])
-  @@index([teamId])
+  @@index([organizationId])
 }

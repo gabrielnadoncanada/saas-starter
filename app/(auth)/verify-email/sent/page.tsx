@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { buildAuthHref, getAuthFlowParams } from "@/features/auth/utils/auth-flow";
 import {
   Card,
   CardContent,
@@ -8,16 +7,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import {
+  buildCallbackURL,
+} from "@/shared/lib/auth/callback-url";
 import { routes } from "@/shared/constants/routes";
 
 type VerifyEmailSentPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+  }>;
 };
 
 export default async function VerifyEmailSentPage({
   searchParams,
 }: VerifyEmailSentPageProps) {
-  const signInHref = buildAuthHref(routes.auth.login, getAuthFlowParams(await searchParams));
+  const { callbackUrl } = await searchParams;
+  const signInHref = buildCallbackURL(
+    routes.auth.login,
+    callbackUrl,
+  );
 
   return (
     <Card className="gap-4">

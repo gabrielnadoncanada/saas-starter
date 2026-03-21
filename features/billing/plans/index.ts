@@ -1,6 +1,7 @@
 export {
   capabilities,
   getPlan,
+  getPricingPlans,
   limitKeys,
   plans,
   type BillingInterval,
@@ -11,15 +12,8 @@ export {
   type Plan,
   type PlanId,
   type PricingModel,
-} from "../config/billing.config";
-export {
-  getConfiguredStripePriceIds,
-  getPlanDisplayName,
-  getPricingPlans,
-  isConfiguredStripePriceId,
-  resolvePlanFromStripePriceId,
-  resolvePricingModelFromStripePriceId,
-} from "../server/billing-resolver";
+} from "@/shared/config/billing.config";
+export { isConfiguredStripePriceId } from "../server/recurring-selection";
 export { resolveTeamPlan } from "./resolve-team-plan";
 export {
   hasPlanAccess,

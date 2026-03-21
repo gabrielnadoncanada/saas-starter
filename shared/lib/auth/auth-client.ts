@@ -1,6 +1,13 @@
+import { dashClient } from "@better-auth/infra/client";
 import { createAuthClient } from "better-auth/react";
-import { magicLinkClient } from "better-auth/client/plugins";
+import { magicLinkClient, organizationClient } from "better-auth/client/plugins";
+import { stripeClient } from "@better-auth/stripe/client";
 
 export const authClient = createAuthClient({
-  plugins: [magicLinkClient()],
+  plugins: [
+    magicLinkClient(),
+    organizationClient(),
+    stripeClient({ subscription: true }),
+    dashClient(),
+  ],
 });

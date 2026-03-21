@@ -52,10 +52,10 @@ describe("POST /api/assistant", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(getCurrentUser).mockResolvedValue({ id: 1 } as never);
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: "1" } as never);
     vi.mocked(getTeamPlan).mockResolvedValue({
       planId: "pro",
-      teamId: 12,
+      organizationId: "12",
       teamName: "Acme",
       subscriptionStatus: "active",
       pricingModel: "flat",
@@ -80,7 +80,7 @@ describe("POST /api/assistant", () => {
   it("returns 403 when the plan does not include ai.assistant", async () => {
     vi.mocked(getTeamPlan).mockResolvedValue({
       planId: "free",
-      teamId: 12,
+      organizationId: "12",
       teamName: "Acme",
       subscriptionStatus: null,
       pricingModel: "flat",
@@ -138,7 +138,7 @@ describe("POST /api/assistant", () => {
     expect(response.status).toBe(200);
     expect(streamText).toHaveBeenCalled();
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      12,
+      "12",
       "aiRequestsPerMonth",
       "pro",
     );

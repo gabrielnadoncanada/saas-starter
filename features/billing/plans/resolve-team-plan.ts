@@ -1,4 +1,4 @@
-import type { PlanId } from "../config/billing.config";
+import type { PlanId } from "@/shared/config/billing.config";
 import { hasPlanAccess } from "./subscription-status";
 
 type TeamBillingSnapshot = {

@@ -1,51 +1,42 @@
-import { ActivityType } from "@/shared/lib/db/enums";
-import { hasMagicLinkProvider } from "@/shared/lib/auth/oauth-config";
-
-import { createActivityLog } from "@/shared/lib/activity-log";
+import { headers } from "next/headers";
 import {
-  OAUTH_PROVIDER_LABELS,
-  type OAuthProviderId,
+  isOAuthProviderId,
 } from "@/shared/lib/auth/oauth-config";
-import { db } from "@/shared/lib/db/prisma";
-import { getUserTeamMembership } from "@/features/teams/server/team-membership";
 
-const ALL_OAUTH_PROVIDER_IDS = Object.keys(
-  OAUTH_PROVIDER_LABELS,
-) as OAuthProviderId[];
+import { auth } from "@/shared/lib/auth";
+import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
+
+type UserAccount = Awaited<ReturnType<typeof auth.api.listUserAccounts>>[number];
+
+async function listCurrentUserAccounts() {
+  return auth.api.listUserAccounts({
+    headers: await headers(),
+  });
+}
+
+function normalizeLinkedAt(value: UserAccount["createdAt"] | null | undefined) {
+  if (!value) return null;
+
+  const linkedAt = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(linkedAt.getTime()) ? null : linkedAt;
+}
 
 export async function getLinkedAccountsOverview(
-  userId: string,
   oauthProviders: OAuthProviderId[],
 ) {
-  const [accounts, credentialAccount] = await Promise.all([
-    db.account.findMany({
-      where: {
-        userId,
-        providerId: { in: oauthProviders },
-      },
-      select: {
-        providerId: true,
-        createdAt: true,
-      },
-    }),
-    db.account.findFirst({
-      where: { userId, providerId: "credential" },
-      select: { id: true },
-    }),
-  ]);
+  const accounts = await listCurrentUserAccounts();
 
   const linkedProviders = new Map(
-    accounts.map((account) => [
-      account.providerId as OAuthProviderId,
-      account.createdAt,
-    ]),
+    accounts
+      .filter((account) => isOAuthProviderId(account.providerId))
+      .map((account) => [account.providerId, normalizeLinkedAt(account.createdAt)]),
   );
 
   const linkedCount = accounts.length;
-  const hasFallbackMethod = Boolean(credentialAccount) || hasMagicLinkProvider();
+  const hasPassword = accounts.some((account) => account.providerId === "credential");
 
   return {
-    hasPassword: Boolean(credentialAccount),
+    hasPassword,
     providers: oauthProviders.map((provider) => {
       const linkedAt = linkedProviders.get(provider) ?? null;
       const isLinked = linkedAt !== null;
@@ -54,36 +45,20 @@ export async function getLinkedAccountsOverview(
         provider,
         linkedAt,
         isLinked,
-        canUnlink: isLinked && (linkedCount > 1 || hasFallbackMethod),
+        canUnlink: isLinked && linkedCount > 1,
       };
     }),
   };
 }
 
 type UnlinkOAuthAccountParams = {
-  userId: string;
   provider: OAuthProviderId;
 };
 
 export async function unlinkOAuthAccountForUser(
   params: UnlinkOAuthAccountParams,
 ) {
-  const [linkedAccounts, credentialAccount] = await Promise.all([
-    db.account.findMany({
-      where: {
-        userId: params.userId,
-        providerId: { in: ALL_OAUTH_PROVIDER_IDS },
-      },
-      select: {
-        id: true,
-        providerId: true,
-      },
-    }),
-    db.account.findFirst({
-      where: { userId: params.userId, providerId: "credential" },
-      select: { id: true },
-    }),
-  ]);
+  const linkedAccounts = await listCurrentUserAccounts();
 
   const targetAccount = linkedAccounts.find(
     (account) => account.providerId === params.provider,
@@ -93,23 +68,15 @@ export async function unlinkOAuthAccountForUser(
     return { status: "not-found" as const };
   }
 
-  // Block unlink if this is the last linked account — prevents lockout
-  const hasFallbackMethod = Boolean(credentialAccount) || hasMagicLinkProvider();
-
-  if (linkedAccounts.length <= 1 && !hasFallbackMethod) {
+  if (linkedAccounts.length <= 1) {
     return { status: "blocked" as const };
   }
 
-  await db.account.delete({
-    where: { id: targetAccount.id },
-  });
-
-  const membership = await getUserTeamMembership(params.userId);
-
-  await createActivityLog({
-    teamId: membership?.teamId,
-    userId: params.userId,
-    action: ActivityType.UNLINK_AUTH_PROVIDER,
+  await auth.api.unlinkAccount({
+    headers: await headers(),
+    body: {
+      providerId: params.provider,
+    },
   });
 
   return { status: "unlinked" as const };

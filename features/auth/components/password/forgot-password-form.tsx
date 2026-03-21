@@ -5,12 +5,11 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { requestPasswordReset } from "@/features/auth/data/auth-requests";
 import {
   emailStepSchema,
   type EmailStepValues,
 } from "@/features/auth/schemas/email-step.schema";
-import { normalizeEmail } from "@/features/auth/utils/normalize-email";
-import { authClient } from "@/shared/lib/auth/auth-client";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
@@ -33,10 +32,7 @@ export function ForgotPasswordForm() {
 
   const onSubmit = handleSubmit(async ({ email }) => {
     try {
-      await authClient.requestPasswordReset({
-        email: normalizeEmail(email),
-        redirectTo: "/reset-password",
-      });
+      await requestPasswordReset(email);
       setSent(true);
       reset(defaultValues);
       toast.success("If an account exists for this email, a reset link has been sent.");

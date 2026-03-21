@@ -52,7 +52,7 @@ export const assistantTools = {
         const messages = await emailProvider.getRecentMessages(limit ?? 5);
 
         await consumeMonthlyUsage(
-          teamPlan.teamId,
+          teamPlan.organizationId,
           "emailSyncsPerMonth",
           teamPlan.planId,
         );

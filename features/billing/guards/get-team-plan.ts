@@ -1,10 +1,10 @@
-import { getCurrentTeam } from "@/features/teams/server/current-team";
+import { getCurrentOrganization } from "@/features/teams/server/current-organization";
 import type { PlanId, PricingModel } from "../plans";
 import { resolveTeamPlan } from "../plans";
 
 type TeamPlanInfo = {
   planId: PlanId;
-  teamId: number;
+  organizationId: string;
   teamName: string;
   subscriptionStatus: string | null;
   pricingModel: PricingModel;
@@ -15,15 +15,15 @@ type TeamPlanInfo = {
  * Returns null if no team is found (user not authenticated or no team).
  */
 export async function getTeamPlan(): Promise<TeamPlanInfo | null> {
-  const team = await getCurrentTeam();
+  const organization = await getCurrentOrganization();
 
-  if (!team) return null;
+  if (!organization) return null;
 
   return {
-    planId: resolveTeamPlan(team),
-    teamId: team.id,
-    teamName: team.name,
-    subscriptionStatus: team.subscriptionStatus,
-    pricingModel: (team.pricingModel as PricingModel) ?? "flat",
+    planId: resolveTeamPlan(organization),
+    organizationId: organization.id,
+    teamName: organization.name,
+    subscriptionStatus: organization.subscriptionStatus,
+    pricingModel: (organization.pricingModel as PricingModel) ?? "flat",
   };
 }

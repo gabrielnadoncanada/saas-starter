@@ -1,16 +1,19 @@
-import "server-only";
-
+import { dash } from "@better-auth/infra";
 import { createElement } from "react";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { stripe } from "@better-auth/stripe";
 import { magicLink } from "better-auth/plugins";
+import { organization } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
+import { stripePlans } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 import { sendEmail } from "@/shared/lib/email/client";
 import { VerifyEmailTemplate } from "@/shared/lib/email/templates/verify-email";
 import { ResetPasswordTemplate } from "@/shared/lib/email/templates/reset-password";
 import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
-import { logUserSignIn } from "@/shared/lib/auth/activity";
+import { sendTeamInvitationEmail } from "@/shared/lib/email/senders";
+import { stripe as stripeClient } from "@/shared/lib/stripe/client";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -19,6 +22,15 @@ export const auth = betterAuth({
   secret: process.env.AUTH_SECRET,
   baseURL: process.env.BASE_URL,
   basePath: "/api/auth",
+  user: {
+    additionalFields: {
+      phoneNumber: {
+        type: "string",
+        required: false,
+        returned: true,
+      },
+    },
+  },
 
   emailAndPassword: {
     enabled: true,
@@ -69,8 +81,8 @@ export const auth = betterAuth({
   },
 
   session: {
-    expiresIn: 60 * 60 * 24, // 24 hours
-    updateAge: 60 * 60, // Refresh every hour
+    expiresIn: 60 * 60 * 24,
+    updateAge: 60 * 60,
   },
 
   account: {
@@ -92,18 +104,54 @@ export const auth = betterAuth({
         });
       },
     }),
+    organization({
+      allowUserToCreateOrganization: true,
+      creatorRole: "owner",
+      invitationExpiresIn: 7 * 24 * 60 * 60,
+      sendInvitationEmail: async ({ invitation, organization: org, inviter }) => {
+        await sendTeamInvitationEmail({
+          email: invitation.email,
+          role: invitation.role,
+          inviterName: inviter.user.name || inviter.user.email,
+          teamName: org.name,
+          invitationToken: invitation.id,
+        });
+      },
+    }),
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      subscription: {
+        enabled: true,
+        plans: stripePlans,
+        authorizeReference: async ({ user, referenceId }) => {
+          const member = await db.member.findFirst({
+            where: {
+              organizationId: referenceId,
+              userId: user.id,
+            },
+            select: {
+              role: true,
+            },
+          });
+
+          return member?.role === "owner";
+        },
+        getCheckoutSessionParams: async () => ({
+          params: {
+            allow_promotion_codes: true,
+          },
+        }),
+      },
+      organization: {
+        enabled: true,
+      },
+    }),
+    dash({
+      apiKey: process.env.BETTER_AUTH_API_KEY,
+    }),
     nextCookies(),
   ],
-
-  databaseHooks: {
-    session: {
-      create: {
-        after: async (session) => {
-          await logUserSignIn(session.userId).catch(() => {});
-        },
-      },
-    },
-  },
 });
 
 export type Auth = typeof auth;

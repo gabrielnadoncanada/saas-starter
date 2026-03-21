@@ -27,7 +27,7 @@ describe("consumeMonthlyUsage", () => {
     });
 
     await expect(
-      consumeMonthlyUsage(12, "aiRequestsPerMonth", "pro", { db }),
+      consumeMonthlyUsage("12", "aiRequestsPerMonth", "pro", { db }),
     ).resolves.toBeUndefined();
 
     expect(db.usageCounter.createMany).toHaveBeenCalledOnce();
@@ -41,7 +41,7 @@ describe("consumeMonthlyUsage", () => {
     });
 
     await expect(
-      consumeMonthlyUsage(12, "aiRequestsPerMonth", "pro", { db }),
+      consumeMonthlyUsage("12", "aiRequestsPerMonth", "pro", { db }),
     ).rejects.toBeInstanceOf(LimitReachedError);
   });
 });

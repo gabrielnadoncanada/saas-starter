@@ -3,15 +3,11 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { authClient } from "@/shared/lib/auth/auth-client";
+import { resendVerificationEmail } from "@/features/auth/data/auth-requests";
 import { Button } from "@/shared/components/ui/button";
 
 type ResendVerificationFormProps = {
   email: string;
-  redirect?: string | null;
-  priceId?: string | null;
-  pricingModel?: string | null;
-  inviteId?: string | null;
 };
 
 export function ResendVerificationForm({
@@ -23,15 +19,7 @@ export function ResendVerificationForm({
     setIsPending(true);
 
     try {
-      const { error } = await authClient.sendVerificationEmail({
-        email: email.trim().toLowerCase(),
-        callbackURL: "/sign-in",
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
+      await resendVerificationEmail(email);
       toast.success("A new verification email has been sent.");
     } catch {
       toast.error("Unable to send verification email. Please try again.");

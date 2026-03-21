@@ -1,23 +1,29 @@
 import { routes } from "@/shared/constants/routes";
-import { buildAuthHref, type AuthRedirect } from "@/features/auth/utils/auth-flow";
+import { getCallbackURL } from "@/shared/lib/auth/callback-url";
 
-type PostSignInParams = {
-  redirect?: AuthRedirect | null;
+type PostSignInCallbackParams = {
+  callbackUrl?: string | null;
+  redirect?: "checkout" | null;
   priceId?: string | null;
-  pricingModel?: string | null;
-  inviteId?: string | null;
 };
 
-export function getPostSignInCallbackUrl({
-  redirect,
-  priceId,
-  pricingModel,
-  inviteId,
-}: PostSignInParams): string {
-  return buildAuthHref(routes.auth.postSignIn, {
-    redirect,
-    priceId,
-    pricingModel,
-    inviteId,
-  });
+export function buildPostSignInCallbackURL(input: PostSignInCallbackParams = {}) {
+  const searchParams = new URLSearchParams();
+
+  if (input.redirect === "checkout" && input.priceId) {
+    searchParams.set("redirect", "checkout");
+    searchParams.set("priceId", input.priceId);
+  }
+
+  if (input.callbackUrl) {
+    const callbackUrl = getCallbackURL(input.callbackUrl);
+
+    if (callbackUrl !== routes.auth.postSignIn) {
+      searchParams.set("callbackUrl", callbackUrl);
+    }
+  }
+
+  return searchParams.size
+    ? `${routes.auth.postSignIn}?${searchParams.toString()}`
+    : routes.auth.postSignIn;
 }

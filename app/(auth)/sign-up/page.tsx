@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { SignUpForm } from "@/features/auth/components/sign-up/sign-up-form";
-import { getAuthFlowParams } from "@/features/auth/utils/auth-flow";
 import {
   getEnabledOAuthProviderIds,
   hasMagicLinkProvider,
 } from "@/shared/lib/auth/oauth-config";
+import {
+  buildCallbackURL,
+  getCallbackURL,
+} from "@/shared/lib/auth/callback-url";
 import { routes } from "@/shared/constants/routes";
 import {
   Card,
@@ -16,13 +19,17 @@ import {
 } from "@/shared/components/ui/card";
 
 type SignUpPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+  }>;
 };
 
 export default async function SignUpPage({ searchParams }: SignUpPageProps) {
-  const authFlow = getAuthFlowParams(await searchParams);
+  const { callbackUrl: callbackUrlParam } = await searchParams;
+  const callbackUrl = getCallbackURL(callbackUrlParam);
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
+  const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
 
   return (
     <Card className="gap-4">
@@ -33,7 +40,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
         <CardDescription>
           Already have an account?{" "}
           <Link
-            href={routes.auth.login}
+            href={signInHref}
             className="underline underline-offset-4 hover:text-primary"
           >
             Sign in
@@ -43,7 +50,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
 
       <CardContent className="space-y-3">
         <SignUpForm
-          {...authFlow}
+          callbackUrl={callbackUrl}
           oauthProviders={oauthProviders}
           allowMagicLink={allowMagicLink}
         />

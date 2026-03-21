@@ -8,22 +8,22 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { ResendMagicLinkButton } from '@/features/auth/components/oauth/resend-magic-link-button';
-import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
+import {
+  buildCallbackURL,
+} from '@/shared/lib/auth/callback-url';
 import { routes } from '@/shared/constants/routes';
 
 type CheckEmailPageProps = {
   searchParams: Promise<{
     email?: string;
-    redirect?: string;
-    priceId?: string;
-    inviteId?: string;
+    callbackUrl?: string;
   }>;
 };
 
 export default async function CheckEmailPage({ searchParams }: CheckEmailPageProps) {
-  const rawSearchParams = await searchParams;
-  const email = rawSearchParams.email?.trim() || null;
-  const { redirect, priceId, pricingModel, inviteId } = getAuthFlowParams(rawSearchParams);
+  const { email: rawEmail, callbackUrl } = await searchParams;
+  const email = rawEmail?.trim() || null;
+  const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
 
   return (
     <Card className="gap-4">
@@ -45,17 +45,14 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
               Haven&apos;t received it?{' '}
               <ResendMagicLinkButton
                 email={email}
-                redirect={redirect}
-                priceId={priceId}
-                pricingModel={pricingModel}
-                inviteId={inviteId}
+                callbackUrl={callbackUrl}
               />
             </>
           ) : (
             <>
               Missing the email address?{' '}
               <Link
-                href={routes.auth.login}
+                href={signInHref}
                 className="font-medium underline underline-offset-4 hover:text-primary"
               >
                 Go back to sign in

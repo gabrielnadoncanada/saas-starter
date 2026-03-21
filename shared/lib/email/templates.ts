@@ -20,7 +20,7 @@ export function buildTeamInvitationEmail(input: {
   invitationToken: string;
 }): EmailPayload {
   const invitationUrl = buildAbsoluteUrl(
-    `/sign-in?inviteId=${input.invitationToken}`,
+    `/accept-invitation/${input.invitationToken}`,
   );
 
   const safeTeamName = sanitizeForEmailSubject(input.teamName);

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Sparkles, Users } from 'lucide-react';
-import { getCurrentTeam } from '@/features/teams/server/current-team';
+import { getCurrentOrganization } from '@/features/teams/server/current-organization';
 import { listCurrentTeamTasks } from '@/features/tasks/server/tasks';
 import { Main } from '@/shared/components/layout/shell/main';
 import { Button } from '@/shared/components/ui/button';
@@ -18,22 +18,21 @@ import { getMonthlyUsage } from '@/features/billing/usage';
 import { UsageMeter } from '@/features/billing/components/usage-meter';
 import { PlanBadge } from '@/features/billing/components/plan-badge';
 import { UpgradeCard } from '@/features/billing/components/upgrade-card';
-import { terminology } from '@/shared/constants/terminology';
 
 export default async function DashboardPage() {
-  const [team, tasks] = await Promise.all([
-    getCurrentTeam(),
+  const [organization, tasks] = await Promise.all([
+    getCurrentOrganization(),
     listCurrentTeamTasks(),
   ]);
 
-  const planId = resolveTeamPlan(team);
+  const planId = resolveTeamPlan(organization);
   const plan = getPlan(planId);
-  const memberCount = team?.teamMembers?.length ?? 0;
+  const memberCount = organization?.members?.length ?? 0;
   const taskCount = tasks.length;
 
   const [tasksUsage, aiUsage] = await Promise.all([
-    team ? getMonthlyUsage(team.id, "tasksPerMonth") : 0,
-    team ? getMonthlyUsage(team.id, "aiRequestsPerMonth") : 0,
+    organization ? getMonthlyUsage(organization.id, "tasksPerMonth") : 0,
+    organization ? getMonthlyUsage(organization.id, "aiRequestsPerMonth") : 0,
   ]);
   const taskLimit = checkLimit(planId, "tasksPerMonth", tasksUsage);
   const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
@@ -44,7 +43,7 @@ export default async function DashboardPage() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
         <p className="text-muted-foreground">
-          Welcome back{team?.name ? ` to ${team.name}` : ''}.
+          Welcome back{organization?.name ? ` to ${organization.name}` : ''}.
         </p>
       </div>
 
@@ -78,7 +77,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardDescription>{terminology.Singular} Members</CardDescription>
+            <CardDescription>Organization Members</CardDescription>
             <CardTitle className="text-2xl flex items-center gap-2">
               <Users className="h-5 w-5 text-orange-500" />
               {memberCount}
@@ -108,8 +107,8 @@ export default async function DashboardPage() {
 
       {!hasCapability(planId, "team.analytics") && (
         <UpgradeCard
-          feature="Team Analytics"
-          description={`Upgrade to the ${terminology.Singular} plan to access advanced analytics for your ${terminology.singular}.`}
+          feature="Organization Analytics"
+          description="Upgrade your plan to access advanced analytics for your organization."
         />
       )}
 
@@ -128,7 +127,7 @@ export default async function DashboardPage() {
         </Link>
         <Link href={routes.app.settingsTeam}>
           <Button variant="outline">
-            {terminology.Singular} Settings
+            Organization Settings
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

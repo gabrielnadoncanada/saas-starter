@@ -14,10 +14,12 @@ export const deleteAccountAction = validatedActionWithUser<
 >(
   deleteAccountSchema,
   async (_, __, user) => {
+    const reqHeaders = await headers();
+
     const result = await deleteAccount({
       id: user.id,
       email: user.email,
-    });
+    }, reqHeaders);
 
     if (result?.error) {
       return result;
@@ -31,7 +33,7 @@ export const deleteAccountAction = validatedActionWithUser<
     // Sign out the current session
     try {
       await auth.api.signOut({
-        headers: await headers(),
+        headers: reqHeaders,
       });
     } catch {
       // Session may already be invalidated

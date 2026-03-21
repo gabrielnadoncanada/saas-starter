@@ -6,8 +6,8 @@ vi.mock("@/shared/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@/features/teams/server/current-team", () => ({
-  getCurrentTeam: vi.fn(),
+vi.mock("@/features/teams/server/current-organization", () => ({
+  getCurrentOrganization: vi.fn(),
 }));
 
 vi.mock("@/shared/lib/db/prisma", () => ({
@@ -23,7 +23,7 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 }));
 
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
-const { getCurrentTeam } = await import("@/features/teams/server/current-team");
+const { getCurrentOrganization } = await import("@/features/teams/server/current-organization");
 const {
   createAssistantConversation,
   deleteAssistantConversation,
@@ -35,8 +35,8 @@ describe("assistant conversations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(getCurrentUser).mockResolvedValue({ id: 7 } as never);
-    vi.mocked(getCurrentTeam).mockResolvedValue({ id: 19 } as never);
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: "7" } as never);
+    vi.mocked(getCurrentOrganization).mockResolvedValue({ id: "19" } as never);
   });
 
   it("creates a scoped conversation with a generated title", async () => {
@@ -74,8 +74,8 @@ describe("assistant conversations", () => {
     expect(db.assistantConversation.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          teamId: 19,
-          userId: 7,
+          organizationId: "19",
+          userId: "7",
           title: "Draft an invoice for Acme Corp due next week.",
         }),
       })
@@ -109,7 +109,7 @@ describe("assistant conversations", () => {
 
     expect(db.assistantConversation.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { teamId: 19, userId: 7 },
+        where: { organizationId: "19", userId: "7" },
       })
     );
     expect(conversations).toEqual([
@@ -122,7 +122,7 @@ describe("assistant conversations", () => {
     ]);
   });
 
-  it("deletes conversations only inside the current user and team scope", async () => {
+  it("deletes conversations only inside the current user and organization scope", async () => {
     vi.mocked(db.assistantConversation.deleteMany).mockResolvedValue({
       count: 1,
     } as never);
@@ -130,7 +130,7 @@ describe("assistant conversations", () => {
     const deleted = await deleteAssistantConversation("conv_1");
 
     expect(db.assistantConversation.deleteMany).toHaveBeenCalledWith({
-      where: { id: "conv_1", teamId: 19, userId: 7 },
+      where: { id: "conv_1", organizationId: "19", userId: "7" },
     });
     expect(deleted).toBe(true);
   });

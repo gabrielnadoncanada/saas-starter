@@ -1,50 +1,24 @@
-import { ActivityType } from "@/shared/lib/db/enums";
-import { db } from "@/shared/lib/db/prisma";
+import { headers } from "next/headers";
 
-export async function ensureUserWorkspace(userId: string, email: string) {
-  const existingTeamMember = await db.teamMember.findFirst({
-    where: { userId },
-    select: { teamId: true },
+import { auth } from "@/shared/lib/auth";
+
+export async function ensureUserWorkspace(email: string) {
+  const reqHeaders = await headers();
+  const existingOrganizations = await auth.api.listOrganizations({
+    headers: reqHeaders,
   });
 
-  if (existingTeamMember) {
-    return existingTeamMember.teamId;
+  if (existingOrganizations?.[0]?.id) {
+    return existingOrganizations[0].id;
   }
 
-  const createdTeam = await db.$transaction(async (tx) => {
-    const team = await tx.team.create({
-      data: {
-        name: `${email}'s Team`,
-      },
-    });
-
-    await tx.teamMember.create({
-      data: {
-        userId,
-        teamId: team.id,
-        role: "OWNER",
-      },
-    });
-
-    await tx.activityLog.createMany({
-      data: [
-        {
-          teamId: team.id,
-          userId,
-          action: ActivityType.CREATE_TEAM,
-          ipAddress: "",
-        },
-        {
-          teamId: team.id,
-          userId,
-          action: ActivityType.SIGN_UP,
-          ipAddress: "",
-        },
-      ],
-    });
-
-    return team;
+  const organization = await auth.api.createOrganization({
+    headers: reqHeaders,
+    body: {
+      name: `${email}'s Team`,
+      slug: crypto.randomUUID(),
+    },
   });
 
-  return createdTeam.id;
+  return organization.id;
 }

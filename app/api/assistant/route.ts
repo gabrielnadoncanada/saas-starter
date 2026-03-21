@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   try {
     assertCapability(teamPlan.planId, "ai.assistant");
     await consumeMonthlyUsage(
-      teamPlan.teamId,
+      teamPlan.organizationId,
       "aiRequestsPerMonth",
       teamPlan.planId,
     );

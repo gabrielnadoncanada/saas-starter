@@ -1,6 +1,7 @@
 import {
   AlertCircle,
   CheckCircle,
+  Crown,
   Link2,
   Mail,
   Settings,
@@ -10,46 +11,81 @@ import {
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
+
 import { terminology } from "@/shared/constants/terminology";
 
 export const activityIconMap: Record<string, LucideIcon> = {
-  SIGN_UP: UserPlus,
-  SIGN_IN: UserCog,
-  DELETE_ACCOUNT: UserMinus,
-  UPDATE_ACCOUNT: Settings,
-  CREATE_TEAM: UserPlus,
-  REMOVE_TEAM_MEMBER: UserMinus,
-  INVITE_TEAM_MEMBER: Mail,
-  ACCEPT_INVITATION: CheckCircle,
-  LINK_AUTH_PROVIDER: Link2,
-  UNLINK_AUTH_PROVIDER: Unlink2,
+  user_created: UserPlus,
+  user_signed_in: UserCog,
+  user_deleted: UserMinus,
+  profile_updated: Settings,
+  organization_created: UserPlus,
+  organization_member_removed: UserMinus,
+  organization_member_invited: Mail,
+  organization_member_invite_accepted: CheckCircle,
+  organization_member_role_updated: Crown,
+  account_linked: Link2,
+  account_unlinked: Unlink2,
 };
 
 export const emptyActivityIcon = AlertCircle;
 
-export function formatActivityAction(action: string) {
+function getStringValue(
+  metadata: Record<string, unknown>,
+  key: string,
+) {
+  const value = metadata[key];
+  return typeof value === "string" ? value : null;
+}
+
+function formatProviderLabel(providerId: string | null) {
+  if (!providerId) {
+    return "a sign-in provider";
+  }
+
+  return providerId.charAt(0).toUpperCase() + providerId.slice(1);
+}
+
+export function formatActivityAction(
+  action: string,
+  metadata: Record<string, unknown>,
+) {
   switch (action) {
-    case "SIGN_UP":
+    case "user_created":
       return "You signed up";
-    case "SIGN_IN":
-      return "You signed in";
-    case "DELETE_ACCOUNT":
+    case "user_signed_in": {
+      const loginMethod = getStringValue(metadata, "loginMethod");
+      return loginMethod
+        ? `You signed in via ${formatProviderLabel(loginMethod)}`
+        : "You signed in";
+    }
+    case "user_deleted":
       return "You deleted your account";
-    case "UPDATE_ACCOUNT":
+    case "profile_updated":
       return "You updated your account";
-    case "CREATE_TEAM":
+    case "organization_created":
       return `You created a new ${terminology.singular}`;
-    case "REMOVE_TEAM_MEMBER":
-      return `You removed a ${terminology.singular} member`;
-    case "INVITE_TEAM_MEMBER":
-      return `You invited a ${terminology.singular} member`;
-    case "ACCEPT_INVITATION":
+    case "organization_member_removed": {
+      const memberEmail = getStringValue(metadata, "memberEmail");
+      return memberEmail
+        ? `You removed ${memberEmail}`
+        : `You removed a ${terminology.singular} member`;
+    }
+    case "organization_member_invited": {
+      const inviteeEmail = getStringValue(metadata, "inviteeEmail");
+      return inviteeEmail
+        ? `You invited ${inviteeEmail}`
+        : `You invited a ${terminology.singular} member`;
+    }
+    case "organization_member_invite_accepted":
       return "You accepted an invitation";
-    case "LINK_AUTH_PROVIDER":
-      return "You linked a sign-in provider";
-    case "UNLINK_AUTH_PROVIDER":
-      return "You unlinked a sign-in provider";
+    case "organization_member_role_updated":
+      return `You updated a ${terminology.singular} member role`;
+    case "account_linked":
+      return `You linked ${formatProviderLabel(getStringValue(metadata, "providerId"))}`;
+    case "account_unlinked":
+      return `You unlinked ${formatProviderLabel(getStringValue(metadata, "providerId"))}`;
     default:
-      return "Unknown action occurred";
+      return "Account activity recorded";
   }
 }
