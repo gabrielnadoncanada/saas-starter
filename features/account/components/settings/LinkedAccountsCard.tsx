@@ -4,7 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { useActionState, useState } from 'react';
 import { authClient } from '@/shared/lib/auth/auth-client';
 
-import { OAuthProviderIcon } from '@/features/auth/components/OAuthProviderIcon';
+import { OAuthProviderIcon } from '@/features/auth/components/oauth/OAuthProviderIcon';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/shared/components/ui/field';

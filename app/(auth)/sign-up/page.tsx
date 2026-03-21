@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SignUpForm } from "@/features/auth/components/SignUpForm";
+import { SignUpForm } from "@/features/auth/components/sign-up/SignUpForm";
 import { getAuthFlowParams } from "@/features/auth/utils/auth-flow";
 import {
   getEnabledOAuthProviderIds,

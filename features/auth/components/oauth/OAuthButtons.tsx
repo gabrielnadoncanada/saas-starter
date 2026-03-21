@@ -3,7 +3,7 @@ import {
   getOAuthProviderConfig,
   type OAuthProviderId
 } from '@/shared/lib/auth/oauth-config';
-import { OAuthProviderIcon } from '@/features/auth/components/OAuthProviderIcon';
+import { OAuthProviderIcon } from '@/features/auth/components/oauth/OAuthProviderIcon';
 
 type OAuthButtonsProps = {
   providers: OAuthProviderId[];

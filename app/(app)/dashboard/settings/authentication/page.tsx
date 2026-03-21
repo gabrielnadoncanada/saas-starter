@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import { PasswordSettingsCard } from '@/features/auth/components/PasswordSettingsCard';
+import { PasswordSettingsCard } from '@/features/auth/components/password/PasswordSettingsCard';
 import { LinkedAccountsCard } from '@/features/account/components/settings/LinkedAccountsCard';
 import { getLinkedAccountsOverview } from '@/features/account/server/linked-accounts';
 import type {

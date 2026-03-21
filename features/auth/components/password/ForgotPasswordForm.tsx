@@ -1,45 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import {
+  emailStepSchema,
+  type EmailStepValues,
+} from "@/features/auth/schemas/email-step.schema";
+import { normalizeEmail } from "@/features/auth/utils/normalize-email";
 import { authClient } from "@/shared/lib/auth/auth-client";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 
+const defaultValues: EmailStepValues = {
+  email: "",
+};
+
 export function ForgotPasswordForm() {
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [isPending, setIsPending] = useState(false);
   const [sent, setSent] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<EmailStepValues>({
+    resolver: zodResolver(emailStepSchema),
+    defaultValues,
+  });
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail) {
-      setEmailError("Enter a valid email address.");
-      return;
-    }
-
-    setIsPending(true);
-    setEmailError("");
-
+  const onSubmit = handleSubmit(async ({ email }) => {
     try {
       await authClient.requestPasswordReset({
-        email: normalizedEmail,
+        email: normalizeEmail(email),
         redirectTo: "/reset-password",
       });
-
       setSent(true);
+      reset(defaultValues);
       toast.success("If an account exists for this email, a reset link has been sent.");
     } catch {
       toast.error("Unable to send reset link. Please try again.");
-    } finally {
-      setIsPending(false);
     }
-  }
+  });
 
   if (sent) {
     return (
@@ -50,26 +54,21 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Field data-invalid={Boolean(emailError)}>
+    <form onSubmit={onSubmit} className="space-y-4">
+      <Field data-invalid={Boolean(errors.email)}>
         <FieldLabel htmlFor="forgot-password-email">Email</FieldLabel>
         <Input
           id="forgot-password-email"
-          name="email"
           type="email"
-          value={email}
-          onChange={(event) => {
-            setEmail(event.target.value);
-            if (emailError) setEmailError("");
-          }}
-          aria-invalid={Boolean(emailError)}
+          aria-invalid={Boolean(errors.email)}
           required
+          {...register("email")}
         />
-        <FieldError>{emailError}</FieldError>
+        <FieldError>{errors.email?.message}</FieldError>
       </Field>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? (
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Sending reset link...

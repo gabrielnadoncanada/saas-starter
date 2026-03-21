@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { AuthCard } from "@/features/auth/components/AuthCard";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 
 type VerifyEmailPageProps = {
@@ -18,25 +25,37 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
   // If there's an error parameter, verification failed.
   if (error) {
     return (
-      <AuthCard
-        title="Verification failed"
-        description="This verification link is invalid or has expired."
-      >
-        <Link href={routes.auth.signup} className="text-sm underline underline-offset-4">
-          Back to sign up
-        </Link>
-      </AuthCard>
+      <Card className="gap-4">
+        <CardHeader>
+          <CardTitle className="text-lg tracking-tight">Verification failed</CardTitle>
+          <CardDescription>
+            This verification link is invalid or has expired.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <Link href={routes.auth.signup} className="text-sm underline underline-offset-4">
+            Back to sign up
+          </Link>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <AuthCard
-      title="Email verified"
-      description="Your email address is now confirmed. You can sign in."
-    >
-      <Link href={routes.auth.login} className="text-sm underline underline-offset-4">
-        Go to sign in
-      </Link>
-    </AuthCard>
+    <Card className="gap-4">
+      <CardHeader>
+        <CardTitle className="text-lg tracking-tight">Email verified</CardTitle>
+        <CardDescription>
+          Your email address is now confirmed. You can sign in.
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <Link href={routes.auth.login} className="text-sm underline underline-offset-4">
+          Go to sign in
+        </Link>
+      </CardContent>
+    </Card>
   );
 }

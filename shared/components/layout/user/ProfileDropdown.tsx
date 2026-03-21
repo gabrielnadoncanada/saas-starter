@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 import { routes } from '@/shared/constants/routes'
-import { SignOutDialog } from '@/features/auth/components/SignOutDialog'
+import { SignOutDialog } from '@/features/auth/components/session/SignOutDialog'
 import Link from 'next/link'
 import { useUser } from '@/shared/components/providers/UserProvider'
 

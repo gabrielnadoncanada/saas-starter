@@ -26,7 +26,7 @@ import {
 } from '@/shared/components/ui/sidebar'
 import Link from 'next/link'
 import { routes } from '@/shared/constants/routes'
-import { SignOutDialog } from '@/features/auth/components/SignOutDialog'
+import { SignOutDialog } from '@/features/auth/components/session/SignOutDialog'
 
 type NavUserProps = {
   user: {

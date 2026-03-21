@@ -1,8 +1,13 @@
 import Link from 'next/link';
-import { Suspense } from 'react';
 
-import { AuthCard } from '@/features/auth/components/AuthCard';
-import { ResendMagicLinkButton } from '@/features/auth/components/ResendMagicLinkButton';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { ResendMagicLinkButton } from '@/features/auth/components/oauth/ResendMagicLinkButton';
 import { getAuthFlowParams } from '@/features/auth/utils/auth-flow';
 import { routes } from '@/shared/constants/routes';
 
@@ -21,15 +26,19 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
   const { redirect, priceId, pricingModel, inviteId } = getAuthFlowParams(rawSearchParams);
 
   return (
-    <Suspense>
-      <AuthCard
-        title="Check your email"
-        contentClassName="space-y-3"
-        description="We sent a magic sign-in link to your email address."
-      >
+    <Card className="gap-4">
+      <CardHeader>
+        <CardTitle className="text-lg tracking-tight">Check your email</CardTitle>
+        <CardDescription>
+          We sent a magic sign-in link to your email address.
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
           Open the email and click the link to complete sign-in.
         </p>
+
         <p className="text-sm text-muted-foreground">
           {email ? (
             <>
@@ -54,7 +63,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
             </>
           )}
         </p>
-      </AuthCard>
-    </Suspense>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,6 +1,13 @@
 import Link from "next/link";
-import { AuthCard } from "@/features/auth/components/AuthCard";
+
 import { buildAuthHref, getAuthFlowParams } from "@/features/auth/utils/auth-flow";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 
 type VerifyEmailSentPageProps = {
@@ -13,17 +20,23 @@ export default async function VerifyEmailSentPage({
   const signInHref = buildAuthHref(routes.auth.login, getAuthFlowParams(await searchParams));
 
   return (
-    <AuthCard
-      title="Check your email"
-      description="We sent you a verification link. Open it to activate your account."
-    >
-      <p className="text-sm text-muted-foreground">
-        After verification,{" "}
-        <Link href={signInHref} className="underline underline-offset-4">
-          return to sign in
-        </Link>
-        .
-      </p>
-    </AuthCard>
+    <Card className="gap-4">
+      <CardHeader>
+        <CardTitle className="text-lg tracking-tight">Check your email</CardTitle>
+        <CardDescription>
+          We sent you a verification link. Open it to activate your account.
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <p className="text-sm text-muted-foreground">
+          After verification,{" "}
+          <Link href={signInHref} className="underline underline-offset-4">
+            return to sign in
+          </Link>
+          .
+        </p>
+      </CardContent>
+    </Card>
   );
 }
