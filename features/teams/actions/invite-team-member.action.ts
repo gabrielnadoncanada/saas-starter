@@ -4,7 +4,7 @@ import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with
 import { inviteTeamMemberSchema } from "@/features/teams/schemas/team.schema";
 import { requireTeamRole, isTeamRoleError } from "@/features/teams/server/require-team-role";
 import { inviteTeamMemberToTeam } from "@/features/teams/server/team-invitations";
-import { getTeamPlan } from "@/features/billing/guards";
+import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
 
 export const inviteTeamMemberAction = validatedActionWithUser<
   typeof inviteTeamMemberSchema,

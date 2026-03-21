@@ -1,11 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { plans, getPlan, isPlanId } from "@/features/billing/config/billing.config";
-import { hasCapability } from "@/features/billing/guards/has-capability";
-import { assertCapability } from "@/features/billing/guards/assert-capability";
-import { getPlanLimit } from "@/features/billing/guards/get-plan-limit";
-import { assertLimit } from "@/features/billing/guards/assert-limit";
-import { checkLimit } from "@/features/billing/guards/check-limit";
+import { hasCapability, assertCapability, getPlanLimit, assertLimit, checkLimit } from "@/features/billing/guards";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 

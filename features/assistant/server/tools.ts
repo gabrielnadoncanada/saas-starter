@@ -8,7 +8,8 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { getTeamPlan, assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards";
+import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
 import { consumeMonthlyUsage } from "@/features/billing/usage";
 import { createTaskForCurrentTeam } from "@/features/tasks/server/create-task-for-current-team";
 import { emailProvider } from "./email-provider";

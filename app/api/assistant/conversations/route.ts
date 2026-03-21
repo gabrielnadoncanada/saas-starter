@@ -5,7 +5,8 @@ import {
   listAssistantConversations,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/conversations";
-import { getTeamPlan, assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards";
+import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
 import { UpgradeRequiredError } from "@/features/billing/errors";
 
 function getScopeErrorResponse(scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>) {

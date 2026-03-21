@@ -14,8 +14,11 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   },
 }));
 
-vi.mock("@/features/billing/guards", () => ({
+vi.mock("@/features/billing/guards/get-team-plan", () => ({
   getTeamPlan: vi.fn(),
+}));
+
+vi.mock("@/features/billing/guards", () => ({
   assertCapability: vi.fn(),
 }));
 
@@ -24,9 +27,8 @@ vi.mock("@/features/billing/usage", () => ({
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
-const { getTeamPlan, assertCapability } = await import(
-  "@/features/billing/guards"
-);
+const { getTeamPlan } = await import("@/features/billing/guards/get-team-plan");
+const { assertCapability } = await import("@/features/billing/guards");
 const { consumeMonthlyUsage } = await import(
   "@/features/billing/usage"
 );

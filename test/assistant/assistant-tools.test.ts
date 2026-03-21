@@ -7,8 +7,7 @@ import type {
 } from "@/features/assistant/types";
 import { LimitReachedError, UpgradeRequiredError } from "@/features/billing/errors";
 import { getPlan } from "@/features/billing/plans";
-import { getPlanLimit } from "@/features/billing/guards/get-plan-limit";
-import { hasCapability } from "@/features/billing/guards/has-capability";
+import { getPlanLimit, hasCapability } from "@/features/billing/guards";
 
 vi.mock("server-only", () => ({}));
 
@@ -16,9 +15,18 @@ vi.mock("ai", () => ({
   tool: <T>(definition: T) => definition,
 }));
 
-vi.mock("@/features/billing/guards", () => {
+vi.mock("@/features/billing/guards/get-team-plan", () => ({
+  getTeamPlan: vi.fn(),
+}));
+
+vi.mock("@/features/billing/guards", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/features/billing/guards")>(
+      "@/features/billing/guards",
+    );
+
   return {
-    getTeamPlan: vi.fn(),
+    ...actual,
     assertCapability: vi.fn((planId, capability) => {
       if (!hasCapability(planId, capability)) {
         throw new UpgradeRequiredError(capability, getPlan(planId).name);
@@ -42,7 +50,7 @@ vi.mock("@/features/assistant/server/email-provider", () => ({
   },
 }));
 
-const { getTeamPlan } = await import("@/features/billing/guards");
+const { getTeamPlan } = await import("@/features/billing/guards/get-team-plan");
 const { consumeMonthlyUsage } = await import(
   "@/features/billing/usage"
 );

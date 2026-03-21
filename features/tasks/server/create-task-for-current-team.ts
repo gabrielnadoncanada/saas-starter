@@ -4,7 +4,8 @@ import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { db } from "@/shared/lib/db/prisma";
-import { getTeamPlan, assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards";
+import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
 import { consumeMonthlyUsage } from "@/features/billing/usage";
 import { createTaskSchema } from "@/features/tasks/schemas/task.schema";
 import type { Task } from "@/features/tasks/types/task.types";

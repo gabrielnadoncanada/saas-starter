@@ -2,7 +2,8 @@ import { streamText, convertToModelMessages, stepCountIs } from "ai";
 
 import { getAssistantModel } from "@/features/assistant/server/get-assistant-model";
 import { getAssistantConversation } from "@/features/assistant/server/conversations";
-import { getTeamPlan, assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards";
+import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
 import { consumeMonthlyUsage } from "@/features/billing/usage";
 import { UpgradeRequiredError, LimitReachedError } from "@/features/billing/errors";
 import { assistantTools } from "@/features/assistant/server/tools";

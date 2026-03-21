@@ -32,17 +32,9 @@ vi.mock("@/shared/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@/features/billing/guards", async () => {
-  const actual =
-    await vi.importActual<typeof import("@/features/billing/guards")>(
-      "@/features/billing/guards",
-    );
-
-  return {
-    ...actual,
-    getTeamPlan: vi.fn(),
-  };
-});
+vi.mock("@/features/billing/guards/get-team-plan", () => ({
+  getTeamPlan: vi.fn(),
+}));
 
 vi.mock("@/features/billing/usage", () => ({
   consumeMonthlyUsage: vi.fn(),
@@ -50,7 +42,7 @@ vi.mock("@/features/billing/usage", () => ({
 
 const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
-const { getTeamPlan } = await import("@/features/billing/guards");
+const { getTeamPlan } = await import("@/features/billing/guards/get-team-plan");
 const { consumeMonthlyUsage } = await import(
   "@/features/billing/usage"
 );

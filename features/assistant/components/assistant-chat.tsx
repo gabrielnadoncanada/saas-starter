@@ -55,27 +55,28 @@ export function AssistantChat({
 }: AssistantChatProps) {
   const [modelId, setModelId] = useState<string>(assistantModels[0].id);
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
-  const conversationIdRef = useRef<string | null>(conversationId);
-  const initialMessagesRef = useRef(initialMessages);
-  const onConversationCreatedRef = useRef(onConversationCreated);
-  const onConversationUpdatedRef = useRef(onConversationUpdated);
-  const selectedModelRef = useRef<(typeof assistantModels)[number]>(
-    assistantModels[0]
-  );
+
+  const stateRef = useRef({
+    conversationId,
+    initialMessages,
+    onConversationCreated,
+    onConversationUpdated,
+    selectedModel: assistantModels[0] as (typeof assistantModels)[number],
+  });
+
   const [transport] = useState(
     () =>
       new DefaultChatTransport({
         api: "/api/assistant",
         prepareSendMessagesRequest: async ({ messages, body }) => {
-          const selectedModel = selectedModelRef.current;
-          const currentConversationId = conversationIdRef.current;
+          const { selectedModel, conversationId: currentConversationId } = stateRef.current;
 
           if (currentConversationId) {
             const conversation = await replaceAssistantConversationRequest(
               currentConversationId,
               messages
             );
-            onConversationUpdatedRef.current(conversation);
+            stateRef.current.onConversationUpdated(conversation);
 
             return {
               body: {
@@ -89,8 +90,8 @@ export function AssistantChat({
           }
 
           const conversation = await createAssistantConversationRequest(messages);
-          conversationIdRef.current = conversation.id;
-          onConversationCreatedRef.current(conversation);
+          stateRef.current.conversationId = conversation.id;
+          stateRef.current.onConversationCreated(conversation);
 
           return {
             body: {
@@ -107,15 +108,15 @@ export function AssistantChat({
   const { clearError, error, messages, sendMessage, setMessages, status, stop } =
     useChat({
       onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
-        if (isAbort || isDisconnect || isError || !conversationIdRef.current) {
+        if (isAbort || isDisconnect || isError || !stateRef.current.conversationId) {
           return;
         }
 
         void replaceAssistantConversationRequest(
-          conversationIdRef.current,
+          stateRef.current.conversationId,
           nextMessages
         ).then((conversation) => {
-          onConversationUpdatedRef.current(conversation);
+          stateRef.current.onConversationUpdated(conversation);
         });
       },
       transport,
@@ -126,28 +127,16 @@ export function AssistantChat({
     assistantModels.find((model) => model.id === modelId) ?? assistantModels[0];
 
   useEffect(() => {
-    conversationIdRef.current = conversationId;
-  }, [conversationId]);
-
-  useEffect(() => {
-    onConversationCreatedRef.current = onConversationCreated;
-  }, [onConversationCreated]);
-
-  useEffect(() => {
-    onConversationUpdatedRef.current = onConversationUpdated;
-  }, [onConversationUpdated]);
-
-  useEffect(() => {
-    selectedModelRef.current = selectedModel;
-  }, [selectedModel]);
-
-  useEffect(() => {
-    initialMessagesRef.current = initialMessages;
-  }, [initialMessages]);
+    stateRef.current.conversationId = conversationId;
+    stateRef.current.initialMessages = initialMessages;
+    stateRef.current.onConversationCreated = onConversationCreated;
+    stateRef.current.onConversationUpdated = onConversationUpdated;
+    stateRef.current.selectedModel = selectedModel;
+  });
 
   useEffect(() => {
     clearError();
-    setMessages(initialMessagesRef.current);
+    setMessages(stateRef.current.initialMessages);
   }, [clearError, setMessages]);
 
   useEffect(() => {
@@ -157,7 +146,7 @@ export function AssistantChat({
 
     stop();
     clearError();
-    setMessages(initialMessagesRef.current);
+    setMessages(stateRef.current.initialMessages);
   }, [clearError, resetKey, setMessages, stop]);
 
   const sendAssistantMessage = (message: PromptInputMessage) => {
