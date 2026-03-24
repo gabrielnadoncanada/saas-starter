@@ -96,11 +96,13 @@ export const plans: Record<PlanId, Plan> = {
     },
     pricingModel: "flat",
     prices: {
-      monthly: {
-        priceId: process.env.STRIPE_PRICE_PRO_MONTHLY!,
-        unitAmount: 1900,
-        trialDays: 7,
-      },
+      ...(process.env.STRIPE_PRICE_PRO_MONTHLY && {
+        monthly: {
+          priceId: process.env.STRIPE_PRICE_PRO_MONTHLY,
+          unitAmount: 1900,
+          trialDays: 7,
+        },
+      }),
     },
   },
   team: {
@@ -133,11 +135,13 @@ export const plans: Record<PlanId, Plan> = {
     },
     pricingModel: "per_seat",
     prices: {
-      monthly: {
-        priceId: process.env.STRIPE_PRICE_TEAM_MONTHLY!,
-        unitAmount: 4900,
-        trialDays: 7,
-      },
+      ...(process.env.STRIPE_PRICE_TEAM_MONTHLY && {
+        monthly: {
+          priceId: process.env.STRIPE_PRICE_TEAM_MONTHLY,
+          unitAmount: 4900,
+          trialDays: 7,
+        },
+      }),
     },
   },
 };
@@ -155,15 +159,15 @@ export function getPricingPlans() {
 }
 
 export const stripePlans = Object.values(plans)
-  .filter((plan) => plan.id !== "free")
+  .filter((plan) => plan.id !== "free" && plan.prices.monthly?.priceId)
   .map((plan) => ({
     name: plan.id,
-    priceId: plan.prices.monthly?.priceId,
+    priceId: plan.prices.monthly!.priceId,
     seatPriceId:
       plan.pricingModel === "per_seat"
-        ? plan.prices.monthly?.priceId
+        ? plan.prices.monthly!.priceId
         : undefined,
-    freeTrial: plan.prices.monthly?.trialDays
-      ? { days: plan.prices.monthly.trialDays }
+    freeTrial: plan.prices.monthly!.trialDays
+      ? { days: plan.prices.monthly!.trialDays }
       : undefined,
   }));

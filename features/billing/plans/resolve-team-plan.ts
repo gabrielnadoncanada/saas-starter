@@ -1,4 +1,4 @@
-import type { PlanId } from "@/shared/config/billing.config";
+import { isPlanId, type PlanId } from "@/shared/config/billing.config";
 import { hasPlanAccess } from "./subscription-status";
 
 type TeamBillingSnapshot = {
@@ -11,9 +11,5 @@ export function resolveTeamPlan(team: TeamBillingSnapshot | null | undefined): P
     return "free";
   }
 
-  if (team.planId === "free" || team.planId === "pro" || team.planId === "team") {
-    return team.planId;
-  }
-
-  return "free";
+  return team.planId && isPlanId(team.planId) ? team.planId : "free";
 }

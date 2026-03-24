@@ -16,7 +16,10 @@ export const updateAccountSchema = z.object({
     .string()
     .trim()
     .max(30, "Phone number is too long")
-    .transform((value) => (value.length ? value : null)),
+    .transform((value) => {
+      if (!value.length) return null;
+      return value.replace(/[\s\-().]/g, "");
+    }),
 });
 
 export const unlinkAuthProviderSchema = z.object({

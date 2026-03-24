@@ -4,6 +4,7 @@ import { customerPortalAction } from '@/features/billing/actions/customer-portal
 import { InviteOrganizationMemberPanel } from '@/features/teams/components/invite-organization-member-panel';
 import { OrganizationInvitationsPanel } from '@/features/teams/components/organization-invitations-panel';
 import { OrganizationMembersPanel } from '@/features/teams/components/organization-members-panel';
+import { RenameOrganizationPanel } from '@/features/teams/components/rename-organization-panel';
 import { getPlan, resolveTeamPlan } from '@/features/billing/plans';
 import { getCurrentOrganizationContext } from '@/features/teams/server/organization-context';
 import { listPendingOrganizationInvitations } from '@/features/teams/server/organization-invitations';
@@ -54,7 +55,11 @@ export async function OrganizationSettingsPage() {
 
   return (
     <>
-      <Item variant="outline" className="mb-8">
+      <RenameOrganizationPanel
+        currentName={organization.name}
+        canManage={context.canManageMembers}
+      />
+      <Item variant="outline" className="mb-8 mt-6">
         <ItemContent>
           <ItemTitle>Current Plan: {plan.name}</ItemTitle>
           <ItemDescription>{getSubscriptionLabel(organization)}</ItemDescription>

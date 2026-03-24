@@ -1,71 +1,71 @@
-'use client';
+"use client";
 
-import { format, parseISO } from 'date-fns';
-import { useActionState, useState } from 'react';
+import { format, parseISO } from "date-fns";
+import { useActionState, useState } from "react";
 
-import { OAuthProviderIcon } from '@/features/auth/components/oauth/oauth-provider-icon';
-import { signInWithOAuth } from '@/features/auth/data/auth-requests';
-import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/shared/components/ui/field';
+import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
+import { signInWithOAuth } from "@/features/auth/data/auth-requests";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import {
   Item,
   ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
-  ItemTitle
-} from '@/shared/components/ui/item';
-import { unlinkAuthProviderAction } from '@/features/account/actions/unlink-auth-provider.action';
+  ItemTitle,
+} from "@/shared/components/ui/item";
+import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.action";
 import type {
   LinkedAccountsActionState,
   LinkedProviderOverview,
-  SecuritySettingsFeedback
-} from '@/features/account/types/account.types';
-import { routes } from '@/shared/constants/routes';
-import { getOAuthProviderConfig } from '@/shared/lib/auth/oauth-config';
-import { getFieldState } from '@/shared/lib/get-field-state';
-import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
-import { useToastMessage } from '@/shared/hooks/useToastMessage';
+  SecuritySettingsFeedback,
+} from "@/features/account/types/account.types";
+import { routes } from "@/shared/constants/routes";
+import { getOAuthProviderConfig } from "@/shared/lib/auth/oauth-config";
+import { getFieldState } from "@/shared/lib/get-field-state";
+import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 
 type LinkedAccountsCardProps = {
-  allowMagicLink: boolean;
   providers: LinkedProviderOverview[];
   feedback?: SecuritySettingsFeedback;
 };
 
 export function LinkedAccountsCard({
-  allowMagicLink,
   providers,
-  feedback
+  feedback,
 }: LinkedAccountsCardProps) {
-  const [linkingProvider, setLinkingProvider] = useState<LinkedProviderOverview['provider'] | null>(
-    null
-  );
-  const [state, formAction, isPending] = useActionState<LinkedAccountsActionState, FormData>(
-    unlinkAuthProviderAction,
-    {}
-  );
+  const [linkingProvider, setLinkingProvider] = useState<
+    LinkedProviderOverview["provider"] | null
+  >(null);
+  const [state, formAction, isPending] = useActionState<
+    LinkedAccountsActionState,
+    FormData
+  >(unlinkAuthProviderAction, {});
   const selectedProvider = state.values?.provider;
-  const providerField = getFieldState(state, 'provider');
+  const providerField = getFieldState(state, "provider");
 
   useFormActionToasts(state, {
     skipError: Boolean(state.fieldErrors),
   });
   useToastMessage(feedback?.error, {
-    kind: 'error',
+    kind: "error",
   });
   useToastMessage(feedback?.success, {
-    kind: 'success',
+    kind: "success",
   });
 
-  async function handleLinkAccount(provider: LinkedProviderOverview['provider']) {
+  async function handleLinkAccount(
+    provider: LinkedProviderOverview["provider"],
+  ) {
     setLinkingProvider(provider);
 
     try {
       await signInWithOAuth(
         provider,
-        `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`
+        `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`,
       );
     } finally {
       setLinkingProvider(null);
@@ -74,15 +74,10 @@ export function LinkedAccountsCard({
 
   return (
     <>
-      {allowMagicLink ? (
-        <p className="mb-4 text-sm text-muted-foreground">
-          Email magic links are enabled for your account email.
-        </p>
-      ) : null}
-
       <ItemGroup className="gap-4">
         {providers.map((provider) => {
-          const isUnlinkingProvider = selectedProvider === provider.provider && isPending;
+          const isUnlinkingProvider =
+            selectedProvider === provider.provider && isPending;
           const isLinkingProvider = linkingProvider === provider.provider;
           const providerConfig = getOAuthProviderConfig(provider.provider);
 
@@ -90,14 +85,19 @@ export function LinkedAccountsCard({
             <Item key={provider.provider} variant="outline">
               <ItemContent>
                 <ItemTitle className="flex items-center gap-2">
-                  <OAuthProviderIcon provider={provider.provider} className="h-4 w-4 shrink-0" />
+                  <OAuthProviderIcon
+                    provider={provider.provider}
+                    className="h-4 w-4 shrink-0"
+                  />
                   {providerConfig.label}
-                  {provider.isLinked ? <Badge variant="secondary">Linked</Badge> : null}
+                  {provider.isLinked ? (
+                    <Badge variant="secondary">Linked</Badge>
+                  ) : null}
                 </ItemTitle>
                 <ItemDescription>
                   {provider.linkedAt
-                    ? `Linked on ${format(parseISO(provider.linkedAt), 'PP')}`
-                    : 'Not linked yet'}
+                    ? `Linked on ${format(parseISO(provider.linkedAt), "PP")}`
+                    : "Not linked yet"}
                 </ItemDescription>
               </ItemContent>
 
@@ -105,9 +105,17 @@ export function LinkedAccountsCard({
                 {provider.isLinked ? (
                   provider.canUnlink ? (
                     <form action={formAction}>
-                      <input type="hidden" name="provider" value={provider.provider} />
-                      <Button type="submit" variant="outline" disabled={isUnlinkingProvider}>
-                        {isUnlinkingProvider ? 'Unlinking...' : 'Unlink'}
+                      <input
+                        type="hidden"
+                        name="provider"
+                        value={provider.provider}
+                      />
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        disabled={isUnlinkingProvider}
+                      >
+                        {isUnlinkingProvider ? "Unlinking..." : "Unlink"}
                       </Button>
                     </form>
                   ) : (
@@ -120,7 +128,7 @@ export function LinkedAccountsCard({
                     disabled={isLinkingProvider}
                     onClick={() => void handleLinkAccount(provider.provider)}
                   >
-                    {isLinkingProvider ? 'Redirecting...' : 'Link'}
+                    {isLinkingProvider ? "Redirecting..." : "Link"}
                   </Button>
                 )}
               </ItemActions>
@@ -137,12 +145,11 @@ export function LinkedAccountsCard({
           id="linked-account-provider"
           type="hidden"
           name="provider"
-          value={selectedProvider ?? ''}
+          value={selectedProvider ?? ""}
           readOnly
         />
         <FieldError>{providerField.error}</FieldError>
       </Field>
-
     </>
   );
 }

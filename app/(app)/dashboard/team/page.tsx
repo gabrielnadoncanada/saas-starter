@@ -1,5 +1,5 @@
-import { OrganizationSettingsPage } from '@/features/teams/components/organization-settings-page';
-import { ContentSection } from '@/features/account/components/settings/content-section';
+import { OrganizationSettingsPage } from "@/features/teams/components/organization-settings-page";
+import { ContentSection } from "@/features/account/components/settings/content-section";
 
 export default function SettingsPage() {
   return (
@@ -9,5 +9,5 @@ export default function SettingsPage() {
     >
       <OrganizationSettingsPage />
     </ContentSection>
-  )
+  );
 }

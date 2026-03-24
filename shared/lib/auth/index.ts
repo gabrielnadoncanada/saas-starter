@@ -147,9 +147,6 @@ export const auth = betterAuth({
         enabled: true,
       },
     }),
-    dash({
-      apiKey: process.env.BETTER_AUTH_API_KEY,
-    }),
     nextCookies(),
   ],
 });

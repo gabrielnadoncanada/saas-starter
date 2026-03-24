@@ -14,6 +14,12 @@ async function parseConversationResponse<T>(response: Response) {
   throw new Error(errorText || "Unable to load conversation");
 }
 
+export async function listAssistantConversationsRequest() {
+  const response = await fetch("/api/assistant/conversations");
+  if (!response.ok) return [];
+  return (await response.json()) as AssistantConversationListItem[];
+}
+
 export async function fetchAssistantConversation(conversationId: string) {
   const response = await fetch(`/api/assistant/conversations/${conversationId}`);
   return parseConversationResponse<AssistantConversation>(response);

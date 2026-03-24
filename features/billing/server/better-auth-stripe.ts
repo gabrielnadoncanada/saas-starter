@@ -1,11 +1,11 @@
-import { plans, type PlanId, type PricingModel } from "@/features/billing/plans";
+import { isPlanId, plans, type PlanId, type PricingModel } from "@/features/billing/plans";
 import { resolveRecurringSelectionFromPriceId } from "@/features/billing/server/recurring-selection";
 import { routes } from "@/shared/constants/routes";
 import { auth } from "@/shared/lib/auth";
 
 type SubscriptionSnapshot = {
   billingInterval: string | null;
-  planId: PlanId | null;
+  planId: string | null;
   pricingModel: PricingModel | null;
   seats: number | null;
   stripeSubscriptionId: string | null;
@@ -86,14 +86,14 @@ export async function getOrganizationSubscriptionSnapshot(
     };
   }
 
-  const planId = subscription.plan === "pro" || subscription.plan === "team"
+  const planId = subscription.plan && isPlanId(subscription.plan) && subscription.plan !== "free"
     ? subscription.plan
     : null;
 
   return {
     billingInterval: subscription.billingInterval ?? null,
     planId,
-    pricingModel: planId ? plans[planId].pricingModel : null,
+    pricingModel: planId ? plans[planId as PlanId].pricingModel : null,
     seats: subscription.seats ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
     subscriptionStatus: subscription.status ?? null,

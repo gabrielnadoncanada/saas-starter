@@ -164,9 +164,9 @@ export function AssistantChat({
 
   return (
     <PromptInputProvider>
-      <div className="flex h-[calc(100vh-10rem)] min-h-[36rem] flex-col gap-3">
-        <Conversation className="rounded-lg border bg-background">
-          <ConversationContent className="gap-4 p-4">
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <Conversation>
+          <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
             {messages.length === 0 && !error ? (
               <AssistantEmptyState
                 onPromptClick={(text) => sendAssistantMessage({ files: [], text })}
@@ -227,6 +227,7 @@ export function AssistantChat({
 
         {error ? <AssistantErrorState error={error} onDismiss={clearError} /> : null}
 
+        <div className="mx-auto w-full max-w-3xl px-4 pb-4">
         <PromptInput className="w-full" onSubmit={sendAssistantMessage}>
           <PromptInputBody>
             <PromptInputTextarea
@@ -254,6 +255,7 @@ export function AssistantChat({
             <PromptInputSubmit onStop={stop} status={status} />
           </PromptInputFooter>
         </PromptInput>
+        </div>
       </div>
     </PromptInputProvider>
   );

@@ -1,9 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { ThemeSwitch } from '@/shared/components/layout/preferences/theme-switch'
 import { Header } from '@/shared/components/layout/shell/header'
 import { Search } from '@/shared/components/navigation/search'
-import { ProfileDropdown } from '@/shared/components/layout/user/profile-dropdown'
 import { cn } from '@/shared/lib/utils'
 import { SearchProvider } from '@/shared/components/command/search-provider'
 import { SidebarInset, SidebarProvider } from '@/shared/components/ui/sidebar'
@@ -55,10 +53,6 @@ export default async function DashboardLayout({
             >
               <Header>
                 <Search />
-                <div className="ms-auto flex items-center space-x-4">
-                  <ThemeSwitch />
-                  <ProfileDropdown />
-                </div>
               </Header>
               {children}
             </SidebarInset>

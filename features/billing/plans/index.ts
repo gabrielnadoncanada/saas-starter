@@ -2,6 +2,7 @@ export {
   capabilities,
   getPlan,
   getPricingPlans,
+  isPlanId,
   limitKeys,
   plans,
   type BillingInterval,

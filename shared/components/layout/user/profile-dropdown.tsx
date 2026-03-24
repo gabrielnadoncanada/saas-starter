@@ -50,13 +50,13 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={routes.app.settingsAccount}>
+              <Link href={routes.app.account}>
                 Account
               </Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <Link href={routes.app.settingsTeam}>
+              <Link href={routes.app.team}>
                 Team
               </Link>
             </DropdownMenuItem>

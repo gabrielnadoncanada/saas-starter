@@ -34,7 +34,7 @@ export async function checkoutAction(formData: FormData) {
 
   const guard = await requireOrganizationRole(user.id, ["owner"]);
   if (isOrganizationRoleError(guard)) {
-    redirect(routes.app.settingsTeam);
+    redirect(routes.app.team);
   }
 
   const organization = await getCurrentOrganization();

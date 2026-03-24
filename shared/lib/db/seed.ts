@@ -1,3 +1,4 @@
+import type { PlanId } from "@/shared/config/billing.config";
 import { db } from "./prisma";
 import { stripe } from "@/shared/lib/stripe/client";
 
@@ -5,7 +6,7 @@ type SeedStripePlan = {
   name: string;
   description: string;
   unitAmount: number;
-  planId: "pro" | "team";
+  planId: Exclude<PlanId, "free">;
   pricingModel: "flat";
 };
 

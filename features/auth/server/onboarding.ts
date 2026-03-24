@@ -9,6 +9,10 @@ export async function ensureUserWorkspace(email: string) {
   });
 
   if (existingOrganizations?.[0]?.id) {
+    await auth.api.setActiveOrganization({
+      headers: reqHeaders,
+      body: { organizationId: existingOrganizations[0].id },
+    });
     return existingOrganizations[0].id;
   }
 
@@ -18,6 +22,11 @@ export async function ensureUserWorkspace(email: string) {
       name: `${email}'s Team`,
       slug: crypto.randomUUID(),
     },
+  });
+
+  await auth.api.setActiveOrganization({
+    headers: reqHeaders,
+    body: { organizationId: organization.id },
   });
 
   return organization.id;

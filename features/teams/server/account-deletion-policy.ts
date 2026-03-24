@@ -41,7 +41,7 @@ export async function getAccountDeletionBlocker(userId: string) {
       return `You are the sole owner of "${fullOrg.name}". Transfer ownership before deleting your account.`;
     }
 
-    const subscription = await getOrganizationSubscriptionSnapshot(fullOrg.id);
+    const subscription = await getOrganizationSubscriptionSnapshot(fullOrg.id, await headers());
 
     if (
       otherOwnerCount === 0 &&

@@ -38,11 +38,6 @@ const screenshots: Screenshot[] = [
     caption: 'Pricing page with monthly plans and Stripe-powered subscriptions.',
   },
   {
-    slot: 'activity',
-    src: null,
-    caption: 'Activity log tracking sign-ins, team changes, and account events.',
-  },
-  {
     slot: 'plan-gate',
     src: null,
     caption: 'Plan gating in action - upgrade prompts when limits are reached.',

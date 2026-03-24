@@ -24,7 +24,7 @@ const tiers: Tier[] = [
       'Stripe billing: flat, per-seat, and one-time',
       'Plan gating with capability checks and usage limits',
       'Team management with roles and invitations',
-      'Dashboard shell with sidebar, settings, activity log',
+      'Dashboard shell with sidebar and settings',
       'Tasks CRUD example with plan-gated creation',
       'AI-ready assistant module with real task actions and honest scaffolds',
       'PostgreSQL + Prisma with migrations and seed',

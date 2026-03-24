@@ -37,7 +37,7 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-export function NavGroup({ title, items }: SidebarNavGroup) {
+export function NavGroup({ title, items, children }: SidebarNavGroup & { children?: ReactNode }) {
   const { state, isMobile } = useSidebar()
   const pathname = usePathname()
   return (
@@ -51,7 +51,7 @@ export function NavGroup({ title, items }: SidebarNavGroup) {
               : `${item.title}-${item.url}`
 
           if (!item.items)
-            return <SidebarMenuLink key={key} item={item} href={item.url} />
+            return <SidebarMenuLink key={key} item={item} href={pathname} />
 
           if (state === 'collapsed' && !isMobile)
             return (
@@ -66,6 +66,7 @@ export function NavGroup({ title, items }: SidebarNavGroup) {
             <SidebarMenuCollapsible key={key} item={item} href={pathname} />
           )
         })}
+        {children}
       </SidebarMenu>
     </SidebarGroup>
   )
@@ -187,13 +188,13 @@ function SidebarMenuCollapsedDropdown({
 }
 
 function checkIsActive(href: string, item: SidebarNavItem, mainNav = false) {
-  return false;
-  // return (
-  //   href === item.url || // /endpint?search=param
-  //   href.split('?')[0] === item.url || // endpoint
-  //   !!item?.items?.filter((i) => i.url === href).length || // if child nav is active
-  //   (mainNav &&
-  //     href.split('/')[1] !== '' &&
-  //     href.split('/')[1] === item?.url?.split('/')[1])
-  // )
+  const path = href.split('?')[0]
+
+  if (item.url && path === item.url) return true
+
+  if (item.items?.some((i) => path === i.url)) return true
+
+  if (mainNav && item.items?.some((i) => path.startsWith(i.url))) return true
+
+  return false
 }

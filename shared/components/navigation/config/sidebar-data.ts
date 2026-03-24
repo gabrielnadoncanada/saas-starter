@@ -1,7 +1,7 @@
 import {
+  CreditCard,
   LayoutDashboard,
   ListTodo,
-  Sparkles,
 } from "lucide-react";
 
 import { routes } from "@/shared/constants/routes";
@@ -15,7 +15,7 @@ export const sidebarData: SidebarData = {
       items: [
         { title: "Dashboard", url: routes.app.dashboard, icon: LayoutDashboard },
         { title: "Tasks", url: routes.app.tasks, icon: ListTodo },
-        { title: "AI Assistant", url: routes.app.assistant, icon: Sparkles },
+        { title: "Billing", url: routes.app.billing, icon: CreditCard },
       ],
     },
     settingsGroup,

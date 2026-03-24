@@ -51,7 +51,7 @@ const features = [
     icon: Settings,
     title: "Settings + Account",
     description:
-      "Profile editing, linked auth providers, activity log, account deletion, and team management pages.",
+      "Profile editing, linked auth providers, account deletion, and team management pages.",
   },
   {
     icon: Sparkles,

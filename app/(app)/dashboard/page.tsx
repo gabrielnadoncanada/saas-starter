@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Sparkles, Users } from 'lucide-react';
 import { getCurrentOrganization } from '@/features/teams/server/current-organization';
 import { listCurrentTeamTasks } from '@/features/tasks/server/tasks';
-import { Main } from '@/shared/components/layout/shell/main';
+import { Page, PageDescription, PageHeader, PageTitle } from '@/shared/components/layout/page';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -39,13 +39,13 @@ export default async function DashboardPage() {
   const canUseAI = hasCapability(planId, "ai.assistant");
 
   return (
-    <Main className="flex flex-1 flex-col gap-4 sm:gap-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">
+    <Page className="flex flex-1 flex-col gap-4 sm:gap-6">
+      <PageHeader>
+        <PageTitle>Dashboard</PageTitle>
+        <PageDescription>
           Welcome back{organization?.name ? ` to ${organization.name}` : ''}.
-        </p>
-      </div>
+        </PageDescription>
+      </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
@@ -125,13 +125,13 @@ export default async function DashboardPage() {
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
-        <Link href={routes.app.settingsTeam}>
+        <Link href={routes.app.team}>
           <Button variant="outline">
             Organization Settings
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
       </div>
-    </Main>
+    </Page>
   );
 }

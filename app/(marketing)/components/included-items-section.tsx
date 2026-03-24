@@ -22,7 +22,7 @@ const includedItems = [
   },
   {
     label: "Dashboard",
-    detail: "Sidebar, command menu, dark mode, settings, activity log",
+    detail: "Sidebar, command menu, dark mode, settings",
   },
   {
     label: "AI-ready module",
