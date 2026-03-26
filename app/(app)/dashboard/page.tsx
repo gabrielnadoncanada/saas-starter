@@ -1,23 +1,34 @@
-import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Sparkles, Users } from 'lucide-react';
-import { getCurrentOrganization } from '@/features/teams/server/current-organization';
-import { listCurrentTeamTasks } from '@/features/tasks/server/tasks';
-import { Page, PageDescription, PageHeader, PageTitle } from '@/shared/components/layout/page';
-import { Button } from '@/shared/components/ui/button';
+import Link from "next/link";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+  Users,
+  ArrowUp,
+} from "lucide-react";
+import { getCurrentOrganization } from "@/features/teams/server/current-organization";
+import { listCurrentTeamTasks } from "@/features/tasks/server/tasks";
+import {
+  Page,
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/shared/components/layout/page";
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/shared/components/ui/card';
-import { routes } from '@/shared/constants/routes';
-import { resolveTeamPlan, getPlan } from '@/features/billing/plans';
-import { hasCapability, checkLimit } from '@/features/billing/guards';
-import { getMonthlyUsage } from '@/features/billing/usage';
-import { UsageMeter } from '@/features/billing/components/usage-meter';
-import { PlanBadge } from '@/features/billing/components/plan-badge';
-import { UpgradeCard } from '@/features/billing/components/upgrade-card';
+} from "@/shared/components/ui/card";
+import { routes } from "@/shared/constants/routes";
+import { resolveTeamPlan, getPlan } from "@/features/billing/plans";
+import { hasCapability, checkLimit } from "@/features/billing/guards";
+import { getMonthlyUsage } from "@/features/billing/usage";
+import { UsageMeter } from "@/features/billing/components/usage-meter";
+import { Badge } from "@/shared/components/ui/badge";
+import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 
 export default async function DashboardPage() {
   const [organization, tasks] = await Promise.all([
@@ -39,22 +50,33 @@ export default async function DashboardPage() {
   const canUseAI = hasCapability(planId, "ai.assistant");
 
   return (
-    <Page className="flex flex-1 flex-col gap-4 sm:gap-6">
+    <Page>
       <PageHeader>
         <PageTitle>Dashboard</PageTitle>
         <PageDescription>
-          Welcome back{organization?.name ? ` to ${organization.name}` : ''}.
+          Welcome back{organization?.name ? ` to ${organization.name}` : ""}.
         </PageDescription>
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardDescription>Current Plan</CardDescription>
-            <CardTitle className="text-2xl flex items-center gap-2">
+            <CardTitle>
               {plan.name}
-              <PlanBadge plan={planId} />
+              <Badge
+                variant="outline"
+                className="border-transparent text-green-500"
+              >
+                <ArrowUp />
+                {planId}
+              </Badge>
             </CardTitle>
+            <CardDescription>
+              <span>Current Plan</span>
+            </CardDescription>
+            <div>
+              <div className="font-heading text-2xl font-semibold">$3.4</div>
+            </div>
           </CardHeader>
         </Card>
 
@@ -125,7 +147,7 @@ export default async function DashboardPage() {
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
-        <Link href={routes.app.team}>
+        <Link href={routes.settings.organization}>
           <Button variant="outline">
             Organization Settings
             <ArrowRight className="ml-2 h-4 w-4" />

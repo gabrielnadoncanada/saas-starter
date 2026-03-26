@@ -13,7 +13,6 @@ CREATE TYPE "TaskLabel" AS ENUM ('FEATURE', 'BUG', 'DOCUMENTATION');
 -- CreateEnum
 CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
 
-
 -- CreateTable
 CREATE TABLE "AssistantConversation" (
     "id" TEXT NOT NULL,
@@ -170,7 +169,6 @@ CREATE TABLE "Invitation" (
     CONSTRAINT "Invitation_pkey" PRIMARY KEY ("id")
 );
 
-
 -- CreateTable
 CREATE TABLE "UsageCounter" (
     "id" SERIAL NOT NULL,
@@ -204,6 +202,9 @@ CREATE UNIQUE INDEX "Session_token_key" ON "Session"("token");
 
 -- CreateIndex
 CREATE INDEX "Session_userId_idx" ON "Session"("userId");
+
+-- CreateIndex
+CREATE INDEX "Verification_identifier_idx" ON "Verification"("identifier");
 
 -- CreateIndex
 CREATE INDEX "Subscription_referenceId_idx" ON "Subscription"("referenceId");
@@ -256,7 +257,6 @@ CREATE INDEX "Invitation_organizationId_idx" ON "Invitation"("organizationId");
 -- CreateIndex
 CREATE INDEX "Invitation_email_idx" ON "Invitation"("email");
 
-
 -- CreateIndex
 CREATE INDEX "UsageCounter_organizationId_limitKey_idx" ON "UsageCounter"("organizationId", "limitKey");
 
@@ -290,8 +290,5 @@ ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_organizationId_fkey" FOREIGN
 -- AddForeignKey
 ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_inviterId_fkey" FOREIGN KEY ("inviterId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-
-
 -- AddForeignKey
 ALTER TABLE "UsageCounter" ADD CONSTRAINT "UsageCounter_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-

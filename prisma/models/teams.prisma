@@ -1,13 +1,13 @@
 model Organization {
-  id                       String    @id
-  name                     String    @db.VarChar(100)
-  slug                     String?   @unique
-  logo                     String?
-  metadata                 String?   @db.Text
-  createdAt                DateTime  @default(now())
+  id        String   @id
+  name      String   @db.VarChar(100)
+  slug      String?  @unique
+  logo      String?
+  metadata  String?  @db.Text
+  createdAt DateTime @default(now())
 
   // Billing fields
-  stripeCustomerId         String?   @unique
+  stripeCustomerId String? @unique
 
   members                Member[]
   invitations            Invitation[]

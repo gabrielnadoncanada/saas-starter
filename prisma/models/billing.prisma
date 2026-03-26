@@ -1,23 +1,23 @@
 model Subscription {
-  id                  String   @id
-  plan                String   @db.VarChar(50)
-  referenceId         String
-  stripeCustomerId    String?
+  id                   String    @id
+  plan                 String    @db.VarChar(50)
+  referenceId          String
+  stripeCustomerId     String?
   stripeSubscriptionId String?
-  status              String   @default("incomplete") @db.VarChar(30)
-  periodStart         DateTime?
-  periodEnd           DateTime?
-  trialStart          DateTime?
-  trialEnd            DateTime?
-  cancelAtPeriodEnd   Boolean? @default(false)
-  cancelAt            DateTime?
-  canceledAt          DateTime?
-  endedAt             DateTime?
-  seats               Int?
-  billingInterval     String?  @db.VarChar(20)
-  stripeScheduleId    String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  status               String    @default("incomplete") @db.VarChar(30)
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean?  @default(false)
+  cancelAt             DateTime?
+  canceledAt           DateTime?
+  endedAt              DateTime?
+  seats                Int?
+  billingInterval      String?   @db.VarChar(20)
+  stripeScheduleId     String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   @@index([referenceId])
   @@index([stripeCustomerId])

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CreditCard, BarChart3, Receipt } from "lucide-react";
+import { CreditCard, BarChart3, Receipt, ArrowUp } from "lucide-react";
 
 import { getCurrentOrganization } from "@/features/teams/server/current-organization";
 import { getCurrentOrganizationContext } from "@/features/teams/server/organization-context";
@@ -7,7 +7,7 @@ import { resolveTeamPlan, getPlan } from "@/features/billing/plans";
 import { checkLimit } from "@/features/billing/guards";
 import { getMonthlyUsage } from "@/features/billing/usage";
 import { customerPortalAction } from "@/features/billing/actions/customer-portal.action";
-import { PlanBadge } from "@/features/billing/components/plan-badge";
+import { Badge } from "@/shared/components/ui/badge";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
 import {
   Page,
@@ -105,7 +105,13 @@ export default async function BillingPage() {
           </CardTitle>
           <CardDescription>
             <span className="flex items-center gap-2">
-              {plan.name} <PlanBadge plan={planId} />
+              {plan.name}{" "}
+              <Badge
+                variant="outline"
+                className="border-transparent text-green-500"
+              >
+                {planId}
+              </Badge>
               <span className="text-muted-foreground">
                 &mdash; {getSubscriptionLabel(organization)}
               </span>

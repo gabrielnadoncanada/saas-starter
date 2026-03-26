@@ -5,6 +5,7 @@ import { createContext, useContext } from "react";
 export type SidebarUser = {
   name: string;
   email: string;
+  image: string | null;
 };
 
 const UserContext = createContext<SidebarUser | null>(null);

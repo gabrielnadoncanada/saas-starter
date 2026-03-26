@@ -17,10 +17,12 @@ export const routes = {
     dashboard: "/dashboard",
     tasks: "/dashboard/tasks",
     assistant: "/dashboard/assistant",
-    account: "/dashboard/account",
-    team: "/dashboard/team",
-    billing: "/dashboard/billing",
-    settings: "/dashboard/settings",
-    settingsAuthentication: "/dashboard/settings/authentication",
+  },
+  settings: {
+    profile: "/settings/",
+    preferences: "/settings/preferences",
+    billing: "/settings/billing",
+    organization: "/settings/organization",
+    authentication: "/settings/authentication",
   },
 } as const;

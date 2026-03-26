@@ -4,17 +4,17 @@ enum PlatformRole {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String?      @db.VarChar(100)
-  email         String       @unique @db.VarChar(255)
-  emailVerified Boolean      @default(false)
-  image         String?
-  platformRole  PlatformRole @default(USER)
+  id               String       @id @default(cuid())
+  name             String?      @db.VarChar(100)
+  email            String       @unique @db.VarChar(255)
+  emailVerified    Boolean      @default(false)
+  image            String?
+  platformRole     PlatformRole @default(USER)
   stripeCustomerId String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  deletedAt     DateTime?
-  phoneNumber   String?      @map("phone_number") @db.VarChar(30)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  deletedAt        DateTime?
+  phoneNumber      String?      @map("phone_number") @db.VarChar(30)
 
   accounts               Account[]
   sessions               Session[]

@@ -1,8 +1,9 @@
 import { z } from "zod";
-import type { User } from "@prisma/client";
 
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import type { FormActionState } from "@/shared/types/form-action-state";
+
+type AuthUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 
 type ValidatedActionWithUserFunction<
   S extends z.ZodTypeAny,
@@ -10,7 +11,7 @@ type ValidatedActionWithUserFunction<
 > = (
   data: z.infer<S>,
   formData: FormData,
-  user: User,
+  user: AuthUser,
 ) => Promise<FormActionState<z.infer<S>> & TExtraState>;
 
 export function validatedActionWithUser<

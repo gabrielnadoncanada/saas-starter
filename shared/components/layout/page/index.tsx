@@ -3,18 +3,16 @@ import { cn } from "@/shared/lib/utils";
 type PageProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean;
   fluid?: boolean;
-  ref?: React.Ref<HTMLElement>;
+  ref?: React.ComponentProps<"div">["ref"];
 };
 
 function Page({ fixed, className, fluid, ...props }: PageProps) {
   return (
-    <main
-      data-layout={fixed ? "fixed" : "auto"}
+    <div
       className={cn(
         "px-4 py-6 flex flex-1 flex-col gap-4 sm:gap-6",
         fixed && "flex grow flex-col overflow-hidden",
-        !fluid &&
-          "@7xl/content:mx-auto @7xl/content:w-full @7xl/content:max-w-7xl",
+        !fluid && "container flex min-w-0 flex-1 flex-col lg:px-4",
         className,
       )}
       {...props}
