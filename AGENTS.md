@@ -69,6 +69,13 @@ Output standard:
 - Extra structure is allowed only when the underlying workflow is genuinely complex, high-risk, or highly reusable.
 - If an abstraction needs explanation before it feels useful, it is probably too expensive.
 
+## UI Consistency
+
+- Use as few custom CSS classes as possible.
+- Prefer `shadcn/ui` components and their existing variants before building custom UI primitives.
+- Do not create bespoke styling patterns when a `shadcn/ui` component or composition already solves the need.
+- Keep the visual system coherent by extending the shared component set instead of scattering one-off class-based implementations.
+
 ## Local Database
 
 - You can always reset the local database when needed.

@@ -13,7 +13,7 @@ import type { SidebarData } from "@/shared/components/navigation/sidebar-types";
 export const settingsSidebarData: SidebarData = {
   navGroups: [
     {
-      title: "Your Account",
+      title: "Account",
       items: [
         {
           title: "Profile",
@@ -27,13 +27,13 @@ export const settingsSidebarData: SidebarData = {
         },
         {
           title: "Security",
-          url: routes.settings.authentication,
+          url: routes.settings.profile,
           icon: ShieldCheck,
         }
       ],
     },
     {
-      title: "Your Account",
+      title: "Workspace",
       items: [
         {
           title: "Organization",
@@ -42,7 +42,7 @@ export const settingsSidebarData: SidebarData = {
         },
         {
           title: "Members",
-          url: routes.settings.authentication,
+          url: routes.settings.members,
           icon: Users,
         },
         {

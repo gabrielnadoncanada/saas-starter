@@ -1,6 +1,6 @@
 import "server-only";
 
-import { isOrgRole, type OrgRole } from "@/shared/lib/db/enums";
+import type { OrgRole } from "@/shared/lib/db/enums";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getCurrentOrganization } from "@/features/teams/server/current-organization";
 
@@ -32,10 +32,6 @@ export async function getCurrentOrganizationContext(): Promise<CurrentOrganizati
   );
 
   if (!currentMember) {
-    return null;
-  }
-
-  if (!isOrgRole(currentMember.role)) {
     return null;
   }
 

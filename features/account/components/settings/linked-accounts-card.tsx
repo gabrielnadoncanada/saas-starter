@@ -65,7 +65,7 @@ export function LinkedAccountsCard({
     try {
       await signInWithOAuth(
         provider,
-        `${routes.app.settingsAuthentication}?provider=${provider}&success=linked`,
+        `${routes.settings.profile}?provider=${provider}&success=linked`,
       );
     } finally {
       setLinkingProvider(null);

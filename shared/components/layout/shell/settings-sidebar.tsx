@@ -4,6 +4,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
+  SidebarMenuButton,
 } from "@/shared/components/ui/sidebar";
 import { settingsSidebarData } from "@/shared/components/navigation/config/settings-sidebar-data";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
@@ -18,15 +19,20 @@ export function SettingsSidebar() {
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
-        <Button variant="ghost" asChild>
-          <Link href={routes.app.dashboard} className="justify-start">
+        <SidebarMenuButton variant="ghost" asChild>
+          <Link
+            href={routes.app.dashboard}
+            className="justify-start whitespace-nowrap"
+          >
             <ArrowLeftIcon className="size-4" />
             Back to dashboard
           </Link>
-        </Button>
+        </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <NavGroup {...groups[0]} />
+        {groups.map((group, index) => (
+          <NavGroup key={`${group.title}-${index}`} {...group} />
+        ))}
       </SidebarContent>
     </Sidebar>
   );

@@ -20,16 +20,6 @@ function Page({ fixed, className, fluid, ...props }: PageProps) {
   );
 }
 
-function PageContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="page-content"
-      className={cn("flex-1", className)}
-      {...props}
-    />
-  );
-}
-
 function PageTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -76,11 +66,4 @@ function PageHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-export {
-  Page,
-  PageContent,
-  PageTitle,
-  PageDescription,
-  PageHeaderActions,
-  PageHeader,
-};
+export { Page, PageTitle, PageDescription, PageHeaderActions, PageHeader };

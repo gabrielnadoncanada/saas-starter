@@ -34,13 +34,14 @@ export type BillingPrice = {
 
 export type BillingPrices = {
   monthly?: BillingPrice;
+  yearly?: BillingPrice;
 };
 
 export type Plan = {
   id: PlanId;
   name: string;
   description: string;
-  marketingFeatures: string[];
+  features: string[];
   capabilities: Capability[];
   limits: Record<LimitKey, number>;
   pricingModel: PricingModel;
@@ -52,7 +53,7 @@ export const plans: Record<PlanId, Plan> = {
     id: "free",
     name: "Free",
     description: "For trying the starter without paid billing.",
-    marketingFeatures: [
+    features: [
       "Create tasks",
       "Billing portal access",
     ],
@@ -71,7 +72,7 @@ export const plans: Record<PlanId, Plan> = {
     id: "pro",
     name: "Pro",
     description: "For solo builders and small teams shipping quickly.",
-    marketingFeatures: [
+    features: [
       "Task export",
       "AI assistant access",
       "Email sync",
@@ -103,13 +104,20 @@ export const plans: Record<PlanId, Plan> = {
           trialDays: 7,
         },
       }),
+      ...(process.env.STRIPE_PRICE_PRO_YEARLY && {
+        yearly: {
+          priceId: process.env.STRIPE_PRICE_PRO_YEARLY,
+          unitAmount: 19000,
+          trialDays: 7,
+        },
+      }),
     },
   },
   team: {
     id: "team",
     name: "Team",
     description: "For teams that need seats, analytics, and higher limits.",
-    marketingFeatures: [
+    features: [
       "Per-seat billing",
       "Team analytics",
       "Higher usage limits",
@@ -163,6 +171,8 @@ export const stripePlans = Object.values(plans)
   .map((plan) => ({
     name: plan.id,
     priceId: plan.prices.monthly!.priceId,
+    annualDiscountPriceId:
+      plan.pricingModel === "flat" ? plan.prices.yearly?.priceId : undefined,
     seatPriceId:
       plan.pricingModel === "per_seat"
         ? plan.prices.monthly!.priceId

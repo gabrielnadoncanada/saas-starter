@@ -1,4 +1,4 @@
-import { Page, PageContent } from "@/shared/components/layout/page";
+import { Page } from "@/shared/components/layout/page";
 import { resolveTeamPlan } from "@/features/billing/plans";
 import { hasCapability, checkLimit } from "@/features/billing/guards";
 import { getMonthlyUsage } from "@/features/billing/usage";
@@ -32,7 +32,7 @@ export default async function AssistantPage({
 
   return (
     <Page fixed>
-      <PageContent className="flex flex-col ">
+      <div className="flex flex-col ">
         {!canUseAssistant ? (
           <UpgradeCard
             feature="AI Assistant"
@@ -49,7 +49,7 @@ export default async function AssistantPage({
             initialConversationId={initialConversation?.id ?? null}
           />
         )}
-      </PageContent>
+      </div>
     </Page>
   );
 }

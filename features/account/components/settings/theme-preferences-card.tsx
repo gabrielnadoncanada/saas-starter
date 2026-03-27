@@ -30,7 +30,7 @@ export function ThemePreferencesCard() {
   const activeTheme = mounted ? (theme ?? "system") : null;
 
   return (
-    <Card>
+    <Card className="max-w-2xl ">
       <CardHeader>
         <CardTitle>Theme</CardTitle>
         <CardDescription>

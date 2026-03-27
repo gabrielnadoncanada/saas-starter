@@ -1,13 +1,33 @@
-import { OrganizationSettingsPage } from "@/features/teams/components/organization-settings-page";
-import { ContentSection } from "@/features/account/components/settings/content-section";
+import { RenameOrganizationPanel } from "@/features/teams/components/rename-organization-panel";
+import { getCurrentOrganizationContext } from "@/features/teams/server/organization-context";
+import {
+  Page,
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/shared/components/layout/page";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const context = await getCurrentOrganizationContext();
+
+  if (!context) {
+    return null;
+  }
+
+  const { organization } = context;
+
   return (
-    <ContentSection
-      title="Organization Settings"
-      desc="Manage your organization settings and invite new members."
-    >
-      <OrganizationSettingsPage />
-    </ContentSection>
+    <Page fixed>
+      <PageHeader>
+        <PageTitle>Organization Settings</PageTitle>
+        <PageDescription>
+          Manage your organization details and subscription.
+        </PageDescription>
+      </PageHeader>
+      <RenameOrganizationPanel
+        currentName={organization.name}
+        canManage={context.canManageMembers}
+      />
+    </Page>
   );
 }

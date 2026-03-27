@@ -23,10 +23,20 @@ export async function createOrganizationCheckoutSession(params: {
     throw new Error("Invalid recurring Stripe price selected.");
   }
 
+  if (
+    selection.billingInterval === "year" &&
+    selection.pricingModel === "per_seat"
+  ) {
+    throw new Error(
+      "Yearly per-seat checkout is not supported by the current billing setup.",
+    );
+  }
+
   const checkout = await auth.api.upgradeSubscription({
     headers: params.reqHeaders,
     body: {
       plan: selection.planId,
+      annual: selection.billingInterval === "year",
       customerType: "organization",
       referenceId: params.organizationId,
       seats: Math.max(1, params.seatQuantity),

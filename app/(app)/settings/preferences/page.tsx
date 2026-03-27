@@ -9,13 +9,6 @@ import { ThemePreferencesCard } from "@/features/account/components/settings/the
 export default function PreferencesPage() {
   return (
     <Page fixed>
-      <PageHeader>
-        <PageTitle>Preferences</PageTitle>
-        <PageDescription>
-          Manage how the app looks and behaves for your account.
-        </PageDescription>
-      </PageHeader>
-
       <ThemePreferencesCard />
     </Page>
   );

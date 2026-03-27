@@ -3,6 +3,7 @@ import { plans, type PlanId, type PricingModel } from "@/features/billing/plans"
 type RecurringSelection = {
   planId: Exclude<PlanId, "free">;
   pricingModel: PricingModel;
+  billingInterval: "month" | "year";
 };
 
 export function resolveRecurringSelectionFromPriceId(
@@ -14,7 +15,19 @@ export function resolveRecurringSelectionFromPriceId(
     }
 
     if (plan.prices.monthly?.priceId === priceId) {
-      return { planId: plan.id, pricingModel: plan.pricingModel };
+      return {
+        planId: plan.id,
+        pricingModel: plan.pricingModel,
+        billingInterval: "month",
+      };
+    }
+
+    if (plan.prices.yearly?.priceId === priceId) {
+      return {
+        planId: plan.id,
+        pricingModel: plan.pricingModel,
+        billingInterval: "year",
+      };
     }
   }
 

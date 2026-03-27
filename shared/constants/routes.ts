@@ -19,10 +19,10 @@ export const routes = {
     assistant: "/dashboard/assistant",
   },
   settings: {
-    profile: "/settings/",
+    profile: "/settings",
     preferences: "/settings/preferences",
     billing: "/settings/billing",
     organization: "/settings/organization",
-    authentication: "/settings/authentication",
+    members: "/settings/members",
   },
 } as const;

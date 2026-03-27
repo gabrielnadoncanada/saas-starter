@@ -33,7 +33,7 @@ export const unlinkAuthProviderAction = validatedActionWithUser<
     }
 
     return redirect(
-      `${routes.app.settingsAuthentication}?provider=${provider}&success=unlinked`,
+      `${routes.settings.profile}?provider=${provider}&success=unlinked`,
     );
   },
 );

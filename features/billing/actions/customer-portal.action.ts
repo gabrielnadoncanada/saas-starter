@@ -17,7 +17,7 @@ export async function customerPortalAction() {
   if (!user) redirect(routes.auth.login);
 
   const guard = await requireOrganizationRole(user.id, ["owner"]);
-  if (isOrganizationRoleError(guard)) redirect(routes.app.team);
+  if (isOrganizationRoleError(guard)) redirect(routes.settings.members);
 
   const organization = await getCurrentOrganization();
   if (!organization?.stripeCustomerId || !organization?.subscriptionStatus) {

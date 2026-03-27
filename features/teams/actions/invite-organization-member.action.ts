@@ -1,8 +1,10 @@
 "use server";
 
 import { headers } from "next/headers";
+import { z } from "zod";
 import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
 import { inviteOrganizationMemberSchema } from "@/features/teams/schemas/organization.schema";
+import type { RefreshableFormState } from "@/features/teams/types/organization.types";
 import {
   requireOrganizationRole,
   isOrganizationRoleError,
@@ -12,6 +14,11 @@ import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
 import { assertCapability, assertLimit } from "@/features/billing/guards";
 import { auth } from "@/shared/lib/auth";
 import { UpgradeRequiredError, LimitReachedError } from "@/features/billing/errors";
+
+type InviteOrganizationMemberValues = z.infer<typeof inviteOrganizationMemberSchema>;
+
+export type InviteOrganizationMemberActionState =
+  RefreshableFormState<InviteOrganizationMemberValues>;
 
 export const inviteOrganizationMemberAction = validatedActionWithUser<
   typeof inviteOrganizationMemberSchema,
