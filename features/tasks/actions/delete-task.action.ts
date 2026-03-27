@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { routes } from "@/shared/constants/routes";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 import {
   bulkDeleteTasksSchema,
   deleteTaskSchema,
@@ -13,7 +13,7 @@ import {
   deleteTaskForCurrentTeam,
 } from "@/features/tasks/server/tasks";
 
-export const deleteTaskAction = validatedActionWithUser<
+export const deleteTaskAction = validatedAuthenticatedAction<
   typeof deleteTaskSchema,
   { taskId?: number }
 >(
@@ -29,7 +29,7 @@ export const deleteTaskAction = validatedActionWithUser<
   },
 );
 
-export const bulkDeleteTasksAction = validatedActionWithUser<
+export const bulkDeleteTasksAction = validatedAuthenticatedAction<
   typeof bulkDeleteTasksSchema,
   { taskIds?: number[] }
 >(

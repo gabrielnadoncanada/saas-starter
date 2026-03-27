@@ -67,6 +67,35 @@ features/
 
 Only add the folders that are actually needed.
 
+When one feature contains multiple clearly separate screens or workflows, you may add one more level of pragmatic slices inside the feature.
+
+Example:
+
+```txt
+features/
+  admin/
+    shared/
+      components/
+      server/
+    overview/
+      server/
+      components/
+    users/
+      server/
+      components/
+      types/
+    organizations/
+      server/
+      components/
+      types/
+```
+
+Use slices only when they reduce mixing inside a feature.
+Do not create slices for tiny features or for one screen split across too many folders.
+When a feature has slices, put cross-slice code in `features/<feature>/shared/`.
+Do not scatter cross-slice code across ambiguous root folders like `components/` or `server/` once slices exist.
+Keep only clearly feature-level entry files or top-level folders at the feature root.
+
 ### `shared/`
 
 Use root `shared/` for app-wide code that is not owned by one product feature.
@@ -197,6 +226,20 @@ Use these defaults:
 
 Inside a feature, prefer `server/` or `utils/` over a catch-all local `lib/`.
 
+If a feature uses internal slices:
+
+- keep feature-wide shared concerns at `features/<feature>/shared/`
+- keep slice-owned UI and workflows in `features/<feature>/<slice>/`
+- do not create extra architecture layers between the route and the slice
+- do not introduce slice folders unless the feature already has meaningful internal subdomains
+
+Examples:
+
+- shared admin guard used by multiple admin slices -> `features/admin/shared/server/`
+- shared admin dialog or table helper reused across admin slices -> `features/admin/shared/components/`
+- members-only table UI -> `features/teams/members/components/`
+- invitations-only action -> `features/teams/invitations/actions/`
+
 Do not let root shared code depend on `features/`.
 
 Good:
@@ -301,6 +344,8 @@ When reviewing a structure or suggesting a refactor:
 7. rename misleading files such as feature-local `XxxPage.tsx`
 8. move Prisma queries and transactions out of `actions/` and into `server/`
 9. keep the recommendation pragmatic and small
+
+If one feature has multiple route-backed areas such as `overview`, `users`, and `organizations`, prefer light slices over one large mixed folder.
 
 ## Reference files
 

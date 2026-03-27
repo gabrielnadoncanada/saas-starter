@@ -8,7 +8,7 @@ import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { SettingsSidebar } from "@/shared/components/layout/shell/settings-sidebar";
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
-import { ensureActiveOrganization } from "@/features/teams/server/ensure-active-organization";
+import { ensureActiveOrganization } from "@/features/teams/shared/server/ensure-active-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { ActiveOrganizationProvider } from "@/shared/components/providers/active-organization-provider";
 import { UserProvider } from "@/shared/components/providers/user-provider";
@@ -35,6 +35,7 @@ export default async function SettingsLayout({
     name: user.name ?? user.email ?? "User",
     email: user.email ?? "",
     image: user.image ?? null,
+    role: (user as any).role ?? null,
   };
 
   return (

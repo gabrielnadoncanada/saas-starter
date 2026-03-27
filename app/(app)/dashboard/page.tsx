@@ -6,7 +6,7 @@ import {
   Users,
   ArrowUp,
 } from "lucide-react";
-import { getCurrentOrganization } from "@/features/teams/server/current-organization";
+import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
 import { listCurrentTeamTasks } from "@/features/tasks/server/tasks";
 import {
   Page,

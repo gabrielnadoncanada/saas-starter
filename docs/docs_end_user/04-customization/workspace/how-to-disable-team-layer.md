@@ -19,7 +19,7 @@ The team layer is structural. It is wired into:
 | Checkout finalization | `features/billing/server/finalize-checkout.ts` — writes billing fields to the `Team` model |
 | Subscription sync | `features/billing/server/handle-subscription-change.ts` — webhook updates team billing fields |
 | Account deletion | `features/account/server/delete-account.ts` — checks team subscription status before allowing deletion |
-| Deletion policy | `features/teams/server/account-deletion-policy.ts` — blocks deletion if last member with active subscription |
+| Deletion policy | `features/teams/shared/server/account-deletion-policy.ts` — blocks deletion if last member with active subscription |
 | Invitations | `features/teams/server/team-invitations.ts`, `cancel-invitation.ts`, `resend-invitation.ts` |
 | RBAC guard | `features/teams/server/require-team-role.ts` — checks membership role |
 | Sidebar | `shared/components/navigation/config/settings-group.ts` — team settings link |
@@ -62,7 +62,7 @@ This is a structural refactor, not a configuration toggle.
 
 1. Update `features/auth/server/onboarding.ts` to skip team creation (or keep it as a silent 1:1 personal workspace if you want to minimize changes)
 2. Update `features/account/server/delete-account.ts` to check `user.subscriptionStatus` instead of team membership
-3. Delete `features/teams/server/account-deletion-policy.ts` or adapt it
+3. Delete `features/teams/shared/server/account-deletion-policy.ts` or adapt it
 
 ### Phase 5 — Clean up
 
@@ -92,7 +92,7 @@ This is a structural refactor, not a configuration toggle.
 | DELETE | `features/teams/server/cancel-invitation.ts` |
 | DELETE | `features/teams/server/resend-invitation.ts` |
 | DELETE | `features/teams/server/active-team.ts` |
-| DELETE | `features/teams/server/account-deletion-policy.ts` |
+| DELETE | `features/teams/shared/server/account-deletion-policy.ts` |
 | DELETE | `app/(app)/dashboard/settings/team/page.tsx` |
 
 ## Complexity Scorecard

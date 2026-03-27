@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { routes } from "@/shared/constants/routes";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 import {
   bulkUpdateTaskStatusSchema,
   updateTaskSchema,
@@ -16,7 +16,7 @@ import {
 } from "@/features/tasks/server/tasks";
 import type { Task } from "@/features/tasks/types/task.types";
 
-export const updateTaskAction = validatedActionWithUser<
+export const updateTaskAction = validatedAuthenticatedAction<
   typeof updateTaskSchema,
   { task?: Task }
 >(
@@ -32,7 +32,7 @@ export const updateTaskAction = validatedActionWithUser<
   },
 );
 
-export const updateTaskStatusAction = validatedActionWithUser<
+export const updateTaskStatusAction = validatedAuthenticatedAction<
   typeof updateTaskStatusSchema,
   { refreshKey?: number }
 >(
@@ -45,7 +45,7 @@ export const updateTaskStatusAction = validatedActionWithUser<
   },
 );
 
-export const bulkUpdateTaskStatusAction = validatedActionWithUser<
+export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
   typeof bulkUpdateTaskStatusSchema,
   { status?: Task["status"]; taskIds?: number[] }
 >(

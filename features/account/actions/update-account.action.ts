@@ -2,9 +2,9 @@
 
 import { updateAccount } from "@/features/account/server/update-account";
 import { updateAccountSchema } from "@/features/account/schemas/account.schema";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 
-export const updateAccountAction = validatedActionWithUser(
+export const updateAccountAction = validatedAuthenticatedAction(
   updateAccountSchema,
   async ({ name, phoneNumber }) => {
     return updateAccount({

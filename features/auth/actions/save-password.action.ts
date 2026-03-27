@@ -2,9 +2,9 @@
 
 import { savePasswordServer } from "@/features/auth/server/save-password";
 import { savePasswordSchema } from "@/features/auth/schemas/save-password.schema";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 
-export const savePasswordAction = validatedActionWithUser(
+export const savePasswordAction = validatedAuthenticatedAction(
   savePasswordSchema,
   async ({ currentPassword, newPassword }, formData) => {
     const hasPassword = formData.get("hasPassword") === "true";

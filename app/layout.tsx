@@ -1,8 +1,10 @@
 import "@/shared/styles/globals.css";
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/app/theme-provider";
 import { Toaster } from "@/shared/components/ui/sonner";
+import { ImpersonationBannerWrapper } from "@/features/admin/shared/components/impersonation-banner-wrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +43,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Suspense>
+            <ImpersonationBannerWrapper />
+          </Suspense>
           {children}
           <Toaster />
         </ThemeProvider>

@@ -7,10 +7,10 @@ import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { createOrganizationCheckoutSession } from "@/features/billing/server/better-auth-stripe";
 import { isConfiguredStripePriceId } from "@/features/billing/plans";
 import {
-  requireOrganizationRole,
-  isOrganizationRoleError,
-} from "@/features/teams/server/require-organization-role";
-import { getCurrentOrganization } from "@/features/teams/server/current-organization";
+  getRequiredOrganizationMembership,
+  OrganizationMembershipError,
+} from "@/features/teams/shared/server/get-required-organization-membership";
+import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -32,9 +32,14 @@ export async function checkoutAction(formData: FormData) {
     );
   }
 
-  const guard = await requireOrganizationRole(user.id, ["owner"]);
-  if (isOrganizationRoleError(guard)) {
-    redirect(routes.settings.members);
+  try {
+    await getRequiredOrganizationMembership(user.id, ["owner"]);
+  } catch (error) {
+    if (error instanceof OrganizationMembershipError) {
+      redirect(routes.settings.members);
+    }
+
+    throw error;
   }
 
   const organization = await getCurrentOrganization();

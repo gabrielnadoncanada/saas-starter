@@ -10,6 +10,10 @@ model User {
   emailVerified    Boolean      @default(false)
   image            String?
   platformRole     PlatformRole @default(USER)
+  role             String?      @default("user")
+  banned           Boolean?     @default(false)
+  banReason        String?
+  banExpires       DateTime?
   stripeCustomerId String?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
@@ -53,6 +57,7 @@ model Session {
   userAgent            String?
   userId               String
   activeOrganizationId String?
+  impersonatedBy       String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

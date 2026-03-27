@@ -3,13 +3,13 @@
 import { revalidatePath } from "next/cache";
 
 import { routes } from "@/shared/constants/routes";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 import { createTaskSchema } from "@/features/tasks/schemas/task.schema";
 import type { Task } from "@/features/tasks/types/task.types";
 import { createTaskForCurrentTeam } from "@/features/tasks/server/create-task-for-current-team";
 import { UpgradeRequiredError, LimitReachedError } from "@/features/billing/errors";
 
-export const createTaskAction = validatedActionWithUser<
+export const createTaskAction = validatedAuthenticatedAction<
   typeof createTaskSchema,
   { task?: Task }
 >(

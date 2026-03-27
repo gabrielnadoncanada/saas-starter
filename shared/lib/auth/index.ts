@@ -3,10 +3,11 @@ import { createElement } from "react";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { stripe } from "@better-auth/stripe";
-import { magicLink } from "better-auth/plugins";
+import { admin, magicLink } from "better-auth/plugins";
 import { organization } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { stripePlans } from "@/shared/config/billing.config";
+import { accountFlags } from "@/shared/config/account.config";
 import { db } from "@/shared/lib/db/prisma";
 import { sendEmail } from "@/shared/lib/email/client";
 import { VerifyEmailTemplate } from "@/shared/lib/email/templates/verify-email";
@@ -93,6 +94,10 @@ export const auth = betterAuth({
   },
 
   plugins: [
+    admin({
+      defaultRole: "user",
+      adminRoles: ["admin"],
+    }),
     magicLink({
       sendMagicLink: async ({ email, url }) => {
         await sendEmail({
@@ -105,7 +110,7 @@ export const auth = betterAuth({
       },
     }),
     organization({
-      allowUserToCreateOrganization: true,
+      allowUserToCreateOrganization: accountFlags.allowCreateOrganization,
       creatorRole: "owner",
       invitationExpiresIn: 7 * 24 * 60 * 60,
       sendInvitationEmail: async ({ invitation, organization: org, inviter }) => {

@@ -1,4 +1,4 @@
-import { getCurrentOrganization } from "@/features/teams/server/current-organization";
+import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
 import type { PlanId, PricingModel } from "../plans";
 import { resolveTeamPlan } from "../plans";
 

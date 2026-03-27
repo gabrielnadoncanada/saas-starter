@@ -2,7 +2,7 @@ import { Page } from "@/shared/components/layout/page";
 import { resolveTeamPlan } from "@/features/billing/plans";
 import { hasCapability, checkLimit } from "@/features/billing/guards";
 import { getMonthlyUsage } from "@/features/billing/usage";
-import { getCurrentOrganization } from "@/features/teams/server/current-organization";
+import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import { getAssistantConversation } from "@/features/assistant/server/conversations";

@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { unlinkOAuthAccountForUser } from "@/features/account/server/linked-accounts";
 import { unlinkAuthProviderSchema } from "@/features/account/schemas/account.schema";
 import { routes } from "@/shared/constants/routes";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 
-export const unlinkAuthProviderAction = validatedActionWithUser<
+export const unlinkAuthProviderAction = validatedAuthenticatedAction<
   typeof unlinkAuthProviderSchema,
   {}
 >(

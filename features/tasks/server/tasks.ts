@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { db } from "@/shared/lib/db/prisma";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import { getActiveOrganizationMembership } from "@/features/teams/server/organization-membership";
+import { getActiveOrganizationMembership } from "@/features/teams/shared/server/organization-membership";
 import type {
   bulkDeleteTasksSchema,
   bulkUpdateTaskStatusSchema,

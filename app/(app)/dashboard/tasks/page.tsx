@@ -1,8 +1,8 @@
 import { listCurrentTeamTasks } from "@/features/tasks/server/tasks";
-import { TasksDialogs } from "@/features/tasks/components/tasks-dialogs";
 import { TasksPrimaryButtons } from "@/features/tasks/components/tasks-primary-buttons";
-import { TasksTable } from "@/features/tasks/components/tasks-table";
-import { TasksProvider } from "@/features/tasks/components/tasks-provider";
+import { TasksDialogs } from "@/features/tasks/components/dialogs/tasks-dialogs";
+import { TasksTable } from "@/features/tasks/components/table/tasks-table";
+import { TasksProvider } from "@/features/tasks/state/tasks-provider";
 import {
   Page,
   PageDescription,

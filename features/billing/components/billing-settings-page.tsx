@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 import { getPlan, getPricingPlans, isPlanId } from "@/features/billing/plans";
-import { getCurrentOrganizationContext } from "@/features/teams/server/organization-context";
+import { getCurrentOrganizationContext } from "@/features/teams/shared/server/organization-context";
 
 import {
   Card,

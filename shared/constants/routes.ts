@@ -18,6 +18,11 @@ export const routes = {
     tasks: "/dashboard/tasks",
     assistant: "/dashboard/assistant",
   },
+  admin: {
+    dashboard: "/admin",
+    users: "/admin/users",
+    organizations: "/admin/organizations",
+  },
   settings: {
     profile: "/settings",
     preferences: "/settings/preferences",

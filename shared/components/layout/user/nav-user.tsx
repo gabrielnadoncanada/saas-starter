@@ -6,12 +6,13 @@ import {
   ChevronsUpDown,
   Cog,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useDialogState from "@/shared/hooks/useDialogState";
-import { useActiveOrganization } from "@/features/teams/data/active-organization";
-import { useOrganizationList } from "@/features/teams/data/organization-list";
-import { useSetActiveOrganization } from "@/features/teams/data/set-active-organization";
+import { useActiveOrganization } from "@/features/teams/shared/data/active-organization";
+import { useOrganizationList } from "@/features/teams/shared/data/organization-list";
+import { useSetActiveOrganization } from "@/features/teams/shared/data/set-active-organization";
 import {
   Avatar,
   AvatarFallback,
@@ -38,6 +39,7 @@ import {
 } from "@/shared/components/ui/sidebar";
 import Link from "next/link";
 import { routes } from "@/shared/constants/routes";
+import { accountFlags } from "@/shared/config/account.config";
 import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
 import { useUser } from "@/shared/components/providers/user-provider";
 
@@ -77,7 +79,9 @@ export function NavUser() {
                   <span className="truncate font-semibold">
                     {currentOrgName}
                   </span>
-                  <span className="truncate text-xs">Organization</span>
+                  <span className="truncate text-xs">
+                    {accountFlags.enableTeamFeatures ? "Organization" : "Account"}
+                  </span>
                 </div>
                 <ChevronsUpDown className="ms-auto size-4" />
               </SidebarMenuButton>
@@ -107,42 +111,46 @@ export function NavUser() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <Building2 />
-                    Switch workspace
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      {orgItems.map((org) => (
-                        <DropdownMenuItem
-                          key={org.id}
-                          onClick={async () => {
-                            if (org.id !== activeOrganization?.id) {
-                              await setActiveOrganization.mutate({
-                                organizationId: org.id,
-                              });
-                              router.refresh();
-                            }
-                          }}
-                        >
-                          <div className="flex size-5 items-center justify-center rounded-sm border">
-                            <span className="text-xs font-semibold">
-                              {org.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          {org.name}
-                          {org.id === activeOrganization?.id && (
-                            <Check className="ms-auto size-4" />
-                          )}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
+              {accountFlags.showOrgSwitcher && (
+                <>
+                  <DropdownMenuGroup>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <Building2 />
+                        Switch workspace
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                          {orgItems.map((org) => (
+                            <DropdownMenuItem
+                              key={org.id}
+                              onClick={async () => {
+                                if (org.id !== activeOrganization?.id) {
+                                  await setActiveOrganization.mutate({
+                                    organizationId: org.id,
+                                  });
+                                  router.refresh();
+                                }
+                              }}
+                            >
+                              <div className="flex size-5 items-center justify-center rounded-sm border">
+                                <span className="text-xs font-semibold">
+                                  {org.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              {org.name}
+                              {org.id === activeOrganization?.id && (
+                                <Check className="ms-auto size-4" />
+                              )}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href={routes.settings.profile}>
@@ -150,6 +158,14 @@ export function NavUser() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
+                {user.role === "admin" && (
+                  <DropdownMenuItem asChild>
+                    <Link href={routes.admin.dashboard}>
+                      <ShieldCheck />
+                      Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setOpen(true)}>

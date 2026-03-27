@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 
 import { auth } from "@/shared/lib/auth";
+import { accountFlags } from "@/shared/config/account.config";
 
 export async function ensureUserWorkspace(email: string) {
   const reqHeaders = await headers();
@@ -16,10 +17,14 @@ export async function ensureUserWorkspace(email: string) {
     return existingOrganizations[0].id;
   }
 
+  const orgName = accountFlags.enableTeamFeatures
+    ? `${email}'s Team`
+    : `Personal`;
+
   const organization = await auth.api.createOrganization({
     headers: reqHeaders,
     body: {
-      name: `${email}'s Team`,
+      name: orgName,
       slug: crypto.randomUUID(),
     },
   });

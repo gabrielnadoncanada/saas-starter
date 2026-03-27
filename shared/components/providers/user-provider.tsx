@@ -6,6 +6,7 @@ export type SidebarUser = {
   name: string;
   email: string;
   image: string | null;
+  role: string | null;
 };
 
 const UserContext = createContext<SidebarUser | null>(null);

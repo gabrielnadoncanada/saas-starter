@@ -5,10 +5,10 @@ import { headers } from "next/headers";
 import { auth } from "@/shared/lib/auth";
 import { deleteAccount } from "@/features/account/server/delete-account";
 import { deleteAccountSchema } from "@/features/account/schemas/account.schema";
-import { validatedActionWithUser } from "@/shared/lib/auth/validated-action-with-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 import { db } from "@/shared/lib/db/prisma";
 
-export const deleteAccountAction = validatedActionWithUser<
+export const deleteAccountAction = validatedAuthenticatedAction<
   typeof deleteAccountSchema,
   {}
 >(

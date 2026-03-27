@@ -7,7 +7,7 @@ import type {
   AssistantConversation,
   AssistantConversationListItem,
 } from "@/features/assistant/types";
-import { getCurrentOrganization } from "@/features/teams/server/current-organization";
+import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
 
