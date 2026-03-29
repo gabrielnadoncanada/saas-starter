@@ -1,3 +1,0 @@
-interface:
-  display_name: "Next.js SaaS Structure"
-  short_description: "Pragmatic structure for Next.js App Router SaaS starters with clear feature, server, and server action boundaries"

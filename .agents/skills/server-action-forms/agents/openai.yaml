@@ -1,5 +1,0 @@
-interface:
-  display_name: Server Action Forms
-  short_description: Build and refactor Next.js server-action-first forms with useActionState, FormActionState, getFieldState, and shadcn Field.
-  icon: bolt
-  color: indigo
