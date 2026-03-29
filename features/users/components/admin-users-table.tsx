@@ -5,15 +5,13 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AdminConfirmDialog } from "@/shared/components/dialogs/admin-confirm-dialog";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
-import {
-  banUserAction,
-  getUserDetailAction,
-  listUsersAction,
-  removeUserAction,
-  revokeAllUserSessionsAction,
-  setUserRoleAction,
-  unbanUserAction,
-} from "@/features/users/actions/admin-users.actions";
+import { banUserAction } from "@/features/users/actions/ban-user.action";
+import { getUserDetailAction } from "@/features/users/actions/get-user-detail.action";
+import { listUsersAction } from "@/features/users/actions/list-users.action";
+import { removeUserAction } from "@/features/users/actions/remove-user.action";
+import { revokeAllUserSessionsAction } from "@/features/users/actions/revoke-all-user-sessions.action";
+import { setUserRoleAction } from "@/features/users/actions/set-user-role.action";
+import { unbanUserAction } from "@/features/users/actions/unban-user.action";
 import { authClient } from "@/shared/lib/auth/auth-client";
 import { Table, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 import { UserDetailSheet } from "./user-detail-sheet";

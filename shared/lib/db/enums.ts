@@ -1,3 +1,5 @@
+import { getPrimaryRole, hasAnyRole, hasRole, parseRoles } from "@/shared/lib/roles";
+
 /**
  * Re-exports Prisma-generated enums so feature code never imports
  * directly from the Prisma client path. If Prisma's export surface
@@ -22,9 +24,24 @@ export function isOrgRole(value: unknown): value is OrgRole {
   return typeof value === "string" && ORG_ROLES.some((role) => role === value);
 }
 
-export function toOrgRole(
+export function parseOrgRoles(value: unknown): OrgRole[] {
+  return parseRoles(value).filter(isOrgRole);
+}
+
+export function hasOrgRole(value: unknown, role: OrgRole): boolean {
+  return hasRole(value, role);
+}
+
+export function hasAnyOrgRole(
+  value: unknown,
+  roles: readonly OrgRole[],
+): boolean {
+  return hasAnyRole(value, roles);
+}
+
+export function getPrimaryOrgRole(
   value: unknown,
   fallback: OrgRole = "member",
 ): OrgRole {
-  return isOrgRole(value) ? value : fallback;
+  return getPrimaryRole(parseOrgRoles(value), ORG_ROLES, fallback);
 }

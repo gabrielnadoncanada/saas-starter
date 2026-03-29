@@ -6,7 +6,7 @@ import { cn } from "@/shared/lib/utils";
 import { SearchProvider } from "@/shared/components/command/search-provider";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { DashboardSidebar } from "@/shared/components/layout/shell/dashboard-sidebar";
+import { DashboardSidebar } from "@/features/dashboard/components/dashboard-sidebar";
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
 import { ensureActiveOrganization } from "@/features/organizations/server/ensure-active-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";

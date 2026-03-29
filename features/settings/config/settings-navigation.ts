@@ -1,16 +1,18 @@
 import {
+  Building2,
   CreditCard,
-  Users,
+  Palette,
   ShieldCheck,
   User,
-  Building2,
-  Palette,
+  Users,
 } from "lucide-react";
 
-import { routes } from "@/shared/constants/routes";
+import type {
+  SidebarData,
+  SidebarNavLink,
+} from "@/shared/components/navigation/sidebar-types";
 import { accountFlags } from "@/shared/config/account.config";
-import type { SidebarData } from "@/shared/components/navigation/sidebar-types";
-import type { SidebarNavLink } from "@/shared/components/navigation/sidebar-types";
+import { routes } from "@/shared/constants/routes";
 
 const workspaceItems: SidebarNavLink[] = [
   ...(accountFlags.enableTeamFeatures

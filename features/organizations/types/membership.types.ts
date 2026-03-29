@@ -10,7 +10,8 @@ export type OrganizationUserView = {
 
 export type OrganizationMemberView = {
   id: string;
-  role: OrgRole;
+  roles: OrgRole[];
+  primaryRole: OrgRole;
   joinedAt: string | null;
   user: OrganizationUserView;
 };
@@ -18,7 +19,8 @@ export type OrganizationMemberView = {
 export type OrganizationInvitationView = {
   id: string;
   email: string;
-  role: OrgRole;
+  roles: OrgRole[];
+  primaryRole: OrgRole;
   invitedAt: string;
   expiresAt: string | null;
 };

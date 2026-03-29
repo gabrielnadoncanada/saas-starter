@@ -8,6 +8,8 @@ import { organization } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { stripePlans } from "@/shared/config/billing.config";
 import { accountFlags } from "@/shared/config/account.config";
+import { PLATFORM_ADMIN_ROLES } from "@/shared/lib/auth/roles";
+import { hasOrgRole } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 import { sendEmail } from "@/shared/lib/email/client";
 import { VerifyEmailTemplate } from "@/shared/lib/email/templates/verify-email";
@@ -96,7 +98,7 @@ export const auth = betterAuth({
   plugins: [
     admin({
       defaultRole: "user",
-      adminRoles: ["admin"],
+      adminRoles: [...PLATFORM_ADMIN_ROLES],
     }),
     magicLink({
       sendMagicLink: async ({ email, url }) => {
@@ -140,7 +142,7 @@ export const auth = betterAuth({
             },
           });
 
-          return member?.role === "owner";
+          return hasOrgRole(member?.role, "owner");
         },
         getCheckoutSessionParams: async () => ({
           params: {

@@ -6,7 +6,7 @@ import { cn } from "@/shared/lib/utils";
 import { SearchProvider } from "@/shared/components/command/search-provider";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { SettingsSidebar } from "@/shared/components/layout/shell/settings-sidebar";
+import { SettingsSidebar } from "@/features/settings/components/settings-sidebar";
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
 import { ensureActiveOrganization } from "@/features/organizations/server/ensure-active-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";

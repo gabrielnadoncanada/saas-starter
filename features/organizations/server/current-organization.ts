@@ -5,7 +5,7 @@ import type { CurrentOrganizationView } from "@/features/organizations/types/org
 import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
 import { auth } from "@/shared/lib/auth";
 import { getAuthSession } from "@/shared/lib/auth/get-session";
-import { toOrgRole } from "@/shared/lib/db/enums";
+import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
 
 type RawOrganizationMember = {
   id: string;
@@ -37,7 +37,8 @@ function toIsoString(value?: Date | string | null) {
 function mapOrganizationMember(member: RawOrganizationMember): OrganizationMemberView {
   return {
     id: member.id,
-    role: toOrgRole(member.role),
+    roles: parseOrgRoles(member.role),
+    primaryRole: getPrimaryOrgRole(member.role),
     joinedAt: toIsoString(member.createdAt),
     user: {
       id: member.user.id,

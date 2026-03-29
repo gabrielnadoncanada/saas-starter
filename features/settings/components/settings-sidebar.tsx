@@ -1,16 +1,15 @@
 "use client";
 
+import { settingsSidebarData } from "@/features/settings/config/settings-navigation";
+import { NavGroup } from "@/shared/components/navigation/nav-group";
+import { routes } from "@/shared/constants/routes";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenuButton,
 } from "@/shared/components/ui/sidebar";
-import { settingsSidebarData } from "@/shared/components/navigation/config/settings-sidebar-data";
-import { NavGroup } from "@/shared/components/navigation/nav-group";
 import { ArrowLeftIcon } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { routes } from "@/shared/constants/routes";
 import Link from "next/link";
 
 export function SettingsSidebar() {

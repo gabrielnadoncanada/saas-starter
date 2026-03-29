@@ -4,8 +4,8 @@ import { useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { type Table } from '@tanstack/react-table';
 import { CircleArrowUp, Loader2, Trash2 } from 'lucide-react';
 
-import { bulkDeleteTasksAction } from '@/features/tasks/actions/delete-task.action';
-import { bulkUpdateTaskStatusAction } from '@/features/tasks/actions/update-task.action';
+import { bulkDeleteTasksAction } from '@/features/tasks/actions/bulk-delete-tasks.action';
+import { bulkUpdateTaskStatusAction } from '@/features/tasks/actions/bulk-update-task-status.action';
 import { statuses } from '@/features/tasks/constants';
 import type {
   BulkDeleteTasksActionState,

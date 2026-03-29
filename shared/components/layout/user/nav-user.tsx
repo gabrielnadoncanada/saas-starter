@@ -41,6 +41,7 @@ import Link from "next/link";
 import { routes } from "@/shared/constants/routes";
 import { accountFlags } from "@/shared/config/account.config";
 import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
+import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 import { useUser } from "@/shared/components/providers/user-provider";
 
 export function NavUser() {
@@ -158,7 +159,7 @@ export function NavUser() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
-                {user.role === "admin" && (
+                {isPlatformAdmin(user.role) && (
                   <DropdownMenuItem asChild>
                     <Link href={routes.admin.dashboard}>
                       <ShieldCheck />

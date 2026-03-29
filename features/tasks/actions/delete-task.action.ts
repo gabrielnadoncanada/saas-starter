@@ -2,16 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 
+import { deleteTaskSchema } from "@/features/tasks/schemas/task.schema";
+import { deleteTaskForCurrentOrganization } from "@/features/tasks/server/tasks";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
-import {
-  bulkDeleteTasksSchema,
-  deleteTaskSchema,
-} from "@/features/tasks/schemas/task.schema";
-import {
-  bulkDeleteTasksForCurrentOrganization,
-  deleteTaskForCurrentOrganization,
-} from "@/features/tasks/server/tasks";
 
 export const deleteTaskAction = validatedAuthenticatedAction<
   typeof deleteTaskSchema,
@@ -28,20 +22,3 @@ export const deleteTaskAction = validatedAuthenticatedAction<
     };
   },
 );
-
-export const bulkDeleteTasksAction = validatedAuthenticatedAction<
-  typeof bulkDeleteTasksSchema,
-  { taskIds?: number[] }
->(
-  bulkDeleteTasksSchema,
-  async ({ taskIds }) => {
-    const deletedCount = await bulkDeleteTasksForCurrentOrganization(taskIds);
-    revalidatePath(routes.app.tasks);
-
-    return {
-      success: `${deletedCount} task${deletedCount > 1 ? "s" : ""} deleted`,
-      taskIds,
-    };
-  },
-);
-

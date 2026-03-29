@@ -1,6 +1,7 @@
 import { createOrganizationCheckoutSession } from "@/features/billing/server/better-auth-stripe";
 import { isConfiguredStripePriceId } from "@/features/billing/plans";
 import { auth } from "@/shared/lib/auth";
+import { hasOrgRole } from "@/shared/lib/db/enums";
 
 type ResumeCheckoutAfterSignInParams = {
   organizationId: string;
@@ -27,7 +28,7 @@ export async function resumeCheckoutAfterSignIn({
   }
 
   const currentMember = organization.members.find(
-    (m: { userId: string; role: string }) => m.role === "owner",
+    (m: { role: string }) => hasOrgRole(m.role, "owner"),
   );
 
   if (!currentMember) {

@@ -1,4 +1,4 @@
-import type { OrgRole } from "@/shared/lib/db/enums";
+import { hasAnyOrgRole, type OrgRole } from "@/shared/lib/db/enums";
 import {
   getActiveOrganizationMembership,
   type ActiveOrganizationMembership,
@@ -21,7 +21,7 @@ export async function getRequiredOrganizationMembership(
     throw new OrganizationMembershipError("User is not part of an organization");
   }
 
-  if (!allowedRoles.includes(membership.role)) {
+  if (!hasAnyOrgRole(membership.roles, allowedRoles)) {
     throw new OrganizationMembershipError(
       "You do not have permission to perform this action",
     );

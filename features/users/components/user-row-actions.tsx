@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import type { AdminUser } from "@/features/users/types/admin-users.types";
+import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 
 type UserRowActionsProps = {
   user: AdminUser;
@@ -35,7 +36,7 @@ export function UserRowActions({
   onRemove,
   onImpersonate,
 }: UserRowActionsProps) {
-  const isAdmin = user.role === "admin";
+  const isAdmin = isPlatformAdmin(user.role);
 
   return (
     <DropdownMenu>

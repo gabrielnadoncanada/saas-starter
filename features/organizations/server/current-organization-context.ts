@@ -3,6 +3,7 @@ import "server-only";
 import type { OrgRole } from "@/shared/lib/db/enums";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { hasOrgRole } from "@/shared/lib/db/enums";
 
 export type CurrentOrganizationContext = {
   user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
@@ -10,7 +11,8 @@ export type CurrentOrganizationContext = {
   currentMember: NonNullable<
     NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>["members"][number]
   >;
-  role: OrgRole;
+  roles: OrgRole[];
+  primaryRole: OrgRole;
   canInviteMembers: boolean;
   canManageBilling: boolean;
   canManageMembers: boolean;
@@ -35,14 +37,16 @@ export async function getCurrentOrganizationContext(): Promise<CurrentOrganizati
     return null;
   }
 
-  const role: OrgRole = currentMember.role;
-  const isOwner = role === "owner";
+  const roles = currentMember.roles;
+  const primaryRole = currentMember.primaryRole;
+  const isOwner = hasOrgRole(roles, "owner");
 
   return {
     user,
     organization,
     currentMember,
-    role,
+    roles,
+    primaryRole,
     canInviteMembers: isOwner,
     canManageBilling: isOwner,
     canManageMembers: isOwner,

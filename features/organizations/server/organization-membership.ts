@@ -1,10 +1,15 @@
 import { headers } from "next/headers";
 import { auth } from "@/shared/lib/auth";
-import { isOrgRole, type OrgRole } from "@/shared/lib/db/enums";
+import {
+  getPrimaryOrgRole,
+  parseOrgRoles,
+  type OrgRole,
+} from "@/shared/lib/db/enums";
 
 export type ActiveOrganizationMembership = {
   organizationId: string;
-  role: OrgRole;
+  roles: OrgRole[];
+  primaryRole: OrgRole;
 };
 
 export async function getActiveOrganizationMembership(
@@ -18,12 +23,15 @@ export async function getActiveOrganizationMembership(
     return null;
   }
 
-  if (!isOrgRole(member.role)) {
+  const roles = parseOrgRoles(member.role);
+
+  if (roles.length === 0) {
     return null;
   }
 
   return {
     organizationId: member.organizationId,
-    role: member.role,
+    roles,
+    primaryRole: getPrimaryOrgRole(roles),
   };
 }

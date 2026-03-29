@@ -31,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { hasOrgRole } from "@/shared/lib/db/enums";
 
 type OrganizationMembersTableProps = {
   currentUserId: string;
@@ -77,7 +78,7 @@ function MemberActions({
 
   const canRemoveMember =
     canManageMembers &&
-    member.role !== "owner" &&
+    !hasOrgRole(member.roles, "owner") &&
     member.user.id !== currentUserId;
 
   useFormActionToasts(state);
@@ -166,7 +167,7 @@ export function OrganizationMembersTable({
               </TableCell>
               <TableCell>
                 <Badge variant="outline" className="capitalize">
-                  {member.role}
+                  {member.primaryRole}
                 </Badge>
               </TableCell>
               <TableCell className="text-muted-foreground">

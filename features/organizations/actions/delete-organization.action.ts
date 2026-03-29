@@ -1,28 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+
 import { requireAdminAction } from "@/features/auth/server/require-admin";
-import { getAdminOrganizationDetail } from "@/features/organizations/server/get-admin-organization-detail";
-import { listAdminOrganizations } from "@/features/organizations/server/list-admin-organizations";
-import type { ListAdminOrganizationsQuery } from "@/features/organizations/types/admin-organizations.types";
 import { db } from "@/shared/lib/db/prisma";
-
-function revalidateAdminOrganizationPaths() {
-  revalidatePath("/admin");
-  revalidatePath("/admin/organizations");
-}
-
-export async function listOrganizationsAction(
-  query: ListAdminOrganizationsQuery,
-) {
-  await requireAdminAction();
-  return listAdminOrganizations(query);
-}
-
-export async function getOrganizationDetailAction(organizationId: string) {
-  await requireAdminAction();
-  return getAdminOrganizationDetail(organizationId);
-}
 
 export async function deleteOrganizationAction(organizationId: string) {
   const adminId = await requireAdminAction();
@@ -56,7 +37,7 @@ export async function deleteOrganizationAction(organizationId: string) {
   }
 
   await db.organization.delete({ where: { id: organizationId } });
-  revalidateAdminOrganizationPaths();
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/organizations");
 }
-
-

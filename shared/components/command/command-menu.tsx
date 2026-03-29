@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import { dashboardSidebarData } from "@/shared/components/navigation/config/dashboard-sidebar-data";
+import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 
 import {

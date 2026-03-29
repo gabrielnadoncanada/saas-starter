@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 
 import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/better-auth-stripe";
 import { auth } from "@/shared/lib/auth";
+import { hasOrgRole } from "@/shared/lib/db/enums";
 
 const ACTIVE_STATUSES = ["active", "trialing"] as const;
 
@@ -30,11 +31,11 @@ export async function getAccountDeletionBlocker(userId: string) {
       (m: { userId: string }) => m.userId === userId,
     );
 
-    if (userMember?.role !== "owner") continue;
+    if (!hasOrgRole(userMember?.role, "owner")) continue;
 
     const otherOwnerCount = members.filter(
       (m: { userId: string; role: string }) =>
-        m.role === "owner" && m.userId !== userId,
+        hasOrgRole(m.role, "owner") && m.userId !== userId,
     ).length;
 
     if (otherOwnerCount === 0 && members.length > 1) {

@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import type { OrganizationInvitationView } from "@/features/organizations/types/membership.types";
 import { auth } from "@/shared/lib/auth";
-import { toOrgRole } from "@/shared/lib/db/enums";
+import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
 
 type RawOrganizationInvitation = {
   id: string;
@@ -32,7 +32,8 @@ function mapPendingInvitation(
   return {
     id: invitation.id,
     email: invitation.email,
-    role: toOrgRole(invitation.role),
+    roles: parseOrgRoles(invitation.role),
+    primaryRole: getPrimaryOrgRole(invitation.role),
     invitedAt: toIsoString(invitation.createdAt) ?? new Date(0).toISOString(),
     expiresAt: toIsoString(invitation.expiresAt),
   };
