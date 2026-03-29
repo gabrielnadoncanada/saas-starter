@@ -2,61 +2,82 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import {
+  functionalUpdate,
   type ColumnFiltersState,
   type PaginationState,
   type RowSelectionState,
   type SortingState,
   type VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { DataTablePagination, DataTableToolbar } from '@/shared/components/data-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/shared/components/ui/table'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/shared/lib/utils'
-import { priorities, statuses } from '../../constants'
+import { TASK_TABLE_PAGE_SIZES } from '../../constants/task-table'
+import {
+  type TaskTableSearchParams,
+  type TaskTableSortField,
+} from '../../schemas/task-table-search-params.schema'
 import type { Task } from '../../types/task.types'
+import { buildTasksTableHref } from '../../utils/task-table-url'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { getTasksColumns } from './tasks-columns'
-
-type TaskColumnMeta = {
-  className?: string
-  thClassName?: string
-  tdClassName?: string
-}
+import { TasksTableContent } from './tasks-table-content'
+import { TasksTablePagination } from './tasks-table-pagination'
+import { TasksTableToolbar } from './tasks-table-toolbar'
 
 type TasksTableProps = {
+  order: TaskTableSearchParams['order']
+  page: number
+  pageCount: number
+  pageSize: TaskTableSearchParams['pageSize']
+  priority: TaskTableSearchParams['priority']
+  q: TaskTableSearchParams['q']
+  rowCount: number
+  rows: Task[]
+  sort: TaskTableSearchParams['sort']
+  status: TaskTableSearchParams['status']
   onOpenDeleteDialog: (task: Task) => void
   onOpenUpdateDialog: (task: Task) => void
-  tasks: Task[]
+}
+
+const sortableColumns = new Set<TaskTableSortField>(['title', 'status', 'priority'])
+
+function isTaskTablePageSize(value: number): value is TaskTableSearchParams['pageSize'] {
+  return TASK_TABLE_PAGE_SIZES.includes(value as TaskTableSearchParams['pageSize'])
+}
+
+function getFilterValues(
+  filters: ColumnFiltersState,
+  columnId: 'status' | 'priority'
+) {
+  const value = filters.find((filter) => filter.id === columnId)?.value
+
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : []
 }
 
 export function TasksTable({
+  order,
+  page,
+  pageCount,
+  pageSize,
+  priority,
+  q,
+  rowCount,
+  rows,
+  sort,
+  status,
   onOpenDeleteDialog,
   onOpenUpdateDialog,
-  tasks,
 }: TasksTableProps) {
+  const pathname = usePathname()
+  const router = useRouter()
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-  const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
 
   const columns = useMemo(
     () =>
@@ -66,56 +87,130 @@ export function TasksTable({
       }),
     [onOpenDeleteDialog, onOpenUpdateDialog]
   )
-
-  const normalizedFilter = globalFilter.trim().toLowerCase()
-  const filteredData = useMemo(() => {
-    if (!normalizedFilter) {
-      return tasks
-    }
-
-    return tasks.filter((task) => {
-      return (
-        task.code.toLowerCase().includes(normalizedFilter) ||
-        task.title.toLowerCase().includes(normalizedFilter)
-      )
-    })
-  }, [tasks, normalizedFilter])
-
-  const table = useReactTable({
-    data: filteredData,
-    columns,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      globalFilter,
-      pagination,
-    },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    onPaginationChange: setPagination,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnFiltersChange: setColumnFilters,
-  })
-  const pageCount = table.getPageCount()
+  const sorting = useMemo<SortingState>(
+    () =>
+      sortableColumns.has(sort)
+        ? [
+            {
+              id: sort,
+              desc: order === 'desc',
+            },
+          ]
+        : [],
+    [order, sort]
+  )
+  const columnFilters = useMemo<ColumnFiltersState>(
+    () => [
+      ...(status.length > 0 ? [{ id: 'status', value: status }] : []),
+      ...(priority.length > 0 ? [{ id: 'priority', value: priority }] : []),
+    ],
+    [priority, status]
+  )
+  const pagination = useMemo<PaginationState>(
+    () => ({
+      pageIndex: page - 1,
+      pageSize,
+    }),
+    [page, pageSize]
+  )
+  const tableParams = useMemo<TaskTableSearchParams>(
+    () => ({
+      page,
+      pageSize,
+      q,
+      sort,
+      order,
+      status,
+      priority,
+    }),
+    [order, page, pageSize, priority, q, sort, status]
+  )
 
   useEffect(() => {
-    if (pageCount > 0 && pagination.pageIndex > pageCount - 1) {
-      setPagination((current) => ({
-        ...current,
-        pageIndex: pageCount - 1,
-      }))
-    }
-  }, [pageCount, pagination.pageIndex])
+    setRowSelection({})
+  }, [order, page, pageSize, priority, q, rowCount, sort, status])
+
+  const table = useReactTable({
+    data: rows,
+    columns,
+    pageCount,
+    manualFiltering: true,
+    manualPagination: true,
+    manualSorting: true,
+    state: {
+      rowSelection,
+      sorting,
+      pagination,
+      columnFilters,
+      columnVisibility,
+      globalFilter: q ?? '',
+    },
+    enableRowSelection: true,
+    enableMultiSort: false,
+    getRowId: (row) => row.id.toString(),
+    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: (updater) => {
+      const nextSorting = functionalUpdate(updater, sorting)
+      const nextSort = nextSorting[0]
+
+      if (!nextSort || !sortableColumns.has(nextSort.id as TaskTableSortField)) {
+        router.replace(
+          buildTasksTableHref(pathname, {
+            ...tableParams,
+            page: 1,
+            sort: 'createdAt',
+            order: 'desc',
+          }),
+          { scroll: false }
+        )
+        return
+      }
+
+      router.replace(
+        buildTasksTableHref(pathname, {
+          ...tableParams,
+          page: 1,
+          sort: nextSort.id as TaskTableSortField,
+          order: nextSort.desc ? 'desc' : 'asc',
+        }),
+        { scroll: false }
+      )
+    },
+    onPaginationChange: (updater) => {
+      const nextPagination = functionalUpdate(updater, pagination)
+      const nextPageSize = nextPagination.pageSize
+
+      if (!isTaskTablePageSize(nextPageSize)) {
+        return
+      }
+
+      router.replace(
+        buildTasksTableHref(pathname, {
+          ...tableParams,
+          page: nextPageSize === pageSize ? nextPagination.pageIndex + 1 : 1,
+          pageSize: nextPageSize,
+        }),
+        { scroll: false }
+      )
+    },
+    onColumnFiltersChange: (updater) => {
+      const nextFilters = functionalUpdate(updater, columnFilters)
+
+      router.replace(
+        buildTasksTableHref(pathname, {
+          ...tableParams,
+          page: 1,
+          status: getFilterValues(nextFilters, 'status') as TasksTableProps['status'],
+          priority: getFilterValues(nextFilters, 'priority') as TasksTableProps['priority'],
+        }),
+        { scroll: false }
+      )
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+  })
 
   return (
     <div
@@ -124,83 +219,14 @@ export function TasksTable({
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder='Filter by title or ID...'
-        filters={[
-          {
-            columnId: 'status',
-            title: 'Status',
-            options: statuses,
-          },
-          {
-            columnId: 'priority',
-            title: 'Priority',
-            options: priorities,
-          },
-        ]}
-      />
-      <div className='overflow-hidden rounded-md border'>
-        <Table className='min-w-xl'>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  const meta = header.column.columnDef.meta as TaskColumnMeta | undefined
-
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={cn(meta?.className, meta?.thClassName)}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta as TaskColumnMeta | undefined
-
-                    return (
-                      <TableCell
-                        key={cell.id}
-                        className={cn(meta?.className, meta?.tdClassName)}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <TasksTableToolbar params={tableParams} table={table} />
+      <TasksTableContent columnsLength={columns.length} table={table} />
+      <div className='flex items-center justify-between gap-4'>
+        <p className='text-sm text-muted-foreground'>
+          {rowCount} task{rowCount === 1 ? '' : 's'}
+        </p>
+        <TasksTablePagination table={table} className='mt-auto w-full px-0' />
       </div>
-      <DataTablePagination table={table} className='mt-auto' />
       <DataTableBulkActions table={table} />
     </div>
   )

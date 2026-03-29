@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { TasksDialogs } from "@/features/tasks/components/dialogs/tasks-dialogs";
 import { TasksPrimaryButtons } from "@/features/tasks/components/tasks-primary-buttons";
 import { TasksTable } from "@/features/tasks/components/table/tasks-table";
+import type { TaskTableSearchParams } from "@/features/tasks/schemas/task-table-search-params.schema";
 import type { Task } from "@/features/tasks/types/task.types";
 import {
   Page,
@@ -17,10 +18,14 @@ import {
 type TasksDialogType = "create" | "update" | "delete";
 
 type TasksPageClientProps = {
-  initialTasks: Task[];
+  tasksPage: TaskTableSearchParams & {
+    rows: Task[];
+    rowCount: number;
+    pageCount: number;
+  };
 };
 
-export function TasksPageClient({ initialTasks }: TasksPageClientProps) {
+export function TasksPageClient({ tasksPage }: TasksPageClientProps) {
   const [dialog, setDialog] = useState<TasksDialogType | null>(null);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const clearTaskTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -79,7 +84,16 @@ export function TasksPageClient({ initialTasks }: TasksPageClientProps) {
           </PageHeaderActions>
         </PageHeader>
         <TasksTable
-          tasks={initialTasks}
+          order={tasksPage.order}
+          page={tasksPage.page}
+          pageCount={tasksPage.pageCount}
+          pageSize={tasksPage.pageSize}
+          priority={tasksPage.priority}
+          q={tasksPage.q}
+          rowCount={tasksPage.rowCount}
+          rows={tasksPage.rows}
+          sort={tasksPage.sort}
+          status={tasksPage.status}
           onOpenDeleteDialog={openDeleteDialog}
           onOpenUpdateDialog={openUpdateDialog}
         />
