@@ -1,6 +1,6 @@
 import { db } from "@/shared/lib/db/prisma";
 import { auth } from "@/shared/lib/auth";
-import { getAccountDeletionBlocker } from "@/features/teams/shared/server/account-deletion-policy";
+import { getAccountDeletionBlocker } from "@/features/account/server/account-deletion-policy";
 
 export type DeleteAccountUser = {
   id: string;
@@ -52,3 +52,5 @@ export async function deleteAccount(user: DeleteAccountUser, reqHeaders: Headers
 
   return { success: "Account deleted successfully." };
 }
+
+

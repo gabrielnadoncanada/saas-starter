@@ -32,8 +32,8 @@ vi.mock("@/shared/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@/features/billing/guards/get-team-plan", () => ({
-  getTeamPlan: vi.fn(),
+vi.mock("@/features/billing/guards/get-organization-plan", () => ({
+  getOrganizationPlan: vi.fn(),
 }));
 
 vi.mock("@/features/billing/usage", () => ({
@@ -42,7 +42,7 @@ vi.mock("@/features/billing/usage", () => ({
 
 const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
-const { getTeamPlan } = await import("@/features/billing/guards/get-team-plan");
+const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
 const { consumeMonthlyUsage } = await import(
   "@/features/billing/usage"
 );
@@ -53,10 +53,10 @@ describe("POST /api/assistant", () => {
     vi.clearAllMocks();
 
     vi.mocked(getCurrentUser).mockResolvedValue({ id: "1" } as never);
-    vi.mocked(getTeamPlan).mockResolvedValue({
+    vi.mocked(getOrganizationPlan).mockResolvedValue({
       planId: "pro",
       organizationId: "12",
-      teamName: "Acme",
+      organizationName: "Acme",
       subscriptionStatus: "active",
       pricingModel: "flat",
     });
@@ -78,10 +78,10 @@ describe("POST /api/assistant", () => {
   });
 
   it("returns 403 when the plan does not include ai.assistant", async () => {
-    vi.mocked(getTeamPlan).mockResolvedValue({
+    vi.mocked(getOrganizationPlan).mockResolvedValue({
       planId: "free",
       organizationId: "12",
-      teamName: "Acme",
+      organizationName: "Acme",
       subscriptionStatus: null,
       pricingModel: "flat",
     });
@@ -144,3 +144,4 @@ describe("POST /api/assistant", () => {
     );
   });
 });
+

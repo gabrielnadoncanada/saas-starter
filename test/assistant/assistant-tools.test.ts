@@ -15,8 +15,8 @@ vi.mock("ai", () => ({
   tool: <T>(definition: T) => definition,
 }));
 
-vi.mock("@/features/billing/guards/get-team-plan", () => ({
-  getTeamPlan: vi.fn(),
+vi.mock("@/features/billing/guards/get-organization-plan", () => ({
+  getOrganizationPlan: vi.fn(),
 }));
 
 vi.mock("@/features/billing/guards", async () => {
@@ -39,8 +39,8 @@ vi.mock("@/features/billing/usage", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 
-vi.mock("@/features/tasks/server/create-task-for-current-team", () => ({
-  createTaskForCurrentTeam: vi.fn(),
+vi.mock("@/features/tasks/server/create-task-for-current-organization", () => ({
+  createTaskForCurrentOrganization: vi.fn(),
 }));
 
 vi.mock("@/features/assistant/server/email-provider", () => ({
@@ -50,12 +50,12 @@ vi.mock("@/features/assistant/server/email-provider", () => ({
   },
 }));
 
-const { getTeamPlan } = await import("@/features/billing/guards/get-team-plan");
+const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
 const { consumeMonthlyUsage } = await import(
   "@/features/billing/usage"
 );
-const { createTaskForCurrentTeam } = await import(
-  "@/features/tasks/server/create-task-for-current-team"
+const { createTaskForCurrentOrganization } = await import(
+  "@/features/tasks/server/create-task-for-current-organization"
 );
 const { emailProvider } = await import("@/features/assistant/server/email-provider");
 const { assistantTools } = await import("@/features/assistant/server/tools");
@@ -77,10 +77,10 @@ const createInvoiceDraftExecute = assistantTools.createInvoiceDraft
 describe("assistant tools", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getTeamPlan).mockResolvedValue({
+    vi.mocked(getOrganizationPlan).mockResolvedValue({
       planId: "pro",
       organizationId: "12",
-      teamName: "Acme",
+      organizationName: "Acme",
       subscriptionStatus: "active",
       pricingModel: "flat",
     });
@@ -88,10 +88,10 @@ describe("assistant tools", () => {
   });
 
   it("blocks reviewInbox when the plan does not include email.sync", async () => {
-    vi.mocked(getTeamPlan).mockResolvedValue({
+    vi.mocked(getOrganizationPlan).mockResolvedValue({
       planId: "free",
       organizationId: "12",
-      teamName: "Acme",
+      organizationName: "Acme",
       subscriptionStatus: null,
       pricingModel: "flat",
     });
@@ -146,7 +146,7 @@ describe("assistant tools", () => {
   });
 
   it("creates tasks through the shared guarded task contract", async () => {
-    vi.mocked(createTaskForCurrentTeam).mockResolvedValue({
+    vi.mocked(createTaskForCurrentOrganization).mockResolvedValue({
       code: "TASK-52",
       title: "Follow up with client",
       status: "TODO",
@@ -158,7 +158,7 @@ describe("assistant tools", () => {
       priority: "HIGH",
     });
 
-    expect(createTaskForCurrentTeam).toHaveBeenCalledWith({
+    expect(createTaskForCurrentOrganization).toHaveBeenCalledWith({
       title: "Follow up with client",
       description: undefined,
       label: "FEATURE",
@@ -168,10 +168,10 @@ describe("assistant tools", () => {
   });
 
   it("blocks invoice drafts when the plan does not include invoice.create", async () => {
-    vi.mocked(getTeamPlan).mockResolvedValue({
+    vi.mocked(getOrganizationPlan).mockResolvedValue({
       planId: "free",
       organizationId: "12",
-      teamName: "Acme",
+      organizationName: "Acme",
       subscriptionStatus: null,
       pricingModel: "flat",
     });
@@ -187,3 +187,4 @@ describe("assistant tools", () => {
     }
   });
 });
+

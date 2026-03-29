@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { db } from "@/shared/lib/db/prisma";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import { getActiveOrganizationMembership } from "@/features/teams/shared/server/organization-membership";
+import { getActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
 import type {
   bulkDeleteTasksSchema,
   bulkUpdateTaskStatusSchema,
@@ -35,7 +35,7 @@ async function requireCurrentOrganizationId() {
   return membership.organizationId;
 }
 
-export async function listCurrentTeamTasks() {
+export async function listCurrentOrganizationTasks() {
   const organizationId = await requireCurrentOrganizationId();
 
   return db.task.findMany({
@@ -44,7 +44,7 @@ export async function listCurrentTeamTasks() {
   });
 }
 
-export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
+export async function updateTaskForCurrentOrganization(input: UpdateTaskInput) {
   const organizationId = await requireCurrentOrganizationId();
   const existingTask = await db.task.findFirst({
     where: {
@@ -70,7 +70,7 @@ export async function updateTaskForCurrentTeam(input: UpdateTaskInput) {
   });
 }
 
-export async function updateTaskStatusForCurrentTeam(
+export async function updateTaskStatusForCurrentOrganization(
   input: UpdateTaskStatusInput,
 ) {
   const organizationId = await requireCurrentOrganizationId();
@@ -90,7 +90,7 @@ export async function updateTaskStatusForCurrentTeam(
   }
 }
 
-export async function deleteTaskForCurrentTeam(
+export async function deleteTaskForCurrentOrganization(
   taskId: DeleteTaskInput["taskId"],
 ) {
   const organizationId = await requireCurrentOrganizationId();
@@ -107,7 +107,7 @@ export async function deleteTaskForCurrentTeam(
   }
 }
 
-export async function bulkUpdateTaskStatusForCurrentTeam(
+export async function bulkUpdateTaskStatusForCurrentOrganization(
   input: BulkUpdateTaskStatusInput,
 ) {
   const organizationId = await requireCurrentOrganizationId();
@@ -129,7 +129,7 @@ export async function bulkUpdateTaskStatusForCurrentTeam(
   return result.count;
 }
 
-export async function bulkDeleteTasksForCurrentTeam(
+export async function bulkDeleteTasksForCurrentOrganization(
   taskIds: BulkDeleteTasksInput["taskIds"],
 ) {
   const organizationId = await requireCurrentOrganizationId();
@@ -147,3 +147,6 @@ export async function bulkDeleteTasksForCurrentTeam(
 
   return result.count;
 }
+
+
+

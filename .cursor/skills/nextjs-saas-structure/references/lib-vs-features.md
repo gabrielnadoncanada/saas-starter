@@ -123,6 +123,20 @@ Wrong.
 Global auth infrastructure should not depend on `features/`.
 Move supporting auth-system logic into `shared/lib/auth/`.
 
+### Mistake 4
+
+"The page is under `/admin`, so the code belongs in `features/admin/`."
+
+Wrong.
+
+`features/admin/` is for the admin shell, not every admin-only workflow.
+
+Examples:
+
+- `/admin/users` -> `features/users/`
+- `/admin/members` when they are organization members -> `features/organizations/`
+- `/admin/settings` when they are platform settings -> `features/system-settings/`
+
 ---
 
 ## Quick decision test

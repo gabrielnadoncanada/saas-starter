@@ -1,6 +1,6 @@
-import { requireAdmin } from "@/features/admin/shared/server/require-admin";
-import { AdminOrganizationsTable } from "@/features/admin/organizations/components/admin-organizations-table";
-import { listAdminOrganizations } from "@/features/admin/organizations/server/list-admin-organizations";
+import { requireAdmin } from "@/features/auth/server/require-admin";
+import { AdminOrganizationsTable } from "@/features/organizations/components/admin-organizations-table";
+import { listAdminOrganizations } from "@/features/organizations/server/list-admin-organizations";
 import {
   Page,
   PageDescription,
@@ -35,3 +35,5 @@ export default async function AdminOrganizationsPage() {
     </Page>
   );
 }
+
+

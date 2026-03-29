@@ -15,8 +15,9 @@ export {
   type PricingModel,
 } from "@/shared/config/billing.config";
 export { isConfiguredStripePriceId } from "../server/recurring-selection";
-export { resolveTeamPlan } from "./resolve-team-plan";
+export { resolveOrganizationPlan } from "./resolve-organization-plan";
 export {
   hasPlanAccess,
   isTerminalStripeSubscriptionStatus,
 } from "./subscription-status";
+

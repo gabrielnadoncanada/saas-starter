@@ -6,7 +6,7 @@ vi.mock("@/shared/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@/features/teams/shared/server/current-organization", () => ({
+vi.mock("@/features/organizations/server/current-organization", () => ({
   getCurrentOrganization: vi.fn(),
 }));
 
@@ -23,7 +23,9 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 }));
 
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
-const { getCurrentOrganization } = await import("@/features/teams/shared/server/current-organization");
+const { getCurrentOrganization } = await import(
+  "@/features/organizations/server/current-organization"
+);
 const {
   createAssistantConversation,
   deleteAssistantConversation,
@@ -135,3 +137,4 @@ describe("assistant conversations", () => {
     expect(deleted).toBe(true);
   });
 });
+

@@ -1,17 +1,17 @@
-# Root `shared/` versus `features/`
+# Root app folders versus `features/`
 
 ## Core rule
 
 Choose placement based on ownership, not on whether code is server-side, shared, or important.
 
-- app-wide shared code not owned by one domain -> `shared/`
+- app-wide code not owned by one domain -> root folders
 - product logic owned by one domain -> `features/<feature>/`
 
 ---
 
-## `shared/` DOES
+## Root folders DO
 
-Root `shared/` does contain:
+Root folders do contain:
 
 - database client setup
 - auth framework setup
@@ -22,23 +22,25 @@ Root `shared/` does contain:
 - app-wide technical utilities
 - app-wide reusable UI
 - app-wide constants
+- global styles
 
 Examples:
 
-- `shared/lib/db/prisma.ts`
-- `shared/lib/auth/providers.ts`
-- `shared/lib/auth/auth.ts`
-- `shared/lib/stripe/client.ts`
-- `shared/lib/env.ts`
-- `shared/components/ui/button.tsx`
-- `shared/components/app/page-header.tsx`
-- `shared/constants/routes.ts`
+- `lib/db/prisma.ts`
+- `lib/auth/providers.ts`
+- `lib/auth/auth.ts`
+- `lib/stripe/client.ts`
+- `lib/env.ts`
+- `components/ui/button.tsx`
+- `components/app/page-header.tsx`
+- `constants/routes.ts`
+- `styles/globals.css`
 
 ---
 
-## `shared/` DOES NOT
+## Root folders DO NOT
 
-Root `shared/` does not contain:
+Root folders do not contain:
 
 - task creation logic
 - invitation workflows
@@ -50,10 +52,10 @@ Root `shared/` does not contain:
 
 Bad examples:
 
-- `shared/lib/create-task.ts`
-- `shared/lib/invite-member.ts`
-- `shared/lib/delete-account.ts`
-- `shared/lib/invoice-summary.ts`
+- `lib/create-task.ts`
+- `lib/invite-member.ts`
+- `lib/delete-account.ts`
+- `lib/invoice-summary.ts`
 
 These belong in their owning feature.
 
@@ -95,7 +97,7 @@ Bad examples:
 - `features/teams/env.ts`
 - `features/auth/stripe-client.ts`
 
-These belong in root `shared/`.
+These belong in root folders.
 
 ---
 
@@ -103,14 +105,14 @@ These belong in root `shared/`.
 
 ### Mistake 1
 
-"It touches the database, so it belongs in `shared/`."
+"It touches the database, so it belongs in a root folder."
 
 Wrong.
 Database access that belongs to one feature should stay in that feature.
 
 ### Mistake 2
 
-"It is reused in two places, so it must move to root `shared/`."
+"It is reused in two places, so it must move to a root folder."
 
 Wrong.
 If both usages belong to the same feature, keep it in that feature.
@@ -121,7 +123,21 @@ If both usages belong to the same feature, keep it in that feature.
 
 Wrong.
 Global auth infrastructure should not depend on `features/`.
-Move supporting auth-system logic into `shared/lib/auth/`.
+Move supporting auth-system logic into `lib/auth/`.
+
+### Mistake 4
+
+"The page is under `/admin`, so the code belongs in `features/admin/`."
+
+Wrong.
+
+`features/admin/` is for the admin shell, not every admin-only workflow.
+
+Examples:
+
+- `/admin/users` -> `features/users/`
+- `/admin/members` when they are organization members -> `features/organizations/`
+- `/admin/settings` when they are platform settings -> `features/system-settings/`
 
 ---
 
@@ -135,32 +151,32 @@ Ask:
 
 If the answer is:
 
-- app-wide shared code -> `shared/`
+- app-wide code -> root folders
 - owned by one feature -> `features/<feature>/`
 
 ---
 
 ## Strong rule
 
-`shared/` is not a misc folder.
+Root folders are not misc folders.
 
-Do not use root `shared/` as:
+Do not use `lib/`, `components/`, `hooks/`, or `types/` as:
 
-- a dumping ground
-- a place for random server code
-- a place for business logic that feels reusable
-- a place for anything you do not know how to classify
+- dumping grounds
+- places for random server code
+- homes for business logic that only feels reusable
+- catch-alls for anything you do not know how to classify
 
 When in doubt, prefer feature ownership first.
-Move something to root `shared/` only when it is truly cross-feature app-level code.
+Promote something to a root folder only when it is truly app-level code.
 
 ---
 
 ## Activity log example
 
-Use a shared helper such as `shared/lib/activity-log.ts` for the low-level insert.
+Use a shared helper such as `lib/activity-log.ts` for the low-level insert.
 
-Keep feature-owned lookups outside root `shared/`.
+Keep feature-owned lookups outside root folders.
 
 Good:
 
@@ -169,6 +185,6 @@ Good:
 
 Bad:
 
-- `shared/lib/auth/...` importing team membership queries just to attach a `teamId`
+- `lib/auth/...` importing team membership queries just to attach a `teamId`
 
 If a global auth hook needs to write an activity row, let it call the shared helper directly with the data it already owns.

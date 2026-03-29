@@ -1,6 +1,6 @@
-import { requireAdmin } from "@/features/admin/shared/server/require-admin";
-import { AdminUsersTable } from "@/features/admin/users/components/admin-users-table";
-import { listAdminUsers } from "@/features/admin/users/server/list-admin-users";
+import { requireAdmin } from "@/features/auth/server/require-admin";
+import { AdminUsersTable } from "@/features/users/components/admin-users-table";
+import { listAdminUsers } from "@/features/users/server/list-admin-users";
 import {
   Page,
   PageDescription,
@@ -37,3 +37,5 @@ export default async function AdminUsersPage() {
     </Page>
   );
 }
+
+

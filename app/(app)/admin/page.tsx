@@ -1,5 +1,5 @@
 import { Building2, Users, ShieldBan, ShieldCheck } from "lucide-react";
-import { getAdminOverviewStats } from "@/features/admin/overview/server/get-admin-overview-stats";
+import { getAdminOverviewStats } from "@/features/admin/server/get-admin-overview-stats";
 import {
   Page,
   PageDescription,
@@ -74,3 +74,4 @@ export default async function AdminDashboardPage() {
     </Page>
   );
 }
+

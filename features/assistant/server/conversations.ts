@@ -7,7 +7,7 @@ import type {
   AssistantConversation,
   AssistantConversationListItem,
 } from "@/features/assistant/types";
-import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -234,3 +234,5 @@ export async function deleteAssistantConversation(conversationId: string) {
 
   return result.count > 0;
 }
+
+

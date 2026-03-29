@@ -5,9 +5,9 @@ import { cn } from "@/shared/lib/utils";
 import { SearchProvider } from "@/shared/components/command/search-provider";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { AdminSidebar } from "@/shared/components/layout/shell/admin-sidebar";
+import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
-import { requireAdmin } from "@/features/admin/shared/server/require-admin";
+import { requireAdmin } from "@/features/auth/server/require-admin";
 import { UserProvider } from "@/shared/components/providers/user-provider";
 
 export default async function AdminLayout({
@@ -52,3 +52,4 @@ export default async function AdminLayout({
     </UserProvider>
   );
 }
+

@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useDialogState from "@/shared/hooks/useDialogState";
-import { useActiveOrganization } from "@/features/teams/shared/data/active-organization";
-import { useOrganizationList } from "@/features/teams/shared/data/organization-list";
-import { useSetActiveOrganization } from "@/features/teams/shared/data/set-active-organization";
+import { useActiveOrganization } from "@/features/organizations/data/active-organization";
+import { useOrganizationList } from "@/features/organizations/data/organization-list";
+import { useSetActiveOrganization } from "@/features/organizations/data/set-active-organization";
 import {
   Avatar,
   AvatarFallback,
@@ -181,3 +181,5 @@ export function NavUser() {
     </>
   );
 }
+
+

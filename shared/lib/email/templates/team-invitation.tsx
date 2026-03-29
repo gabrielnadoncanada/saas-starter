@@ -5,26 +5,26 @@ import { EmailButton } from "./components/email-button";
 
 type TeamInvitationEmailProps = {
   inviterName: string;
-  teamName: string;
+  organizationName: string;
   role: string;
   invitationUrl: string;
 };
 
 export function TeamInvitationEmail({
   inviterName = "John",
-  teamName = "Acme",
+  organizationName = "Acme",
   role = "member",
   invitationUrl = "https://example.com/accept-invitation/1",
 }: TeamInvitationEmailProps) {
   return (
     <EmailLayout
-      preview={`${inviterName} vous invite à rejoindre ${teamName}`}
+      preview={`${inviterName} vous invite à rejoindre ${organizationName}`}
       footerText="Si vous n'attendiez pas cette invitation, vous pouvez ignorer cet email."
     >
-      <Heading style={heading}>Invitation à rejoindre {teamName}</Heading>
+      <Heading style={heading}>Invitation à rejoindre {organizationName}</Heading>
       <Text style={paragraph}>
         <strong>{inviterName}</strong> vous invite à rejoindre{" "}
-        <strong>{teamName}</strong> en tant que {role}.
+        <strong>{organizationName}</strong> en tant que {role}.
       </Text>
       <Section style={buttonContainer}>
         <EmailButton href={invitationUrl}>Accepter l&apos;invitation</EmailButton>
@@ -63,3 +63,4 @@ const link: React.CSSProperties = {
   color: "#9ca3af",
   wordBreak: "break-all" as const,
 };
+

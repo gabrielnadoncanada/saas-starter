@@ -6,8 +6,8 @@ import {
   Users,
   ArrowUp,
 } from "lucide-react";
-import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
-import { listCurrentTeamTasks } from "@/features/tasks/server/tasks";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { listCurrentOrganizationTasks } from "@/features/tasks/server/tasks";
 import {
   Page,
   PageDescription,
@@ -23,7 +23,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { resolveTeamPlan, getPlan } from "@/features/billing/plans";
+import { resolveOrganizationPlan, getPlan } from "@/features/billing/plans";
 import { hasCapability, checkLimit } from "@/features/billing/guards";
 import { getMonthlyUsage } from "@/features/billing/usage";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
@@ -33,10 +33,10 @@ import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 export default async function DashboardPage() {
   const [organization, tasks] = await Promise.all([
     getCurrentOrganization(),
-    listCurrentTeamTasks(),
+    listCurrentOrganizationTasks(),
   ]);
 
-  const planId = resolveTeamPlan(organization);
+  const planId = resolveOrganizationPlan(organization);
   const plan = getPlan(planId);
   const memberCount = organization?.members?.length ?? 0;
   const taskCount = tasks.length;
@@ -157,3 +157,6 @@ export default async function DashboardPage() {
     </Page>
   );
 }
+
+
+

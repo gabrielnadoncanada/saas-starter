@@ -129,7 +129,7 @@ Prefer:
 - one cohesive config file per domain concern
 - names that tell the developer exactly what can be changed
 - `features/<feature>/config/` for feature-owned config
-- `shared/config/` for app-wide config
+- root `config/` for app-wide config
 
 Avoid:
 
@@ -146,7 +146,7 @@ Do not put these in `.config.ts` files:
 - mutations or side effects
 - orchestration logic
 
-If the file needs async work or runtime effects, it probably belongs in `server/` or `shared/lib/`, not in `config/`.
+If the file needs async work or runtime effects, it probably belongs in `server/` or `lib/`, not in `config/`.
 
 ---
 

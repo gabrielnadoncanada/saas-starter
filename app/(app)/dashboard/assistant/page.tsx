@@ -1,8 +1,8 @@
 import { Page } from "@/shared/components/layout/page";
-import { resolveTeamPlan } from "@/features/billing/plans";
+import { resolveOrganizationPlan } from "@/features/billing/plans";
 import { hasCapability, checkLimit } from "@/features/billing/guards";
 import { getMonthlyUsage } from "@/features/billing/usage";
-import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import { getAssistantConversation } from "@/features/assistant/server/conversations";
@@ -17,7 +17,7 @@ export default async function AssistantPage({
   searchParams,
 }: AssistantPageProps) {
   const organization = await getCurrentOrganization();
-  const planId = resolveTeamPlan(organization);
+  const planId = resolveOrganizationPlan(organization);
   const canUseAssistant = hasCapability(planId, "ai.assistant");
   const { conversationId } = await searchParams;
 
@@ -53,3 +53,6 @@ export default async function AssistantPage({
     </Page>
   );
 }
+
+
+

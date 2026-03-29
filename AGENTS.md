@@ -69,6 +69,20 @@ Output standard:
 - Extra structure is allowed only when the underlying workflow is genuinely complex, high-risk, or highly reusable.
 - If an abstraction needs explanation before it feels useful, it is probably too expensive.
 
+## Feature Placement
+
+- Place code by real ownership, not by URL path, menu location, or role access alone.
+- Always separate route surface, authorization, business domain, and shared infrastructure.
+- `app/` owns route files only: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `route.ts`.
+- `features/auth/` owns session lookup, guards, permissions, and access-control helpers.
+- `features/admin/` owns the admin shell only: admin layout, navigation, overview widgets, and shell-specific UI.
+- Business domains own their own behavior even when the entry route is admin-only. Example: `/admin/users` belongs to `features/users/`, not `features/admin/users/`.
+- Put Better Auth or other provider bootstrap code in `lib/`. Put app-specific auth usage helpers such as `require-admin` in `features/auth/`.
+- Prefer the business domain over `admin` whenever a file manipulates users, organizations, billing, invoices, or system settings.
+- Dependency direction is `app -> features -> lib`.
+- Business features must not depend on `features/admin/`.
+- `lib/` must not depend on feature folders.
+
 ## UI Consistency
 
 - Use as few custom CSS classes as possible.

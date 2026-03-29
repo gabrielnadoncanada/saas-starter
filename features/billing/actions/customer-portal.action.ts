@@ -8,8 +8,8 @@ import { routes } from "@/shared/constants/routes";
 import {
   getRequiredOrganizationMembership,
   OrganizationMembershipError,
-} from "@/features/teams/shared/server/get-required-organization-membership";
-import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
+} from "@/features/organizations/server/get-required-organization-membership";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function customerPortalAction() {
@@ -38,3 +38,5 @@ export async function customerPortalAction() {
 
   redirect(url);
 }
+
+

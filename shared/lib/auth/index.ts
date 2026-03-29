@@ -118,7 +118,7 @@ export const auth = betterAuth({
           email: invitation.email,
           role: invitation.role,
           inviterName: inviter.user.name || inviter.user.email,
-          teamName: org.name,
+          organizationName: org.name,
           invitationToken: invitation.id,
         });
       },
@@ -157,3 +157,4 @@ export const auth = betterAuth({
 });
 
 export type Auth = typeof auth;
+

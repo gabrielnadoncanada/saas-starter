@@ -43,10 +43,10 @@ export function CodeProof() {
                 // Gate a feature in your server action
               </p>
               <pre className="whitespace-pre leading-relaxed">
-{`const teamPlan = await getTeamPlan();
+{`const organizationPlan = await getOrganizationPlan();
 
-assertCapability(teamPlan.planId, "team.invite");
-assertLimit(teamPlan.planId, "teamMembers", memberCount);
+assertCapability(organizationPlan.planId, "team.invite");
+assertLimit(organizationPlan.planId, "teamMembers", memberCount);
 
 // If we get here, the user's plan allows it`}
               </pre>
@@ -77,3 +77,4 @@ assertLimit(teamPlan.planId, "teamMembers", memberCount);
     </section>
   );
 }
+

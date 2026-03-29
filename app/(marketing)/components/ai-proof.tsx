@@ -43,14 +43,14 @@ export function AiProof() {
                 // Route-level AI gating + provider resolution
               </p>
               <pre className="whitespace-pre leading-relaxed">
-{`const teamPlan = await getTeamPlan();
-assertCapability(teamPlan.planId, "ai.assistant");
+{`const organizationPlan = await getOrganizationPlan();
+assertCapability(organizationPlan.planId, "ai.assistant");
 
 const usage = await getMonthlyUsage(
-  teamPlan.organizationId,
+  organizationPlan.organizationId,
   "aiRequestsPerMonth"
 );
-assertLimit(teamPlan.planId, "aiRequestsPerMonth", usage);
+assertLimit(organizationPlan.planId, "aiRequestsPerMonth", usage);
 
 const assistantModel = getAssistantModel();
 
@@ -58,7 +58,7 @@ const result = streamText({
   model: assistantModel.model,
   tools: assistantTools,
   onFinish: () =>
-    recordUsage(teamPlan.organizationId, "aiRequestsPerMonth"),
+    recordUsage(organizationPlan.organizationId, "aiRequestsPerMonth"),
 });`}
               </pre>
             </div>
@@ -68,16 +68,16 @@ const result = streamText({
                 // Tool-level billing stays real too
               </p>
               <pre className="whitespace-pre leading-relaxed">
-{`assertCapability(teamPlan.planId, "email.sync");
+{`assertCapability(organizationPlan.planId, "email.sync");
 
 const usage = await getMonthlyUsage(
-  teamPlan.organizationId,
+  organizationPlan.organizationId,
   "emailSyncsPerMonth"
 );
-assertLimit(teamPlan.planId, "emailSyncsPerMonth", usage);
+assertLimit(organizationPlan.planId, "emailSyncsPerMonth", usage);
 
 const messages = await emailProvider.getRecentMessages();
-await recordUsage(teamPlan.organizationId, "emailSyncsPerMonth");`}
+await recordUsage(organizationPlan.organizationId, "emailSyncsPerMonth");`}
               </pre>
             </div>
           </div>
@@ -86,3 +86,4 @@ await recordUsage(teamPlan.organizationId, "emailSyncsPerMonth");`}
     </section>
   );
 }
+

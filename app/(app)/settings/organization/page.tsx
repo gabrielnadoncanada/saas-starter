@@ -4,9 +4,12 @@ import {
   PageHeader,
   PageTitle,
 } from "@/shared/components/layout/page";
-import { OrganizationSettingsPage } from "@/features/teams/organization/components/organization-settings-page";
+import { RenameOrganizationPanel } from "@/features/organizations/components/rename-organization-panel";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
 
 export default async function SettingsPage() {
+  const context = await getCurrentOrganizationContext();
+
   return (
     <Page fixed>
       <PageHeader>
@@ -15,7 +18,13 @@ export default async function SettingsPage() {
           Manage your organization details and subscription.
         </PageDescription>
       </PageHeader>
-      <OrganizationSettingsPage />
+      {context ? (
+        <RenameOrganizationPanel
+          currentName={context.organization.name}
+          canManage={context.canManageMembers}
+        />
+      ) : null}
     </Page>
   );
 }
+

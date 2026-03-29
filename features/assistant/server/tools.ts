@@ -9,9 +9,9 @@ import type {
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
 import { assertCapability } from "@/features/billing/guards";
-import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
+import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
 import { consumeMonthlyUsage } from "@/features/billing/usage";
-import { createTaskForCurrentTeam } from "@/features/tasks/server/create-task-for-current-team";
+import { createTaskForCurrentOrganization } from "@/features/tasks/server/create-task-for-current-organization";
 import { emailProvider } from "./email-provider";
 import { toAssistantToolFailure } from "./tool-result";
 
@@ -23,14 +23,14 @@ type InvoiceDraftInput = {
   dueInDays?: number;
 };
 
-async function getToolTeamPlan() {
-  const teamPlan = await getTeamPlan();
+async function getToolOrganizationPlan() {
+  const organizationPlan = await getOrganizationPlan();
 
-  if (!teamPlan) {
-    throw new Error("Team not found");
+  if (!organizationPlan) {
+    throw new Error("Organization not found");
   }
 
-  return teamPlan;
+  return organizationPlan;
 }
 
 export const assistantTools = {
@@ -47,14 +47,14 @@ export const assistantTools = {
     }),
     execute: async ({ limit }: { limit?: number }): Promise<ReviewInboxToolResult> => {
       try {
-        const teamPlan = await getToolTeamPlan();
-        assertCapability(teamPlan.planId, "email.sync");
+        const organizationPlan = await getToolOrganizationPlan();
+        assertCapability(organizationPlan.planId, "email.sync");
         const messages = await emailProvider.getRecentMessages(limit ?? 5);
 
         await consumeMonthlyUsage(
-          teamPlan.organizationId,
+          organizationPlan.organizationId,
           "emailSyncsPerMonth",
-          teamPlan.planId,
+          organizationPlan.planId,
         );
 
         return {
@@ -102,7 +102,7 @@ export const assistantTools = {
       label?: "FEATURE" | "BUG" | "DOCUMENTATION";
     }): Promise<CreateTaskToolResult> => {
       try {
-        const task = await createTaskForCurrentTeam({
+        const task = await createTaskForCurrentOrganization({
           title,
           description,
           priority: priority ?? "MEDIUM",
@@ -159,8 +159,8 @@ export const assistantTools = {
       dueInDays,
     }: InvoiceDraftInput): Promise<CreateInvoiceDraftToolResult> => {
       try {
-        const teamPlan = await getToolTeamPlan();
-        assertCapability(teamPlan.planId, "invoice.create");
+        const organizationPlan = await getToolOrganizationPlan();
+        assertCapability(organizationPlan.planId, "invoice.create");
 
         const subtotal = items.reduce(
           (sum, item) => sum + item.quantity * item.unitPrice,
@@ -191,3 +191,4 @@ export const assistantTools = {
     },
   }),
 };
+

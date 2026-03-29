@@ -16,29 +16,30 @@ export function buildTeamInvitationEmail(input: {
   email: string;
   role: string;
   inviterName: string;
-  teamName: string;
+  organizationName: string;
   invitationToken: string;
 }): EmailPayload {
   const invitationUrl = buildAbsoluteUrl(
     `/accept-invitation/${input.invitationToken}`,
   );
 
-  const safeTeamName = sanitizeForEmailSubject(input.teamName);
+  const safeTeamName = sanitizeForEmailSubject(input.organizationName);
 
   return {
     to: [input.email],
     subject: `Vous êtes invité à rejoindre ${safeTeamName}`,
     react: createElement(TeamInvitationEmail, {
       inviterName: input.inviterName,
-      teamName: input.teamName,
+      organizationName: input.organizationName,
       role: input.role,
       invitationUrl,
     }),
     text: [
-      `${input.inviterName} vous invite à rejoindre ${input.teamName} en tant que ${input.role}.`,
+      `${input.inviterName} vous invite à rejoindre ${input.organizationName} en tant que ${input.role}.`,
       "",
       `Accepter l'invitation : ${invitationUrl}`,
     ].join("\n"),
     tags: [{ name: "email_type", value: "team_invitation" }],
   };
 }
+

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { OrganizationInvitationPage } from "@/features/teams/invitations/components/organization-invitation-page";
+import { OrganizationInvitationPage } from "@/features/organizations/components/organization-invitation-page";
 import { routes } from "@/shared/constants/routes";
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
@@ -30,3 +30,6 @@ export default async function AcceptInvitationPage({
 
   return <OrganizationInvitationPage invitationId={id} />;
 }
+
+
+

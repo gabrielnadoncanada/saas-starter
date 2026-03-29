@@ -9,8 +9,8 @@ import {
   deleteTaskSchema,
 } from "@/features/tasks/schemas/task.schema";
 import {
-  bulkDeleteTasksForCurrentTeam,
-  deleteTaskForCurrentTeam,
+  bulkDeleteTasksForCurrentOrganization,
+  deleteTaskForCurrentOrganization,
 } from "@/features/tasks/server/tasks";
 
 export const deleteTaskAction = validatedAuthenticatedAction<
@@ -19,7 +19,7 @@ export const deleteTaskAction = validatedAuthenticatedAction<
 >(
   deleteTaskSchema,
   async ({ taskId }) => {
-    await deleteTaskForCurrentTeam(taskId);
+    await deleteTaskForCurrentOrganization(taskId);
     revalidatePath(routes.app.tasks);
 
     return {
@@ -35,7 +35,7 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
 >(
   bulkDeleteTasksSchema,
   async ({ taskIds }) => {
-    const deletedCount = await bulkDeleteTasksForCurrentTeam(taskIds);
+    const deletedCount = await bulkDeleteTasksForCurrentOrganization(taskIds);
     revalidatePath(routes.app.tasks);
 
     return {
@@ -44,3 +44,4 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
     };
   },
 );
+

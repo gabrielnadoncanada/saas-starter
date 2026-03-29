@@ -3,7 +3,7 @@ import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { getAssistantModel } from "@/features/assistant/server/get-assistant-model";
 import { getAssistantConversation } from "@/features/assistant/server/conversations";
 import { assertCapability } from "@/features/billing/guards";
-import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
+import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
 import { consumeMonthlyUsage } from "@/features/billing/usage";
 import { UpgradeRequiredError, LimitReachedError } from "@/features/billing/errors";
 import { assistantTools } from "@/features/assistant/server/tools";
@@ -17,17 +17,17 @@ export async function POST(req: Request) {
   }
 
   // 2. Check plan gating and usage limits
-  const teamPlan = await getTeamPlan();
-  if (!teamPlan) {
-    return new Response("Team not found", { status: 403 });
+  const organizationPlan = await getOrganizationPlan();
+  if (!organizationPlan) {
+    return new Response("Organization not found", { status: 403 });
   }
 
   try {
-    assertCapability(teamPlan.planId, "ai.assistant");
+    assertCapability(organizationPlan.planId, "ai.assistant");
     await consumeMonthlyUsage(
-      teamPlan.organizationId,
+      organizationPlan.organizationId,
       "aiRequestsPerMonth",
-      teamPlan.planId,
+      organizationPlan.planId,
     );
   } catch (error) {
     if (error instanceof UpgradeRequiredError) {
@@ -109,3 +109,4 @@ Guidelines:
 
   return result.toUIMessageStreamResponse();
 }
+

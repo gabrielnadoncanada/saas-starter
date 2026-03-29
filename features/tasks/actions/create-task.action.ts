@@ -6,7 +6,7 @@ import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 import { createTaskSchema } from "@/features/tasks/schemas/task.schema";
 import type { Task } from "@/features/tasks/types/task.types";
-import { createTaskForCurrentTeam } from "@/features/tasks/server/create-task-for-current-team";
+import { createTaskForCurrentOrganization } from "@/features/tasks/server/create-task-for-current-organization";
 import { UpgradeRequiredError, LimitReachedError } from "@/features/billing/errors";
 
 export const createTaskAction = validatedAuthenticatedAction<
@@ -16,7 +16,7 @@ export const createTaskAction = validatedAuthenticatedAction<
   createTaskSchema,
   async (data) => {
     try {
-      const task = await createTaskForCurrentTeam(data);
+      const task = await createTaskForCurrentOrganization(data);
       revalidatePath(routes.app.tasks);
 
       return {
@@ -27,7 +27,7 @@ export const createTaskAction = validatedAuthenticatedAction<
       if (
         error instanceof UpgradeRequiredError ||
         error instanceof LimitReachedError ||
-        (error instanceof Error && error.message === "Team not found")
+        (error instanceof Error && error.message === "Organization not found")
       ) {
         return { error: error.message };
       }
@@ -35,3 +35,4 @@ export const createTaskAction = validatedAuthenticatedAction<
     }
   },
 );
+

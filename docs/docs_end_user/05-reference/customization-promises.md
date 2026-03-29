@@ -1,3 +1,0 @@
-# Customization Promises
-
-Déjà produit.

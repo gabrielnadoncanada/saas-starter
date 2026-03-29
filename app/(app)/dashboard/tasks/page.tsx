@@ -1,4 +1,4 @@
-import { listCurrentTeamTasks } from "@/features/tasks/server/tasks";
+import { listCurrentOrganizationTasks } from "@/features/tasks/server/tasks";
 import { TasksPrimaryButtons } from "@/features/tasks/components/tasks-primary-buttons";
 import { TasksDialogs } from "@/features/tasks/components/dialogs/tasks-dialogs";
 import { TasksTable } from "@/features/tasks/components/table/tasks-table";
@@ -12,7 +12,7 @@ import {
 } from "@/shared/components/layout/page";
 
 export default async function DashboardTasksPage() {
-  const tasks = await listCurrentTeamTasks();
+  const tasks = await listCurrentOrganizationTasks();
 
   return (
     <TasksProvider initialTasks={tasks}>
@@ -32,3 +32,4 @@ export default async function DashboardTasksPage() {
     </TasksProvider>
   );
 }
+

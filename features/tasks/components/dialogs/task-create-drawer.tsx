@@ -69,7 +69,7 @@ export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) 
       <SheetContent className='flex flex-col'>
         <SheetHeader className='text-start'>
           <SheetTitle>Create Task</SheetTitle>
-          <SheetDescription>Add a task for the current team.</SheetDescription>
+          <SheetDescription>Add a task for the current organization.</SheetDescription>
         </SheetHeader>
 
         <form action={formAction} className='flex flex-1 flex-col gap-6 overflow-y-auto px-4'>

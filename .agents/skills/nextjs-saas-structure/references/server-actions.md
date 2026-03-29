@@ -54,17 +54,17 @@ If a file imports Prisma or touches the database, it usually belongs in `server/
 
 ---
 
-## What stays in `shared/lib/` instead of feature `server/`
+## What stays in root `lib/` instead of feature `server/`
 
-Use `shared/lib/` only for shared infrastructure.
+Use `lib/` only for shared infrastructure.
 
 Examples:
-- `shared/lib/db/prisma.ts`
+- `lib/db/prisma.ts`
 - auth provider setup
 - Stripe client setup
 - generic framework integrations
 
-Do not move feature queries into `shared/lib/` just because they talk to the database.
+Do not move feature queries into `lib/` just because they talk to the database.
 
 ## Testability rules for `server/`
 
@@ -115,7 +115,7 @@ export async function createInvoiceAction(formData: FormData) {
 
 ```ts
 // server/create-invoice.ts
-import { prisma } from '@/shared/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
 
 export async function createInvoice(input: {
   customerId: string;
@@ -157,7 +157,7 @@ export async function updateAccountAction(formData: FormData) {
 
 ```ts
 // server/update-account.ts
-import { prisma } from '@/shared/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
 
 export async function updateAccount(params: {
   userId: number;

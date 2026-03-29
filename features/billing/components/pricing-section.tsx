@@ -7,7 +7,7 @@ export async function PricingSection() {
       productId: `${plan.id}-recurring`,
       productName: plan.name,
       description: plan.description,
-      features: plan.marketingFeatures,
+      features: plan.features,
       pricingModel: plan.pricingModel,
       monthly: plan.prices.monthly ?? null,
       sortAmount: plan.prices.monthly?.unitAmount ?? 0,

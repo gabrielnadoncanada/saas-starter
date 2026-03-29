@@ -67,6 +67,17 @@ features/
 
 Only add the folders that are actually needed.
 
+## Admin placement rule
+
+Do not place code by `/admin` path or admin-only access alone.
+
+- `features/admin/` -> admin shell only
+- business domains keep ownership of users, organizations, billing, invoices, and system settings
+- auth guards stay in `features/auth/`
+- provider bootstrap stays in `shared/lib/`
+
+Example: `app/admin/users/page.tsx` + `features/users/*` + `features/auth/server/require-admin.ts`
+
 ### `shared/`
 
 Use root `shared/` for app-wide code that is not owned by one product feature.
@@ -312,6 +323,7 @@ Consult these references when relevant:
 - scaling guidance -> `references/scaling.md`
 - exact `actions/` versus `server/` boundary -> `references/server-actions.md`
 - exact `shared/` versus `features/` ownership -> `references/lib-vs-features.md`
+- exact admin versus domain placement -> `references/feature-placement.md`
 
 ## Output expectations
 

@@ -9,8 +9,8 @@ import { isConfiguredStripePriceId } from "@/features/billing/plans";
 import {
   getRequiredOrganizationMembership,
   OrganizationMembershipError,
-} from "@/features/teams/shared/server/get-required-organization-membership";
-import { getCurrentOrganization } from "@/features/teams/shared/server/current-organization";
+} from "@/features/organizations/server/get-required-organization-membership";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -58,3 +58,5 @@ export async function checkoutAction(formData: FormData) {
 
   redirect(url);
 }
+
+

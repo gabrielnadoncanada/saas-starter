@@ -10,9 +10,9 @@ import {
   updateTaskStatusSchema,
 } from "@/features/tasks/schemas/task.schema";
 import {
-  bulkUpdateTaskStatusForCurrentTeam,
-  updateTaskForCurrentTeam,
-  updateTaskStatusForCurrentTeam,
+  bulkUpdateTaskStatusForCurrentOrganization,
+  updateTaskForCurrentOrganization,
+  updateTaskStatusForCurrentOrganization,
 } from "@/features/tasks/server/tasks";
 import type { Task } from "@/features/tasks/types/task.types";
 
@@ -22,7 +22,7 @@ export const updateTaskAction = validatedAuthenticatedAction<
 >(
   updateTaskSchema,
   async (data) => {
-    const task = await updateTaskForCurrentTeam(data);
+    const task = await updateTaskForCurrentOrganization(data);
     revalidatePath(routes.app.tasks);
 
     return {
@@ -38,7 +38,7 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
 >(
   updateTaskStatusSchema,
   async (data) => {
-    await updateTaskStatusForCurrentTeam(data);
+    await updateTaskStatusForCurrentOrganization(data);
     revalidatePath(routes.app.tasks);
 
     return { success: "Task updated", refreshKey: Date.now() };
@@ -51,7 +51,7 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
 >(
   bulkUpdateTaskStatusSchema,
   async (data) => {
-    const updatedCount = await bulkUpdateTaskStatusForCurrentTeam(data);
+    const updatedCount = await bulkUpdateTaskStatusForCurrentOrganization(data);
     revalidatePath(routes.app.tasks);
 
     return {
@@ -61,3 +61,4 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
     };
   },
 );
+

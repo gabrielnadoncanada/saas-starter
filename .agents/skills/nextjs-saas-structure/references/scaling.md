@@ -34,7 +34,7 @@ At this stage:
 - keep actions thin
 - keep server logic close to the feature
 - avoid repositories and use-cases by default
-- avoid shared abstractions too early
+- avoid promoting abstractions too early
 
 ---
 
@@ -110,9 +110,9 @@ A use-case is usually not justified for:
 
 ---
 
-## Good trigger for `shared/components/app/`
+## Good trigger for `components/app/`
 
-Move a component from a feature to `shared/components/app/` only when:
+Move a component from a feature to `components/app/` only when:
 - it is reused by multiple features
 - the UI concept is truly app-level
 - it carries no feature-specific business assumptions
@@ -130,9 +130,9 @@ Examples of bad early moves:
 
 ---
 
-## Good trigger for global `hooks/`
+## Good trigger for root `hooks/`
 
-Move a hook to global `hooks/` only when:
+Move a hook to root `hooks/` only when:
 - it is reused across features
 - it is genuinely app-wide React behavior
 - it is not tied to one business domain
@@ -141,14 +141,27 @@ Otherwise keep it inside the feature or do not create it at all.
 
 ---
 
-## Good trigger for global `types/`
+## Good trigger for root `types/`
 
-Use global `types/` only when:
+Use root `types/` only when:
 - a type is shared across several domains
 - it is not owned by one feature
 - it clearly belongs at the application level
 
 Otherwise keep the type inside the feature that owns it.
+
+---
+
+## Good trigger for root `styles/`
+
+Use root `styles/` only for styling entry points or tokens that belong to the whole app.
+
+Good candidates:
+- `styles/globals.css`
+- `styles/editor.css`
+- theme token files
+
+Do not move feature-only class recipes or component-local styles there just because they are CSS.
 
 ---
 
@@ -163,7 +176,7 @@ Start with:
 Scale by:
 - splitting by responsibility
 - extracting repeated logic
-- promoting only proven shared code
+- promoting only proven app-wide code
 
 Avoid:
 - creating architecture for hypothetical future complexity

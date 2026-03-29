@@ -7,7 +7,7 @@ import {
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/conversations";
 import { assertCapability } from "@/features/billing/guards";
-import { getTeamPlan } from "@/features/billing/guards/get-team-plan";
+import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
 import { UpgradeRequiredError } from "@/features/billing/errors";
 
 type RouteContext = {
@@ -21,17 +21,17 @@ function getScopeErrorResponse(scope: Awaited<ReturnType<typeof resolveAssistant
     return new Response("Unauthorized", { status: 401 });
   }
 
-  return new Response("Team not found", { status: 403 });
+  return new Response("Organization not found", { status: 403 });
 }
 
 async function assertAssistantAccess() {
-  const teamPlan = await getTeamPlan();
-  if (!teamPlan) {
-    return new Response("Team not found", { status: 403 });
+  const organizationPlan = await getOrganizationPlan();
+  if (!organizationPlan) {
+    return new Response("Organization not found", { status: 403 });
   }
 
   try {
-    assertCapability(teamPlan.planId, "ai.assistant");
+    assertCapability(organizationPlan.planId, "ai.assistant");
   } catch (error) {
     if (error instanceof UpgradeRequiredError) {
       return Response.json(
@@ -112,3 +112,4 @@ export async function DELETE(_req: Request, context: RouteContext) {
 
   return new Response(null, { status: 204 });
 }
+

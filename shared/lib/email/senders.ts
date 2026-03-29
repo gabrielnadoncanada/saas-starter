@@ -13,7 +13,7 @@ export async function sendTeamInvitationEmail(input: {
   email: string;
   role: string;
   inviterName: string;
-  teamName: string;
+  organizationName: string;
   invitationToken: string;
 }) {
   const payload = buildTeamInvitationEmail(input);
@@ -37,3 +37,4 @@ export async function sendTeamInvitationEmail(input: {
     throw error;
   }
 }
+

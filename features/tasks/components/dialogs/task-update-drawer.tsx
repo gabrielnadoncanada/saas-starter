@@ -77,7 +77,7 @@ export function TaskUpdateDrawer({
       <SheetContent className='flex flex-col'>
         <SheetHeader className='text-start'>
           <SheetTitle>Update Task</SheetTitle>
-          <SheetDescription>Edit {task.code} for the current team.</SheetDescription>
+          <SheetDescription>Edit {task.code} for the current organization.</SheetDescription>
         </SheetHeader>
 
         <form action={formAction} className='flex flex-1 flex-col gap-6 overflow-y-auto px-4'>
