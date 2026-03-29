@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { type Table } from '@tanstack/react-table';
 import { CircleArrowUp, Loader2, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { bulkDeleteTasksAction } from '@/features/tasks/actions/bulk-delete-tasks.action';
 import { bulkUpdateTaskStatusAction } from '@/features/tasks/actions/bulk-update-task-status.action';
@@ -24,7 +25,6 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/components/ui/tooltip';
 
 import type { Task } from '../../types/task.types';
-import { useTasks } from '../../state/tasks-provider';
 
 type DataTableBulkActionsProps = {
   table: Table<Task>;
@@ -34,8 +34,10 @@ function serializeTaskIds(tasks: Task[]) {
   return tasks.map((task) => task.id).join(',');
 }
 
-export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
-  const { bulkDeleteTasks, bulkUpdateTaskStatus } = useTasks();
+export function DataTableBulkActions({
+  table,
+}: DataTableBulkActionsProps) {
+  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const selectedTasks = useMemo(
     () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
@@ -63,26 +65,15 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
   useFormActionToasts(deleteState);
 
   useEffect(() => {
-    if (state.taskIds?.length && state.status) {
-      bulkUpdateTaskStatus(state.taskIds, state.status);
-    }
-
-    if (deleteState.taskIds?.length) {
-      bulkDeleteTasks(deleteState.taskIds);
-    }
-
     if (state.success || deleteState.success) {
+      router.refresh();
       table.resetRowSelection();
       setIsDeleteOpen(false);
     }
   }, [
-    bulkDeleteTasks,
-    bulkUpdateTaskStatus,
     deleteState.success,
-    deleteState.taskIds,
-    state.status,
+    router,
     state.success,
-    state.taskIds,
     table,
   ]);
 

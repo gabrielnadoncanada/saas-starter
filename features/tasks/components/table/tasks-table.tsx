@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import {
-  type RowSelectionState,
   type ColumnFiltersState,
   type PaginationState,
+  type RowSelectionState,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -16,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { cn } from '@/shared/lib/utils'
+import { DataTablePagination, DataTableToolbar } from '@/shared/components/data-table'
 import {
   Table,
   TableBody,
@@ -25,11 +25,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/shared/components/data-table'
+import { cn } from '@/shared/lib/utils'
 import { priorities, statuses } from '../../constants'
-import { useTasks } from '../../state/tasks-provider'
+import type { Task } from '../../types/task.types'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { tasksColumns as columns } from './tasks-columns'
+import { getTasksColumns } from './tasks-columns'
 
 type TaskColumnMeta = {
   className?: string
@@ -37,8 +37,17 @@ type TaskColumnMeta = {
   tdClassName?: string
 }
 
-export function TasksTable() {
-  const { tasks } = useTasks()
+type TasksTableProps = {
+  onOpenDeleteDialog: (task: Task) => void
+  onOpenUpdateDialog: (task: Task) => void
+  tasks: Task[]
+}
+
+export function TasksTable({
+  onOpenDeleteDialog,
+  onOpenUpdateDialog,
+  tasks,
+}: TasksTableProps) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -48,6 +57,15 @@ export function TasksTable() {
     pageIndex: 0,
     pageSize: 10,
   })
+
+  const columns = useMemo(
+    () =>
+      getTasksColumns({
+        onOpenDeleteDialog,
+        onOpenUpdateDialog,
+      }),
+    [onOpenDeleteDialog, onOpenUpdateDialog]
+  )
 
   const normalizedFilter = globalFilter.trim().toLowerCase()
   const filteredData = useMemo(() => {
@@ -102,7 +120,7 @@ export function TasksTable() {
   return (
     <div
       className={cn(
-        'max-sm:has-[div[role="toolbar"]]:mb-16', // Add margin bottom to the table on mobile when the toolbar is visible
+        'max-sm:has-[div[role="toolbar"]]:mb-16',
         'flex flex-1 flex-col gap-4'
       )}
     >
@@ -134,17 +152,14 @@ export function TasksTable() {
                     <TableHead
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={cn(
-                        meta?.className,
-                        meta?.thClassName
-                      )}
+                      className={cn(meta?.className, meta?.thClassName)}
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   )
                 })}
@@ -177,10 +192,7 @@ export function TasksTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
                   No results.
                 </TableCell>
               </TableRow>

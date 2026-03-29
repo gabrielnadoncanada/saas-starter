@@ -14,15 +14,18 @@ import {
 } from '@/shared/components/ui/dropdown-menu';
 
 import type { Task } from '../../types/task.types';
-import { useTasks } from '../../state/tasks-provider';
 
 type DataTableRowActionsProps = {
+  onOpenDeleteDialog: (task: Task) => void;
+  onOpenUpdateDialog: (task: Task) => void;
   row: Row<Task>;
 };
 
-export function DataTableRowActions({ row }: DataTableRowActionsProps) {
-  const { openDeleteDialog, openUpdateDialog } = useTasks();
-
+export function DataTableRowActions({
+  onOpenDeleteDialog,
+  onOpenUpdateDialog,
+  row,
+}: DataTableRowActionsProps) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -35,11 +38,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem onClick={() => openUpdateDialog(row.original)}>
+        <DropdownMenuItem onClick={() => onOpenUpdateDialog(row.original)}>
           Edit
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => openDeleteDialog(row.original)}>
+        <DropdownMenuItem onClick={() => onOpenDeleteDialog(row.original)}>
           Delete
           <DropdownMenuShortcut>
             <Trash2 size={16} />

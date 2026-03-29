@@ -2,20 +2,31 @@
 
 import { useCallback } from 'react';
 
-import { useTasks } from '../../state/tasks-provider';
+import type { Task } from '../../types/task.types';
 import { TaskCreateDrawer } from './task-create-drawer';
 import { TasksDeleteDialog } from './tasks-delete-dialog';
 import { TaskUpdateDrawer } from './task-update-drawer';
 
-export function TasksDialogs() {
-  const { closeDialog, currentTask, dialog } = useTasks();
+type TasksDialogType = 'create' | 'update' | 'delete';
+
+type TasksDialogsProps = {
+  currentTask: Task | null;
+  dialog: TasksDialogType | null;
+  onCloseDialog: () => void;
+};
+
+export function TasksDialogs({
+  currentTask,
+  dialog,
+  onCloseDialog,
+}: TasksDialogsProps) {
   const handleDialogOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        closeDialog();
+        onCloseDialog();
       }
     },
-    [closeDialog]
+    [onCloseDialog]
   );
 
   return (

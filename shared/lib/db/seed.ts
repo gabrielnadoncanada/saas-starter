@@ -1,7 +1,7 @@
 import type { PlanId } from "@/shared/config/billing.config";
-import { hashPassword } from "better-auth/crypto";
 import { db } from "./prisma";
 import { stripe } from "@/shared/lib/stripe/client";
+import { seedAdminWorkspace } from "./seeds/admin-seed";
 
 type SeedStripePlan = {
   name: string;
@@ -111,76 +111,6 @@ async function createStripeProducts() {
   console.log("Stripe products and prices created successfully.");
 }
 
-async function seedAdmin() {
-  const adminEmail = "admin@admin.com";
-  const adminPassword = "admin123";
-
-  const hashedPassword = await hashPassword(adminPassword);
-
-  const admin = await db.user.upsert({
-    where: { email: adminEmail },
-    update: { role: "admin", emailVerified: true },
-    create: {
-      name: "Admin",
-      email: adminEmail,
-      emailVerified: true,
-      role: "admin",
-    },
-  });
-
-  const existingAccount = await db.account.findFirst({
-    where: { userId: admin.id, providerId: "credential" },
-  });
-
-  if (!existingAccount) {
-    await db.account.create({
-      data: {
-        id: crypto.randomUUID(),
-        accountId: admin.id,
-        providerId: "credential",
-        userId: admin.id,
-        password: hashedPassword,
-      },
-    });
-  } else {
-    await db.account.update({
-      where: { id: existingAccount.id },
-      data: { password: hashedPassword },
-    });
-  }
-
-  let adminOrg = await db.organization.findFirst({
-    where: { slug: "admin-team" },
-  });
-
-  if (!adminOrg) {
-    adminOrg = await db.organization.create({
-      data: {
-        id: crypto.randomUUID(),
-        name: "Admin Team",
-        slug: "admin-team",
-      },
-    });
-  }
-
-  const existingMembership = await db.member.findFirst({
-    where: { organizationId: adminOrg.id, userId: admin.id },
-  });
-
-  if (!existingMembership) {
-    await db.member.create({
-      data: {
-        id: crypto.randomUUID(),
-        organizationId: adminOrg.id,
-        userId: admin.id,
-        role: "owner",
-      },
-    });
-  }
-
-  console.log(`Admin user ready: ${adminEmail} / ${adminPassword}`);
-}
-
 async function seed() {
   const email = "test@test.com";
 
@@ -236,7 +166,7 @@ async function seed() {
     });
   }
 
-  await seedAdmin();
+  await seedAdminWorkspace();
   await createStripeProducts();
 }
 

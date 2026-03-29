@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { updateTaskAction } from '@/features/tasks/actions/update-task.action';
 import { labels, priorities, statuses } from '@/features/tasks/constants';
@@ -29,7 +30,6 @@ import {
   SheetTitle,
 } from '@/shared/components/ui/sheet';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { useTasks } from '@/features/tasks/state/tasks-provider';
 
 type TaskUpdateDrawerProps = {
   task: Task;
@@ -42,7 +42,7 @@ export function TaskUpdateDrawer({
   open,
   onOpenChange,
 }: TaskUpdateDrawerProps) {
-  const { updateTask } = useTasks();
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState<UpdateTaskActionState, FormData>(
     updateTaskAction,
     {}
@@ -63,14 +63,11 @@ export function TaskUpdateDrawer({
   useFormActionToasts(state);
 
   useEffect(() => {
-    if (state.task) {
-      updateTask(state.task);
-    }
-
     if (state.success) {
+      router.refresh();
       onOpenChange(false);
     }
-  }, [onOpenChange, state.success, state.task, updateTask]);
+  }, [onOpenChange, router, state.success]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

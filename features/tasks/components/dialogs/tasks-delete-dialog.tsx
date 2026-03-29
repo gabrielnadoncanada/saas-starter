@@ -1,13 +1,13 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { deleteTaskAction } from '@/features/tasks/actions/delete-task.action';
 import type { DeleteTaskActionState } from '@/features/tasks/types/task-action.types';
 import type { Task } from '@/features/tasks/types/task.types';
 import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
 import { ConfirmDialog } from '@/shared/components/dialogs/confirm-dialog';
-import { useTasks } from '@/features/tasks/state/tasks-provider';
 
 type TasksDeleteDialogProps = {
   task: Task;
@@ -20,8 +20,8 @@ export function TasksDeleteDialog({
   open,
   onOpenChange,
 }: TasksDeleteDialogProps) {
+  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  const { deleteTask } = useTasks();
   const [state, formAction, isPending] = useActionState<DeleteTaskActionState, FormData>(
     deleteTaskAction,
     {}
@@ -30,14 +30,11 @@ export function TasksDeleteDialog({
   useFormActionToasts(state);
 
   useEffect(() => {
-    if (state.taskId) {
-      deleteTask(state.taskId);
-    }
-
     if (state.success) {
+      router.refresh();
       onOpenChange(false);
     }
-  }, [deleteTask, onOpenChange, state.success, state.taskId]);
+  }, [onOpenChange, router, state.success]);
 
   return (
     <>

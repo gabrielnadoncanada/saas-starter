@@ -4,13 +4,13 @@ import { Plus } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 
-import { useTasks } from '@/features/tasks/state/tasks-provider';
+type TasksPrimaryButtonsProps = {
+  onCreateClick: () => void;
+};
 
-export function TasksPrimaryButtons() {
-  const { openCreateDialog } = useTasks();
-
+export function TasksPrimaryButtons({ onCreateClick }: TasksPrimaryButtonsProps) {
   return (
-    <Button className='space-x-1' onClick={openCreateDialog}>
+    <Button className='space-x-1' onClick={onCreateClick}>
       <span>Create</span>
       <Plus size={18} />
     </Button>

@@ -6,12 +6,13 @@ import { NavAssistant } from "@/shared/components/navigation/nav-assistant";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
 import {
   Sidebar,
+  SidebarGroup,
   SidebarContent,
   SidebarHeader,
 } from "@/shared/components/ui/sidebar";
 
 export function DashboardSidebar() {
-  const generalGroup = dashboardSidebarData.navGroups[0];
+  const { navGroups } = dashboardSidebarData;
 
   return (
     <Sidebar collapsible="icon" variant="floating">
@@ -19,9 +20,13 @@ export function DashboardSidebar() {
         <NavUser />
       </SidebarHeader>
       <SidebarContent>
-        <NavGroup {...generalGroup}>
-          <NavAssistant />
-        </NavGroup>
+        <SidebarGroup>
+          {navGroups.map((group) => (
+            <NavGroup key={group.title} {...group}>
+              <NavAssistant />
+            </NavGroup>
+          ))}
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );

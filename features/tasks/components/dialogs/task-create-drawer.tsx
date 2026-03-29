@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { createTaskAction } from '@/features/tasks/actions/create-task.action';
 import { labels, priorities } from '@/features/tasks/constants';
@@ -28,7 +29,6 @@ import {
   SheetTitle,
 } from '@/shared/components/ui/sheet';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { useTasks } from '@/features/tasks/state/tasks-provider';
 
 type TaskCreateDrawerProps = {
   open: boolean;
@@ -36,7 +36,7 @@ type TaskCreateDrawerProps = {
 };
 
 export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) {
-  const { createTask } = useTasks();
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState<CreateTaskActionState, FormData>(
     createTaskAction,
     {}
@@ -55,14 +55,11 @@ export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) 
   useFormActionToasts(state);
 
   useEffect(() => {
-    if (state.task) {
-      createTask(state.task);
-    }
-
     if (state.success) {
+      router.refresh();
       onOpenChange(false);
     }
-  }, [createTask, onOpenChange, state.success, state.task]);
+  }, [onOpenChange, router, state.success]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
