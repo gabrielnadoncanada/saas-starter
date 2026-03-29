@@ -22,6 +22,8 @@
 # misc
 /.claude
 /.cursor
+/.idea
+/AGENTS.md
 .DS_Store
 *.pem
 
