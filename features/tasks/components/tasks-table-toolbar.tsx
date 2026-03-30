@@ -3,14 +3,15 @@
 import { type Table } from "@tanstack/react-table";
 import { XIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { priorities, statuses } from "@/features/tasks/constants";
+import { priorities } from "@/features/tasks/constants/priorities";
+import { statuses } from "@/features/tasks/constants/statuses";
 import {
   type TaskTableSearchParams,
-} from "@/features/tasks/schemas/task-table-search-params.schema";
+  buildTasksTableHref,
+} from "@/features/tasks/schemas/task-table-params";
 import type { Task } from "@/features/tasks/types/task.types";
-import { buildTasksTableHref } from "@/features/tasks/utils/task-table-url";
 import {
   DataTableFacetedFilter,
   DataTableViewOptions,
@@ -23,28 +24,12 @@ type TasksTableToolbarProps = {
   table: Table<Task>;
 };
 
-export function TasksTableToolbar({
-  params,
-  table,
-}: TasksTableToolbarProps) {
+export function TasksTableToolbar({ params, table }: TasksTableToolbarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState(params.q ?? "");
-  const statusKey = params.status.join(",");
-  const priorityKey = params.priority.join(",");
-  const currentParams = useMemo(
-    () => params,
-    [
-      params.order,
-      params.page,
-      params.pageSize,
-      params.q,
-      params.sort,
-      priorityKey,
-      statusKey,
-    ],
-  );
-  const isFiltered = Boolean(params.q) || table.getState().columnFilters.length > 0;
+  const isFiltered =
+    Boolean(params.q) || table.getState().columnFilters.length > 0;
 
   useEffect(() => {
     setSearchValue(params.q ?? "");
@@ -52,16 +37,14 @@ export function TasksTableToolbar({
 
   useEffect(() => {
     const nextQuery = searchValue.trim();
-    const currentQuery = currentParams.q ?? "";
+    const currentQuery = params.q ?? "";
 
-    if (nextQuery === currentQuery) {
-      return;
-    }
+    if (nextQuery === currentQuery) return;
 
     const timeoutId = window.setTimeout(() => {
       router.replace(
         buildTasksTableHref(pathname, {
-          ...currentParams,
+          ...params,
           page: 1,
           q: nextQuery || undefined,
         }),
@@ -70,7 +53,7 @@ export function TasksTableToolbar({
     }, 300);
 
     return () => window.clearTimeout(timeoutId);
-  }, [currentParams, pathname, router, searchValue]);
+  }, [params, pathname, router, searchValue]);
 
   return (
     <div className="flex items-center justify-between">
@@ -100,7 +83,7 @@ export function TasksTableToolbar({
               setSearchValue("");
               router.replace(
                 buildTasksTableHref(pathname, {
-                  ...currentParams,
+                  ...params,
                   page: 1,
                   q: undefined,
                   status: [],

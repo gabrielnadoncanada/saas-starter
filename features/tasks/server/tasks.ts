@@ -2,8 +2,6 @@ import "server-only";
 
 import { z } from "zod";
 
-import { db } from "@/shared/lib/db/prisma";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
 import type {
   bulkDeleteTasksSchema,
@@ -12,6 +10,8 @@ import type {
   updateTaskSchema,
   updateTaskStatusSchema,
 } from "@/features/tasks/schemas/task.schema";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { db } from "@/shared/lib/db/prisma";
 
 type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
@@ -35,7 +35,7 @@ async function requireCurrentOrganizationId() {
   return membership.organizationId;
 }
 
-export async function listCurrentOrganizationTasks() {
+export async function listTasks() {
   const organizationId = await requireCurrentOrganizationId();
 
   return db.task.findMany({
@@ -44,22 +44,14 @@ export async function listCurrentOrganizationTasks() {
   });
 }
 
-export async function updateTaskForCurrentOrganization(input: UpdateTaskInput) {
+export async function updateTask(input: UpdateTaskInput) {
   const organizationId = await requireCurrentOrganizationId();
-  const existingTask = await db.task.findFirst({
+
+  const result = await db.task.updateMany({
     where: {
       id: input.taskId,
       organizationId,
     },
-    select: { id: true },
-  });
-
-  if (!existingTask) {
-    throw new Error("Task not found");
-  }
-
-  return db.task.update({
-    where: { id: existingTask.id },
     data: {
       title: input.title,
       description: input.description || null,
@@ -68,11 +60,13 @@ export async function updateTaskForCurrentOrganization(input: UpdateTaskInput) {
       status: input.status,
     },
   });
+
+  if (result.count === 0) {
+    throw new Error("Task not found");
+  }
 }
 
-export async function updateTaskStatusForCurrentOrganization(
-  input: UpdateTaskStatusInput,
-) {
+export async function updateTaskStatus(input: UpdateTaskStatusInput) {
   const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.updateMany({
@@ -90,9 +84,7 @@ export async function updateTaskStatusForCurrentOrganization(
   }
 }
 
-export async function deleteTaskForCurrentOrganization(
-  taskId: DeleteTaskInput["taskId"],
-) {
+export async function deleteTask(taskId: DeleteTaskInput["taskId"]) {
   const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.deleteMany({
@@ -107,14 +99,16 @@ export async function deleteTaskForCurrentOrganization(
   }
 }
 
-export async function bulkUpdateTaskStatusForCurrentOrganization(
+export async function bulkUpdateTaskStatus(
   input: BulkUpdateTaskStatusInput,
 ) {
   const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.updateMany({
     where: {
-      id: { in: input.taskIds },
+      id: {
+        in: input.taskIds,
+      },
       organizationId,
     },
     data: {
@@ -129,14 +123,16 @@ export async function bulkUpdateTaskStatusForCurrentOrganization(
   return result.count;
 }
 
-export async function bulkDeleteTasksForCurrentOrganization(
+export async function bulkDeleteTasks(
   taskIds: BulkDeleteTasksInput["taskIds"],
 ) {
   const organizationId = await requireCurrentOrganizationId();
 
   const result = await db.task.deleteMany({
     where: {
-      id: { in: taskIds },
+      id: {
+        in: taskIds,
+      },
       organizationId,
     },
   });
@@ -147,6 +143,3 @@ export async function bulkDeleteTasksForCurrentOrganization(
 
   return result.count;
 }
-
-
-

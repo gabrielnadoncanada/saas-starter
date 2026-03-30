@@ -1,13 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
-import { deleteTaskAction } from '@/features/tasks/actions/delete-task.action';
-import type { DeleteTaskActionState } from '@/features/tasks/types/task-action.types';
-import type { Task } from '@/features/tasks/types/task.types';
-import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
-import { ConfirmDialog } from '@/shared/components/dialogs/confirm-dialog';
+import { deleteTaskAction } from "@/features/tasks/actions/delete-task.action";
+import type { DeleteTaskActionState } from "@/features/tasks/types/task-action.types";
+import type { Task } from "@/features/tasks/types/task.types";
+import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 
 type TasksDeleteDialogProps = {
   task: Task;
@@ -22,10 +22,10 @@ export function TasksDeleteDialog({
 }: TasksDeleteDialogProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction, isPending] = useActionState<DeleteTaskActionState, FormData>(
-    deleteTaskAction,
-    {}
-  );
+  const [state, formAction, isPending] = useActionState<
+    DeleteTaskActionState,
+    FormData
+  >(deleteTaskAction, {});
 
   useFormActionToasts(state);
 
@@ -38,8 +38,8 @@ export function TasksDeleteDialog({
 
   return (
     <>
-      <form ref={formRef} action={formAction} className='hidden'>
-        <input type='hidden' name='taskId' value={task.id} />
+      <form ref={formRef} action={formAction} className="hidden">
+        <input type="hidden" name="taskId" value={task.id} />
       </form>
 
       <ConfirmDialog
@@ -48,17 +48,17 @@ export function TasksDeleteDialog({
         destructive
         isLoading={isPending}
         handleConfirm={() => formRef.current?.requestSubmit()}
-        className='max-w-md'
+        className="max-w-md"
         title={`Delete ${task.code}?`}
         desc={
-          <div className='space-y-3'>
+          <div className="space-y-3">
             <p>
               You are about to delete <strong>{task.title}</strong>.
             </p>
             <p>This action cannot be undone.</p>
           </div>
         }
-        confirmText='Delete'
+        confirmText="Delete"
       />
     </>
   );

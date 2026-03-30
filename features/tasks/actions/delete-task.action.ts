@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { deleteTaskSchema } from "@/features/tasks/schemas/task.schema";
-import { deleteTaskForCurrentOrganization } from "@/features/tasks/server/tasks";
+import { deleteTask } from "@/features/tasks/server/tasks";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
 
@@ -13,7 +13,7 @@ export const deleteTaskAction = validatedAuthenticatedAction<
 >(
   deleteTaskSchema,
   async ({ taskId }) => {
-    await deleteTaskForCurrentOrganization(taskId);
+    await deleteTask(taskId);
     revalidatePath(routes.app.tasks);
 
     return {

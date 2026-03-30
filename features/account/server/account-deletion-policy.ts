@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/better-auth-stripe";
+import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
 import { auth } from "@/shared/lib/auth";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 
@@ -42,7 +42,7 @@ export async function getAccountDeletionBlocker(userId: string) {
       return `You are the sole owner of "${fullOrg.name}". Transfer ownership before deleting your account.`;
     }
 
-    const subscription = await getOrganizationSubscriptionSnapshot(fullOrg.id, await headers());
+    const subscription = await getOrganizationSubscriptionSnapshot(fullOrg.id);
 
     if (
       otherOwnerCount === 0 &&

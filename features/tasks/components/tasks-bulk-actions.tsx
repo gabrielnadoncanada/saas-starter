@@ -1,47 +1,50 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState } from 'react';
-import { type Table } from '@tanstack/react-table';
-import { CircleArrowUp, Loader2, Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { type Table } from "@tanstack/react-table";
+import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { bulkDeleteTasksAction } from '@/features/tasks/actions/bulk-delete-tasks.action';
-import { bulkUpdateTaskStatusAction } from '@/features/tasks/actions/bulk-update-task-status.action';
-import { statuses } from '@/features/tasks/constants';
+import { bulkDeleteTasksAction } from "@/features/tasks/actions/bulk-delete-tasks.action";
+import { bulkUpdateTaskStatusAction } from "@/features/tasks/actions/bulk-update-task-status.action";
+import { statuses } from "@/features/tasks/constants/statuses";
 import type {
   BulkDeleteTasksActionState,
   BulkUpdateTaskStatusActionState,
-} from '@/features/tasks/types/task-action.types';
-import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
-import { ConfirmDialog } from '@/shared/components/dialogs/confirm-dialog';
-import { DataTableBulkActions as BulkActionsToolbar } from '@/shared/components/data-table';
-import { Button } from '@/shared/components/ui/button';
+} from "@/features/tasks/types/task-action.types";
+import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import { DataTableBulkActions as BulkActionsToolbar } from "@/shared/components/data-table";
+import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/components/ui/tooltip';
+} from "@/shared/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
-import type { Task } from '../../types/task.types';
+import type { Task } from "../types/task.types";
 
-type DataTableBulkActionsProps = {
+type TasksBulkActionsProps = {
   table: Table<Task>;
 };
 
 function serializeTaskIds(tasks: Task[]) {
-  return tasks.map((task) => task.id).join(',');
+  return tasks.map((task) => task.id).join(",");
 }
 
-export function DataTableBulkActions({
-  table,
-}: DataTableBulkActionsProps) {
+export function TasksBulkActions({ table }: TasksBulkActionsProps) {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const selectedTasks = useMemo(
-    () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
-    [table, table.getState().rowSelection]
+    () =>
+      table.getFilteredSelectedRowModel().rows.map((row) => row.original),
+    [table, table.getState().rowSelection],
   );
   const taskIds = serializeTaskIds(selectedTasks);
   const statusFormRef = useRef<HTMLFormElement>(null);
@@ -49,17 +52,11 @@ export function DataTableBulkActions({
   const [state, statusAction, isStatusPending] = useActionState<
     BulkUpdateTaskStatusActionState,
     FormData
-  >(
-    bulkUpdateTaskStatusAction,
-    {}
-  );
+  >(bulkUpdateTaskStatusAction, {});
   const [deleteState, deleteAction, isDeletePending] = useActionState<
     BulkDeleteTasksActionState,
     FormData
-  >(
-    bulkDeleteTasksAction,
-    {}
-  );
+  >(bulkDeleteTasksAction, {});
 
   useFormActionToasts(state);
   useFormActionToasts(deleteState);
@@ -70,38 +67,33 @@ export function DataTableBulkActions({
       table.resetRowSelection();
       setIsDeleteOpen(false);
     }
-  }, [
-    deleteState.success,
-    router,
-    state.success,
-    table,
-  ]);
+  }, [deleteState.success, router, state.success, table]);
 
   return (
     <>
-      <form ref={statusFormRef} action={statusAction} className='hidden'>
-        <input type='hidden' name='taskIds' value={taskIds} />
-        <input type='hidden' name='status' value='' />
+      <form ref={statusFormRef} action={statusAction} className="hidden">
+        <input type="hidden" name="taskIds" value={taskIds} />
+        <input type="hidden" name="status" value="" />
       </form>
 
-      <form ref={deleteFormRef} action={deleteAction} className='hidden'>
-        <input type='hidden' name='taskIds' value={taskIds} />
+      <form ref={deleteFormRef} action={deleteAction} className="hidden">
+        <input type="hidden" name="taskIds" value={taskIds} />
       </form>
 
-      <BulkActionsToolbar table={table} entityName='task'>
+      <BulkActionsToolbar table={table} entityName="task">
         <DropdownMenu>
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant='outline'
-                  size='icon'
-                  className='size-8'
-                  aria-label='Update status'
+                  variant="outline"
+                  size="icon"
+                  className="size-8"
+                  aria-label="Update status"
                   disabled={isStatusPending || isDeletePending}
                 >
                   {isStatusPending ? (
-                    <Loader2 className='animate-spin' />
+                    <Loader2 className="animate-spin" />
                   ) : (
                     <CircleArrowUp />
                   )}
@@ -117,17 +109,18 @@ export function DataTableBulkActions({
               <DropdownMenuItem
                 key={status.value}
                 onClick={() => {
-                  const statusInput = statusFormRef.current?.elements.namedItem('status');
+                  const statusInput =
+                    statusFormRef.current?.elements.namedItem("status");
 
-                  if (!(statusInput instanceof HTMLInputElement)) {
-                    return;
-                  }
+                  if (!(statusInput instanceof HTMLInputElement)) return;
 
                   statusInput.value = status.value;
                   statusFormRef.current?.requestSubmit();
                 }}
               >
-                {status.icon ? <status.icon className='size-4 text-muted-foreground' /> : null}
+                {status.icon ? (
+                  <status.icon className="size-4 text-muted-foreground" />
+                ) : null}
                 {status.label}
               </DropdownMenuItem>
             ))}
@@ -137,14 +130,18 @@ export function DataTableBulkActions({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant='destructive'
-              size='icon'
+              variant="destructive"
+              size="icon"
               onClick={() => setIsDeleteOpen(true)}
-              className='size-8'
-              aria-label='Delete selected tasks'
+              className="size-8"
+              aria-label="Delete selected tasks"
               disabled={isStatusPending || isDeletePending}
             >
-              {isDeletePending ? <Loader2 className='animate-spin' /> : <Trash2 />}
+              {isDeletePending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Trash2 />
+              )}
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -159,13 +156,13 @@ export function DataTableBulkActions({
         handleConfirm={() => deleteFormRef.current?.requestSubmit()}
         destructive
         isLoading={isDeletePending}
-        title={`Delete ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}?`}
+        title={`Delete ${selectedTasks.length} task${selectedTasks.length > 1 ? "s" : ""}?`}
         desc={
-          <div className='space-y-3'>
+          <div className="space-y-3">
             <p>This action will permanently delete the selected tasks.</p>
           </div>
         }
-        confirmText='Delete'
+        confirmText="Delete"
       />
     </>
   );

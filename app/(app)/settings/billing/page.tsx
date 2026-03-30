@@ -30,8 +30,8 @@ export default async function SettingsBillingPage() {
       name: plan.name,
       description: plan.description,
       pricingModel: plan.pricingModel,
-      monthly: plan.prices.monthly ?? null,
-      yearly: plan.prices.yearly ?? null,
+      monthly: plan.prices.month ?? null,
+      yearly: plan.prices.year ?? null,
     }))
     .filter((plan) => plan.monthly !== null);
 
@@ -55,6 +55,7 @@ export default async function SettingsBillingPage() {
                 Boolean(organization.stripeCustomerId) &&
                 Boolean(organization.subscriptionStatus)
               }
+              currentBillingInterval={organization.billingInterval}
               currentPlanId={currentPlanId}
               plans={plans}
             />

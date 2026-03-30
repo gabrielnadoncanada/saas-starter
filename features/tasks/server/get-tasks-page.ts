@@ -3,7 +3,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 
 import { getActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
-import type { TaskTableSearchParams } from "@/features/tasks/schemas/task-table-search-params.schema";
+import type { TaskTableSearchParams } from "@/features/tasks/schemas/task-table-params";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -23,23 +23,28 @@ async function requireCurrentOrganizationId() {
   return membership.organizationId;
 }
 
-function getOrderBy(sort: TaskTableSearchParams["sort"], order: "asc" | "desc") {
+function getTaskOrderBy(
+  sort: TaskTableSearchParams["sort"],
+  order: TaskTableSearchParams["order"],
+): Prisma.TaskOrderByWithRelationInput {
   switch (sort) {
     case "title":
-      return { title: order } satisfies Prisma.TaskOrderByWithRelationInput;
+      return { title: order };
     case "status":
-      return { status: order } satisfies Prisma.TaskOrderByWithRelationInput;
+      return { status: order };
     case "priority":
-      return { priority: order } satisfies Prisma.TaskOrderByWithRelationInput;
+      return { priority: order };
     case "createdAt":
     default:
-      return { createdAt: order } satisfies Prisma.TaskOrderByWithRelationInput;
+      return { createdAt: order };
   }
 }
 
-export async function getTasksPage(params: TaskTableSearchParams) {
-  const organizationId = await requireCurrentOrganizationId();
-  const where: Prisma.TaskWhereInput = {
+function getTaskWhereInput(
+  organizationId: string,
+  params: TaskTableSearchParams,
+): Prisma.TaskWhereInput {
+  return {
     organizationId,
     ...(params.q
       ? {
@@ -74,12 +79,19 @@ export async function getTasksPage(params: TaskTableSearchParams) {
         }
       : {}),
   };
+}
+
+export async function getTasksPage(params: TaskTableSearchParams) {
+  const organizationId = await requireCurrentOrganizationId();
+  const where = getTaskWhereInput(organizationId, params);
+
   const rowCount = await db.task.count({ where });
   const pageCount = Math.max(1, Math.ceil(rowCount / params.pageSize));
   const page = Math.min(params.page, pageCount);
+
   const rows = await db.task.findMany({
     where,
-    orderBy: getOrderBy(params.sort, params.order),
+    orderBy: getTaskOrderBy(params.sort, params.order),
     skip: (page - 1) * params.pageSize,
     take: params.pageSize,
   });

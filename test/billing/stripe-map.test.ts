@@ -3,30 +3,32 @@ import { describe, expect, it } from "vitest";
 process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
 process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
 process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
+process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
-const { plans } = await import("@/shared/config/billing.config");
-
-const { isConfiguredStripePriceId } = await import(
-  "@/features/billing/server/recurring-selection"
+const { billingConfig, findPlanPriceByPriceId, getPlan, getPlanPrice } = await import(
+  "@/shared/config/billing.config"
 );
 
 describe("billing config prices", () => {
   it("keeps Stripe prices in the billing config", () => {
-    expect(plans.pro.prices.monthly?.priceId).toBe("price_pro_monthly");
-    expect(plans.pro.prices.yearly?.priceId).toBe("price_pro_yearly");
-    expect(plans.team.prices.monthly?.priceId).toBe("price_team_monthly");
+    expect(getPlanPrice("pro", "month")?.priceId).toBe("price_pro_monthly");
+    expect(getPlanPrice("pro", "year")?.priceId).toBe("price_pro_yearly");
+    expect(getPlanPrice("team", "month")?.priceId).toBe("price_team_monthly");
+    expect(getPlanPrice("team", "year")?.priceId).toBe("price_team_yearly");
+    expect(getPlan("free").prices).toEqual({});
+    expect(billingConfig.plans.find((plan) => plan.id === "pro")?.highlighted).toBe(
+      true,
+    );
   });
 
-  it("recognises configured Stripe price ids", () => {
-    expect(isConfiguredStripePriceId("price_pro_monthly")).toBe(true);
-    expect(isConfiguredStripePriceId("price_pro_yearly")).toBe(true);
-    expect(isConfiguredStripePriceId("price_team_monthly")).toBe(true);
+  it("can resolve Stripe price ids back to the billing config", () => {
+    expect(findPlanPriceByPriceId("price_pro_monthly")?.plan.id).toBe("pro");
+    expect(findPlanPriceByPriceId("price_pro_yearly")?.billingInterval).toBe("year");
+    expect(findPlanPriceByPriceId("price_team_monthly")?.plan.id).toBe("team");
+    expect(findPlanPriceByPriceId("price_team_yearly")?.billingInterval).toBe("year");
   });
 
   it("rejects unknown or missing price ids", () => {
-    expect(isConfiguredStripePriceId("price_unknown")).toBe(false);
-    expect(isConfiguredStripePriceId("")).toBe(false);
-    expect(isConfiguredStripePriceId(null)).toBe(false);
-    expect(isConfiguredStripePriceId(undefined)).toBe(false);
+    expect(findPlanPriceByPriceId("price_unknown")).toBeNull();
   });
 });

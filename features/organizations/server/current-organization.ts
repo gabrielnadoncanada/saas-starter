@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/better-auth-stripe";
+import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
 import type { CurrentOrganizationView } from "@/features/organizations/types/organization.types";
 import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
 import { auth } from "@/shared/lib/auth";
@@ -85,7 +85,7 @@ export async function getCurrentOrganization(): Promise<CurrentOrganizationView 
       query: { organizationId: orgId },
       headers: reqHeaders,
     }),
-    getOrganizationSubscriptionSnapshot(orgId, reqHeaders),
+    getOrganizationSubscriptionSnapshot(orgId),
   ]);
 
   if (!organization) {

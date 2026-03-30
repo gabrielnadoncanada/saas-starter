@@ -5,7 +5,11 @@ import { useFormStatus } from "react-dom";
 
 import { checkoutAction } from "@/features/billing/actions/checkout.action";
 import { customerPortalAction } from "@/features/billing/actions/customer-portal.action";
-import type { PlanId } from "@/features/billing/plans";
+import {
+  getPlanPrice,
+  type BillingInterval,
+  type PlanId,
+} from "@/features/billing/plans";
 import {
   BillingIntervalSelector,
   BillingPlanRadioGroup,
@@ -19,12 +23,12 @@ import {
   ItemContent,
   ItemTitle,
   ItemDescription,
-  ItemFooter,
 } from "@/shared/components/ui/item";
 import { getPlan } from "@/shared/config/billing.config";
-import { CheckIcon, CircleCheckBigIcon } from "lucide-react";
+import { CircleCheckBigIcon } from "lucide-react";
 type BillingPlanSelectorProps = {
   plans: BillingPlanOption[];
+  currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   canManageBilling: boolean;
   canManagePortal: boolean;
@@ -32,6 +36,7 @@ type BillingPlanSelectorProps = {
 
 export function BillingPlanSelector({
   plans,
+  currentBillingInterval,
   currentPlanId,
   canManageBilling,
   canManagePortal,
@@ -43,7 +48,9 @@ export function BillingPlanSelector({
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId | undefined>(
     defaultPlan?.id,
   );
-  const [interval, setInterval] = useState<"month" | "year">("month");
+  const [interval, setInterval] = useState<"month" | "year">(
+    currentBillingInterval ?? "month",
+  );
 
   if (!defaultPlan || !selectedPlanId) {
     return (
@@ -60,12 +67,13 @@ export function BillingPlanSelector({
 
   const selectedPlan = getPlan(selectedPlanId);
   const selectedPrice =
-    interval === "year"
-      ? selectedPlan.prices.yearly
-      : selectedPlan.prices.monthly;
-  const annualEnabled = plans.some((plan) => Boolean(plan.yearly?.priceId));
-  const selectingCurrentPlan =
-    selectedPlan.id === currentPlanId && currentPlanId !== "free";
+    selectedPlan.id === "free" ? null : getPlanPrice(selectedPlan.id, interval);
+  const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
+  const hasPaidSubscription = currentPlanId !== "free";
+  const isCurrentSelection =
+    hasPaidSubscription &&
+    selectedPlan.id === currentPlanId &&
+    currentBillingInterval === interval;
 
   return (
     <div className="space-y-6">
@@ -77,6 +85,7 @@ export function BillingPlanSelector({
 
       <BillingPlanRadioGroup
         plans={plans}
+        currentBillingInterval={currentBillingInterval}
         currentPlanId={currentPlanId}
         interval={interval}
         selectedPlanId={selectedPlan.id}
@@ -102,19 +111,24 @@ export function BillingPlanSelector({
         <Button disabled className="h-11 rounded-xl px-5">
           Reserve au proprietaire
         </Button>
-      ) : selectingCurrentPlan && canManagePortal ? (
-        <form action={customerPortalAction}>
-          <Button type="submit" disabled={!canManagePortal || isPending}>
-            Gerer l'abonnement
-          </Button>
-        </form>
+      ) : hasPaidSubscription && canManagePortal ? (
+        <div className="space-y-2">
+          <form action={customerPortalAction}>
+            <Button type="submit" disabled={!canManagePortal || isPending}>
+              {isCurrentSelection
+                ? "Gerer l'abonnement dans Stripe"
+                : "Changer ce forfait dans Stripe"}
+            </Button>
+          </form>
+          <p className="text-sm text-muted-foreground">
+            Les changements de forfait ou de frequence se font dans le portail
+            Stripe.
+          </p>
+        </div>
       ) : (
         <form action={checkoutAction}>
-          <input
-            type="hidden"
-            name="priceId"
-            value={selectedPrice?.priceId ?? ""}
-          />
+          <input type="hidden" name="planId" value={selectedPlan.id} />
+          <input type="hidden" name="billingInterval" value={interval} />
           <Button type="submit" disabled={!selectedPrice}>
             Proceder au paiement
           </Button>

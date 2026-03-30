@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select'
 
+const DEFAULT_PAGE_SIZES = [10, 20, 30, 40, 50] as const
+
 type DataTablePaginationProps<TData> = {
   table: Table<TData>
   className?: string
@@ -27,6 +29,7 @@ export function DataTablePagination<TData>({
   const currentPage = table.getState().pagination.pageIndex + 1
   const totalPages = table.getPageCount()
   const pageNumbers = getPageNumbers(currentPage, totalPages)
+  const pageSizes = table.options.meta?.pageSizes ?? DEFAULT_PAGE_SIZES
 
   return (
     <div
@@ -52,7 +55,7 @@ export function DataTablePagination<TData>({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side='top'>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {pageSizes.map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>

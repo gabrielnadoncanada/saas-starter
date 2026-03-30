@@ -4,13 +4,15 @@ import { PricingToggle } from "@/features/billing/components/pricing-toggle";
 export async function PricingSection() {
   const paidPlans = getPricingPlans()
     .map((plan) => ({
-      productId: `${plan.id}-recurring`,
+      planId: plan.id,
       productName: plan.name,
       description: plan.description,
+      highlighted: plan.highlighted ?? false,
       features: plan.features,
       pricingModel: plan.pricingModel,
-      monthly: plan.prices.monthly ?? null,
-      sortAmount: plan.prices.monthly?.unitAmount ?? 0,
+      monthly: plan.prices.month ?? null,
+      yearly: plan.prices.year ?? null,
+      sortAmount: plan.prices.month?.unitAmount ?? 0,
     }))
     .filter((plan) => plan.monthly !== null)
     .sort((a, b) => a.sortAmount - b.sortAmount);

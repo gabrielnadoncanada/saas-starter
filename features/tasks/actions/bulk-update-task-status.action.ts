@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { bulkUpdateTaskStatusSchema } from "@/features/tasks/schemas/task.schema";
-import { bulkUpdateTaskStatusForCurrentOrganization } from "@/features/tasks/server/tasks";
+import { bulkUpdateTaskStatus } from "@/features/tasks/server/tasks";
 import type { Task } from "@/features/tasks/types/task.types";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
@@ -14,7 +14,7 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
 >(
   bulkUpdateTaskStatusSchema,
   async (data) => {
-    const updatedCount = await bulkUpdateTaskStatusForCurrentOrganization(data);
+    const updatedCount = await bulkUpdateTaskStatus(data);
     revalidatePath(routes.app.tasks);
 
     return {

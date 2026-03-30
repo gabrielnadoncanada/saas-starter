@@ -1,20 +1,26 @@
-import { createOrganizationCheckoutSession } from "@/features/billing/server/better-auth-stripe";
-import { isConfiguredStripePriceId } from "@/features/billing/plans";
+import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
+import {
+  getPlanPrice,
+  type BillingInterval,
+  type PaidPlanId,
+} from "@/features/billing/plans";
 import { auth } from "@/shared/lib/auth";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 
 type ResumeCheckoutAfterSignInParams = {
+  billingInterval: BillingInterval;
   organizationId: string;
-  priceId: string;
+  planId: PaidPlanId;
   reqHeaders: Headers;
 };
 
 export async function resumeCheckoutAfterSignIn({
+  billingInterval,
   organizationId,
-  priceId,
+  planId,
   reqHeaders,
 }: ResumeCheckoutAfterSignInParams) {
-  if (!isConfiguredStripePriceId(priceId)) {
+  if (!getPlanPrice(planId, billingInterval)) {
     return null;
   }
 
@@ -36,9 +42,9 @@ export async function resumeCheckoutAfterSignIn({
   }
 
   return createOrganizationCheckoutSession({
+    billingInterval,
     organizationId: organization.id,
-    priceId,
-    reqHeaders,
+    planId,
     seatQuantity: organization.members.length,
   });
 }

@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 
 import { TasksPageClient } from "@/features/tasks/components/tasks-page-client";
 import {
+  buildTasksTableHref,
   parseTaskTableSearchParams,
-} from "@/features/tasks/schemas/task-table-search-params.schema";
+} from "@/features/tasks/schemas/task-table-params";
 import { getTasksPage } from "@/features/tasks/server/get-tasks-page";
-import { buildTasksTableHref } from "@/features/tasks/utils/task-table-url";
 import { routes } from "@/shared/constants/routes";
 
 type DashboardTasksPageProps = {

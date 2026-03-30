@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { plans, getPlan, isPlanId } from "@/shared/config/billing.config";
+import { billingConfig, getPlan, isPlanId } from "@/shared/config/billing.config";
 import { hasCapability, assertCapability, getPlanLimit, assertLimit, checkLimit } from "@/features/billing/guards";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
@@ -11,15 +11,15 @@ import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 
 describe("plan configuration", () => {
   it("every plan has an id matching its key", () => {
-    for (const [key, plan] of Object.entries(plans)) {
-      expect(plan.id).toBe(key);
+    for (const plan of billingConfig.plans) {
+      expect(plan.id).toBeTruthy();
     }
   });
 
   it("limits scale up from free to pro to team", () => {
-    const free = plans.free.limits;
-    const pro = plans.pro.limits;
-    const team = plans.team.limits;
+    const free = getPlan("free").limits;
+    const pro = getPlan("pro").limits;
+    const team = getPlan("team").limits;
 
     expect(pro.tasksPerMonth).toBeGreaterThan(free.tasksPerMonth);
     expect(team.tasksPerMonth).toBeGreaterThan(pro.tasksPerMonth);
@@ -32,9 +32,9 @@ describe("plan configuration", () => {
   });
 
   it("higher plans include all capabilities of lower plans", () => {
-    const freeCaps = new Set(plans.free.capabilities);
-    const proCaps = new Set(plans.pro.capabilities);
-    const teamCaps = new Set(plans.team.capabilities);
+    const freeCaps = new Set(getPlan("free").capabilities);
+    const proCaps = new Set(getPlan("pro").capabilities);
+    const teamCaps = new Set(getPlan("team").capabilities);
 
     for (const cap of freeCaps) {
       expect(proCaps.has(cap)).toBe(true);

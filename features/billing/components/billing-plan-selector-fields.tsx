@@ -1,12 +1,12 @@
 "use client";
 
 import type {
+  BillingInterval,
   BillingPrice,
   PlanId,
   PricingModel,
 } from "@/features/billing/plans";
 import { Badge } from "@/shared/components/ui/badge";
-import { Card, CardContent } from "@/shared/components/ui/card";
 import {
   Field,
   FieldContent,
@@ -17,9 +17,6 @@ import {
   FieldTitle,
 } from "@/shared/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
-import { cn } from "@/shared/lib/utils";
-
-type BillingInterval = "month" | "year";
 
 export type BillingPlanOption = {
   id: PlanId;
@@ -38,6 +35,7 @@ type BillingIntervalSelectorProps = {
 
 type BillingPlanRadioGroupProps = {
   plans: BillingPlanOption[];
+  currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   interval: BillingInterval;
   selectedPlanId: PlanId;
@@ -46,9 +44,9 @@ type BillingPlanRadioGroupProps = {
 
 type BillingPlanCardProps = {
   plan: BillingPlanOption;
+  currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   interval: BillingInterval;
-  isSelected: boolean;
 };
 
 function formatPrice(unitAmount: number) {
@@ -101,13 +99,15 @@ function BillingPlanPrice({
 
 function BillingPlanCard({
   plan,
+  currentBillingInterval,
   currentPlanId,
   interval,
-  isSelected,
 }: BillingPlanCardProps) {
   const price = getPlanPrice(plan, interval);
-  const isCurrentPaidPlan =
-    plan.id === currentPlanId && currentPlanId !== "free";
+  const isCurrentSelection =
+    plan.id === currentPlanId &&
+    currentPlanId !== "free" &&
+    currentBillingInterval === interval;
 
   return (
     <Field orientation="horizontal" className="items-start gap-4">
@@ -123,8 +123,8 @@ function BillingPlanCard({
             <div className="flex flex-wrap items-center gap-2">
               <FieldTitle>{plan.name}</FieldTitle>
 
-              {isCurrentPaidPlan ? (
-                <Badge variant="secondary">Forfait actuel</Badge>
+              {isCurrentSelection ? (
+                <Badge variant="secondary">Selection actuelle</Badge>
               ) : null}
             </div>
 
@@ -194,6 +194,7 @@ export function BillingIntervalSelector({
 
 export function BillingPlanRadioGroup({
   plans,
+  currentBillingInterval,
   currentPlanId,
   interval,
   selectedPlanId,
@@ -215,15 +216,13 @@ export function BillingPlanRadioGroup({
         className="gap-3"
       >
         {plans.map((plan) => {
-          const isSelected = plan.id === selectedPlanId;
-
           return (
             <FieldLabel key={plan.id} htmlFor={`billing-plan-${plan.id}`}>
               <BillingPlanCard
                 plan={plan}
+                currentBillingInterval={currentBillingInterval}
                 currentPlanId={currentPlanId}
                 interval={interval}
-                isSelected={isSelected}
               />
             </FieldLabel>
           );

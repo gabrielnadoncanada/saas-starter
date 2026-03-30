@@ -1,22 +1,17 @@
-import { dash } from "@better-auth/infra";
 import { createElement } from "react";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { stripe } from "@better-auth/stripe";
 import { admin, magicLink } from "better-auth/plugins";
 import { organization } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
-import { stripePlans } from "@/shared/config/billing.config";
 import { accountFlags } from "@/shared/config/account.config";
 import { PLATFORM_ADMIN_ROLES } from "@/shared/lib/auth/roles";
-import { hasOrgRole } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 import { sendEmail } from "@/shared/lib/email/client";
 import { VerifyEmailTemplate } from "@/shared/lib/email/templates/verify-email";
 import { ResetPasswordTemplate } from "@/shared/lib/email/templates/reset-password";
 import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
 import { sendTeamInvitationEmail } from "@/shared/lib/email/senders";
-import { stripe as stripeClient } from "@/shared/lib/stripe/client";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -123,35 +118,6 @@ export const auth = betterAuth({
           organizationName: org.name,
           invitationToken: invitation.id,
         });
-      },
-    }),
-    stripe({
-      stripeClient,
-      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-      subscription: {
-        enabled: true,
-        plans: stripePlans,
-        authorizeReference: async ({ user, referenceId }) => {
-          const member = await db.member.findFirst({
-            where: {
-              organizationId: referenceId,
-              userId: user.id,
-            },
-            select: {
-              role: true,
-            },
-          });
-
-          return hasOrgRole(member?.role, "owner");
-        },
-        getCheckoutSessionParams: async () => ({
-          params: {
-            allow_promotion_codes: true,
-          },
-        }),
-      },
-      organization: {
-        enabled: true,
       },
     }),
     nextCookies(),

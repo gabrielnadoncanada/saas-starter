@@ -1,9 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { createOrganizationBillingPortalSession } from "@/features/billing/server/better-auth-stripe";
+import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-portal";
 import { routes } from "@/shared/constants/routes";
 import {
   getRequiredOrganizationMembership,
@@ -31,10 +30,7 @@ export async function customerPortalAction() {
     redirect(routes.marketing.pricing);
   }
 
-  const url = await createOrganizationBillingPortalSession({
-    organizationId: organization.id,
-    reqHeaders: await headers(),
-  });
+  const url = await createOrganizationBillingPortalSession(organization.id);
 
   redirect(url);
 }

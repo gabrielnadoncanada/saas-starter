@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { type Table as TableInstance, flexRender } from '@tanstack/react-table'
+import { type Table as TableInstance, flexRender } from "@tanstack/react-table";
 
 import {
   Table,
@@ -9,35 +9,36 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/shared/components/ui/table'
-import { cn } from '@/shared/lib/utils'
+} from "@/shared/components/ui/table";
+import { cn } from "@/shared/lib/utils";
 
-import type { Task } from '../../types/task.types'
+type ColumnMeta = {
+  className?: string;
+  thClassName?: string;
+  tdClassName?: string;
+};
 
-type TaskColumnMeta = {
-  className?: string
-  thClassName?: string
-  tdClassName?: string
-}
+type DataTableContentProps<TData> = {
+  table: TableInstance<TData>;
+  className?: string;
+  tableClassName?: string;
+};
 
-type TasksTableContentProps = {
-  columnsLength: number
-  table: TableInstance<Task>
-}
-
-export function TasksTableContent({
-  columnsLength,
+export function DataTableContent<TData>({
   table,
-}: TasksTableContentProps) {
+  className,
+  tableClassName,
+}: DataTableContentProps<TData>) {
   return (
-    <div className='overflow-hidden rounded-md border'>
-      <Table className='min-w-xl'>
+    <div className={cn("overflow-hidden rounded-md border", className)}>
+      <Table className={tableClassName}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
-                const meta = header.column.columnDef.meta as TaskColumnMeta | undefined
-
+                const meta = header.column.columnDef.meta as
+                  | ColumnMeta
+                  | undefined;
                 return (
                   <TableHead
                     key={header.id}
@@ -48,10 +49,10 @@ export function TasksTableContent({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -59,24 +60,34 @@ export function TasksTableContent({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
                 {row.getVisibleCells().map((cell) => {
-                  const meta = cell.column.columnDef.meta as TaskColumnMeta | undefined
-
+                  const meta = cell.column.columnDef.meta as
+                    | ColumnMeta
+                    | undefined;
                   return (
                     <TableCell
                       key={cell.id}
                       className={cn(meta?.className, meta?.tdClassName)}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
-                  )
+                  );
                 })}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columnsLength} className='h-24 text-center'>
+              <TableCell
+                colSpan={table.getVisibleLeafColumns().length}
+                className="h-24 text-center"
+              >
                 No results.
               </TableCell>
             </TableRow>
@@ -84,5 +95,5 @@ export function TasksTableContent({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
