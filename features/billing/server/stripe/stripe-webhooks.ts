@@ -6,6 +6,7 @@ import {
 } from "@/features/billing/plans";
 import { db } from "@/shared/lib/db/prisma";
 import {
+  clearStripeCustomerBillingState,
   findOrganizationIdByStripeCustomerId,
   syncOrganizationStripeCustomer,
 } from "./stripe-customers";
@@ -25,16 +26,20 @@ function getPrimaryItem(subscription: Stripe.Subscription) {
 }
 
 function resolvePlanId(subscription: Stripe.Subscription) {
+  const priceId = getPrimaryItem(subscription)?.price?.id;
+  if (priceId) {
+    const planIdFromPrice = findPlanPriceByPriceId(priceId)?.plan.id ?? null;
+
+    if (planIdFromPrice) {
+      return planIdFromPrice;
+    }
+  }
+
   if (isPlanId(subscription.metadata.planId)) {
     return subscription.metadata.planId;
   }
 
-  const priceId = getPrimaryItem(subscription)?.price?.id;
-  if (!priceId) {
-    return null;
-  }
-
-  return findPlanPriceByPriceId(priceId)?.plan.id ?? null;
+  return null;
 }
 
 async function resolveReferenceId(subscription: Stripe.Subscription) {
@@ -131,10 +136,23 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   });
 }
 
+async function handleCustomerDeleted(customer: Stripe.Customer) {
+  const result = await clearStripeCustomerBillingState(customer.id);
+
+  console.info("[billing:customer.deleted]", {
+    stripeCustomerId: customer.id,
+    clearedOrganizations: result.clearedOrganizations,
+    deletedSubscriptions: result.deletedSubscriptions,
+  });
+}
+
 export async function handleStripeWebhookEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
       await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+      return;
+    case "customer.deleted":
+      await handleCustomerDeleted(event.data.object as Stripe.Customer);
       return;
     case "customer.subscription.created":
     case "customer.subscription.updated":

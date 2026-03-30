@@ -21,6 +21,18 @@ export function hasPlanAccess(subscriptionStatus: string | null | undefined) {
   return ACTIVE_BILLING_STATUSES.has(subscriptionStatus);
 }
 
+export function hasCurrentStripeSubscription(
+  subscriptionStatus: string | null | undefined,
+) {
+  if (!subscriptionStatus) {
+    return false;
+  }
+
+  return CURRENT_SUBSCRIPTION_STATUSES.includes(
+    subscriptionStatus as (typeof CURRENT_SUBSCRIPTION_STATUSES)[number],
+  );
+}
+
 export function isTerminalStripeSubscriptionStatus(
   subscriptionStatus: string | null | undefined,
 ) {

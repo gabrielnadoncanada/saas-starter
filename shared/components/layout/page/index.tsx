@@ -30,9 +30,9 @@ function PageTitle({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function PageDescription({ className, ...props }: React.ComponentProps<"p">) {
+function PageDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <p
+    <div
       data-slot="page-description"
       className={cn("text-muted-foreground", className)}
       {...props}

@@ -5,11 +5,7 @@ import { useFormStatus } from "react-dom";
 
 import { checkoutAction } from "@/features/billing/actions/checkout.action";
 import { customerPortalAction } from "@/features/billing/actions/customer-portal.action";
-import {
-  getPlanPrice,
-  type BillingInterval,
-  type PlanId,
-} from "@/features/billing/plans";
+import { type BillingInterval, type PlanId } from "@/features/billing/plans";
 import {
   BillingIntervalSelector,
   BillingPlanRadioGroup,
@@ -24,21 +20,27 @@ import {
   ItemTitle,
   ItemDescription,
 } from "@/shared/components/ui/item";
-import { getPlan } from "@/shared/config/billing.config";
 import { CircleCheckBigIcon } from "lucide-react";
+
 type BillingPlanSelectorProps = {
   plans: BillingPlanOption[];
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   canManageBilling: boolean;
+  hasCurrentSubscription: boolean;
   canManagePortal: boolean;
 };
+
+function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
+  return interval === "year" ? plan.yearly : plan.monthly;
+}
 
 export function BillingPlanSelector({
   plans,
   currentBillingInterval,
   currentPlanId,
   canManageBilling,
+  hasCurrentSubscription,
   canManagePortal,
 }: BillingPlanSelectorProps) {
   const formStatus = useFormStatus();
@@ -65,13 +67,12 @@ export function BillingPlanSelector({
     );
   }
 
-  const selectedPlan = getPlan(selectedPlanId);
-  const selectedPrice =
-    selectedPlan.id === "free" ? null : getPlanPrice(selectedPlan.id, interval);
+  const selectedPlan =
+    plans.find((plan) => plan.id === selectedPlanId) ?? defaultPlan;
+  const selectedPrice = getPlanPrice(selectedPlan, interval);
   const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
-  const hasPaidSubscription = currentPlanId !== "free";
   const isCurrentSelection =
-    hasPaidSubscription &&
+    hasCurrentSubscription &&
     selectedPlan.id === currentPlanId &&
     currentBillingInterval === interval;
 
@@ -111,7 +112,7 @@ export function BillingPlanSelector({
         <Button disabled className="h-11 rounded-xl px-5">
           Reserve au proprietaire
         </Button>
-      ) : hasPaidSubscription && canManagePortal ? (
+      ) : hasCurrentSubscription && canManagePortal ? (
         <div className="space-y-2">
           <form action={customerPortalAction}>
             <Button type="submit" disabled={!canManagePortal || isPending}>
@@ -123,6 +124,16 @@ export function BillingPlanSelector({
           <p className="text-sm text-muted-foreground">
             Les changements de forfait ou de frequence se font dans le portail
             Stripe.
+          </p>
+        </div>
+      ) : hasCurrentSubscription ? (
+        <div className="space-y-2">
+          <Button disabled className="h-11 rounded-xl px-5">
+            Abonnement deja actif
+          </Button>
+          <p className="text-sm text-muted-foreground">
+            Cet espace a deja un abonnement en cours. Le portail Stripe n&apos;est
+            pas disponible tant que le client Stripe n&apos;est pas synchronise.
           </p>
         </div>
       ) : (

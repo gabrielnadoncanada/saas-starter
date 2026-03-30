@@ -53,3 +53,20 @@ export async function findOrganizationIdByStripeCustomerId(customerId: string) {
 
   return organization?.id ?? null;
 }
+
+export async function clearStripeCustomerBillingState(customerId: string) {
+  const [organizationResult, subscriptionResult] = await Promise.all([
+    db.organization.updateMany({
+      where: { stripeCustomerId: customerId },
+      data: { stripeCustomerId: null },
+    }),
+    db.subscription.deleteMany({
+      where: { stripeCustomerId: customerId },
+    }),
+  ]);
+
+  return {
+    clearedOrganizations: organizationResult.count,
+    deletedSubscriptions: subscriptionResult.count,
+  };
+}

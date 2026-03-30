@@ -20,6 +20,7 @@ export {
 } from "@/shared/config/billing.config";
 export { resolveOrganizationPlan } from "./resolve-organization-plan";
 export {
+  hasCurrentStripeSubscription,
   hasPlanAccess,
   isTerminalStripeSubscriptionStatus,
 } from "./subscription-status";

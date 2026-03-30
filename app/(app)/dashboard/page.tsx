@@ -7,7 +7,7 @@ import {
   ArrowUp,
 } from "lucide-react";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
-import { listCurrentOrganizationTasks } from "@/features/tasks/server/tasks";
+import { listTasks } from "@/features/tasks/server/tasks";
 import {
   Page,
   PageDescription,
@@ -33,7 +33,7 @@ import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 export default async function DashboardPage() {
   const [organization, tasks] = await Promise.all([
     getCurrentOrganization(),
-    listCurrentOrganizationTasks(),
+    listTasks(),
   ]);
 
   const planId = resolveOrganizationPlan(organization);
@@ -157,6 +157,3 @@ export default async function DashboardPage() {
     </Page>
   );
 }
-
-
-

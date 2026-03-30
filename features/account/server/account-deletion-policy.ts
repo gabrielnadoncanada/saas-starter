@@ -13,6 +13,23 @@ function hasActiveSubscription(status: string | null | undefined) {
   );
 }
 
+function formatPeriodEnd(periodEnd: Date | null) {
+  if (!periodEnd) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+  }).format(periodEnd);
+}
+
+function hasScheduledCancellation(subscription: {
+  cancelAt: Date | null;
+  cancelAtPeriodEnd: boolean;
+}) {
+  return subscription.cancelAtPeriodEnd || Boolean(subscription.cancelAt);
+}
+
 export async function getAccountDeletionBlocker(userId: string) {
   const reqHeaders = await headers();
 
@@ -48,6 +65,14 @@ export async function getAccountDeletionBlocker(userId: string) {
       otherOwnerCount === 0 &&
       hasActiveSubscription(subscription.subscriptionStatus)
     ) {
+      if (hasScheduledCancellation(subscription)) {
+        const periodEnd = formatPeriodEnd(subscription.periodEnd);
+
+        return periodEnd
+          ? `The subscription for "${fullOrg.name}" is already canceled and will end on ${periodEnd}. Wait until it ends before deleting your account.`
+          : `The subscription for "${fullOrg.name}" is already canceled but still active until the current billing period ends. Wait until it ends before deleting your account.`;
+      }
+
       return `Cancel the subscription for "${fullOrg.name}" before deleting your account.`;
     }
   }

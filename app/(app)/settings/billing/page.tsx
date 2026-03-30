@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
-import { getPricingPlans, isPlanId } from "@/features/billing/plans";
+import {
+  getPricingPlans,
+  hasCurrentStripeSubscription,
+  isPlanId,
+} from "@/features/billing/plans";
 import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
 import {
   Card,
@@ -24,11 +28,15 @@ export default async function SettingsBillingPage() {
     organization.planId && isPlanId(organization.planId)
       ? organization.planId
       : "free";
+  const hasCurrentSubscription = hasCurrentStripeSubscription(
+    organization.subscriptionStatus,
+  );
   const plans = getPricingPlans()
     .map((plan) => ({
       id: plan.id,
       name: plan.name,
       description: plan.description,
+      features: plan.features,
       pricingModel: plan.pricingModel,
       monthly: plan.prices.month ?? null,
       yearly: plan.prices.year ?? null,
@@ -52,9 +60,11 @@ export default async function SettingsBillingPage() {
               canManageBilling={context.canManageBilling}
               canManagePortal={
                 Boolean(context.canManageBilling) &&
+                hasCurrentSubscription &&
                 Boolean(organization.stripeCustomerId) &&
                 Boolean(organization.subscriptionStatus)
               }
+              hasCurrentSubscription={hasCurrentSubscription}
               currentBillingInterval={organization.billingInterval}
               currentPlanId={currentPlanId}
               plans={plans}

@@ -1,3 +1,5 @@
+import "server-only";
+
 export const capabilities = [
   "task.create",
   "task.export",
@@ -124,7 +126,7 @@ export const billingConfig: BillingConfig = {
       id: "team",
       name: "Team",
       description: "For teams that need seats, analytics, and higher limits.",
-      pricingModel: "per_seat",
+      pricingModel: "flat",
       features: [
         "Per-seat billing",
         "Team analytics",

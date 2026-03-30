@@ -8,9 +8,13 @@ import { db } from "@/shared/lib/db/prisma";
 
 type SubscriptionSnapshot = {
   billingInterval: BillingInterval | null;
+  cancelAt: Date | null;
+  cancelAtPeriodEnd: boolean;
   planId: string | null;
+  periodEnd: Date | null;
   pricingModel: PricingModel | null;
   seats: number | null;
+  stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   subscriptionStatus: string | null;
 };
@@ -34,9 +38,13 @@ export async function getOrganizationSubscriptionSnapshot(
   if (!subscription) {
     return {
       billingInterval: null,
+      cancelAt: null,
+      cancelAtPeriodEnd: false,
       planId: null,
+      periodEnd: null,
       pricingModel: null,
       seats: null,
+      stripeCustomerId: null,
       stripeSubscriptionId: null,
       subscriptionStatus: null,
     };
@@ -48,9 +56,13 @@ export async function getOrganizationSubscriptionSnapshot(
       subscription.billingInterval === "year"
         ? subscription.billingInterval
         : null,
+    cancelAt: subscription.cancelAt ?? null,
+    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd ?? false,
     planId: subscription.plan ?? null,
+    periodEnd: subscription.periodEnd ?? null,
     pricingModel: toPricingModel(subscription.plan ?? null),
     seats: subscription.seats ?? null,
+    stripeCustomerId: subscription.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
     subscriptionStatus: subscription.status ?? null,
   };

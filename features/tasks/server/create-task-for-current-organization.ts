@@ -1,145 +1,87 @@
 import "server-only";
 
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-import { getActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
-import type {
-  bulkDeleteTasksSchema,
-  bulkUpdateTaskStatusSchema,
-  deleteTaskSchema,
-  updateTaskSchema,
-  updateTaskStatusSchema,
-} from "@/features/tasks/schemas/task.schema";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
+import { assertCapability } from "@/features/billing/guards";
+import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { consumeMonthlyUsage } from "@/features/billing/usage";
+import { createTaskSchema } from "@/features/tasks/schemas/task.schema";
+import type { Task } from "@/features/tasks/types/task.types";
 
-type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
-type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
-type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;
-type BulkDeleteTasksInput = z.infer<typeof bulkDeleteTasksSchema>;
-type BulkUpdateTaskStatusInput = z.infer<typeof bulkUpdateTaskStatusSchema>;
+type CreateTaskInput = z.infer<typeof createTaskSchema>;
+type TaskDbClient = Prisma.TransactionClient;
 
-async function requireCurrentOrganizationId() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    throw new Error("User is not authenticated");
-  }
-
-  const membership = await getActiveOrganizationMembership(user.id);
-
-  if (!membership?.organizationId) {
-    throw new Error("User is not part of an organization");
-  }
-
-  return membership.organizationId;
+function isUniqueCodeError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "P2002"
+  );
 }
 
-export async function listTasks() {
-  const organizationId = await requireCurrentOrganizationId();
-
-  return db.task.findMany({
+async function createTaskCode(organizationId: string, client: TaskDbClient) {
+  const latestTask = await client.task.findFirst({
     where: { organizationId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { id: "desc" },
+    select: { code: true },
   });
+
+  const latestNumber = Number(latestTask?.code.replace("TASK-", "")) || 0;
+  return `TASK-${latestNumber + 1}`;
 }
 
-export async function updateTask(input: UpdateTaskInput) {
-  const organizationId = await requireCurrentOrganizationId();
+async function createTaskRecord(
+  organizationId: string,
+  input: CreateTaskInput,
+  client: TaskDbClient,
+): Promise<Task> {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const code = await createTaskCode(organizationId, client);
 
-  const result = await db.task.updateMany({
-    where: {
-      id: input.taskId,
-      organizationId,
-    },
-    data: {
-      title: input.title,
-      description: input.description || null,
-      label: input.label,
-      priority: input.priority,
-      status: input.status,
-    },
-  });
-
-  if (result.count === 0) {
-    throw new Error("Task not found");
+    try {
+      return await client.task.create({
+        data: {
+          organizationId,
+          code,
+          title: input.title,
+          description: input.description || null,
+          label: input.label,
+          priority: input.priority,
+          status: "TODO",
+        },
+      });
+    } catch (error) {
+      if (!isUniqueCodeError(error)) {
+        throw error;
+      }
+    }
   }
+
+  throw new Error("Could not generate a unique task code");
 }
 
-export async function updateTaskStatus(input: UpdateTaskStatusInput) {
-  const organizationId = await requireCurrentOrganizationId();
+export async function createTaskForCurrentOrganization(
+  input: CreateTaskInput,
+): Promise<Task> {
+  const organizationPlan = await getOrganizationPlan();
 
-  const result = await db.task.updateMany({
-    where: {
-      id: input.taskId,
-      organizationId,
-    },
-    data: {
-      status: input.status,
-    },
-  });
-
-  if (result.count === 0) {
-    throw new Error("Task not found");
-  }
-}
-
-export async function deleteTask(taskId: DeleteTaskInput["taskId"]) {
-  const organizationId = await requireCurrentOrganizationId();
-
-  const result = await db.task.deleteMany({
-    where: {
-      id: taskId,
-      organizationId,
-    },
-  });
-
-  if (result.count === 0) {
-    throw new Error("Task not found");
-  }
-}
-
-export async function bulkUpdateTaskStatus(
-  input: BulkUpdateTaskStatusInput,
-) {
-  const organizationId = await requireCurrentOrganizationId();
-
-  const result = await db.task.updateMany({
-    where: {
-      id: {
-        in: input.taskIds,
-      },
-      organizationId,
-    },
-    data: {
-      status: input.status,
-    },
-  });
-
-  if (result.count === 0) {
-    throw new Error("Tasks not found");
+  if (!organizationPlan) {
+    throw new Error("Organization not found");
   }
 
-  return result.count;
-}
+  assertCapability(organizationPlan.planId, "task.create");
 
-export async function bulkDeleteTasks(
-  taskIds: BulkDeleteTasksInput["taskIds"],
-) {
-  const organizationId = await requireCurrentOrganizationId();
+  return db.$transaction(async (tx) => {
+    await consumeMonthlyUsage(
+      organizationPlan.organizationId,
+      "tasksPerMonth",
+      organizationPlan.planId,
+      { db: tx },
+    );
 
-  const result = await db.task.deleteMany({
-    where: {
-      id: {
-        in: taskIds,
-      },
-      organizationId,
-    },
+    return createTaskRecord(organizationPlan.organizationId, input, tx);
   });
-
-  if (result.count === 0) {
-    throw new Error("Tasks not found");
-  }
-
-  return result.count;
 }

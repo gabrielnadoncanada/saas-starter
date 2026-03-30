@@ -59,7 +59,8 @@ function mapCurrentOrganization(
     billingInterval: subscription.billingInterval,
     planId: subscription.planId,
     pricingModel: subscription.pricingModel,
-    stripeCustomerId: organization.stripeCustomerId ?? null,
+    stripeCustomerId:
+      organization.stripeCustomerId ?? subscription.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId,
     subscriptionStatus: subscription.subscriptionStatus,
     members: (organization.members ?? []).map(mapOrganizationMember),
