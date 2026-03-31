@@ -2,26 +2,9 @@ import "server-only";
 
 import { Prisma } from "@prisma/client";
 
-import { getActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
+import { requireCurrentOrganizationId } from "@/features/organizations/server/require-current-organization-id";
 import type { TaskTableSearchParams } from "@/features/tasks/schemas/task-table-params";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
-
-async function requireCurrentOrganizationId() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    throw new Error("User is not authenticated");
-  }
-
-  const membership = await getActiveOrganizationMembership(user.id);
-
-  if (!membership?.organizationId) {
-    throw new Error("User is not part of an organization");
-  }
-
-  return membership.organizationId;
-}
 
 function getTaskOrderBy(
   sort: TaskTableSearchParams["sort"],

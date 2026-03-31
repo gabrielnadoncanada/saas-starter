@@ -8,13 +8,14 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { useFormActionToasts } from '@/shared/hooks/useFormActionToasts';
-import { renameOrganizationAction } from '@/features/organizations/actions/rename-organization.action';
+import { useToastMessage } from '@/shared/hooks/useToastMessage';
+import { renameOrganizationAction } from '@/features/organizations/actions/organization-owner.actions';
 
 type ActionState = {
   error?: string;
   success?: string;
   refreshKey?: number;
+  fieldErrors?: Record<string, string[] | undefined>;
 };
 
 type RenameOrganizationPanelProps = {
@@ -32,7 +33,8 @@ export function RenameOrganizationPanel({
     {}
   );
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   useEffect(() => {
     if (!state.refreshKey) {
@@ -88,6 +90,5 @@ export function RenameOrganizationPanel({
     </Card>
   );
 }
-
 
 

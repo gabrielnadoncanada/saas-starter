@@ -1,8 +1,8 @@
 import { db } from "@/shared/lib/db/prisma";
-import { LimitReachedError } from "../errors";
+import { LimitReachedError } from "../errors/limit-reached";
 import type { LimitKey, PlanId } from "../plans";
 import { getPlan } from "../plans";
-import { getPlanLimit } from "../guards";
+import { getPlanLimit } from "../guards/plan-guards";
 
 function getPeriodStart(date = new Date()) {
   return new Date(date.getFullYear(), date.getMonth(), 1);

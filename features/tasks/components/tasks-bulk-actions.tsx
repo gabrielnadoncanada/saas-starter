@@ -5,14 +5,16 @@ import { type Table } from "@tanstack/react-table";
 import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { bulkDeleteTasksAction } from "@/features/tasks/actions/bulk-delete-tasks.action";
-import { bulkUpdateTaskStatusAction } from "@/features/tasks/actions/bulk-update-task-status.action";
+import {
+  bulkDeleteTasksAction,
+  bulkUpdateTaskStatusAction,
+} from "@/features/tasks/actions/task.actions";
 import { statuses } from "@/features/tasks/constants/statuses";
 import type {
   BulkDeleteTasksActionState,
   BulkUpdateTaskStatusActionState,
 } from "@/features/tasks/types/task-action.types";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { DataTableBulkActions as BulkActionsToolbar } from "@/shared/components/data-table";
 import { Button } from "@/shared/components/ui/button";
@@ -28,7 +30,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 
-import type { Task } from "../types/task.types";
+import type { Task } from "@prisma/client";
 
 type TasksBulkActionsProps = {
   table: Table<Task>;
@@ -58,8 +60,10 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
     FormData
   >(bulkDeleteTasksAction, {});
 
-  useFormActionToasts(state);
-  useFormActionToasts(deleteState);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
+  useToastMessage(deleteState.error, { kind: "error", skip: Boolean(deleteState.fieldErrors), trigger: deleteState });
+  useToastMessage(deleteState.success, { kind: "success", trigger: deleteState });
 
   useEffect(() => {
     if (state.success || deleteState.success) {

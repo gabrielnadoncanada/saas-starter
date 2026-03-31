@@ -5,9 +5,9 @@ import {
   listAssistantConversations,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/conversations";
-import { assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { UpgradeRequiredError } from "@/features/billing/errors";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 
 function getScopeErrorResponse(scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>) {
   if (scope.kind === "unauthorized") {
@@ -75,4 +75,3 @@ export async function POST(req: Request) {
 
   return Response.json(conversation, { status: 201 });
 }
-

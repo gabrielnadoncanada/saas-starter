@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
 import type { CurrentOrganizationView } from "@/features/organizations/types/organization.types";
 import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import { getAuthSession } from "@/shared/lib/auth/get-session";
 import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
 

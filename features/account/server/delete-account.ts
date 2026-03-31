@@ -1,5 +1,5 @@
 import { db } from "@/shared/lib/db/prisma";
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import { getAccountDeletionBlocker } from "@/features/account/server/account-deletion-policy";
 
 export type DeleteAccountUser = {

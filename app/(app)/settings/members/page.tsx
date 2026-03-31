@@ -4,7 +4,7 @@ import {
   PageHeader,
   PageHeaderActions,
   PageTitle,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 import { InviteOrganizationMemberDialog } from "@/features/organizations/components/invite-organization-member-dialog";
 import { OrganizationInvitationsTable } from "@/features/organizations/components/organization-invitations-table";
 import { OrganizationMembersTable } from "@/features/organizations/components/organization-members-table";

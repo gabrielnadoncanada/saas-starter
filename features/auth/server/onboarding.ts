@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import { accountFlags } from "@/shared/config/account.config";
 
 export async function ensureUserWorkspace(email: string) {

@@ -7,7 +7,7 @@ import type {
   deleteTaskSchema,
   updateTaskSchema,
 } from '../schemas/task.schema';
-import type { Task } from './task.types';
+import type { Task } from '@prisma/client';
 import type { z } from 'zod';
 
 type CreateTaskValues = z.infer<typeof createTaskSchema>;
@@ -20,9 +20,7 @@ export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
   task?: Task;
 };
 
-export type UpdateTaskActionState = FormActionState<UpdateTaskValues> & {
-  task?: Task;
-};
+export type UpdateTaskActionState = FormActionState<UpdateTaskValues>;
 
 export type DeleteTaskActionState = FormActionState<DeleteTaskValues> & {
   taskId?: number;

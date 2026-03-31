@@ -4,12 +4,12 @@ import { useActionState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { createTaskAction } from "@/features/tasks/actions/create-task.action";
+import { createTaskAction } from "@/features/tasks/actions/task.actions";
 import { labels } from "@/features/tasks/constants/labels";
 import { priorities } from "@/features/tasks/constants/priorities";
 import type { CreateTaskActionState } from "@/features/tasks/types/task-action.types";
 import { getFieldState } from "@/shared/lib/get-field-state";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { Button } from "@/shared/components/ui/button";
 import {
   Field,
@@ -58,7 +58,8 @@ export function TaskCreateDrawer({ open, onOpenChange }: TaskCreateDrawerProps) 
   const labelField = getFieldState(state, "label");
   const priorityField = getFieldState(state, "priority");
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   useEffect(() => {
     if (state.success) {

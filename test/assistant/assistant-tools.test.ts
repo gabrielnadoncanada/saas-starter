@@ -5,9 +5,10 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { LimitReachedError, UpgradeRequiredError } from "@/features/billing/errors";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 import { getPlan } from "@/features/billing/plans";
-import { getPlanLimit, hasCapability } from "@/features/billing/guards";
+import { getPlanLimit, hasCapability } from "@/features/billing/guards/plan-guards";
 
 vi.mock("server-only", () => ({}));
 
@@ -19,10 +20,10 @@ vi.mock("@/features/billing/guards/get-organization-plan", () => ({
   getOrganizationPlan: vi.fn(),
 }));
 
-vi.mock("@/features/billing/guards", async () => {
+vi.mock("@/features/billing/guards/plan-guards", async () => {
   const actual =
-    await vi.importActual<typeof import("@/features/billing/guards")>(
-      "@/features/billing/guards",
+    await vi.importActual<typeof import("@/features/billing/guards/plan-guards")>(
+      "@/features/billing/guards/plan-guards",
     );
 
   return {
@@ -35,7 +36,7 @@ vi.mock("@/features/billing/guards", async () => {
   };
 });
 
-vi.mock("@/features/billing/usage", () => ({
+vi.mock("@/features/billing/usage/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 
@@ -52,7 +53,7 @@ vi.mock("@/features/assistant/server/email-provider", () => ({
 
 const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
 const { consumeMonthlyUsage } = await import(
-  "@/features/billing/usage"
+  "@/features/billing/usage/usage-service"
 );
 const { createTaskForCurrentOrganization } = await import(
   "@/features/tasks/server/create-task-for-current-organization"
@@ -187,4 +188,3 @@ describe("assistant tools", () => {
     }
   });
 });
-

@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import type { ListAdminUsersQuery } from "../types/admin-users.types";
 
 export async function listAdminUsers(query: ListAdminUsersQuery) {

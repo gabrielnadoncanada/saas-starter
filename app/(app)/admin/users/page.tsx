@@ -6,7 +6,7 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 
 const PAGE_SIZE = 25;
 

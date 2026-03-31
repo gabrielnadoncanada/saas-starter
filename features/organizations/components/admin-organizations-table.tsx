@@ -5,9 +5,11 @@ import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { AdminConfirmDialog } from "@/shared/components/dialogs/admin-confirm-dialog";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
-import { deleteOrganizationAction } from "@/features/organizations/actions/delete-organization.action";
-import { getOrganizationDetailAction } from "@/features/organizations/actions/get-organization-detail.action";
-import { listOrganizationsAction } from "@/features/organizations/actions/list-organizations.action";
+import {
+  deleteOrganizationAction,
+  getOrganizationDetailAction,
+  listOrganizationsAction,
+} from "@/features/organizations/actions/organization-admin.actions";
 import { Input } from "@/shared/components/ui/input";
 import { Table, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 import { OrganizationDetailSheet } from "./organization-detail-sheet";

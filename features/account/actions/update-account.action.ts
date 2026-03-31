@@ -2,7 +2,7 @@
 
 import { updateAccount } from "@/features/account/server/update-account";
 import { updateAccountSchema } from "@/features/account/schemas/account.schema";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
 export const updateAccountAction = validatedAuthenticatedAction(
   updateAccountSchema,

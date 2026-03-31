@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError, UpgradeRequiredError } from "@/features/billing/errors";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 
 vi.mock("server-only", () => ({}));
 
@@ -18,19 +19,19 @@ vi.mock("@/features/billing/guards/get-organization-plan", () => ({
   getOrganizationPlan: vi.fn(),
 }));
 
-vi.mock("@/features/billing/guards", () => ({
+vi.mock("@/features/billing/guards/plan-guards", () => ({
   assertCapability: vi.fn(),
 }));
 
-vi.mock("@/features/billing/usage", () => ({
+vi.mock("@/features/billing/usage/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
 const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
-const { assertCapability } = await import("@/features/billing/guards");
+const { assertCapability } = await import("@/features/billing/guards/plan-guards");
 const { consumeMonthlyUsage } = await import(
-  "@/features/billing/usage"
+  "@/features/billing/usage/usage-service"
 );
 const { createTaskForCurrentOrganization } = await import(
   "@/features/tasks/server/create-task-for-current-organization"
@@ -128,4 +129,3 @@ describe("createTaskForCurrentOrganization", () => {
     expect(task.code).toBe("TASK-42");
   });
 });
-

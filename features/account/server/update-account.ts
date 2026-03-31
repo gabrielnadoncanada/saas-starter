@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import type { UpdateAccountActionState } from "@/features/account/types/account.types";
 
 type UpdateAccountParams = {

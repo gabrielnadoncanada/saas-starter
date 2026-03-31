@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 
-import type { Task } from "../types/task.types";
+import type { Task } from "@prisma/client";
 
 type TasksRowActionsProps = {
   onEditTask: (task: Task) => void;

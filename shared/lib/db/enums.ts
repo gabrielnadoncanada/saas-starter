@@ -1,4 +1,4 @@
-import { getPrimaryRole, hasAnyRole, hasRole, parseRoles } from "@/shared/lib/roles";
+import { getPrimaryRole, hasAnyRole, hasRole, parseRoles } from "@/shared/lib/auth/roles";
 
 /**
  * Re-exports Prisma-generated enums so feature code never imports

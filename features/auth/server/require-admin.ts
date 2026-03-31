@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { routes } from "@/shared/constants/routes";

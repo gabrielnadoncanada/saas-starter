@@ -13,7 +13,7 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
@@ -24,8 +24,8 @@ import {
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 import { resolveOrganizationPlan, getPlan } from "@/features/billing/plans";
-import { hasCapability, checkLimit } from "@/features/billing/guards";
-import { getMonthlyUsage } from "@/features/billing/usage";
+import { hasCapability, checkLimit } from "@/features/billing/guards/plan-guards";
+import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
 import { Badge } from "@/shared/components/ui/badge";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";

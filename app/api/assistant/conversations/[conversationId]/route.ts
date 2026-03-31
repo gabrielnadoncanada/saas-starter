@@ -6,9 +6,9 @@ import {
   replaceAssistantConversation,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/conversations";
-import { assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { UpgradeRequiredError } from "@/features/billing/errors";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 
 type RouteContext = {
   params: Promise<{
@@ -112,4 +112,3 @@ export async function DELETE(_req: Request, context: RouteContext) {
 
   return new Response(null, { status: 204 });
 }
-

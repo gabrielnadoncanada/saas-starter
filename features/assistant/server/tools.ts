@@ -8,9 +8,9 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { consumeMonthlyUsage } from "@/features/billing/usage";
+import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { createTaskForCurrentOrganization } from "@/features/tasks/server/create-task-for-current-organization";
 import { emailProvider } from "./email-provider";
 import { toAssistantToolFailure } from "./tool-result";
@@ -191,4 +191,3 @@ export const assistantTools = {
     },
   }),
 };
-

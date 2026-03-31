@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 
 export async function getAdminUserDetail(userId: string) {
   const requestHeaders = await headers();

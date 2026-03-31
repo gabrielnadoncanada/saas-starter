@@ -4,11 +4,11 @@ import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { db } from "@/shared/lib/db/prisma";
-import { assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { consumeMonthlyUsage } from "@/features/billing/usage";
+import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { createTaskSchema } from "@/features/tasks/schemas/task.schema";
-import type { Task } from "@/features/tasks/types/task.types";
+import type { Task } from "@prisma/client";
 
 type CreateTaskInput = z.infer<typeof createTaskSchema>;
 type TaskDbClient = Prisma.TransactionClient;

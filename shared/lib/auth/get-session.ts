@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 
 type RawAuthSession = NonNullable<
   Awaited<ReturnType<typeof auth.api.getSession>>

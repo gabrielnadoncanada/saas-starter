@@ -25,7 +25,6 @@ import type {
 import { routes } from "@/shared/constants/routes";
 import { getOAuthProviderConfig } from "@/shared/lib/auth/oauth-config";
 import { getFieldState } from "@/shared/lib/get-field-state";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 
 type LinkedAccountsCardProps = {
@@ -47,9 +46,8 @@ export function LinkedAccountsCard({
   const selectedProvider = state.values?.provider;
   const providerField = getFieldState(state, "provider");
 
-  useFormActionToasts(state, {
-    skipError: Boolean(state.fieldErrors),
-  });
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
   useToastMessage(feedback?.error, {
     kind: "error",
   });

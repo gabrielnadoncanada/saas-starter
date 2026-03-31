@@ -7,7 +7,7 @@ import {
   PageHeader,
   PageTitle,
   PageDescription,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 import {
   Avatar,
   AvatarFallback,

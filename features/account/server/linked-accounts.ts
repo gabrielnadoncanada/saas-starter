@@ -3,7 +3,7 @@ import {
   isOAuthProviderId,
 } from "@/shared/lib/auth/oauth-config";
 
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
 type UserAccount = Awaited<ReturnType<typeof auth.api.listUserAccounts>>[number];

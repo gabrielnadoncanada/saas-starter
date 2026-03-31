@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { savePasswordAction } from "@/features/auth/actions/save-password.action";
 import type { SavePasswordInput } from "@/features/auth/schemas/save-password.schema";
 import { getFieldState } from "@/shared/lib/get-field-state";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -52,7 +52,8 @@ export function EditPasswordDialog({
     }
   }, [state]);
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

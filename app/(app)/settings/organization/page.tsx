@@ -3,7 +3,7 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 import { RenameOrganizationPanel } from "@/features/organizations/components/rename-organization-panel";
 import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
 

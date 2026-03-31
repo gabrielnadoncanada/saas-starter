@@ -1,7 +1,7 @@
-import { Page } from "@/shared/components/layout/page";
+import { Page } from "@/shared/components/layout/page-layout";
 import { resolveOrganizationPlan } from "@/features/billing/plans";
-import { hasCapability, checkLimit } from "@/features/billing/guards";
-import { getMonthlyUsage } from "@/features/billing/usage";
+import { hasCapability, checkLimit } from "@/features/billing/guards/plan-guards";
+import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
@@ -53,6 +53,5 @@ export default async function AssistantPage({
     </Page>
   );
 }
-
 
 

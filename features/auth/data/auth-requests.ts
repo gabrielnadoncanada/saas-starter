@@ -4,7 +4,6 @@ import { authClient } from "@/shared/lib/auth/auth-client";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 import { routes } from "@/shared/constants/routes";
-import { normalizeEmail } from "@/features/auth/utils/normalize-email";
 
 export type SignInWithPasswordResult =
   | { status: "success" }
@@ -46,7 +45,7 @@ function getAuthErrorMessage(
 
 export function buildCheckEmailHref(email: string, callbackUrl: string) {
   const query = new URLSearchParams({
-    email: normalizeEmail(email),
+    email: email.trim().toLowerCase(),
   });
   const baseHref = buildCallbackURL(routes.auth.checkEmail, callbackUrl);
   const separator = baseHref.includes("?") ? "&" : "?";
@@ -56,7 +55,7 @@ export function buildCheckEmailHref(email: string, callbackUrl: string) {
 
 export async function sendMagicLink(email: string, callbackUrl: string) {
   const { error } = await authClient.signIn.magicLink({
-    email: normalizeEmail(email),
+    email: email.trim().toLowerCase(),
     callbackURL: callbackUrl,
   });
 
@@ -81,7 +80,7 @@ export async function signInWithPassword(
   password: string,
 ): Promise<SignInWithPasswordResult> {
   const { error } = await authClient.signIn.email({
-    email: normalizeEmail(email),
+    email: email.trim().toLowerCase(),
     password,
   });
 
@@ -115,7 +114,7 @@ export async function signUpWithEmail(
   callbackUrl: string,
 ): Promise<SignUpWithEmailResult> {
   const { error } = await authClient.signUp.email({
-    email: normalizeEmail(email),
+    email: email.trim().toLowerCase(),
     password,
     name: "",
     callbackURL: callbackUrl,
@@ -138,7 +137,7 @@ export async function signUpWithEmail(
 
 export async function resendVerificationEmail(email: string) {
   const { error } = await authClient.sendVerificationEmail({
-    email: normalizeEmail(email),
+    email: email.trim().toLowerCase(),
     callbackURL: routes.auth.login,
   });
 
@@ -149,7 +148,7 @@ export async function resendVerificationEmail(email: string) {
 
 export async function requestPasswordReset(email: string) {
   await authClient.requestPasswordReset({
-    email: normalizeEmail(email),
+    email: email.trim().toLowerCase(),
     redirectTo: routes.auth.resetPassword,
   });
 }

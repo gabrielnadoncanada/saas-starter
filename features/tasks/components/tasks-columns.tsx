@@ -7,7 +7,7 @@ import { Checkbox } from "@/shared/components/ui/checkbox";
 import { labels } from "../constants/labels";
 import { priorities } from "../constants/priorities";
 import { statuses } from "../constants/statuses";
-import type { Task } from "../types/task.types";
+import type { Task } from "@prisma/client";
 import { TasksRowActions } from "./tasks-row-actions";
 
 type TasksColumnsOptions = {

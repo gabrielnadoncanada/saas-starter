@@ -4,7 +4,7 @@ import {
   type BillingInterval,
   type PaidPlanId,
 } from "@/features/billing/plans";
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 
 type ResumeCheckoutAfterSignInParams = {

@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
 import type { SavePasswordInput } from "@/features/auth/schemas/save-password.schema";
 

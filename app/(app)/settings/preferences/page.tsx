@@ -3,7 +3,7 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 import { ThemePreferencesCard } from "@/features/account/components/settings/theme-preferences-card";
 
 export default function PreferencesPage() {

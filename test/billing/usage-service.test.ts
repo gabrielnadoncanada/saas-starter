@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError } from "@/features/billing/errors";
-import { consumeMonthlyUsage } from "@/features/billing/usage";
+import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {},

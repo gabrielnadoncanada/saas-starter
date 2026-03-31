@@ -2,10 +2,11 @@ import { streamText, convertToModelMessages, stepCountIs } from "ai";
 
 import { getAssistantModel } from "@/features/assistant/server/get-assistant-model";
 import { getAssistantConversation } from "@/features/assistant/server/conversations";
-import { assertCapability } from "@/features/billing/guards";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { consumeMonthlyUsage } from "@/features/billing/usage";
-import { UpgradeRequiredError, LimitReachedError } from "@/features/billing/errors";
+import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 import { assistantTools } from "@/features/assistant/server/tools";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -109,4 +110,3 @@ Guidelines:
 
   return result.toUIMessageStreamResponse();
 }
-

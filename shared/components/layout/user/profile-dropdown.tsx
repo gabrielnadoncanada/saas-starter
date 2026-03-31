@@ -1,6 +1,6 @@
 "use client";
 
-import useDialogState from '@/shared/hooks/useDialogState'
+import { useState } from "react";
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
 import { Button } from '@/shared/components/ui/button'
 import {
@@ -18,7 +18,7 @@ import Link from 'next/link'
 import { useUser } from '@/shared/components/providers/user-provider'
 
 export function ProfileDropdown() {
-  const [open, setOpen] = useDialogState()
+  const [open, setOpen] = useState(false)
   const user = useUser()
 
   const initials = user.name
@@ -68,7 +68,7 @@ export function ProfileDropdown() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <SignOutDialog open={!!open} onOpenChange={setOpen} />
+      <SignOutDialog open={open} onOpenChange={setOpen} />
     </>
   )
 }

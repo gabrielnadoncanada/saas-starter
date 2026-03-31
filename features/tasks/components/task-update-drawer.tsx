@@ -4,14 +4,14 @@ import { useActionState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { updateTaskAction } from "@/features/tasks/actions/update-task.action";
+import { updateTaskAction } from "@/features/tasks/actions/task.actions";
 import { labels } from "@/features/tasks/constants/labels";
 import { priorities } from "@/features/tasks/constants/priorities";
 import { statuses } from "@/features/tasks/constants/statuses";
 import type { UpdateTaskActionState } from "@/features/tasks/types/task-action.types";
-import type { Task } from "@/features/tasks/types/task.types";
+import type { Task } from "@prisma/client";
 import { getFieldState } from "@/shared/lib/get-field-state";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { Button } from "@/shared/components/ui/button";
 import {
   Field,
@@ -67,7 +67,8 @@ export function TaskUpdateDrawer({
   const priorityField = getFieldState(state, "priority");
   const statusField = getFieldState(state, "status");
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   useEffect(() => {
     if (state.success) {

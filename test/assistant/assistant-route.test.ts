@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError } from "@/features/billing/errors";
+import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 
 vi.mock("server-only", () => ({}));
 
@@ -36,7 +36,7 @@ vi.mock("@/features/billing/guards/get-organization-plan", () => ({
   getOrganizationPlan: vi.fn(),
 }));
 
-vi.mock("@/features/billing/usage", () => ({
+vi.mock("@/features/billing/usage/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 
@@ -44,7 +44,7 @@ const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
 const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
 const { consumeMonthlyUsage } = await import(
-  "@/features/billing/usage"
+  "@/features/billing/usage/usage-service"
 );
 const { POST } = await import("@/app/api/assistant/route");
 

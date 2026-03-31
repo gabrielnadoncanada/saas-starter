@@ -3,7 +3,7 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default function DashboardLoading() {

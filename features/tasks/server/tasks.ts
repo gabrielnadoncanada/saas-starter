@@ -2,7 +2,7 @@ import "server-only";
 
 import { z } from "zod";
 
-import { getActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
+import { requireCurrentOrganizationId } from "@/features/organizations/server/require-current-organization-id";
 import type {
   bulkDeleteTasksSchema,
   bulkUpdateTaskStatusSchema,
@@ -10,7 +10,6 @@ import type {
   updateTaskSchema,
   updateTaskStatusSchema,
 } from "@/features/tasks/schemas/task.schema";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
 
 type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
@@ -18,22 +17,6 @@ type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
 type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;
 type BulkDeleteTasksInput = z.infer<typeof bulkDeleteTasksSchema>;
 type BulkUpdateTaskStatusInput = z.infer<typeof bulkUpdateTaskStatusSchema>;
-
-async function requireCurrentOrganizationId() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    throw new Error("User is not authenticated");
-  }
-
-  const membership = await getActiveOrganizationMembership(user.id);
-
-  if (!membership?.organizationId) {
-    throw new Error("User is not part of an organization");
-  }
-
-  return membership.organizationId;
-}
 
 export async function listTasks() {
   const organizationId = await requireCurrentOrganizationId();

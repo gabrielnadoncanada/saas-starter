@@ -5,10 +5,10 @@ import { format, parseISO } from "date-fns";
 import { MoreVertical, UserMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import type { RemoveOrganizationMemberActionState } from "@/features/organizations/actions/remove-organization-member.action";
+import type { RemoveOrganizationMemberActionState } from "@/features/organizations/actions/organization-owner.actions";
 import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
-import { removeOrganizationMemberAction } from "@/features/organizations/actions/remove-organization-member.action";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { removeOrganizationMemberAction } from "@/features/organizations/actions/organization-owner.actions";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import {
   Avatar,
   AvatarFallback,
@@ -81,7 +81,8 @@ function MemberActions({
     !hasOrgRole(member.roles, "owner") &&
     member.user.id !== currentUserId;
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   useEffect(() => {
     if (state.refreshKey) {

@@ -4,7 +4,7 @@ import type { FormActionState } from "@/shared/types/form-action-state";
 import {
   type AuthenticatedUser,
   validatedAuthenticatedAction,
-} from "@/shared/lib/auth/validated-authenticated-action";
+} from "@/shared/lib/auth/authenticated-action";
 import {
   getRequiredOrganizationMembership,
   OrganizationMembershipError,
@@ -26,7 +26,7 @@ type ValidatedOrganizationOwnerActionHandler<
 
 export function validatedOrganizationOwnerAction<
   S extends z.ZodTypeAny,
-  TExtraState extends object = Record<string, never>,
+  TExtraState extends object = {},
 >(
   schema: S,
   action: ValidatedOrganizationOwnerActionHandler<S, TExtraState>,

@@ -2,10 +2,10 @@
 
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib/auth/auth-config";
 import { deleteAccount } from "@/features/account/server/delete-account";
 import { deleteAccountSchema } from "@/features/account/schemas/account.schema";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/validated-authenticated-action";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import { db } from "@/shared/lib/db/prisma";
 
 export const deleteAccountAction = validatedAuthenticatedAction<

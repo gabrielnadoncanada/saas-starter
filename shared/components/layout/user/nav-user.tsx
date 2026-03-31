@@ -9,7 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import useDialogState from "@/shared/hooks/useDialogState";
+import { useState } from "react";
 import { useActiveOrganization } from "@/features/organizations/data/active-organization";
 import { useOrganizationList } from "@/features/organizations/data/organization-list";
 import { useSetActiveOrganization } from "@/features/organizations/data/set-active-organization";
@@ -47,7 +47,7 @@ import { useUser } from "@/shared/components/providers/user-provider";
 export function NavUser() {
   const router = useRouter();
   const { state } = useSidebar();
-  const [open, setOpen] = useDialogState();
+  const [open, setOpen] = useState(false);
   const user = useUser();
   const { data: organizations } = useOrganizationList();
   const { data: activeOrganization } = useActiveOrganization();
@@ -178,7 +178,7 @@ export function NavUser() {
         </SidebarMenuItem>
       </SidebarMenu>
 
-      <SignOutDialog open={!!open} onOpenChange={setOpen} />
+      <SignOutDialog open={open} onOpenChange={setOpen} />
     </>
   );
 }

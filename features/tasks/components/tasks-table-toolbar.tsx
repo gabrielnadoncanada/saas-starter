@@ -11,7 +11,7 @@ import {
   type TaskTableSearchParams,
   buildTasksTableHref,
 } from "@/features/tasks/schemas/task-table-params";
-import type { Task } from "@/features/tasks/types/task.types";
+import type { Task } from "@prisma/client";
 import {
   DataTableFacetedFilter,
   DataTableViewOptions,

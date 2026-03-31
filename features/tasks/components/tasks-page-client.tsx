@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 
 import type { TaskTableSearchParams } from "@/features/tasks/schemas/task-table-params";
-import type { Task } from "@/features/tasks/types/task.types";
+import type { Task } from "@prisma/client";
 import { TaskCreateDrawer } from "@/features/tasks/components/task-create-drawer";
 import { TaskUpdateDrawer } from "@/features/tasks/components/task-update-drawer";
 import { TasksDeleteDialog } from "@/features/tasks/components/tasks-delete-dialog";
@@ -16,7 +16,7 @@ import {
   PageHeader,
   PageHeaderActions,
   PageTitle,
-} from "@/shared/components/layout/page";
+} from "@/shared/components/layout/page-layout";
 
 type TasksDialogType = "create" | "update" | "delete";
 

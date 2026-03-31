@@ -5,10 +5,12 @@ import { format, parseISO } from "date-fns";
 import { Mail, MoreVertical, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import type { CancelOrganizationInvitationActionState } from "@/features/organizations/actions/cancel-organization-invitation.action";
-import type { ResendOrganizationInvitationActionState } from "@/features/organizations/actions/resend-organization-invitation.action";
-import { cancelOrganizationInvitationAction } from "@/features/organizations/actions/cancel-organization-invitation.action";
-import { resendOrganizationInvitationAction } from "@/features/organizations/actions/resend-organization-invitation.action";
+import {
+  type CancelOrganizationInvitationActionState,
+  type ResendOrganizationInvitationActionState,
+  cancelOrganizationInvitationAction,
+  resendOrganizationInvitationAction,
+} from "@/features/organizations/actions/organization-owner.actions";
 import type { OrganizationInvitationView } from "@/features/organizations/types/membership.types";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { Badge } from "@/shared/components/ui/badge";

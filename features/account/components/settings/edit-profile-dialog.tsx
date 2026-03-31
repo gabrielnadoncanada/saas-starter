@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { updateAccountAction } from "@/features/account/actions/update-account.action";
 import type { UpdateAccountActionState } from "@/features/account/types/account.types";
 import { getFieldState } from "@/shared/lib/get-field-state";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { Button } from "@/shared/components/ui/button";
 import { PhoneInput } from "@/shared/components/forms/phone-input";
 import {
@@ -61,7 +61,8 @@ export function EditProfileDialog({
     }
   }, [state]);
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

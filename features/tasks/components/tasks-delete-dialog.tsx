@@ -3,10 +3,10 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { deleteTaskAction } from "@/features/tasks/actions/delete-task.action";
+import { deleteTaskAction } from "@/features/tasks/actions/task.actions";
 import type { DeleteTaskActionState } from "@/features/tasks/types/task-action.types";
-import type { Task } from "@/features/tasks/types/task.types";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import type { Task } from "@prisma/client";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 
 type TasksDeleteDialogProps = {
@@ -27,7 +27,8 @@ export function TasksDeleteDialog({
     FormData
   >(deleteTaskAction, {});
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   useEffect(() => {
     if (state.success) {

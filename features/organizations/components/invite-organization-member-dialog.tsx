@@ -4,10 +4,12 @@ import { useActionState, useEffect, useState } from "react";
 import { Loader2, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import type { InviteOrganizationMemberActionState } from "@/features/organizations/actions/invite-organization-member.action";
-import { inviteOrganizationMemberAction } from "@/features/organizations/actions/invite-organization-member.action";
+import {
+  type InviteOrganizationMemberActionState,
+  inviteOrganizationMemberAction,
+} from "@/features/organizations/actions/organization-owner.actions";
 import { getFieldState } from "@/shared/lib/get-field-state";
-import { useFormActionToasts } from "@/shared/hooks/useFormActionToasts";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -46,7 +48,8 @@ export function InviteOrganizationMemberDialog({
   const defaultEmail = state.values?.email ?? "";
   const defaultRole = state.values?.role ?? "member";
 
-  useFormActionToasts(state);
+  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.success, { kind: "success", trigger: state });
 
   useEffect(() => {
     if (state.success) {

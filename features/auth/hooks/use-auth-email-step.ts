@@ -8,8 +8,6 @@ import {
   emailStepSchema,
   type EmailStepValues,
 } from "@/features/auth/schemas/email-step.schema";
-import { normalizeEmail } from "@/features/auth/utils/normalize-email";
-
 const defaultValues: EmailStepValues = {
   email: "",
 };
@@ -47,7 +45,7 @@ export function useAuthEmailStep(options: UseAuthEmailStepOptions = {}) {
       return null;
     }
 
-    const email = normalizeEmail(getValues("email"));
+    const email = getValues("email").trim().toLowerCase();
     setValue("email", email, { shouldDirty: true, shouldValidate: true });
     clearErrors();
     options.onEmailValidated?.();

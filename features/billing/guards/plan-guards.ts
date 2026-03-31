@@ -1,6 +1,7 @@
 import type { Capability, LimitKey, PlanId } from "../plans";
 import { getPlan } from "../plans";
-import { LimitReachedError, UpgradeRequiredError } from "../errors";
+import { UpgradeRequiredError } from "../errors/upgrade-required";
+import { LimitReachedError } from "../errors/limit-reached";
 
 
 export function hasCapability(planId: PlanId, capability: Capability): boolean {

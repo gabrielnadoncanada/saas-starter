@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { Page } from "@/shared/components/layout/page";
+import { Page } from "@/shared/components/layout/page-layout";
 import { routes } from "@/shared/constants/routes";
 
 export default async function SettingsBillingPage() {
