@@ -1,106 +1,98 @@
-'use client'
+"use client";
 
-import { ChevronsUpDown } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { Building2, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-import { useActiveOrganization } from '@/features/organizations/data/active-organization'
-import { useOrganizationList } from '@/features/organizations/data/organization-list'
-import { useSetActiveOrganization } from '@/features/organizations/data/set-active-organization'
+import { authClient } from "@/shared/lib/auth/auth-client";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu'
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '@/shared/components/ui/sidebar'
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 
 export function OrganizationSwitcher() {
-  const router = useRouter()
-  const { isMobile } = useSidebar()
+  const router = useRouter();
+  const [isSwitching, setIsSwitching] = useState(false);
 
-  const { data: organizations, isPending: isLoadingOrganizations } =
-    useOrganizationList()
+  const { data: organizationsData, isPending: isLoadingOrganizations } =
+    authClient.useListOrganizations();
+
+  const organizations = organizationsData ?? [];
+
   const { data: activeOrganization, isPending: isLoadingActiveOrganization } =
-    useActiveOrganization()
-  const setActiveOrganization = useSetActiveOrganization()
+    authClient.useActiveOrganization();
 
   const isLoading =
-    isLoadingOrganizations ||
-    isLoadingActiveOrganization ||
-    setActiveOrganization.isPending
-  const items = organizations ?? []
+    isLoadingOrganizations || isLoadingActiveOrganization || isSwitching;
 
-  async function handleSwitch(nextOrgId: string) {
-    if (!nextOrgId || nextOrgId === activeOrganization?.id) {
-      return
+  async function switchOrganization(organizationId: string) {
+    if (!organizationId || organizationId === activeOrganization?.id) {
+      return;
     }
 
-    await setActiveOrganization.mutate({ organizationId: nextOrgId })
-    router.refresh()
+    try {
+      setIsSwitching(true);
+
+      const { error } = await authClient.organization.setActive({
+        organizationId,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to switch workspace",
+      );
+    } finally {
+      setIsSwitching(false);
+    }
   }
 
-  if (isLoading || items.length < 1) {
-    return null
+  if (isLoading || organizations.length === 0) {
+    return null;
   }
-
-  const currentOrganization = activeOrganization ?? items[0]
-  const activeOrganizationInitial = currentOrganization?.name?.charAt(0).toUpperCase() ?? 'O'
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size='lg'
-              className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-            >
-              <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
-                <span className='text-sm font-semibold'>{activeOrganizationInitial}</span>
-              </div>
-              <div className='grid flex-1 text-start text-sm leading-tight'>
-                <span className='truncate font-semibold'>{currentOrganization?.name}</span>
-                <span className='truncate text-xs'>Organization</span>
-              </div>
-              <ChevronsUpDown className='ms-auto' />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
-            align='start'
-            side={isMobile ? 'bottom' : 'right'}
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className='text-xs text-muted-foreground'>
-              Organizations
-            </DropdownMenuLabel>
-            {items.map((organization) => (
+    <DropdownMenuGroup>
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger>
+          <Building2 className="size-4" />
+          <span>Switch workspace</span>
+        </DropdownMenuSubTrigger>
+
+        <DropdownMenuPortal>
+          <DropdownMenuSubContent>
+            {organizations.map((organization) => (
               <DropdownMenuItem
                 key={organization.id}
                 onClick={() => {
-                  void handleSwitch(organization.id)
+                  void switchOrganization(organization.id);
                 }}
-                className='gap-2 p-2'
               >
-                <div className='flex size-6 items-center justify-center rounded-sm border'>
-                  <span className='text-xs font-semibold'>
+                <div className="flex size-5 items-center justify-center rounded-sm border">
+                  <span className="text-xs font-semibold">
                     {organization.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
+
                 {organization.name}
+
+                {organization.id === activeOrganization?.id && (
+                  <Check className="ms-auto size-4" />
+                )}
               </DropdownMenuItem>
             ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  )
+          </DropdownMenuSubContent>
+        </DropdownMenuPortal>
+      </DropdownMenuSub>
+    </DropdownMenuGroup>
+  );
 }
-
-

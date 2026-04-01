@@ -1,26 +1,26 @@
 "use server";
 
+import type { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import {
-  createTaskSchema,
-  updateTaskSchema,
-  deleteTaskSchema,
-  updateTaskStatusSchema,
   bulkDeleteTasksSchema,
   bulkUpdateTaskStatusSchema,
-} from "@/features/tasks/schemas/task.schema";
-import { createTaskForCurrentOrganization } from "@/features/tasks/server/create-task-for-current-organization";
+  createTaskSchema,
+  deleteTaskSchema,
+  updateTaskSchema,
+  updateTaskStatusSchema,
+} from "@/features/tasks/task-schemas";
 import {
-  updateTask,
-  deleteTask,
-  updateTaskStatus,
   bulkDeleteTasks,
   bulkUpdateTaskStatus,
-} from "@/features/tasks/server/tasks";
-import type { Task } from "@prisma/client";
+  createTaskForCurrentOrganization,
+  deleteTask,
+  updateTask,
+  updateTaskStatus,
+} from "@/features/tasks/server/task-mutations";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
@@ -44,6 +44,7 @@ export const createTaskAction = validatedAuthenticatedAction<
     ) {
       return { error: error.message };
     }
+
     throw error;
   }
 });
@@ -80,7 +81,10 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
   await updateTaskStatus(data);
   revalidatePath(routes.app.tasks);
 
-  return { success: "Task updated", refreshKey: Date.now() };
+  return {
+    success: "Task updated",
+    refreshKey: Date.now(),
+  };
 });
 
 export const bulkDeleteTasksAction = validatedAuthenticatedAction<

@@ -46,7 +46,11 @@ export function LinkedAccountsCard({
   const selectedProvider = state.values?.provider;
   const providerField = getFieldState(state, "provider");
 
-  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.error, {
+    kind: "error",
+    skip: Boolean(state.fieldErrors),
+    trigger: state,
+  });
   useToastMessage(state.success, { kind: "success", trigger: state });
   useToastMessage(feedback?.error, {
     kind: "error",
@@ -94,7 +98,7 @@ export function LinkedAccountsCard({
                 </ItemTitle>
                 <ItemDescription>
                   {provider.linkedAt
-                    ? `Linked on ${format(parseISO(provider.linkedAt), "PP")}`
+                    ? `Linked on ${format(provider.linkedAt, "PP")}`
                     : "Not linked yet"}
                 </ItemDescription>
               </ItemContent>

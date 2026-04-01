@@ -1,18 +1,7 @@
 "use client";
 
-import {
-  Building2,
-  Check,
-  ChevronsUpDown,
-  Cog,
-  LogOut,
-  ShieldCheck,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
+import { ChevronsUpDown, Cog, LogOut, ShieldCheck } from "lucide-react";
 import { useState } from "react";
-import { useActiveOrganization } from "@/features/organizations/data/active-organization";
-import { useOrganizationList } from "@/features/organizations/data/organization-list";
-import { useSetActiveOrganization } from "@/features/organizations/data/set-active-organization";
 import {
   Avatar,
   AvatarFallback,
@@ -24,11 +13,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import {
@@ -43,19 +28,17 @@ import { accountFlags } from "@/shared/config/account.config";
 import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 import { useUser } from "@/shared/components/providers/user-provider";
+import { OrganizationSwitcher } from "@/features/organizations/components/organization-switcher";
+import { authClient } from "@/shared/lib/auth/auth-client";
 
 export function NavUser() {
-  const router = useRouter();
   const { state } = useSidebar();
   const [open, setOpen] = useState(false);
   const user = useUser();
-  const { data: organizations } = useOrganizationList();
-  const { data: activeOrganization } = useActiveOrganization();
-  const setActiveOrganization = useSetActiveOrganization();
-  const orgItems = organizations ?? [];
-  const currentOrg = activeOrganization ?? orgItems[0];
-  const currentOrgName = currentOrg?.name ?? "Organization";
-  const currentOrgInitial = currentOrgName.charAt(0).toUpperCase();
+  const { data: organizationsData } = authClient.useListOrganizations();
+  const organizations = organizationsData ?? [];
+  const { data: activeOrganizationData } = authClient.useActiveOrganization();
+  const activeOrganization = activeOrganizationData ?? organizations[0];
   const userInitials =
     user.name
       .split(" ")
@@ -73,15 +56,17 @@ export function NavUser() {
               <SidebarMenuButton variant="outline" size="lg">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg">
-                    {currentOrgInitial}
+                    {activeOrganization?.name?.charAt(0).toUpperCase() ?? "O"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-start text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {currentOrgName}
+                    {activeOrganization?.name ?? "Organization"}
                   </span>
                   <span className="truncate text-xs">
-                    {accountFlags.enableTeamFeatures ? "Organization" : "Account"}
+                    {accountFlags.enableTeamFeatures
+                      ? "Organization"
+                      : "Account"}
                   </span>
                 </div>
                 <ChevronsUpDown className="ms-auto size-4" />
@@ -114,41 +99,7 @@ export function NavUser() {
               <DropdownMenuSeparator />
               {accountFlags.showOrgSwitcher && (
                 <>
-                  <DropdownMenuGroup>
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger>
-                        <Building2 />
-                        Switch workspace
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuPortal>
-                        <DropdownMenuSubContent>
-                          {orgItems.map((org) => (
-                            <DropdownMenuItem
-                              key={org.id}
-                              onClick={async () => {
-                                if (org.id !== activeOrganization?.id) {
-                                  await setActiveOrganization.mutate({
-                                    organizationId: org.id,
-                                  });
-                                  router.refresh();
-                                }
-                              }}
-                            >
-                              <div className="flex size-5 items-center justify-center rounded-sm border">
-                                <span className="text-xs font-semibold">
-                                  {org.name.charAt(0).toUpperCase()}
-                                </span>
-                              </div>
-                              {org.name}
-                              {org.id === activeOrganization?.id && (
-                                <Check className="ms-auto size-4" />
-                              )}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuSubContent>
-                      </DropdownMenuPortal>
-                    </DropdownMenuSub>
-                  </DropdownMenuGroup>
+                  <OrganizationSwitcher />
                   <DropdownMenuSeparator />
                 </>
               )}
@@ -182,5 +133,3 @@ export function NavUser() {
     </>
   );
 }
-
-

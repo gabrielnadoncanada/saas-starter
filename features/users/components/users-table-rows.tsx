@@ -9,11 +9,7 @@ import {
 } from "@/shared/components/ui/avatar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
-import {
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/shared/components/ui/table";
+import { TableBody, TableCell, TableRow } from "@/shared/components/ui/table";
 import { UserRowActions } from "./user-row-actions";
 import type { AdminUser } from "@/features/users/types/admin-users.types";
 
@@ -69,7 +65,9 @@ export function UsersTableRows({
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="truncate font-medium">{user.name || "No name"}</p>
+                  <p className="truncate font-medium">
+                    {user.name || "No name"}
+                  </p>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <span className="truncate">{user.email}</span>
                     <Button
@@ -118,4 +116,3 @@ export function UsersTableRows({
     </TableBody>
   );
 }
-

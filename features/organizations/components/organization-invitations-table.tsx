@@ -1,34 +1,33 @@
-"use client";
+'use client'
 
-import { useActionState, useEffect } from "react";
-import { format, parseISO } from "date-fns";
-import { Mail, MoreVertical, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from 'react'
+import { format, parseISO } from 'date-fns'
+import { Mail, MoreVertical, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 import {
-  type CancelOrganizationInvitationActionState,
-  type ResendOrganizationInvitationActionState,
   cancelOrganizationInvitationAction,
   resendOrganizationInvitationAction,
-} from "@/features/organizations/actions/organization-owner.actions";
-import type { OrganizationInvitationView } from "@/features/organizations/types/membership.types";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent } from "@/shared/components/ui/card";
+  type CancelOrganizationInvitationActionState,
+  type ResendOrganizationInvitationActionState,
+} from '@/features/organizations/actions/organization-owner.actions'
+import type { OrganizationInvitationView } from '@/features/organizations/types/membership.types'
+import { Badge } from '@/shared/components/ui/badge'
+import { Button } from '@/shared/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from '@/shared/components/ui/dropdown-menu'
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/shared/components/ui/empty";
+} from '@/shared/components/ui/empty'
 import {
   Table,
   TableBody,
@@ -36,110 +35,110 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/components/ui/table";
+} from '@/shared/components/ui/table'
 
 type OrganizationInvitationsTableProps = {
-  canManageInvitations: boolean;
-  invitations: OrganizationInvitationView[];
-};
+  canManageInvitations: boolean
+  invitations: OrganizationInvitationView[]
+}
 
 function formatDate(value?: string | null) {
   if (!value) {
-    return "Pending";
+    return 'Pending'
   }
 
-  return format(parseISO(value), "MMM d, yyyy");
+  return format(parseISO(value), 'MMM d, yyyy')
 }
 
 function InvitationActions({
   invitation,
   canManageInvitations,
 }: {
-  invitation: OrganizationInvitationView;
-  canManageInvitations: boolean;
+  invitation: OrganizationInvitationView
+  canManageInvitations: boolean
 }) {
-  const router = useRouter();
+  const router = useRouter()
   const [resendState, resendAction, isResending] = useActionState<
     ResendOrganizationInvitationActionState,
     FormData
-  >(resendOrganizationInvitationAction, {});
+  >(resendOrganizationInvitationAction, {})
   const [cancelState, cancelAction, isCanceling] = useActionState<
     CancelOrganizationInvitationActionState,
     FormData
-  >(cancelOrganizationInvitationAction, {});
+  >(cancelOrganizationInvitationAction, {})
 
   useEffect(() => {
-    if (resendState.refreshKey || cancelState.refreshKey) {
-      router.refresh();
+    if (resendState.error) {
+      toast.error(resendState.error)
     }
-  }, [cancelState.refreshKey, resendState.refreshKey, router]);
 
-  const feedback =
-    cancelState.error ||
-    cancelState.success ||
-    resendState.error ||
-    resendState.success;
-  const isError = Boolean(cancelState.error || resendState.error);
+    if (cancelState.error) {
+      toast.error(cancelState.error)
+    }
 
-  useToastMessage(feedback, {
-    kind: isError ? "error" : "success",
-    trigger: feedback,
-  });
+    if (resendState.success) {
+      toast.success(resendState.success)
+    }
+
+    if (cancelState.success) {
+      toast.success(cancelState.success)
+    }
+
+    if (resendState.refreshKey || cancelState.refreshKey) {
+      router.refresh()
+    }
+  }, [
+    cancelState.error,
+    cancelState.refreshKey,
+    cancelState.success,
+    resendState.error,
+    resendState.refreshKey,
+    resendState.success,
+    router,
+  ])
+
+  if (!canManageInvitations) {
+    return null
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-9">
-          <MoreVertical className="size-4" />
-          <span className="sr-only">Open invitation actions</span>
+        <Button variant='ghost' size='icon' className='size-9'>
+          <MoreVertical className='size-4' />
+          <span className='sr-only'>Open invitation actions</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {canManageInvitations ? (
-          <>
-            <DropdownMenuItem asChild>
-              <form action={resendAction} className="w-full">
-                <input
-                  type="hidden"
-                  name="invitationId"
-                  value={invitation.id}
-                />
-                <button
-                  type="submit"
-                  className="flex w-full items-center gap-2 text-left"
-                  disabled={isResending}
-                >
-                  <Mail className="size-4" />
-                  {isResending ? "Resending..." : "Resend invite"}
-                </button>
-              </form>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <form action={cancelAction} className="w-full">
-                <input
-                  type="hidden"
-                  name="invitationId"
-                  value={invitation.id}
-                />
-                <button
-                  type="submit"
-                  className="flex w-full items-center gap-2 text-left"
-                  disabled={isCanceling}
-                >
-                  <X className="size-4" />
-                  {isCanceling ? "Canceling..." : "Cancel invite"}
-                </button>
-              </form>
-            </DropdownMenuItem>
-          </>
-        ) : (
-          <DropdownMenuItem disabled>
-            Only owners can manage invitations
-          </DropdownMenuItem>
-        )}
+      <DropdownMenuContent align='end'>
+        <DropdownMenuItem asChild>
+          <form action={resendAction} className='w-full'>
+            <input type='hidden' name='invitationId' value={invitation.id} />
+            <button
+              type='submit'
+              className='flex w-full items-center gap-2 text-left'
+              disabled={isResending}
+            >
+              <Mail className='size-4' />
+              {isResending ? 'Resending...' : 'Resend invite'}
+            </button>
+          </form>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <form action={cancelAction} className='w-full'>
+            <input type='hidden' name='invitationId' value={invitation.id} />
+            <button
+              type='submit'
+              className='flex w-full items-center gap-2 text-left'
+              disabled={isCanceling}
+            >
+              <X className='size-4' />
+              {isCanceling ? 'Canceling...' : 'Cancel invite'}
+            </button>
+          </form>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
 
 export function OrganizationInvitationsTable({
@@ -147,14 +146,14 @@ export function OrganizationInvitationsTable({
   invitations,
 }: OrganizationInvitationsTableProps) {
   return (
-    <div className="rounded-md border p-0.5">
+    <div className='rounded-md border p-0.5'>
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Email</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Expires</TableHead>
-            <TableHead className="w-16 text-right" />
+            {canManageInvitations ? <TableHead className='w-16 text-right' /> : null}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -163,26 +162,28 @@ export function OrganizationInvitationsTable({
               <TableRow key={invitation.id}>
                 <TableCell>{invitation.email}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">Pending</Badge>
+                  <Badge variant='outline'>Pending</Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className='text-muted-foreground'>
                   {formatDate(invitation.expiresAt)}
                 </TableCell>
-                <TableCell className="text-right">
-                  <InvitationActions
-                    invitation={invitation}
-                    canManageInvitations={canManageInvitations}
-                  />
-                </TableCell>
+                {canManageInvitations ? (
+                  <TableCell className='text-right'>
+                    <InvitationActions
+                      invitation={invitation}
+                      canManageInvitations={canManageInvitations}
+                    />
+                  </TableCell>
+                ) : null}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4}>
-                <Empty className="border-0 p-0">
+              <TableCell colSpan={canManageInvitations ? 4 : 3}>
+                <Empty className='border-0 p-0'>
                   <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <Mail className="size-6" />
+                    <EmptyMedia variant='icon'>
+                      <Mail className='size-6' />
                     </EmptyMedia>
                     <EmptyTitle>No pending invitations</EmptyTitle>
                     <EmptyDescription>
@@ -196,8 +197,5 @@ export function OrganizationInvitationsTable({
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }
-
-
-

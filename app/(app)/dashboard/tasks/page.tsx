@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
-import { TasksPageClient } from "@/features/tasks/components/tasks-page-client";
+import { TasksPage } from "@/features/tasks/components/tasks-page";
 import {
   buildTasksTableHref,
   parseTaskTableSearchParams,
-} from "@/features/tasks/schemas/task-table-params";
+} from "@/features/tasks/task-schemas";
 import { getTasksPage } from "@/features/tasks/server/get-tasks-page";
 import { routes } from "@/shared/constants/routes";
 
@@ -27,6 +27,5 @@ export default async function DashboardTasksPage({
     );
   }
 
-  return <TasksPageClient tasksPage={tasksPage} />;
+  return <TasksPage tasksPage={tasksPage} />;
 }
-

@@ -20,13 +20,11 @@ export function DashboardSidebar() {
         <NavUser />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          {navGroups.map((group) => (
-            <NavGroup key={group.title} {...group}>
-              <NavAssistant />
-            </NavGroup>
-          ))}
-        </SidebarGroup>
+        {navGroups.map((group) => (
+          <NavGroup key={group.title} {...group}>
+            <NavAssistant />
+          </NavGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   );

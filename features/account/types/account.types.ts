@@ -1,10 +1,8 @@
+import type { DeleteAccountInput } from "@/features/account/schemas/account.schema";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
-import type { DeleteAccountInput } from "@/features/account/schemas/account.schema";
 
-export type DeleteAccountValues = DeleteAccountInput;
-
-export type DeleteAccountActionState = FormActionState<DeleteAccountValues>;
+export type DeleteAccountActionState = FormActionState<DeleteAccountInput>;
 
 export type UpdateAccountValues = {
   name: string;
@@ -13,22 +11,20 @@ export type UpdateAccountValues = {
 
 export type UpdateAccountActionState = FormActionState<UpdateAccountValues>;
 
-export type LinkedAccountsValues = {
+export type LinkedAccountsActionState = FormActionState<{
   provider: OAuthProviderId;
-};
+}>;
 
-export type LinkedAccountsActionState = FormActionState<LinkedAccountsValues>;
+export type LinkedProviderOverview = {
+  provider: OAuthProviderId;
+  linkedAt: Date | null;
+  isLinked: boolean;
+  canUnlink: boolean;
+};
 
 export type SecuritySettingsFeedback = {
   error?: string;
   success?: string;
-};
-
-export type LinkedProviderOverview = {
-  provider: OAuthProviderId;
-  linkedAt: string | null;
-  isLinked: boolean;
-  canUnlink: boolean;
 };
 
 export type SecuritySettingsActionState = FormActionState;

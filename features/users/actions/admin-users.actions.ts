@@ -9,17 +9,17 @@ import { listAdminUsers } from "@/features/users/server/list-admin-users";
 import type { ListAdminUsersQuery } from "@/features/users/types/admin-users.types";
 import { auth } from "@/shared/lib/auth/auth-config";
 
-function revalidateAdminPaths() {
+function revalidateAdminUsersPage() {
   revalidatePath("/admin");
   revalidatePath("/admin/users");
 }
 
-export async function listUsersAction(query: ListAdminUsersQuery) {
+export async function listAdminUsersAction(query: ListAdminUsersQuery) {
   await requireAdminAction();
   return listAdminUsers(query);
 }
 
-export async function getUserDetailAction(userId: string) {
+export async function getAdminUserDetailAction(userId: string) {
   await requireAdminAction();
   return getAdminUserDetail(userId);
 }
@@ -44,7 +44,7 @@ export async function banUserAction(
     headers: await headers(),
   });
 
-  revalidateAdminPaths();
+  revalidateAdminUsersPage();
 }
 
 export async function unbanUserAction(userId: string) {
@@ -55,7 +55,7 @@ export async function unbanUserAction(userId: string) {
     headers: await headers(),
   });
 
-  revalidateAdminPaths();
+  revalidateAdminUsersPage();
 }
 
 export async function removeUserAction(userId: string) {
@@ -70,7 +70,7 @@ export async function removeUserAction(userId: string) {
     headers: await headers(),
   });
 
-  revalidateAdminPaths();
+  revalidateAdminUsersPage();
 }
 
 export async function setUserRoleAction(
@@ -88,7 +88,7 @@ export async function setUserRoleAction(
     headers: await headers(),
   });
 
-  revalidateAdminPaths();
+  revalidateAdminUsersPage();
 }
 
 export async function revokeUserSessionAction(sessionToken: string) {
@@ -99,7 +99,7 @@ export async function revokeUserSessionAction(sessionToken: string) {
     headers: await headers(),
   });
 
-  revalidateAdminPaths();
+  revalidateAdminUsersPage();
 }
 
 export async function revokeAllUserSessionsAction(userId: string) {
@@ -114,5 +114,5 @@ export async function revokeAllUserSessionsAction(userId: string) {
     headers: await headers(),
   });
 
-  revalidateAdminPaths();
+  revalidateAdminUsersPage();
 }

@@ -13,9 +13,7 @@ export const unlinkAuthProviderAction = validatedAuthenticatedAction<
 >(
   unlinkAuthProviderSchema,
   async ({ provider }) => {
-    const result = await unlinkOAuthAccountForUser({
-      provider,
-    });
+    const result = await unlinkOAuthAccountForUser({ provider });
 
     if (result.status === "blocked") {
       return {

@@ -1,169 +1,244 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
-import { Button } from "@/shared/components/ui/button";
+import { useEffect, useState, type ReactNode } from 'react'
+import Link from 'next/link'
+import { AlertCircle, CheckCircle2, XCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+
+import { authClient } from '@/shared/lib/auth/auth-client'
+import { Button } from '@/shared/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { useAcceptOrganizationInvitation } from "@/features/organizations/data/accept-organization-invitation";
-import { useOrganizationInvitation } from "@/features/organizations/data/organization-invitation-query";
-import { useRejectOrganizationInvitation } from "@/features/organizations/data/reject-organization-invitation";
-import { routes } from "@/shared/constants/routes";
+} from '@/shared/components/ui/card'
+import { routes } from '@/shared/constants/routes'
 
 type OrganizationInvitationPageProps = {
-  invitationId: string;
-};
+  invitationId: string
+}
+
+type OrganizationInvitation = Awaited<
+  ReturnType<typeof authClient.organization.getInvitation>
+>['data']
 
 export function OrganizationInvitationPage({
   invitationId,
 }: OrganizationInvitationPageProps) {
-  const router = useRouter();
-  const invitation = useOrganizationInvitation(invitationId);
-  const acceptInvitation = useAcceptOrganizationInvitation();
-  const rejectInvitation = useRejectOrganizationInvitation();
+  const router = useRouter()
+  const [invitation, setInvitation] = useState<OrganizationInvitation>(null)
+  const [isLoadingInvitation, setIsLoadingInvitation] = useState(true)
+  const [isAccepting, setIsAccepting] = useState(false)
+  const [isRejecting, setIsRejecting] = useState(false)
 
-  useToastMessage(acceptInvitation.error, { kind: "error" });
-  useToastMessage(rejectInvitation.error, { kind: "error" });
+  useEffect(() => {
+    let ignore = false
 
-  async function handleAccept() {
-    await acceptInvitation.mutate({ invitationId });
-    router.replace(routes.app.dashboard);
+    async function loadInvitation() {
+      try {
+        setIsLoadingInvitation(true)
+
+        const { data, error } = await authClient.organization.getInvitation({
+          query: { id: invitationId },
+        })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        if (!ignore) {
+          setInvitation(data ?? null)
+        }
+      } catch {
+        if (!ignore) {
+          setInvitation(null)
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoadingInvitation(false)
+        }
+      }
+    }
+
+    void loadInvitation()
+
+    return () => {
+      ignore = true
+    }
+  }, [invitationId])
+
+  async function acceptInvitation() {
+    try {
+      setIsAccepting(true)
+
+      const { error } = await authClient.organization.acceptInvitation({
+        invitationId,
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      router.replace(routes.app.dashboard)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to accept invitation',
+      )
+    } finally {
+      setIsAccepting(false)
+    }
   }
 
-  async function handleReject() {
-    await rejectInvitation.mutate({ invitationId });
-    router.replace(routes.app.dashboard);
+  async function rejectInvitation() {
+    try {
+      setIsRejecting(true)
+
+      const { error } = await authClient.organization.rejectInvitation({
+        invitationId,
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      router.replace(routes.app.dashboard)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to decline invitation',
+      )
+    } finally {
+      setIsRejecting(false)
+    }
   }
 
-  if (invitation.isPending) {
-    return <InvitationShell title="Loading invitation" description="Checking invitation details..." />;
-  }
-
-  if (!invitation.data || invitation.error) {
+  if (isLoadingInvitation) {
     return (
-      <InvitationShell
-        title="Invitation unavailable"
-        description="This invitation is invalid, expired, or no longer accessible."
-        icon={<AlertCircle className="h-8 w-8 text-destructive" />}
-      >
-        <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Ask the sender to issue a new invitation if you still need access.
-          </p>
-          <Button asChild variant="outline" className="w-full">
-            <Link href={routes.app.dashboard}>Go to dashboard</Link>
-          </Button>
-        </div>
-      </InvitationShell>
-    );
+      <InvitationCard
+        title='Loading invitation'
+        description='Checking invitation details...'
+      />
+    )
   }
 
-  if (invitation.data.status === "accepted") {
+  if (!invitation) {
     return (
-      <InvitationShell
-        title="Invitation accepted"
-        description={`You're already a member of ${invitation.data.organizationName}.`}
-        icon={<CheckCircle2 className="h-8 w-8 text-green-600" />}
+      <InvitationCard
+        title='Invitation unavailable'
+        description='This invitation is invalid, expired, or no longer accessible.'
+        icon={<AlertCircle className='h-8 w-8 text-destructive' />}
       >
-        <Button asChild className="w-full">
-          <Link href={routes.app.dashboard}>Open dashboard</Link>
-        </Button>
-      </InvitationShell>
-    );
-  }
-
-  if (invitation.data.status === "rejected") {
-    return (
-      <InvitationShell
-        title="Invitation declined"
-        description={`You already declined the invitation to ${invitation.data.organizationName}.`}
-        icon={<XCircle className="h-8 w-8 text-destructive" />}
-      >
-        <Button asChild variant="outline" className="w-full">
+        <p className='text-sm text-muted-foreground'>
+          Ask the sender to issue a new invitation if you still need access.
+        </p>
+        <Button asChild variant='outline' className='w-full'>
           <Link href={routes.app.dashboard}>Go to dashboard</Link>
         </Button>
-      </InvitationShell>
-    );
+      </InvitationCard>
+    )
   }
 
-  return (
-    <InvitationShell
-      title="Organization invitation"
-      description={`Join ${invitation.data.organizationName} as ${invitation.data.role}.`}
-    >
-      <div className="space-y-4">
-        <div className="rounded-lg border p-4 text-sm">
-          <p>
-            <strong>{invitation.data.inviterEmail}</strong> invited you to join{" "}
-            <strong>{invitation.data.organizationName}</strong>.
-          </p>
-          <p className="mt-2 text-muted-foreground">
-            This invitation was sent to <strong>{invitation.data.email}</strong>.
-          </p>
-        </div>
+  if (invitation.status === 'accepted') {
+    return (
+      <InvitationCard
+        title='Invitation accepted'
+        description={`You're already a member of ${invitation.organizationName}.`}
+        icon={<CheckCircle2 className='h-8 w-8 text-green-600' />}
+      >
+        <Button asChild className='w-full'>
+          <Link href={routes.app.dashboard}>Open dashboard</Link>
+        </Button>
+      </InvitationCard>
+    )
+  }
 
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            disabled={rejectInvitation.isPending || acceptInvitation.isPending}
-            onClick={() => {
-              void handleReject();
-            }}
-          >
-            {rejectInvitation.isPending ? "Declining..." : "Decline"}
-          </Button>
-          <Button
-            type="button"
-            className="flex-1"
-            disabled={acceptInvitation.isPending || rejectInvitation.isPending}
-            onClick={() => {
-              void handleAccept();
-            }}
-          >
-            {acceptInvitation.isPending ? "Accepting..." : "Accept invitation"}
-          </Button>
-        </div>
+  if (invitation.status === 'rejected') {
+    return (
+      <InvitationCard
+        title='Invitation declined'
+        description={`You already declined the invitation to ${invitation.organizationName}.`}
+        icon={<XCircle className='h-8 w-8 text-destructive' />}
+      >
+        <Button asChild variant='outline' className='w-full'>
+          <Link href={routes.app.dashboard}>Go to dashboard</Link>
+        </Button>
+      </InvitationCard>
+    )
+  }
+
+  const isSubmitting = isAccepting || isRejecting
+
+  return (
+    <InvitationCard
+      title='Organization invitation'
+      description={`Join ${invitation.organizationName} as ${invitation.role}.`}
+    >
+      <div className='rounded-lg border p-4 text-sm'>
+        <p>
+          <strong>{invitation.inviterEmail}</strong> invited you to join{' '}
+          <strong>{invitation.organizationName}</strong>.
+        </p>
+        <p className='mt-2 text-muted-foreground'>
+          This invitation was sent to <strong>{invitation.email}</strong>.
+        </p>
       </div>
-    </InvitationShell>
-  );
+
+      <div className='flex gap-3'>
+        <Button
+          type='button'
+          variant='outline'
+          className='flex-1'
+          disabled={isSubmitting}
+          onClick={() => {
+            void rejectInvitation()
+          }}
+        >
+          {isRejecting ? 'Declining...' : 'Decline'}
+        </Button>
+        <Button
+          type='button'
+          className='flex-1'
+          disabled={isSubmitting}
+          onClick={() => {
+            void acceptInvitation()
+          }}
+        >
+          {isAccepting ? 'Accepting...' : 'Accept invitation'}
+        </Button>
+      </div>
+    </InvitationCard>
+  )
 }
 
-function InvitationShell({
+type InvitationCardProps = {
+  title: string
+  description: string
+  children?: ReactNode
+  icon?: ReactNode
+}
+
+function InvitationCard({
   title,
   description,
   children,
   icon,
-}: {
-  title: string;
-  description: string;
-  children?: React.ReactNode;
-  icon?: React.ReactNode;
-}) {
+}: InvitationCardProps) {
   return (
-    <div className="flex min-h-[70vh] items-center justify-center">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-4">
+    <div className='flex min-h-[70vh] items-center justify-center'>
+      <Card className='w-full max-w-md'>
+        <CardHeader className='space-y-4'>
           {icon ? <div>{icon}</div> : null}
-          <div className="space-y-2">
+          <div className='space-y-2'>
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
         </CardHeader>
-        {children ? <CardContent>{children}</CardContent> : null}
-        {!children ? <CardFooter /> : null}
+        {children ? (
+          <CardContent className='space-y-4'>{children}</CardContent>
+        ) : null}
       </Card>
     </div>
-  );
+  )
 }
-
-

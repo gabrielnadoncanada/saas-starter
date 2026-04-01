@@ -1,56 +1,67 @@
-import { db } from "@/shared/lib/db/prisma";
 import { auth } from "@/shared/lib/auth/auth-config";
-import { getAccountDeletionBlocker } from "@/features/account/server/account-deletion-policy";
+import { db } from "@/shared/lib/db/prisma";
+import { getAccountDeletionBlocker } from "@/features/account/server/get-account-deletion-blocker";
 
-export type DeleteAccountUser = {
-  id: string;
-  email: string;
+type DeleteAccountParams = {
+  userId: string;
+  userEmail: string;
+  requestHeaders: Headers;
 };
 
-export async function deleteAccount(user: DeleteAccountUser, reqHeaders: Headers) {
-  const blocker = await getAccountDeletionBlocker(user.id);
+export async function deleteAccount({
+  userId,
+  userEmail,
+  requestHeaders,
+}: DeleteAccountParams) {
+  const blocker = await getAccountDeletionBlocker(userId);
 
   if (blocker) {
     return { error: blocker };
   }
 
-  const orgs = await auth.api.listOrganizations({ headers: reqHeaders });
+  const organizations = await auth.api.listOrganizations({
+    headers: requestHeaders,
+  });
 
-  for (const org of orgs ?? []) {
+  for (const organization of organizations ?? []) {
     await auth.api.leaveOrganization({
-      headers: reqHeaders,
-      body: { organizationId: org.id },
+      headers: requestHeaders,
+      body: {
+        organizationId: organization.id,
+      },
     });
   }
 
   await db.$transaction(async (tx) => {
     await tx.user.update({
-      where: { id: user.id },
+      where: { id: userId },
       data: {
         deletedAt: new Date(),
-        email: `${user.email}-${user.id}-deleted`,
+        email: `${userEmail}-${userId}-deleted`,
         image: null,
       },
     });
 
     await tx.account.deleteMany({
-      where: { userId: user.id },
+      where: { userId },
     });
 
     await tx.session.deleteMany({
-      where: { userId: user.id },
+      where: { userId },
     });
 
     await tx.invitation.updateMany({
       where: {
-        inviterId: user.id,
+        inviterId: userId,
         status: "pending",
       },
-      data: { status: "canceled" },
+      data: {
+        status: "canceled",
+      },
     });
   });
 
-  return { success: "Account deleted successfully." };
+  return {
+    success: "Account deleted successfully.",
+  };
 }
-
-

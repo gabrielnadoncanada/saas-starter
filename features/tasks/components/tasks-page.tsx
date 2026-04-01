@@ -1,15 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Plus } from "lucide-react";
-
-import type { TaskTableSearchParams } from "@/features/tasks/schemas/task-table-params";
 import type { Task } from "@prisma/client";
-import { TaskCreateDrawer } from "@/features/tasks/components/task-create-drawer";
-import { TaskUpdateDrawer } from "@/features/tasks/components/task-update-drawer";
-import { TasksDeleteDialog } from "@/features/tasks/components/tasks-delete-dialog";
+import { Plus } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { TaskDeleteDialog } from "@/features/tasks/components/task-delete-dialog";
+import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
 import { TasksTable } from "@/features/tasks/components/tasks-table";
-import { Button } from "@/shared/components/ui/button";
+import type { TaskTableSearchParams } from "@/features/tasks/task-schemas";
 import {
   Page,
   PageDescription,
@@ -17,10 +15,11 @@ import {
   PageHeaderActions,
   PageTitle,
 } from "@/shared/components/layout/page-layout";
+import { Button } from "@/shared/components/ui/button";
 
-type TasksDialogType = "create" | "update" | "delete";
+type TasksDialog = "create" | "update" | "delete" | null;
 
-type TasksPageClientProps = {
+type TasksPageProps = {
   tasksPage: TaskTableSearchParams & {
     rows: Task[];
     rowCount: number;
@@ -28,8 +27,8 @@ type TasksPageClientProps = {
   };
 };
 
-export function TasksPageClient({ tasksPage }: TasksPageClientProps) {
-  const [dialog, setDialog] = useState<TasksDialogType | null>(null);
+export function TasksPage({ tasksPage }: TasksPageProps) {
+  const [dialog, setDialog] = useState<TasksDialog>(null);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const clearTaskTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -37,15 +36,19 @@ export function TasksPageClient({ tasksPage }: TasksPageClientProps) {
 
   useEffect(() => {
     return () => {
-      if (clearTaskTimeoutRef.current)
+      if (clearTaskTimeoutRef.current) {
         clearTimeout(clearTaskTimeoutRef.current);
+      }
     };
   }, []);
 
   const closeDialog = useCallback(() => {
     setDialog(null);
-    if (clearTaskTimeoutRef.current)
+
+    if (clearTaskTimeoutRef.current) {
       clearTimeout(clearTaskTimeoutRef.current);
+    }
+
     clearTaskTimeoutRef.current = setTimeout(() => {
       setCurrentTask(null);
       clearTaskTimeoutRef.current = null;
@@ -53,20 +56,23 @@ export function TasksPageClient({ tasksPage }: TasksPageClientProps) {
   }, []);
 
   const openDialog = useCallback(
-    (type: TasksDialogType, task: Task | null = null) => {
+    (nextDialog: Exclude<TasksDialog, null>, task: Task | null = null) => {
       if (clearTaskTimeoutRef.current) {
         clearTimeout(clearTaskTimeoutRef.current);
         clearTaskTimeoutRef.current = null;
       }
+
       setCurrentTask(task);
-      setDialog(type);
+      setDialog(nextDialog);
     },
     [],
   );
 
   const handleDialogOpenChange = useCallback(
     (open: boolean) => {
-      if (!open) closeDialog();
+      if (!open) {
+        closeDialog();
+      }
     },
     [closeDialog],
   );
@@ -80,15 +86,13 @@ export function TasksPageClient({ tasksPage }: TasksPageClientProps) {
             Here&apos;s a list of your tasks for this month!
           </PageDescription>
           <PageHeaderActions>
-            <Button
-              className="space-x-1"
-              onClick={() => openDialog("create")}
-            >
+            <Button className="space-x-1" onClick={() => openDialog("create")}>
               <span>Create</span>
               <Plus size={18} />
             </Button>
           </PageHeaderActions>
         </PageHeader>
+
         <TasksTable
           tasksPage={tasksPage}
           onEditTask={(task) => openDialog("update", task)}
@@ -96,25 +100,28 @@ export function TasksPageClient({ tasksPage }: TasksPageClientProps) {
         />
       </Page>
 
-      <TaskCreateDrawer
+      <TaskFormSheet
+        mode="create"
         open={dialog === "create"}
         onOpenChange={handleDialogOpenChange}
       />
-      {currentTask && (
-        <TaskUpdateDrawer
-          key={currentTask.id}
+
+      {currentTask ? (
+        <TaskFormSheet
+          mode="update"
           task={currentTask}
           open={dialog === "update"}
           onOpenChange={handleDialogOpenChange}
         />
-      )}
-      {currentTask && (
-        <TasksDeleteDialog
+      ) : null}
+
+      {currentTask ? (
+        <TaskDeleteDialog
           task={currentTask}
           open={dialog === "delete"}
           onOpenChange={handleDialogOpenChange}
         />
-      )}
+      ) : null}
     </>
   );
 }

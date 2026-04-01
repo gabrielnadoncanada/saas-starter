@@ -1,14 +1,14 @@
-import type { FormActionState } from '@/shared/types/form-action-state';
+import type { Task } from "@prisma/client";
+import { z } from "zod";
 
-import type {
+import {
   bulkDeleteTasksSchema,
   bulkUpdateTaskStatusSchema,
   createTaskSchema,
   deleteTaskSchema,
   updateTaskSchema,
-} from '../schemas/task.schema';
-import type { Task } from '@prisma/client';
-import type { z } from 'zod';
+} from "@/features/tasks/task-schemas";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
 type CreateTaskValues = z.infer<typeof createTaskSchema>;
 type UpdateTaskValues = z.infer<typeof updateTaskSchema>;
@@ -33,6 +33,6 @@ export type BulkDeleteTasksActionState =
 
 export type BulkUpdateTaskStatusActionState =
   FormActionState<BulkUpdateTaskStatusValues> & {
-    status?: Task['status'];
+    status?: Task["status"];
     taskIds?: number[];
   };

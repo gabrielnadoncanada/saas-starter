@@ -1,25 +1,26 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-
-import { deleteTaskAction } from "@/features/tasks/actions/task.actions";
-import type { DeleteTaskActionState } from "@/features/tasks/types/task-action.types";
 import type { Task } from "@prisma/client";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
-import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef } from "react";
 
-type TasksDeleteDialogProps = {
+import { deleteTaskAction } from "@/features/tasks/server/task-actions";
+import { DeleteTaskActionState } from "@/features/tasks/server/task-action-state";
+
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
+
+type TaskDeleteDialogProps = {
   task: Task;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export function TasksDeleteDialog({
+export function TaskDeleteDialog({
   task,
   open,
   onOpenChange,
-}: TasksDeleteDialogProps) {
+}: TaskDeleteDialogProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState<
@@ -27,7 +28,11 @@ export function TasksDeleteDialog({
     FormData
   >(deleteTaskAction, {});
 
-  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.error, {
+    kind: "error",
+    skip: Boolean(state.fieldErrors),
+    trigger: state,
+  });
   useToastMessage(state.success, { kind: "success", trigger: state });
 
   useEffect(() => {
