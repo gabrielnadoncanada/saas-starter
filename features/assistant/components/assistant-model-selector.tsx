@@ -1,5 +1,8 @@
 "use client";
 
+import { CheckIcon } from "lucide-react";
+
+import { assistantModels } from "@/features/assistant/models";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -13,8 +16,6 @@ import {
   ModelSelectorTrigger,
 } from "@/shared/components/ai-elements/model-selector";
 import { PromptInputButton } from "@/shared/components/ai-elements/prompt-input";
-import { assistantModels } from "@/features/assistant/models";
-import { CheckIcon } from "lucide-react";
 
 type AssistantModelSelectorProps = {
   modelId: string;

@@ -5,11 +5,13 @@ import {
   listAssistantConversations,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/conversations";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 
-function getScopeErrorResponse(scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>) {
+function getScopeErrorResponse(
+  scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,
+) {
   if (scope.kind === "unauthorized") {
     return new Response("Unauthorized", { status: 401 });
   }
@@ -64,7 +66,7 @@ export async function POST(req: Request) {
   if (!Array.isArray(body.messages) || body.messages.length === 0) {
     return Response.json(
       { error: "Conversation messages are required." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

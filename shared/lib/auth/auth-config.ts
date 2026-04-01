@@ -1,17 +1,18 @@
-import { createElement } from "react";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { nextCookies } from "better-auth/next-js";
 import { admin, magicLink } from "better-auth/plugins";
 import { organization } from "better-auth/plugins";
-import { nextCookies } from "better-auth/next-js";
+import { createElement } from "react";
+
 import { accountFlags } from "@/shared/config/account.config";
 import { PLATFORM_ADMIN_ROLES } from "@/shared/lib/auth/roles";
 import { db } from "@/shared/lib/db/prisma";
 import { sendEmail } from "@/shared/lib/email/client";
-import { VerifyEmailTemplate } from "@/shared/lib/email/templates/verify-email";
-import { ResetPasswordTemplate } from "@/shared/lib/email/templates/reset-password";
-import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
 import { sendTeamInvitationEmail } from "@/shared/lib/email/senders";
+import { MagicLinkEmail } from "@/shared/lib/email/templates/magic-link";
+import { ResetPasswordTemplate } from "@/shared/lib/email/templates/reset-password";
+import { VerifyEmailTemplate } from "@/shared/lib/email/templates/verify-email";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -22,6 +23,11 @@ export const auth = betterAuth({
   basePath: "/api/auth",
   user: {
     additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        returned: true,
+      },
       phoneNumber: {
         type: "string",
         required: false,
@@ -37,9 +43,9 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
         to: [user.email],
-        subject: "Réinitialisez votre mot de passe",
+        subject: "Reset your password",
         react: createElement(ResetPasswordTemplate, { resetUrl: url }),
-        text: `Réinitialisez votre mot de passe : ${url}`,
+        text: `Reset your password: ${url}`,
         tags: [{ name: "email_type", value: "reset_password" }],
       });
     },
@@ -51,9 +57,9 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: [user.email],
-        subject: "Confirmez votre adresse email",
+        subject: "Verify your email address",
         react: createElement(VerifyEmailTemplate, { verificationUrl: url }),
-        text: `Confirmez votre adresse email : ${url}`,
+        text: `Verify your email address: ${url}`,
         tags: [{ name: "email_type", value: "verify_email" }],
       });
     },
@@ -99,9 +105,9 @@ export const auth = betterAuth({
       sendMagicLink: async ({ email, url }) => {
         await sendEmail({
           to: [email],
-          subject: "Votre lien de connexion",
+          subject: "Your sign-in link",
           react: createElement(MagicLinkEmail, { url }),
-          text: `Votre lien de connexion : ${url}`,
+          text: `Your sign-in link: ${url}`,
           tags: [{ name: "email_type", value: "magic_link" }],
         });
       },
@@ -110,7 +116,11 @@ export const auth = betterAuth({
       allowUserToCreateOrganization: accountFlags.allowCreateOrganization,
       creatorRole: "owner",
       invitationExpiresIn: 7 * 24 * 60 * 60,
-      sendInvitationEmail: async ({ invitation, organization: org, inviter }) => {
+      sendInvitationEmail: async ({
+        invitation,
+        organization: org,
+        inviter,
+      }) => {
         await sendTeamInvitationEmail({
           email: invitation.email,
           role: invitation.role,
@@ -125,4 +135,3 @@ export const auth = betterAuth({
 });
 
 export type Auth = typeof auth;
-

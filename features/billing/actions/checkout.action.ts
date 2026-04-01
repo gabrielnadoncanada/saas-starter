@@ -3,17 +3,17 @@
 import { redirect } from "next/navigation";
 
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
-import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import {
   getPlanPrice,
   isBillingInterval,
   isPlanId,
 } from "@/features/billing/plans";
+import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import {
   getRequiredOrganizationMembership,
   OrganizationMembershipError,
 } from "@/features/organizations/server/get-required-organization-membership";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -35,7 +35,8 @@ export async function checkoutAction(formData: FormData) {
             billingInterval && isBillingInterval(billingInterval)
               ? billingInterval
               : null,
-          planId: planId && isPlanId(planId) && planId !== "free" ? planId : null,
+          planId:
+            planId && isPlanId(planId) && planId !== "free" ? planId : null,
           redirect: "checkout",
         }),
       ),
@@ -75,5 +76,3 @@ export async function checkoutAction(formData: FormData) {
 
   redirect(url);
 }
-
-

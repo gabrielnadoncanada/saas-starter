@@ -1,8 +1,7 @@
+import { LimitReachedError } from "../errors/limit-reached";
+import { UpgradeRequiredError } from "../errors/upgrade-required";
 import type { Capability, LimitKey, PlanId } from "../plans";
 import { getPlan } from "../plans";
-import { UpgradeRequiredError } from "../errors/upgrade-required";
-import { LimitReachedError } from "../errors/limit-reached";
-
 
 export function hasCapability(planId: PlanId, capability: Capability): boolean {
   return getPlan(planId).capabilities.includes(capability);
@@ -16,10 +15,7 @@ export function getPlanLimit(planId: PlanId, limitKey: LimitKey): number {
  * Throws UpgradeRequiredError if the plan does not include the capability.
  * Use in server actions and API routes.
  */
-export function assertCapability(
-  planId: PlanId,
-  capability: Capability,
-): void {
+export function assertCapability(planId: PlanId, capability: Capability): void {
   if (!hasCapability(planId, capability)) {
     throw new UpgradeRequiredError(capability, getPlan(planId).name);
   }
@@ -37,7 +33,12 @@ export function assertLimit(
   const limit = getPlanLimit(planId, limitKey);
 
   if (currentUsage >= limit) {
-    throw new LimitReachedError(limitKey, limit, currentUsage, getPlan(planId).name);
+    throw new LimitReachedError(
+      limitKey,
+      limit,
+      currentUsage,
+      getPlan(planId).name,
+    );
   }
 }
 

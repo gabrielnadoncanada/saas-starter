@@ -1,5 +1,6 @@
 import { Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
+
 import { EmailButton } from "./components/email-button";
 import { EmailLayout } from "./components/email-layout";
 
@@ -12,17 +13,18 @@ export function ResetPasswordTemplate({
 }: ResetPasswordTemplateProps) {
   return (
     <EmailLayout
-      preview="Réinitialisez votre mot de passe"
-      footerText="Si vous n'avez pas demandé cette réinitialisation, ignorez cet email."
+      preview="Reset your password"
+      footerText="If you did not request a password reset, you can ignore this email."
     >
-      <Heading style={heading}>Réinitialisation du mot de passe</Heading>
+      <Heading style={heading}>Reset your password</Heading>
       <Text style={paragraph}>
-        Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans 1 heure.
+        Click the button below to choose a new password. This link expires in 1
+        hour.
       </Text>
       <Section style={buttonContainer}>
-        <EmailButton href={resetUrl}>Réinitialiser mon mot de passe</EmailButton>
+        <EmailButton href={resetUrl}>Reset password</EmailButton>
       </Section>
-      <Text style={link}>Ou copiez ce lien dans votre navigateur : {resetUrl}</Text>
+      <Text style={link}>Or copy this link into your browser: {resetUrl}</Text>
     </EmailLayout>
   );
 }

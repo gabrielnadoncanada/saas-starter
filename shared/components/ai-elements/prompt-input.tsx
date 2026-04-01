@@ -1,5 +1,16 @@
 "use client";
 
+import type { ChatStatus } from "ai";
+import {
+  CornerDownLeftIcon,
+  ImageIcon,
+  Monitor,
+  PlusIcon,
+  SquareIcon,
+  XIcon,
+} from "lucide-react";
+import type { FormEvent, HTMLAttributes, KeyboardEventHandler } from "react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +25,6 @@ import {
 } from "@/shared/components/ui/input-group";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { cn } from "@/shared/lib/utils";
-import type { ChatStatus } from "ai";
-import { CornerDownLeftIcon, ImageIcon, Monitor, PlusIcon, SquareIcon, XIcon } from "lucide-react";
-import type { FormEvent, HTMLAttributes, KeyboardEventHandler } from "react";
 
 import {
   filesToAttachments,
@@ -35,7 +43,10 @@ export interface PromptInputMessage {
 type PromptInputProps = Omit<HTMLAttributes<HTMLFormElement>, "onSubmit"> & {
   globalDrop?: boolean;
   multiple?: boolean;
-  onSubmit: (message: PromptInputMessage, event: FormEvent<HTMLFormElement>) => void | Promise<void>;
+  onSubmit: (
+    message: PromptInputMessage,
+    event: FormEvent<HTMLFormElement>,
+  ) => void | Promise<void>;
 };
 
 export function PromptInput({
@@ -65,7 +76,10 @@ export function PromptInput({
       }}
       onSubmit={async (event) => {
         event.preventDefault();
-        await onSubmit({ files: state.attachments, text: state.text.trim() }, event);
+        await onSubmit(
+          { files: state.attachments, text: state.text.trim() },
+          event,
+        );
         state.clearAttachments();
         state.setInput("");
       }}
@@ -101,7 +115,10 @@ export const usePromptInputAttachments = () => {
   };
 };
 
-export const PromptInputBody = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
+export const PromptInputBody = ({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("contents", className)} {...props} />
 );
 
@@ -109,11 +126,21 @@ export const PromptInputFooter = ({
   className,
   ...props
 }: Omit<React.ComponentProps<typeof InputGroupAddon>, "align">) => (
-  <InputGroupAddon align="block-end" className={cn("justify-between gap-1", className)} {...props} />
+  <InputGroupAddon
+    align="block-end"
+    className={cn("justify-between gap-1", className)}
+    {...props}
+  />
 );
 
-export const PromptInputTools = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex min-w-0 items-center gap-1", className)} {...props} />
+export const PromptInputTools = ({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn("flex min-w-0 items-center gap-1", className)}
+    {...props}
+  />
 );
 
 export function PromptInputTextarea({
@@ -126,7 +153,12 @@ export function PromptInputTextarea({
   const state = usePromptInputState();
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
     onKeyDown?.(event);
-    if (!event.defaultPrevented && event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+    if (
+      !event.defaultPrevented &&
+      event.key === "Enter" &&
+      !event.shiftKey &&
+      !event.nativeEvent.isComposing
+    ) {
       event.preventDefault();
       event.currentTarget.form?.requestSubmit();
     }
@@ -154,33 +186,54 @@ export function PromptInputButton({
   variant = "ghost",
   ...props
 }: React.ComponentProps<typeof InputGroupButton>) {
-  return <InputGroupButton className={cn(className)} size={size ?? "icon-sm"} variant={variant} {...props} />;
+  return (
+    <InputGroupButton
+      className={cn(className)}
+      size={size ?? "icon-sm"}
+      variant={variant}
+      {...props}
+    />
+  );
 }
 
-export const PromptInputActionMenu = (props: React.ComponentProps<typeof DropdownMenu>) => (
-  <DropdownMenu {...props} />
-);
-export const PromptInputActionMenuTrigger = (props: React.ComponentProps<typeof InputGroupButton>) => (
+export const PromptInputActionMenu = (
+  props: React.ComponentProps<typeof DropdownMenu>,
+) => <DropdownMenu {...props} />;
+export const PromptInputActionMenuTrigger = (
+  props: React.ComponentProps<typeof InputGroupButton>,
+) => (
   <DropdownMenuTrigger asChild>
-    <PromptInputButton {...props}>{props.children ?? <PlusIcon className="size-4" />}</PromptInputButton>
+    <PromptInputButton {...props}>
+      {props.children ?? <PlusIcon className="size-4" />}
+    </PromptInputButton>
   </DropdownMenuTrigger>
 );
-export const PromptInputActionMenuContent = (props: React.ComponentProps<typeof DropdownMenuContent>) => (
-  <DropdownMenuContent align="start" {...props} />
-);
-export const PromptInputActionAddAttachments = ({ label = "Add files" }: { label?: string }) => {
+export const PromptInputActionMenuContent = (
+  props: React.ComponentProps<typeof DropdownMenuContent>,
+) => <DropdownMenuContent align="start" {...props} />;
+export const PromptInputActionAddAttachments = ({
+  label = "Add files",
+}: {
+  label?: string;
+}) => {
   const state = usePromptInputState();
   return (
-    <DropdownMenuItem onSelect={(event) => {
-      event.preventDefault();
-      state.openFileDialog();
-    }}>
+    <DropdownMenuItem
+      onSelect={(event) => {
+        event.preventDefault();
+        state.openFileDialog();
+      }}
+    >
       <ImageIcon className="mr-2 size-4" />
       {label}
     </DropdownMenuItem>
   );
 };
-export const PromptInputActionAddScreenshot = ({ label = "Take screenshot" }: { label?: string }) => (
+export const PromptInputActionAddScreenshot = ({
+  label = "Take screenshot",
+}: {
+  label?: string;
+}) => (
   <DropdownMenuItem disabled>
     <Monitor className="mr-2 size-4" />
     {label}
@@ -192,13 +245,21 @@ export function PromptInputSubmit({
   status,
   onStop,
   ...props
-}: React.ComponentProps<typeof InputGroupButton> & { onStop?: () => void; status?: ChatStatus }) {
+}: React.ComponentProps<typeof InputGroupButton> & {
+  onStop?: () => void;
+  status?: ChatStatus;
+}) {
   const isGenerating = status === "submitted" || status === "streaming";
   const icon =
-    status === "submitted" ? <Spinner /> :
-    status === "streaming" ? <SquareIcon className="size-4" /> :
-    status === "error" ? <XIcon className="size-4" /> :
-    <CornerDownLeftIcon className="size-4" />;
+    status === "submitted" ? (
+      <Spinner />
+    ) : status === "streaming" ? (
+      <SquareIcon className="size-4" />
+    ) : status === "error" ? (
+      <XIcon className="size-4" />
+    ) : (
+      <CornerDownLeftIcon className="size-4" />
+    );
 
   return (
     <InputGroupButton

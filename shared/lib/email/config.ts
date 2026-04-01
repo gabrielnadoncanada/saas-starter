@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = 'http://localhost:3000';
+const DEFAULT_BASE_URL = "http://localhost:3000";
 
 export type EmailConfig = {
   apiKey: string;
@@ -7,7 +7,7 @@ export type EmailConfig = {
   baseUrl: string;
 };
 
-function readRequiredEnv(name: 'RESEND_API_KEY' | 'EMAIL_FROM') {
+function readRequiredEnv(name: "RESEND_API_KEY" | "EMAIL_FROM") {
   const value = process.env[name]?.trim();
 
   if (!value) {
@@ -21,10 +21,10 @@ export function getEmailConfig(): EmailConfig {
   const replyTo = process.env.EMAIL_REPLY_TO?.trim();
 
   return {
-    apiKey: readRequiredEnv('RESEND_API_KEY'),
-    from: readRequiredEnv('EMAIL_FROM'),
+    apiKey: readRequiredEnv("RESEND_API_KEY"),
+    from: readRequiredEnv("EMAIL_FROM"),
     replyTo: replyTo ? [replyTo] : undefined,
-    baseUrl: getAppBaseUrl()
+    baseUrl: getAppBaseUrl(),
   };
 }
 

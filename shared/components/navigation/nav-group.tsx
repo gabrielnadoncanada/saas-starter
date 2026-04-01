@@ -1,10 +1,16 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { type ReactNode } from "react";
 
+import {
+  type SidebarNavCollapsible,
+  type SidebarNavGroup,
+  type SidebarNavItem,
+  type SidebarNavLink,
+} from "@/shared/components/navigation/sidebar-types";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Collapsible,
@@ -30,12 +36,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/shared/components/ui/sidebar";
-import {
-  type SidebarNavCollapsible,
-  type SidebarNavGroup,
-  type SidebarNavItem,
-  type SidebarNavLink,
-} from "@/shared/components/navigation/sidebar-types";
 
 export function NavGroup({
   title,

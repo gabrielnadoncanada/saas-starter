@@ -1,9 +1,10 @@
-import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { auth } from "@/shared/lib/auth/auth-config";
-import { isPlatformAdmin } from "@/shared/lib/auth/roles";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { redirect } from "next/navigation";
+
 import { routes } from "@/shared/constants/routes";
+import { auth } from "@/shared/lib/auth/auth-config";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 
 export async function requireAdmin() {
   const user = await getCurrentUser();

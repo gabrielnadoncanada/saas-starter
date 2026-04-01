@@ -1,16 +1,17 @@
 "use client";
 
+import { ArrowLeftIcon } from "lucide-react";
+import Link from "next/link";
+
 import { settingsSidebarData } from "@/features/settings/config/settings-navigation";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
-import { routes } from "@/shared/constants/routes";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenuButton,
 } from "@/shared/components/ui/sidebar";
-import { ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
+import { routes } from "@/shared/constants/routes";
 
 export function SettingsSidebar() {
   const groups = settingsSidebarData.navGroups;

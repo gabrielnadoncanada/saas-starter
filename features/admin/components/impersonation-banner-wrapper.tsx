@@ -1,4 +1,5 @@
 import { getAuthSession } from "@/shared/lib/auth/get-session";
+
 import { ImpersonationBanner } from "./impersonation-banner";
 
 export async function ImpersonationBannerWrapper() {

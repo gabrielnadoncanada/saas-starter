@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ChevronRight, MessageSquarePlus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ChevronRight, MessageSquarePlus, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { listAssistantConversationsRequest } from "@/features/assistant/client/conversations";
 import type { AssistantConversationListItem } from "@/features/assistant/types";
-import { routes } from "@/shared/constants/routes";
 import {
   Collapsible,
   CollapsibleContent,
@@ -29,6 +28,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/shared/components/ui/sidebar";
+import { routes } from "@/shared/constants/routes";
 
 export function NavAssistant() {
   const { state, isMobile, setOpenMobile } = useSidebar();
@@ -50,7 +50,10 @@ export function NavAssistant() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton tooltip="AI Assistant" isActive={isAssistantActive}>
+            <SidebarMenuButton
+              tooltip="AI Assistant"
+              isActive={isAssistantActive}
+            >
               <Sparkles />
               <span>AI Assistant</span>
               <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -69,9 +72,15 @@ export function NavAssistant() {
               <DropdownMenuItem key={conversation.id} asChild>
                 <Link
                   href={`${routes.app.assistant}?conversationId=${conversation.id}`}
-                  className={activeConversationId === conversation.id ? "bg-secondary" : ""}
+                  className={
+                    activeConversationId === conversation.id
+                      ? "bg-secondary"
+                      : ""
+                  }
                 >
-                  <span className="max-w-52 truncate">{conversation.title}</span>
+                  <span className="max-w-52 truncate">
+                    {conversation.title}
+                  </span>
                 </Link>
               </DropdownMenuItem>
             ))}
@@ -98,8 +107,14 @@ export function NavAssistant() {
         <CollapsibleContent className="CollapsibleContent">
           <SidebarMenuSub>
             <SidebarMenuSubItem>
-              <SidebarMenuSubButton asChild isActive={isAssistantActive && !activeConversationId}>
-                <Link href={routes.app.assistant} onClick={() => setOpenMobile(false)}>
+              <SidebarMenuSubButton
+                asChild
+                isActive={isAssistantActive && !activeConversationId}
+              >
+                <Link
+                  href={routes.app.assistant}
+                  onClick={() => setOpenMobile(false)}
+                >
                   <MessageSquarePlus />
                   <span>New Conversation</span>
                 </Link>
@@ -107,7 +122,10 @@ export function NavAssistant() {
             </SidebarMenuSubItem>
             {conversations.map((conversation) => (
               <SidebarMenuSubItem key={conversation.id}>
-                <SidebarMenuSubButton asChild isActive={activeConversationId === conversation.id}>
+                <SidebarMenuSubButton
+                  asChild
+                  isActive={activeConversationId === conversation.id}
+                >
                   <Link
                     href={`${routes.app.assistant}?conversationId=${conversation.id}`}
                     onClick={() => setOpenMobile(false)}

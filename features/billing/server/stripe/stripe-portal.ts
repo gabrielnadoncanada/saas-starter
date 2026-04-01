@@ -2,7 +2,9 @@ import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 import { stripe } from "@/shared/lib/stripe/client";
 
-export async function createOrganizationBillingPortalSession(organizationId: string) {
+export async function createOrganizationBillingPortalSession(
+  organizationId: string,
+) {
   const [organization, latestSubscription] = await Promise.all([
     db.organization.findUnique({
       where: { id: organizationId },
@@ -16,7 +18,9 @@ export async function createOrganizationBillingPortalSession(organizationId: str
   ]);
 
   const stripeCustomerId =
-    organization?.stripeCustomerId ?? latestSubscription?.stripeCustomerId ?? null;
+    organization?.stripeCustomerId ??
+    latestSubscription?.stripeCustomerId ??
+    null;
 
   if (!stripeCustomerId) {
     throw new Error("No Stripe customer exists for this organization.");

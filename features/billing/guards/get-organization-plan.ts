@@ -1,4 +1,5 @@
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+
 import type { PlanId, PricingModel } from "../plans";
 import { resolveOrganizationPlan } from "../plans";
 
@@ -14,9 +15,7 @@ type OrganizationPlanInfo = {
  * Resolves the current organization's plan from its Stripe subscription.
  * Returns null if no organization is found.
  */
-export async function getOrganizationPlan(): Promise<
-  OrganizationPlanInfo | null
-> {
+export async function getOrganizationPlan(): Promise<OrganizationPlanInfo | null> {
   const organization = await getCurrentOrganization();
 
   if (!organization) return null;
@@ -29,4 +28,3 @@ export async function getOrganizationPlan(): Promise<
     pricingModel: (organization.pricingModel as PricingModel) ?? "flat",
   };
 }
-

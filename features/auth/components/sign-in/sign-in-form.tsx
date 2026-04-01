@@ -3,15 +3,16 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+
+import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
+import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
+import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
+import { SignInPasswordStep } from "@/features/auth/components/sign-in/sign-in-password-step";
 import {
   buildCheckEmailHref,
   sendMagicLink,
   signInWithOAuth,
 } from "@/features/auth/data/auth-requests";
-import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
-import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
-import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
-import { SignInPasswordStep } from "@/features/auth/components/sign-in/sign-in-password-step";
 import { useAuthEmailStep } from "@/features/auth/hooks/use-auth-email-step";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
@@ -37,9 +38,8 @@ export function SignInForm({
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const [showVerification, setShowVerification] = useState(false);
-  const [pendingProvider, setPendingProvider] = useState<OAuthProviderId | null>(
-    null,
-  );
+  const [pendingProvider, setPendingProvider] =
+    useState<OAuthProviderId | null>(null);
   const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
   const {
     emailError,
@@ -55,7 +55,7 @@ export function SignInForm({
   });
 
   const oauthErrorMessage = error
-    ? OAUTH_ERROR_MESSAGES[error] ?? "Unable to sign in. Please try again."
+    ? (OAUTH_ERROR_MESSAGES[error] ?? "Unable to sign in. Please try again.")
     : null;
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
 

@@ -8,7 +8,11 @@ export const dashboardSidebarData: SidebarData = {
     {
       title: "General",
       items: [
-        { title: "Dashboard", url: routes.app.dashboard, icon: LayoutDashboard },
+        {
+          title: "Dashboard",
+          url: routes.app.dashboard,
+          icon: LayoutDashboard,
+        },
         { title: "Tasks", url: routes.app.tasks, icon: ListTodo },
       ],
     },

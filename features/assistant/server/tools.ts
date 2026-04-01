@@ -8,10 +8,11 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
-import { createTaskForCurrentOrganization } from "@/features/tasks/server/create-task-for-current-organization";
+import { createTaskForCurrentOrganization } from "@/features/tasks/server/task-mutations";
+
 import { emailProvider } from "./email-provider";
 import { toAssistantToolFailure } from "./tool-result";
 
@@ -45,7 +46,11 @@ export const assistantTools = {
         .optional()
         .describe("Number of recent emails to fetch (default 5)"),
     }),
-    execute: async ({ limit }: { limit?: number }): Promise<ReviewInboxToolResult> => {
+    execute: async ({
+      limit,
+    }: {
+      limit?: number;
+    }): Promise<ReviewInboxToolResult> => {
       try {
         const organizationPlan = await getToolOrganizationPlan();
         assertCapability(organizationPlan.planId, "email.sync");

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 import {
   getPricingPlans,
@@ -6,6 +7,7 @@ import {
   isPlanId,
 } from "@/features/billing/plans";
 import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
+import { Page } from "@/shared/components/layout/page-layout";
 import {
   Card,
   CardContent,
@@ -13,7 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { Page } from "@/shared/components/layout/page-layout";
 import { routes } from "@/shared/constants/routes";
 
 export default async function SettingsBillingPage() {

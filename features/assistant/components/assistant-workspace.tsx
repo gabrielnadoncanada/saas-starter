@@ -27,13 +27,16 @@ export function AssistantWorkspace({
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pendingConversationUrlRef = useRef<string | null | undefined>(undefined);
+  const pendingConversationUrlRef = useRef<string | null | undefined>(
+    undefined,
+  );
   const [chatResetKey, setChatResetKey] = useState(0);
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [selectedConversation, setSelectedConversation] =
     useState<AssistantConversation | null>(initialConversation);
-  const [selectedConversationId, setSelectedConversationId] =
-    useState<string | null>(initialConversationId);
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(initialConversationId);
 
   const replaceConversationUrl = (conversationId: string | null) => {
     pendingConversationUrlRef.current = conversationId;
@@ -101,7 +104,7 @@ export function AssistantWorkspace({
       }}
       onConversationUpdated={(conversation) => {
         setSelectedConversation((current) =>
-          current?.id === conversation.id ? conversation : current
+          current?.id === conversation.id ? conversation : current,
         );
       }}
       resetKey={chatResetKey}

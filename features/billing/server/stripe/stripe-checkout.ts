@@ -1,12 +1,13 @@
 import {
+  type BillingInterval,
   getPlan,
   getPlanPrice,
-  type BillingInterval,
   type PaidPlanId,
 } from "@/features/billing/plans";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 import { stripe } from "@/shared/lib/stripe/client";
+
 import { ensureOrganizationStripeCustomer } from "./stripe-customers";
 
 function getBooleanEnv(name: string, defaultValue = false) {
@@ -48,7 +49,16 @@ export async function createOrganizationCheckoutSession(params: {
   const currentSubscription = await db.subscription.findFirst({
     where: {
       referenceId: params.organizationId,
-      status: { in: ["active", "trialing", "past_due", "incomplete", "unpaid", "paused"] },
+      status: {
+        in: [
+          "active",
+          "trialing",
+          "past_due",
+          "incomplete",
+          "unpaid",
+          "paused",
+        ],
+      },
     },
     orderBy: { updatedAt: "desc" },
     select: { id: true },
@@ -60,7 +70,9 @@ export async function createOrganizationCheckoutSession(params: {
     );
   }
 
-  const customerId = await ensureOrganizationStripeCustomer(params.organizationId);
+  const customerId = await ensureOrganizationStripeCustomer(
+    params.organizationId,
+  );
   const settings = getCheckoutSettings();
   const quantity =
     plan.pricingModel === "per_seat" ? Math.max(1, params.seatQuantity) : 1;
@@ -69,10 +81,14 @@ export async function createOrganizationCheckoutSession(params: {
     mode: "subscription",
     customer: customerId,
     allow_promotion_codes: true,
-    billing_address_collection: settings.billingAddressRequired ? "required" : undefined,
+    billing_address_collection: settings.billingAddressRequired
+      ? "required"
+      : undefined,
     automatic_tax: settings.automaticTax ? { enabled: true } : undefined,
     tax_id_collection: settings.taxIdCollection ? { enabled: true } : undefined,
-    payment_method_collection: settings.trialWithoutCard ? "if_required" : undefined,
+    payment_method_collection: settings.trialWithoutCard
+      ? "if_required"
+      : undefined,
     client_reference_id: params.organizationId,
     line_items: [{ price: price.priceId, quantity }],
     success_url: `${process.env.BASE_URL}${routes.settings.billing}?checkout=success`,

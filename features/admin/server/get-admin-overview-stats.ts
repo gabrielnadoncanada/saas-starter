@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+
 import { auth } from "@/shared/lib/auth/auth-config";
 import { db } from "@/shared/lib/db/prisma";
 

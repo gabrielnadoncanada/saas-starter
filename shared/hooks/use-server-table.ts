@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
-  functionalUpdate,
   type ColumnDef,
   type ColumnFiltersState,
+  functionalUpdate,
+  getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   type PaginationState,
   type RowSelectionState,
   type SortingState,
   type Table,
-  type VisibilityState,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
   useReactTable,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // --- Types ---
 
@@ -120,8 +120,7 @@ export function useServerTable<TData, TParams extends BaseTableParams>({
     enableRowSelection: true,
     enableMultiSort: false,
     getRowId:
-      getRowId ??
-      ((row) => String((row as Record<string, unknown>).id)),
+      getRowId ?? ((row) => String((row as Record<string, unknown>).id)),
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: (updater) => {

@@ -6,6 +6,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+
 import { Button } from "@/shared/components/ui/button";
 
 type AdminTablePaginationProps = {
@@ -40,7 +41,10 @@ export function AdminTablePagination({
         Page {currentPage} of {totalPages}
       </span>
       <div className="flex items-center gap-1">
-        <PaginationButton disabled={offset === 0 || disabled} onClick={() => onChange(0)}>
+        <PaginationButton
+          disabled={offset === 0 || disabled}
+          onClick={() => onChange(0)}
+        >
           <ChevronsLeft className="size-4" />
         </PaginationButton>
         <PaginationButton

@@ -21,11 +21,15 @@ export async function listAssistantConversationsRequest() {
 }
 
 export async function fetchAssistantConversation(conversationId: string) {
-  const response = await fetch(`/api/assistant/conversations/${conversationId}`);
+  const response = await fetch(
+    `/api/assistant/conversations/${conversationId}`,
+  );
   return parseConversationResponse<AssistantConversation>(response);
 }
 
-export async function createAssistantConversationRequest(messages: UIMessage[]) {
+export async function createAssistantConversationRequest(
+  messages: UIMessage[],
+) {
   const response = await fetch("/api/assistant/conversations", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,21 +41,29 @@ export async function createAssistantConversationRequest(messages: UIMessage[]) 
 
 export async function replaceAssistantConversationRequest(
   conversationId: string,
-  messages: UIMessage[]
+  messages: UIMessage[],
 ) {
-  const response = await fetch(`/api/assistant/conversations/${conversationId}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages }),
-  });
+  const response = await fetch(
+    `/api/assistant/conversations/${conversationId}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages }),
+    },
+  );
 
   return parseConversationResponse<AssistantConversation>(response);
 }
 
-export async function deleteAssistantConversationRequest(conversationId: string) {
-  const response = await fetch(`/api/assistant/conversations/${conversationId}`, {
-    method: "DELETE",
-  });
+export async function deleteAssistantConversationRequest(
+  conversationId: string,
+) {
+  const response = await fetch(
+    `/api/assistant/conversations/${conversationId}`,
+    {
+      method: "DELETE",
+    },
+  );
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -61,7 +73,7 @@ export async function deleteAssistantConversationRequest(conversationId: string)
 
 export function upsertConversationListItem(
   conversations: AssistantConversationListItem[],
-  conversation: AssistantConversation
+  conversation: AssistantConversation,
 ) {
   const nextItem: AssistantConversationListItem = {
     id: conversation.id,
@@ -70,5 +82,8 @@ export function upsertConversationListItem(
     lastMessageAt: conversation.lastMessageAt,
   };
 
-  return [nextItem, ...conversations.filter((item) => item.id !== conversation.id)];
+  return [
+    nextItem,
+    ...conversations.filter((item) => item.id !== conversation.id),
+  ];
 }

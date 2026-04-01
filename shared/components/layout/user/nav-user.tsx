@@ -1,7 +1,12 @@
 "use client";
 
 import { ChevronsUpDown, Cog, LogOut, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+
+import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
+import { OrganizationSwitcher } from "@/features/organizations/components/organization-switcher";
+import { useUser } from "@/shared/components/providers/user-provider";
 import {
   Avatar,
   AvatarFallback,
@@ -22,14 +27,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/shared/components/ui/sidebar";
-import Link from "next/link";
-import { routes } from "@/shared/constants/routes";
 import { accountFlags } from "@/shared/config/account.config";
-import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
-import { isPlatformAdmin } from "@/shared/lib/auth/roles";
-import { useUser } from "@/shared/components/providers/user-provider";
-import { OrganizationSwitcher } from "@/features/organizations/components/organization-switcher";
+import { routes } from "@/shared/constants/routes";
 import { authClient } from "@/shared/lib/auth/auth-client";
+import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 
 export function NavUser() {
   const { state } = useSidebar();

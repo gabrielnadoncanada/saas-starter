@@ -1,8 +1,8 @@
-import { hasAnyOrgRole, type OrgRole } from "@/shared/lib/db/enums";
 import {
-  getActiveOrganizationMembership,
   type ActiveOrganizationMembership,
+  getActiveOrganizationMembership,
 } from "@/features/organizations/server/organization-membership";
+import { hasAnyOrgRole, type OrgRole } from "@/shared/lib/db/enums";
 
 export class OrganizationMembershipError extends Error {
   constructor(message: string) {
@@ -18,7 +18,9 @@ export async function getRequiredOrganizationMembership(
   const membership = await getActiveOrganizationMembership(userId);
 
   if (!membership?.organizationId) {
-    throw new OrganizationMembershipError("User is not part of an organization");
+    throw new OrganizationMembershipError(
+      "User is not part of an organization",
+    );
   }
 
   if (!hasAnyOrgRole(membership.roles, allowedRoles)) {
@@ -29,5 +31,3 @@ export async function getRequiredOrganizationMembership(
 
   return membership;
 }
-
-

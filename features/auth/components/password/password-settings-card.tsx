@@ -5,22 +5,35 @@ import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
 import { savePassword } from "@/features/auth/data/auth-requests";
 import {
   createPasswordFormSchema,
   passwordFormDefaultValues,
   type PasswordFormValues,
-} from "@/features/auth/schemas/password-form.schema";
+} from "@/features/auth/schemas/password-change.schema";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/components/ui/field";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/shared/components/ui/field";
 
 type PasswordSettingsCardProps = {
   hasPassword: boolean;
 };
 
-export function PasswordSettingsCard({ hasPassword }: PasswordSettingsCardProps) {
+export function PasswordSettingsCard({
+  hasPassword,
+}: PasswordSettingsCardProps) {
   const schema = useMemo(
     () => createPasswordFormSchema({ requireCurrentPassword: hasPassword }),
     [hasPassword],
@@ -38,7 +51,11 @@ export function PasswordSettingsCard({ hasPassword }: PasswordSettingsCardProps)
 
   const onSubmit = handleSubmit(async ({ currentPassword, newPassword }) => {
     try {
-      const result = await savePassword(hasPassword, newPassword, currentPassword);
+      const result = await savePassword(
+        hasPassword,
+        newPassword,
+        currentPassword,
+      );
 
       if (result.status !== "success") {
         if (result.status === "incorrect_current_password") {
@@ -67,14 +84,18 @@ export function PasswordSettingsCard({ hasPassword }: PasswordSettingsCardProps)
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{hasPassword ? "Change password" : "Create a password"}</CardTitle>
+        <CardTitle>
+          {hasPassword ? "Change password" : "Create a password"}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
           <FieldGroup className="space-y-4">
             {hasPassword ? (
               <Field data-invalid={Boolean(errors.currentPassword)}>
-                <FieldLabel htmlFor="current-password">Current password</FieldLabel>
+                <FieldLabel htmlFor="current-password">
+                  Current password
+                </FieldLabel>
                 <PasswordInput
                   id="current-password"
                   aria-invalid={Boolean(errors.currentPassword)}
@@ -97,7 +118,9 @@ export function PasswordSettingsCard({ hasPassword }: PasswordSettingsCardProps)
             </Field>
 
             <Field data-invalid={Boolean(errors.confirmPassword)}>
-              <FieldLabel htmlFor="confirm-password">Confirm new password</FieldLabel>
+              <FieldLabel htmlFor="confirm-password">
+                Confirm new password
+              </FieldLabel>
               <PasswordInput
                 id="confirm-password"
                 aria-invalid={Boolean(errors.confirmPassword)}

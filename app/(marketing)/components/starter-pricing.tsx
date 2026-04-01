@@ -1,5 +1,6 @@
-import { Check } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import { Check } from "lucide-react";
+
+import { Button } from "@/shared/components/ui/button";
 
 type Tier = {
   name: string;
@@ -14,55 +15,58 @@ type Tier = {
 
 const tiers: Tier[] = [
   {
-    name: 'Starter',
+    name: "Starter",
     price: 149,
-    tagline: 'The core foundation for solo builders.',
-    bestFor: 'Solo founders and indie developers who want the codebase and are comfortable customizing it themselves.',
+    tagline: "The core foundation for solo builders.",
+    bestFor:
+      "Solo founders and indie developers who want the codebase and are comfortable customizing it themselves.",
     features: [
-      'Full source code — Next.js 16, React 19, TypeScript',
-      'Auth: magic link, Google, GitHub OAuth',
-      'Stripe billing: flat, per-seat, and one-time',
-      'Plan gating with capability checks and usage limits',
-      'Team management with roles and invitations',
-      'Dashboard shell with sidebar and settings',
-      'Tasks CRUD example with plan-gated creation',
-      'AI-ready assistant module with real task actions and honest scaffolds',
-      'PostgreSQL + Prisma with migrations and seed',
-      'Email templates with Resend',
-      '72 documentation files including 31 customization guides',
-      'MIT license — use for one commercial product',
+      "Full source code — Next.js 16, React 19, TypeScript",
+      "Auth: magic link, Google, GitHub OAuth",
+      "Stripe billing: flat, per-seat, and one-time",
+      "Plan gating with capability checks and usage limits",
+      "Team management with roles and invitations",
+      "Dashboard shell with sidebar and settings",
+      "Tasks CRUD example with plan-gated creation",
+      "AI-ready assistant module with real task actions and honest scaffolds",
+      "PostgreSQL + Prisma with migrations and seed",
+      "Email templates with Resend",
+      "72 documentation files including 31 customization guides",
+      "MIT license — use for one commercial product",
     ],
-    cta: 'Get the Starter',
+    cta: "Get the Starter",
   },
   {
-    name: 'Pro',
+    name: "Pro",
     price: 299,
-    tagline: 'The fastest path from starter to launch.',
-    bestFor: 'Founders launching a real product who want more polish, less assembly, and a stronger starting position.',
+    tagline: "The fastest path from starter to launch.",
+    bestFor:
+      "Founders launching a real product who want more polish, less assembly, and a stronger starting position.",
     highlighted: true,
-    badge: 'Most Popular',
+    badge: "Most Popular",
     features: [
-      'Everything in Starter, plus:',
-      'Priority email support for 6 months',
-      'Extended implementation guides',
-      'Additional page templates and UI blocks',
-      'Advanced billing patterns and examples',
-      'Lifetime access to minor updates',
+      "Everything in Starter, plus:",
+      "Priority email support for 6 months",
+      "Extended implementation guides",
+      "Additional page templates and UI blocks",
+      "Advanced billing patterns and examples",
+      "Lifetime access to minor updates",
     ],
-    cta: 'Get Pro',
+    cta: "Get Pro",
   },
   {
-    name: 'Agency',
+    name: "Agency",
     price: 599,
-    tagline: 'Built for repeat delivery across client projects.',
-    bestFor: 'Agencies, consultants, and studios using the starter across multiple client or internal builds.',
+    tagline: "Built for repeat delivery across client projects.",
+    bestFor:
+      "Agencies, consultants, and studios using the starter across multiple client or internal builds.",
     features: [
-      'Everything in Pro, plus:',
-      'Agency license — use across unlimited client projects',
-      'Multi-project commercial rights',
-      'Priority support for 12 months',
+      "Everything in Pro, plus:",
+      "Agency license — use across unlimited client projects",
+      "Multi-project commercial rights",
+      "Priority support for 12 months",
     ],
-    cta: 'Get Agency',
+    cta: "Get Agency",
   },
 ];
 
@@ -71,8 +75,8 @@ function TierCard({ tier }: { tier: Tier }) {
     <div
       className={`relative flex flex-col rounded-xl border p-6 ${
         tier.highlighted
-          ? 'border-orange-500 ring-1 ring-orange-500 shadow-md'
-          : 'border-border'
+          ? "border-orange-500 ring-1 ring-orange-500 shadow-md"
+          : "border-border"
       }`}
     >
       {tier.badge && (
@@ -104,9 +108,11 @@ function TierCard({ tier }: { tier: Tier }) {
           <Button
             size="lg"
             className={`w-full rounded-full text-base ${
-              tier.highlighted ? '' : 'bg-foreground text-background hover:bg-foreground/90'
+              tier.highlighted
+                ? ""
+                : "bg-foreground text-background hover:bg-foreground/90"
             }`}
-            variant={tier.highlighted ? 'default' : 'outline'}
+            variant={tier.highlighted ? "default" : "outline"}
           >
             {tier.cta}
           </Button>

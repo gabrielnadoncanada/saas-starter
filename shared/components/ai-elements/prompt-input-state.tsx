@@ -21,9 +21,7 @@ type PromptInputState = {
 
 const PromptInputContext = createContext<PromptInputState | null>(null);
 
-export function PromptInputProvider({
-  children,
-}: PropsWithChildren) {
+export function PromptInputProvider({ children }: PropsWithChildren) {
   const [attachments, setAttachments] = useState<PromptAttachment[]>([]);
   const [text, setText] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -55,7 +53,7 @@ export function PromptInputProvider({
       setInput: setText,
       text,
     }),
-    [attachments, text]
+    [attachments, text],
   );
 
   return (
@@ -68,7 +66,9 @@ export function PromptInputProvider({
 export function usePromptInputState() {
   const context = useContext(PromptInputContext);
   if (!context) {
-    throw new Error("PromptInput components must be used inside PromptInputProvider.");
+    throw new Error(
+      "PromptInput components must be used inside PromptInputProvider.",
+    );
   }
 
   return context;
@@ -82,6 +82,6 @@ export function filesToAttachments(files: FileList | File[]) {
       mediaType: file.type,
       type: "file",
       url: URL.createObjectURL(file),
-    })
+    }),
   );
 }

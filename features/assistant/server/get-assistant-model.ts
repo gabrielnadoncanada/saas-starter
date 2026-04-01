@@ -1,8 +1,11 @@
 import { google } from "@ai-sdk/google";
 import { groq } from "@ai-sdk/groq";
 
+import {
+  assistantModels,
+  findAssistantModel,
+} from "@/features/assistant/models";
 import type { AssistantProvider } from "@/features/assistant/types";
-import { assistantModels, findAssistantModel } from "@/features/assistant/models";
 
 function readRequiredEnv(
   name: "GOOGLE_GENERATIVE_AI_API_KEY" | "GROQ_API_KEY",
@@ -36,7 +39,9 @@ export function getAssistantModel(selection?: {
     assistantModels.find((model) => model.provider === fallbackProvider);
 
   if (!selectedModel) {
-    throw new Error("No assistant model is configured for the selected provider");
+    throw new Error(
+      "No assistant model is configured for the selected provider",
+    );
   }
 
   if (selectedModel.provider === "groq") {

@@ -3,12 +3,12 @@
 import { redirect } from "next/navigation";
 
 import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-portal";
-import { routes } from "@/shared/constants/routes";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import {
   getRequiredOrganizationMembership,
   OrganizationMembershipError,
 } from "@/features/organizations/server/get-required-organization-membership";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function customerPortalAction() {
@@ -34,5 +34,3 @@ export async function customerPortalAction() {
 
   redirect(url);
 }
-
-

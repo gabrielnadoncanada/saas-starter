@@ -23,9 +23,8 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 }));
 
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
-const { getCurrentOrganization } = await import(
-  "@/features/organizations/server/current-organization"
-);
+const { getCurrentOrganization } =
+  await import("@/features/organizations/server/current-organization");
 const {
   createAssistantConversation,
   deleteAssistantConversation,
@@ -80,14 +79,14 @@ describe("assistant conversations", () => {
           userId: "7",
           title: "Draft an invoice for Acme Corp due next week.",
         }),
-      })
+      }),
     );
     expect(conversation).toEqual(
       expect.objectContaining({
         id: "conv_1",
         title: "Draft an invoice for Acme Corp due next week.",
         preview: "Draft an invoice for Acme Corp due next week.",
-      })
+      }),
     );
   });
 
@@ -112,7 +111,7 @@ describe("assistant conversations", () => {
     expect(db.assistantConversation.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { organizationId: "19", userId: "7" },
-      })
+      }),
     );
     expect(conversations).toEqual([
       {
@@ -137,4 +136,3 @@ describe("assistant conversations", () => {
     expect(deleted).toBe(true);
   });
 });
-

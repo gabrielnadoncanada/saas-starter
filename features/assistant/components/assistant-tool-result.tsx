@@ -1,14 +1,19 @@
 "use client";
 
 import { AssistantInvoiceArtifact } from "@/features/assistant/components/assistant-invoice-artifact";
-import { MessageResponse } from "@/shared/components/ai-elements/message";
-import { Tool, ToolContent, ToolHeader, ToolOutput } from "@/shared/components/ai-elements/tool";
 import type {
   AssistantToolFailure,
   CreateInvoiceDraftToolResult,
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
+import { MessageResponse } from "@/shared/components/ai-elements/message";
+import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolOutput,
+} from "@/shared/components/ai-elements/tool";
 
 type AssistantToolResultProps = {
   toolName: string;
@@ -92,7 +97,8 @@ function getToolContent(toolName: string, output?: unknown) {
 
   return {
     errorText: isFailureResult(output) ? output.error.message : undefined,
-    response: typeof output === "string" ? output : JSON.stringify(output, null, 2),
+    response:
+      typeof output === "string" ? output : JSON.stringify(output, null, 2),
   };
 }
 
@@ -104,9 +110,11 @@ export function AssistantToolResult({
   const { errorText, response } = getToolContent(toolName, output);
   const state = getToolState(done, Boolean(errorText));
   const renderedResponse =
-    typeof response === "string"
-      ? <MessageResponse>{response}</MessageResponse>
-      : response;
+    typeof response === "string" ? (
+      <MessageResponse>{response}</MessageResponse>
+    ) : (
+      response
+    );
   const isStandaloneInvoiceArtifact =
     toolName === "createInvoiceDraft" && !errorText && renderedResponse;
 
@@ -120,10 +128,7 @@ export function AssistantToolResult({
         />
         {!isStandaloneInvoiceArtifact && (response || errorText) && (
           <ToolContent>
-            <ToolOutput
-              errorText={errorText}
-              output={renderedResponse}
-            />
+            <ToolOutput errorText={errorText} output={renderedResponse} />
           </ToolContent>
         )}
       </Tool>

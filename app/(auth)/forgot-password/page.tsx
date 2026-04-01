@@ -14,7 +14,9 @@ export default function ForgotPasswordPage() {
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">Forgot password</CardTitle>
+        <CardTitle className="text-lg tracking-tight">
+          Forgot password
+        </CardTitle>
         <CardDescription>
           Enter your email address and we will send you a reset link.
         </CardDescription>
@@ -25,7 +27,10 @@ export default function ForgotPasswordPage() {
           <ForgotPasswordForm />
           <p className="text-sm text-muted-foreground">
             Remembered your password?{" "}
-            <Link href={routes.auth.login} className="underline underline-offset-4">
+            <Link
+              href={routes.auth.login}
+              className="underline underline-offset-4"
+            >
               Back to sign in
             </Link>
           </p>

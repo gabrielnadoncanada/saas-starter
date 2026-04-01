@@ -1,16 +1,17 @@
 "use client";
 
+import { ArrowLeftIcon } from "lucide-react";
+import Link from "next/link";
+
+import { adminSidebarData } from "@/features/admin/config/admin-navigation";
+import { NavGroup } from "@/shared/components/navigation/nav-group";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenuButton,
 } from "@/shared/components/ui/sidebar";
-import { adminSidebarData } from "@/features/admin/config/admin-navigation";
-import { NavGroup } from "@/shared/components/navigation/nav-group";
-import { ArrowLeftIcon } from "lucide-react";
 import { routes } from "@/shared/constants/routes";
-import Link from "next/link";
 
 export function AdminSidebar() {
   const groups = adminSidebarData.navGroups;
@@ -36,4 +37,3 @@ export function AdminSidebar() {
     </Sidebar>
   );
 }
-

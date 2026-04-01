@@ -1,4 +1,6 @@
 import Link from "next/link";
+
+import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 import {
   Card,
   CardContent,
@@ -6,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 import { routes } from "@/shared/constants/routes";
 
 type ResetPasswordPageProps = {
@@ -15,7 +16,9 @@ type ResetPasswordPageProps = {
   }>;
 };
 
-export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
+export default async function ResetPasswordPage({
+  searchParams,
+}: ResetPasswordPageProps) {
   const { token: rawToken } = await searchParams;
   const token = rawToken?.trim();
 
@@ -34,7 +37,10 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
           <ResetPasswordForm token={token} />
         ) : (
           <p className="text-sm text-muted-foreground">
-            <Link href={routes.auth.forgotPassword} className="underline underline-offset-4">
+            <Link
+              href={routes.auth.forgotPassword}
+              className="underline underline-offset-4"
+            >
               Request a new reset link
             </Link>
           </p>

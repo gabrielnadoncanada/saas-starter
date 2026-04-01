@@ -2,7 +2,7 @@ import "server-only";
 
 import { Prisma } from "@prisma/client";
 
-import { requireCurrentOrganizationId } from "@/features/organizations/server/require-current-organization-id";
+import { getActiveOrganizationId } from "@/features/organizations/server/get-active-organization-id";
 import type { TaskTableSearchParams } from "@/features/tasks/task-schemas";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -23,7 +23,7 @@ function getTaskOrderBy(
 }
 
 export async function getTasksPage(params: TaskTableSearchParams) {
-  const organizationId = await requireCurrentOrganizationId();
+  const organizationId = await getActiveOrganizationId({ required: true });
 
   const where: Prisma.TaskWhereInput = {
     organizationId,

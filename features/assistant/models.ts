@@ -23,7 +23,6 @@ export const assistantModels = [
 export function findAssistantModel(modelId?: string, provider?: string) {
   return assistantModels.find(
     (model) =>
-      model.id === modelId &&
-      (!provider || model.provider === provider)
+      model.id === modelId && (!provider || model.provider === provider),
   );
 }

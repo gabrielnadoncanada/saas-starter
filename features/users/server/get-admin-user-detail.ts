@@ -1,5 +1,7 @@
 import { headers } from "next/headers";
+
 import { auth } from "@/shared/lib/auth/auth-config";
+
 import type { UserSession } from "../types/admin-users.types";
 
 function normalizeUserSessions(value: unknown): UserSession[] {

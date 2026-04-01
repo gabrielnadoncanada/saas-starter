@@ -5,7 +5,8 @@ type UsageMeterProps = {
 };
 
 export function UsageMeter({ label, current, limit }: UsageMeterProps) {
-  const percentage = limit === Infinity ? 0 : Math.min(100, (current / limit) * 100);
+  const percentage =
+    limit === Infinity ? 0 : Math.min(100, (current / limit) * 100);
   const isNearLimit = percentage >= 80;
   const displayLimit = limit === Infinity ? "Unlimited" : limit;
 

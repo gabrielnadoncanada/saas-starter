@@ -1,7 +1,7 @@
 import { Building2, LayoutDashboard, Users } from "lucide-react";
 
-import { routes } from "@/shared/constants/routes";
 import type { SidebarData } from "@/shared/components/navigation/sidebar-types";
+import { routes } from "@/shared/constants/routes";
 
 export const adminSidebarData: SidebarData = {
   navGroups: [
@@ -14,7 +14,11 @@ export const adminSidebarData: SidebarData = {
           icon: LayoutDashboard,
         },
         { title: "Users", url: routes.admin.users, icon: Users },
-        { title: "Organizations", url: routes.admin.organizations, icon: Building2 },
+        {
+          title: "Organizations",
+          url: routes.admin.organizations,
+          icon: Building2,
+        },
       ],
     },
   ],

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 
 vi.mock("server-only", () => ({}));
 
@@ -28,19 +28,21 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
-const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
-const { assertCapability } = await import("@/features/billing/guards/plan-guards");
-const { consumeMonthlyUsage } = await import(
-  "@/features/billing/usage/usage-service"
-);
-const { createTaskForCurrentOrganization } = await import(
-  "@/features/tasks/server/create-task-for-current-organization"
-);
+const { getOrganizationPlan } =
+  await import("@/features/billing/guards/get-organization-plan");
+const { assertCapability } =
+  await import("@/features/billing/guards/plan-guards");
+const { consumeMonthlyUsage } =
+  await import("@/features/billing/usage/usage-service");
+const { createTaskForCurrentOrganization } =
+  await import("@/features/tasks/server/task-mutations");
 
 describe("createTaskForCurrentOrganization", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(db.$transaction).mockImplementation(async (callback: any) => callback(db));
+    vi.mocked(db.$transaction).mockImplementation(async (callback: any) =>
+      callback(db),
+    );
 
     vi.mocked(getOrganizationPlan).mockResolvedValue({
       planId: "pro",
@@ -51,7 +53,9 @@ describe("createTaskForCurrentOrganization", () => {
     });
     vi.mocked(assertCapability).mockImplementation(() => {});
     vi.mocked(consumeMonthlyUsage).mockResolvedValue(undefined);
-    vi.mocked(db.task.findFirst).mockResolvedValue({ code: "TASK-41" } as never);
+    vi.mocked(db.task.findFirst).mockResolvedValue({
+      code: "TASK-41",
+    } as never);
     vi.mocked(db.task.create).mockResolvedValue({
       code: "TASK-42",
       title: "Ship billing fix",

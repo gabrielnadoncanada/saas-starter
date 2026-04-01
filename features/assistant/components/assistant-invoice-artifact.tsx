@@ -1,5 +1,8 @@
 "use client";
 
+import { CopyIcon, DownloadIcon, ReceiptTextIcon } from "lucide-react";
+
+import type { CreateInvoiceDraftToolResult } from "@/features/assistant/types";
 import {
   Artifact,
   ArtifactAction,
@@ -9,10 +12,11 @@ import {
   ArtifactHeader,
   ArtifactTitle,
 } from "@/shared/components/ai-elements/artifact";
-import type { CreateInvoiceDraftToolResult } from "@/features/assistant/types";
-import { CopyIcon, DownloadIcon, ReceiptTextIcon } from "lucide-react";
 
-type InvoiceDraft = Extract<CreateInvoiceDraftToolResult, { success: true }>["result"];
+type InvoiceDraft = Extract<
+  CreateInvoiceDraftToolResult,
+  { success: true }
+>["result"];
 
 type AssistantInvoiceArtifactProps = {
   invoice: InvoiceDraft;
@@ -35,7 +39,7 @@ export function AssistantInvoiceArtifact({
     "",
     ...invoice.items.map(
       (item) =>
-        `${item.description} — ${item.quantity} x ${formatMoney(item.unitPrice, invoice.currency)} = ${formatMoney(item.total, invoice.currency)}`
+        `${item.description} — ${item.quantity} x ${formatMoney(item.unitPrice, invoice.currency)} = ${formatMoney(item.total, invoice.currency)}`,
     ),
     "",
     `Total: ${formatMoney(invoice.subtotal, invoice.currency)}`,
@@ -89,9 +93,12 @@ export function AssistantInvoiceArtifact({
               key={`${item.description}-${index}`}
             >
               <div className="min-w-0">
-                <p className="truncate font-medium text-sm">{item.description}</p>
+                <p className="truncate font-medium text-sm">
+                  {item.description}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  {item.quantity} × {formatMoney(item.unitPrice, invoice.currency)}
+                  {item.quantity} ×{" "}
+                  {formatMoney(item.unitPrice, invoice.currency)}
                 </p>
               </div>
               <p className="text-right font-medium text-sm">

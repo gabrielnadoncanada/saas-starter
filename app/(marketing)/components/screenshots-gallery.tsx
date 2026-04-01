@@ -1,4 +1,4 @@
-import { MonitorSmartphone } from 'lucide-react';
+import { MonitorSmartphone } from "lucide-react";
 
 type Screenshot = {
   slot: string;
@@ -8,39 +8,43 @@ type Screenshot = {
 
 const screenshots: Screenshot[] = [
   {
-    slot: 'login',
+    slot: "login",
     src: null,
-    caption: 'Sign in with magic link, Google, or GitHub. Account linking built in.',
+    caption:
+      "Sign in with magic link, Google, or GitHub. Account linking built in.",
   },
   {
-    slot: 'dashboard',
+    slot: "dashboard",
     src: null,
-    caption: 'Dashboard with plan status, usage meters, and team overview.',
+    caption: "Dashboard with plan status, usage meters, and team overview.",
   },
   {
-    slot: 'tasks',
+    slot: "tasks",
     src: null,
-    caption: 'Tasks CRUD with sort, filter, pagination, and plan-gated creation.',
+    caption:
+      "Tasks CRUD with sort, filter, pagination, and plan-gated creation.",
   },
   {
-    slot: 'team',
+    slot: "team",
     src: null,
-    caption: 'Team management with roles, invitations, and team switching.',
+    caption: "Team management with roles, invitations, and team switching.",
   },
   {
-    slot: 'settings',
+    slot: "settings",
     src: null,
-    caption: 'Settings: profile, linked auth providers, and account management.',
+    caption:
+      "Settings: profile, linked auth providers, and account management.",
   },
   {
-    slot: 'billing',
+    slot: "billing",
     src: null,
-    caption: 'Pricing page with monthly plans and Stripe-powered subscriptions.',
+    caption:
+      "Pricing page with monthly plans and Stripe-powered subscriptions.",
   },
   {
-    slot: 'plan-gate',
+    slot: "plan-gate",
     src: null,
-    caption: 'Plan gating in action - upgrade prompts when limits are reached.',
+    caption: "Plan gating in action - upgrade prompts when limits are reached.",
   },
 ];
 

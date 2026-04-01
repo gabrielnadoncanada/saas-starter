@@ -1,15 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
+
 import { AuthEmailSummary } from "@/features/auth/components/shared/auth-email-summary";
 import { signInWithPassword } from "@/features/auth/data/auth-requests";
 import {
-  passwordStepSchema,
-  type PasswordStepValues,
-} from "@/features/auth/schemas/password-step.schema";
+  signInPasswordDefaultValues,
+  signInPasswordSchema,
+  type SignInPasswordValues,
+} from "@/features/auth/schemas/auth-forms.schema";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
@@ -20,10 +22,6 @@ type SignInPasswordStepProps = {
   callbackUrl: string;
   onChangeEmail: () => void;
   onVerificationChange: (visible: boolean) => void;
-};
-
-const defaultValues: PasswordStepValues = {
-  password: "",
 };
 
 export function SignInPasswordStep({
@@ -38,9 +36,9 @@ export function SignInPasswordStep({
     handleSubmit,
     register,
     setError,
-  } = useForm<PasswordStepValues>({
-    resolver: zodResolver(passwordStepSchema),
-    defaultValues,
+  } = useForm<SignInPasswordValues>({
+    resolver: zodResolver(signInPasswordSchema),
+    defaultValues: signInPasswordDefaultValues,
   });
 
   const passwordField = register("password", {

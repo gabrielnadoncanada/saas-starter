@@ -2,6 +2,8 @@
 
 import { format } from "date-fns";
 import { Copy } from "lucide-react";
+
+import type { AdminUser } from "@/features/users/types/admin-users.types";
 import {
   Avatar,
   AvatarFallback,
@@ -10,8 +12,8 @@ import {
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { TableBody, TableCell, TableRow } from "@/shared/components/ui/table";
+
 import { UserRowActions } from "./user-row-actions";
-import type { AdminUser } from "@/features/users/types/admin-users.types";
 
 type UsersTableRowsProps = {
   currentUserId: string;

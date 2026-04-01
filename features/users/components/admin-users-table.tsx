@@ -1,19 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
-import { AdminConfirmDialog } from "@/shared/components/dialogs/admin-confirm-dialog";
-import { Input } from "@/shared/components/ui/input";
-import {
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/components/ui/table";
-import { authClient } from "@/shared/lib/auth/auth-client";
+
 import {
   banUserAction,
   getAdminUserDetailAction,
@@ -23,13 +14,24 @@ import {
   setUserRoleAction,
   unbanUserAction,
 } from "@/features/users/actions/admin-users.actions";
-import { UserDetailSheet } from "./user-detail-sheet";
-import { UsersTableRows } from "./users-table-rows";
-import type { AdminConfirmState } from "@/shared/components/dialogs/admin-confirm-dialog";
 import type {
   AdminUser,
   UserSession,
 } from "@/features/users/types/admin-users.types";
+import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
+import type { AdminConfirmState } from "@/shared/components/dialogs/admin-confirm-dialog";
+import { AdminConfirmDialog } from "@/shared/components/dialogs/admin-confirm-dialog";
+import { Input } from "@/shared/components/ui/input";
+import {
+  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
+import { authClient } from "@/shared/lib/auth/auth-client";
+
+import { UserDetailSheet } from "./user-detail-sheet";
+import { UsersTableRows } from "./users-table-rows";
 
 type AdminUsersTableProps = {
   currentUserId: string;

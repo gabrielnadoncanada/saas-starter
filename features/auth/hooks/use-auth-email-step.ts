@@ -5,12 +5,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
-  emailStepSchema,
-  type EmailStepValues,
-} from "@/features/auth/schemas/email-step.schema";
-const defaultValues: EmailStepValues = {
-  email: "",
-};
+  emailDefaultValues,
+  emailSchema,
+  type EmailValues,
+} from "@/features/auth/schemas/auth-forms.schema";
 
 type UseAuthEmailStepOptions = {
   onEmailChanged?: () => void;
@@ -28,9 +26,9 @@ export function useAuthEmailStep(options: UseAuthEmailStepOptions = {}) {
     setError,
     setValue,
     trigger,
-  } = useForm<EmailStepValues>({
-    resolver: zodResolver(emailStepSchema),
-    defaultValues,
+  } = useForm<EmailValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: emailDefaultValues,
   });
 
   const emailField = register("email", {

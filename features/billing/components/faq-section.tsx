@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 type FaqItem = {
   question: string;
@@ -10,29 +10,29 @@ type FaqItem = {
 
 const defaultFaqs: FaqItem[] = [
   {
-    question: 'Can I try it before I pay?',
+    question: "Can I try it before I pay?",
     answer:
-      'Yes. Every paid plan includes a free trial so you can explore the full feature set before being charged.',
+      "Yes. Every paid plan includes a free trial so you can explore the full feature set before being charged.",
   },
   {
-    question: 'Can I change my plan later?',
+    question: "Can I change my plan later?",
     answer:
-      'Absolutely. You can upgrade, downgrade, or cancel at any time from your billing settings. Changes take effect immediately.',
+      "Absolutely. You can upgrade, downgrade, or cancel at any time from your billing settings. Changes take effect immediately.",
   },
   {
-    question: 'What happens when I hit a usage limit?',
+    question: "What happens when I hit a usage limit?",
     answer:
-      'You will see a prompt to upgrade. Your existing data is never deleted — you just need a higher plan to continue creating.',
+      "You will see a prompt to upgrade. Your existing data is never deleted — you just need a higher plan to continue creating.",
   },
   {
-    question: 'How does team billing work?',
+    question: "How does team billing work?",
     answer:
       "Plans are billed per team. Each team member is counted toward your plan's member limit. You can manage members from your team settings.",
   },
   {
-    question: 'What payment methods do you accept?',
+    question: "What payment methods do you accept?",
     answer:
-      'We use Stripe for payments. You can pay with any major credit or debit card. Invoices are available in your billing portal.',
+      "We use Stripe for payments. You can pay with any major credit or debit card. Invoices are available in your billing portal.",
   },
 ];
 
@@ -60,14 +60,18 @@ export function FaqSection({ faqs = defaultFaqs }: FaqSectionProps) {
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="flex w-full items-center justify-between text-left"
                 >
-                  <span className="text-base font-medium text-foreground">{faq.question}</span>
+                  <span className="text-base font-medium text-foreground">
+                    {faq.question}
+                  </span>
                   <ChevronDown
-                    className={`ml-4 h-5 w-5 shrink-0 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    className={`ml-4 h-5 w-5 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
                   />
                 </button>
               </dt>
               {isOpen && (
-                <dd className="mt-2 pr-12 text-sm text-muted-foreground">{faq.answer}</dd>
+                <dd className="mt-2 pr-12 text-sm text-muted-foreground">
+                  {faq.answer}
+                </dd>
               )}
             </div>
           );

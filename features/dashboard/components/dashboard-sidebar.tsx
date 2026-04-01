@@ -6,7 +6,6 @@ import { NavAssistant } from "@/shared/components/navigation/nav-assistant";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
 import {
   Sidebar,
-  SidebarGroup,
   SidebarContent,
   SidebarHeader,
 } from "@/shared/components/ui/sidebar";

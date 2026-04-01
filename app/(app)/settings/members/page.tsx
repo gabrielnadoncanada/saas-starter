@@ -1,3 +1,8 @@
+import { InviteOrganizationMemberDialog } from "@/features/organizations/components/invite-organization-member-dialog";
+import { OrganizationInvitationsTable } from "@/features/organizations/components/organization-invitations-table";
+import { OrganizationMembersTable } from "@/features/organizations/components/organization-members-table";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
+import { listPendingOrganizationInvitations } from "@/features/organizations/server/organization-invitations";
 import {
   Page,
   PageDescription,
@@ -5,11 +10,6 @@ import {
   PageHeaderActions,
   PageTitle,
 } from "@/shared/components/layout/page-layout";
-import { InviteOrganizationMemberDialog } from "@/features/organizations/components/invite-organization-member-dialog";
-import { OrganizationInvitationsTable } from "@/features/organizations/components/organization-invitations-table";
-import { OrganizationMembersTable } from "@/features/organizations/components/organization-members-table";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
-import { listPendingOrganizationInvitations } from "@/features/organizations/server/organization-invitations";
 
 export default async function MembersPage() {
   const context = await getCurrentOrganizationContext();
@@ -62,4 +62,3 @@ export default async function MembersPage() {
     </Page>
   );
 }
-

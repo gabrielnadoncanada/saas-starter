@@ -3,30 +3,33 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import { assertCapability, assertLimit } from "@/features/billing/guards/plan-guards";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import {
+  assertCapability,
+  assertLimit,
+} from "@/features/billing/guards/plan-guards";
 import { validatedOrganizationOwnerAction } from "@/features/organizations/actions/validated-organization-owner.action";
 import {
-  renameOrganizationSchema,
-} from "@/features/organizations/schemas/organization.schema";
-import {
-  inviteOrganizationMemberSchema,
   invitationIdSchema,
+  inviteOrganizationMemberSchema,
   removeOrganizationMemberSchema,
 } from "@/features/organizations/schemas/membership.schema";
+import { renameOrganizationSchema } from "@/features/organizations/schemas/organization.schema";
 import {
-  inviteOrganizationMember,
   cancelOrganizationInvitation,
+  inviteOrganizationMember,
+  resendOrganizationInvitation,
 } from "@/features/organizations/server/organization-invitations";
-import { resendOrganizationInvitation } from "@/features/organizations/server/resend-organization-invitation";
 import type { RefreshableFormState } from "@/features/organizations/types/membership.types";
 import { auth } from "@/shared/lib/auth/auth-config";
 
 // --- Types ---
 
-type InviteOrganizationMemberValues = z.infer<typeof inviteOrganizationMemberSchema>;
+type InviteOrganizationMemberValues = z.infer<
+  typeof inviteOrganizationMemberSchema
+>;
 export type InviteOrganizationMemberActionState =
   RefreshableFormState<InviteOrganizationMemberValues>;
 
@@ -38,7 +41,9 @@ type ResendOrganizationInvitationValues = z.infer<typeof invitationIdSchema>;
 export type ResendOrganizationInvitationActionState =
   RefreshableFormState<ResendOrganizationInvitationValues>;
 
-type RemoveOrganizationMemberValues = z.infer<typeof removeOrganizationMemberSchema>;
+type RemoveOrganizationMemberValues = z.infer<
+  typeof removeOrganizationMemberSchema
+>;
 export type RemoveOrganizationMemberActionState =
   RefreshableFormState<RemoveOrganizationMemberValues>;
 
@@ -59,7 +64,9 @@ export const renameOrganizationAction = validatedOrganizationOwnerAction<
   } catch (error) {
     return {
       error:
-        error instanceof Error ? error.message : "Failed to rename organization",
+        error instanceof Error
+          ? error.message
+          : "Failed to rename organization",
     };
   }
 
@@ -72,117 +79,131 @@ export const renameOrganizationAction = validatedOrganizationOwnerAction<
 export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
   typeof inviteOrganizationMemberSchema,
   { refreshKey?: number }
->(inviteOrganizationMemberSchema, async ({ email, role }, _, { organizationId }) => {
-  const organizationPlan = await getOrganizationPlan();
+>(
+  inviteOrganizationMemberSchema,
+  async ({ email, role }, _, { organizationId }) => {
+    const organizationPlan = await getOrganizationPlan();
 
-  if (!organizationPlan) {
-    return { error: "Unable to determine organization plan" };
-  }
-
-  try {
-    assertCapability(organizationPlan.planId, "team.invite");
-
-    const requestHeaders = await headers();
-    const [members, invitations] = await Promise.all([
-      auth.api.listMembers({
-        query: { organizationId },
-        headers: requestHeaders,
-      }),
-      auth.api.listInvitations({
-        query: { organizationId },
-        headers: requestHeaders,
-      }),
-    ]);
-
-    const memberCount = members?.members.length ?? 0;
-    const pendingCount = (invitations ?? []).filter(
-      (invitation: { status: string }) => invitation.status === "pending",
-    ).length;
-
-    assertLimit(organizationPlan.planId, "teamMembers", memberCount + pendingCount);
-  } catch (error) {
-    if (
-      error instanceof UpgradeRequiredError ||
-      error instanceof LimitReachedError
-    ) {
-      return { error: error.message };
+    if (!organizationPlan) {
+      return { error: "Unable to determine organization plan" };
     }
 
-    throw error;
-  }
+    try {
+      assertCapability(organizationPlan.planId, "team.invite");
 
-  try {
-    await inviteOrganizationMember({
-      organizationId,
-      email,
-      role,
-    });
-  } catch (error) {
+      const requestHeaders = await headers();
+      const [members, invitations] = await Promise.all([
+        auth.api.listMembers({
+          query: { organizationId },
+          headers: requestHeaders,
+        }),
+        auth.api.listInvitations({
+          query: { organizationId },
+          headers: requestHeaders,
+        }),
+      ]);
+
+      const memberCount = members?.members.length ?? 0;
+      const pendingCount = (invitations ?? []).filter(
+        (invitation: { status: string }) => invitation.status === "pending",
+      ).length;
+
+      assertLimit(
+        organizationPlan.planId,
+        "teamMembers",
+        memberCount + pendingCount,
+      );
+    } catch (error) {
+      if (
+        error instanceof UpgradeRequiredError ||
+        error instanceof LimitReachedError
+      ) {
+        return { error: error.message };
+      }
+
+      throw error;
+    }
+
+    try {
+      await inviteOrganizationMember({
+        organizationId,
+        email,
+        role,
+      });
+    } catch (error) {
+      return {
+        error:
+          error instanceof Error ? error.message : "Failed to send invitation",
+      };
+    }
+
+    return { success: "Invitation sent successfully", refreshKey: Date.now() };
+  },
+);
+
+export const cancelOrganizationInvitationAction =
+  validatedOrganizationOwnerAction<
+    typeof invitationIdSchema,
+    { refreshKey?: number }
+  >(invitationIdSchema, async ({ invitationId }) => {
+    try {
+      await cancelOrganizationInvitation({ invitationId });
+    } catch (error) {
+      return {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to cancel invitation",
+      };
+    }
+
     return {
-      error:
-        error instanceof Error ? error.message : "Failed to send invitation",
+      success: "Invitation canceled",
+      refreshKey: Date.now(),
     };
-  }
-
-  return { success: "Invitation sent successfully", refreshKey: Date.now() };
-});
-
-export const cancelOrganizationInvitationAction = validatedOrganizationOwnerAction<
-  typeof invitationIdSchema,
-  { refreshKey?: number }
->(invitationIdSchema, async ({ invitationId }) => {
-  try {
-    await cancelOrganizationInvitation({ invitationId });
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error ? error.message : "Failed to cancel invitation",
-    };
-  }
-
-  return {
-    success: "Invitation canceled",
-    refreshKey: Date.now(),
-  };
-});
-
-export const resendOrganizationInvitationAction = validatedOrganizationOwnerAction<
-  typeof invitationIdSchema,
-  { refreshKey?: number }
->(invitationIdSchema, async ({ invitationId }, _, { organizationId }) => {
-  const result = await resendOrganizationInvitation({
-    invitationId,
-    organizationId,
   });
 
-  if (result.error) {
-    return result;
-  }
+export const resendOrganizationInvitationAction =
+  validatedOrganizationOwnerAction<
+    typeof invitationIdSchema,
+    { refreshKey?: number }
+  >(invitationIdSchema, async ({ invitationId }, _, { organizationId }) => {
+    const result = await resendOrganizationInvitation({
+      invitationId,
+      organizationId,
+    });
 
-  return { ...result, refreshKey: Date.now() };
-});
+    if (result.error) {
+      return result;
+    }
+
+    return { ...result, refreshKey: Date.now() };
+  });
 
 export const removeOrganizationMemberAction = validatedOrganizationOwnerAction<
   typeof removeOrganizationMemberSchema,
   { refreshKey?: number }
->(removeOrganizationMemberSchema, async ({ memberId }, _, { organizationId }) => {
-  try {
-    await auth.api.removeMember({
-      headers: await headers(),
-      body: {
-        memberIdOrEmail: memberId,
-        organizationId,
-      },
-    });
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error ? error.message : "Failed to remove member",
-    };
-  }
+>(
+  removeOrganizationMemberSchema,
+  async ({ memberId }, _, { organizationId }) => {
+    try {
+      await auth.api.removeMember({
+        headers: await headers(),
+        body: {
+          memberIdOrEmail: memberId,
+          organizationId,
+        },
+      });
+    } catch (error) {
+      return {
+        error:
+          error instanceof Error ? error.message : "Failed to remove member",
+      };
+    }
 
-  return {
-    success: "Organization member removed successfully",
-    refreshKey: Date.now(),
-  };
-});
+    return {
+      success: "Organization member removed successfully",
+      refreshKey: Date.now(),
+    };
+  },
+);

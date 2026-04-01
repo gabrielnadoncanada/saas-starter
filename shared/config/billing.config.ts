@@ -200,18 +200,28 @@ export function getPlanPrice(
 
 export function getPricingPlans() {
   return billingConfig.plans.filter(
-    (plan) => plan.id !== "free" && (Boolean(plan.prices.month) || Boolean(plan.prices.year)),
+    (plan) =>
+      plan.id !== "free" &&
+      (Boolean(plan.prices.month) || Boolean(plan.prices.year)),
   );
 }
 
 export function findPlanPriceByPriceId(priceId: string) {
   for (const plan of billingConfig.plans) {
     if (plan.prices.month?.priceId === priceId) {
-      return { billingInterval: "month" as const, plan, price: plan.prices.month };
+      return {
+        billingInterval: "month" as const,
+        plan,
+        price: plan.prices.month,
+      };
     }
 
     if (plan.prices.year?.priceId === priceId) {
-      return { billingInterval: "year" as const, plan, price: plan.prices.year };
+      return {
+        billingInterval: "year" as const,
+        plan,
+        price: plan.prices.year,
+      };
     }
   }
 

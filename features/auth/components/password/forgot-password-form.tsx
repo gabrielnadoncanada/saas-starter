@@ -5,18 +5,16 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
 import { requestPasswordReset } from "@/features/auth/data/auth-requests";
 import {
-  emailStepSchema,
-  type EmailStepValues,
-} from "@/features/auth/schemas/email-step.schema";
+  emailDefaultValues,
+  emailSchema,
+  type EmailValues,
+} from "@/features/auth/schemas/auth-forms.schema";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-
-const defaultValues: EmailStepValues = {
-  email: "",
-};
 
 export function ForgotPasswordForm() {
   const [sent, setSent] = useState(false);
@@ -25,17 +23,19 @@ export function ForgotPasswordForm() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<EmailStepValues>({
-    resolver: zodResolver(emailStepSchema),
-    defaultValues,
+  } = useForm<EmailValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: emailDefaultValues,
   });
 
   const onSubmit = handleSubmit(async ({ email }) => {
     try {
       await requestPasswordReset(email);
       setSent(true);
-      reset(defaultValues);
-      toast.success("If an account exists for this email, a reset link has been sent.");
+      reset(emailDefaultValues);
+      toast.success(
+        "If an account exists for this email, a reset link has been sent.",
+      );
     } catch {
       toast.error("Unable to send reset link. Please try again.");
     }
@@ -44,7 +44,8 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <p className="text-sm text-muted-foreground">
-        If an account exists for this email, a reset link has been sent. Check your inbox.
+        If an account exists for this email, a reset link has been sent. Check
+        your inbox.
       </p>
     );
   }

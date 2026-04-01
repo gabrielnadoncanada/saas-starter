@@ -1,11 +1,20 @@
-import Link from "next/link";
 import {
   ArrowRight,
+  ArrowUp,
   CheckCircle2,
   Sparkles,
   Users,
-  ArrowUp,
 } from "lucide-react";
+import Link from "next/link";
+
+import { UpgradeCard } from "@/features/billing/components/upgrade-card";
+import { UsageMeter } from "@/features/billing/components/usage-meter";
+import {
+  checkLimit,
+  hasCapability,
+} from "@/features/billing/guards/plan-guards";
+import { getPlan, resolveOrganizationPlan } from "@/features/billing/plans";
+import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { listTasks } from "@/features/tasks/server/task-mutations";
 import {
@@ -14,6 +23,7 @@ import {
   PageHeader,
   PageTitle,
 } from "@/shared/components/layout/page-layout";
+import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
@@ -23,15 +33,14 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { resolveOrganizationPlan, getPlan } from "@/features/billing/plans";
-import {
-  hasCapability,
-  checkLimit,
-} from "@/features/billing/guards/plan-guards";
-import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
-import { UsageMeter } from "@/features/billing/components/usage-meter";
-import { Badge } from "@/shared/components/ui/badge";
-import { UpgradeCard } from "@/features/billing/components/upgrade-card";
+
+function formatPlanPrice(unitAmount: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(unitAmount / 100);
+}
 
 export default async function DashboardPage() {
   const [organization, tasks] = await Promise.all([
@@ -51,6 +60,18 @@ export default async function DashboardPage() {
   const taskLimit = checkLimit(planId, "tasksPerMonth", tasksUsage);
   const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
   const canUseAI = hasCapability(planId, "ai.assistant");
+  const activeInterval =
+    organization?.billingInterval && plan.prices[organization.billingInterval]
+      ? organization.billingInterval
+      : plan.prices.month
+        ? "month"
+        : plan.prices.year
+          ? "year"
+          : null;
+  const activePrice = activeInterval ? plan.prices[activeInterval] : null;
+  const priceLabel = activePrice
+    ? formatPlanPrice(activePrice.unitAmount)
+    : "Free";
 
   return (
     <Page>
@@ -78,7 +99,9 @@ export default async function DashboardPage() {
               <span>Current Plan</span>
             </CardDescription>
             <div>
-              <div className="font-heading text-2xl font-semibold">$3.4</div>
+              <div className="font-heading text-2xl font-semibold">
+                {priceLabel}
+              </div>
             </div>
           </CardHeader>
         </Card>

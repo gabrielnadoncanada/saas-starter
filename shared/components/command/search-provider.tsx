@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from "react";
 
-import { CommandMenu } from '@/shared/components/command/command-menu';
+import { CommandMenu } from "@/shared/components/command/command-menu";
 
 type SearchContextValue = {
   open: boolean;
@@ -20,14 +20,14 @@ export function SearchProvider({ children }: SearchProviderProps) {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpen((currentOpen) => !currentOpen);
       }
     };
 
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
   return (
@@ -42,7 +42,7 @@ export function useSearch() {
   const searchContext = useContext(SearchContext);
 
   if (!searchContext) {
-    throw new Error('useSearch must be used within SearchProvider');
+    throw new Error("useSearch must be used within SearchProvider");
   }
 
   return searchContext;

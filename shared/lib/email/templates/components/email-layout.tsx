@@ -1,13 +1,13 @@
 import {
   Body,
   Container,
+  Font,
   Head,
+  Hr,
   Html,
   Preview,
   Section,
   Text,
-  Hr,
-  Font,
 } from "@react-email/components";
 import * as React from "react";
 
@@ -17,7 +17,11 @@ type EmailLayoutProps = {
   footerText?: string;
 };
 
-export function EmailLayout({ preview, children, footerText }: EmailLayoutProps) {
+export function EmailLayout({
+  preview,
+  children,
+  footerText,
+}: EmailLayoutProps) {
   return (
     <Html lang="fr">
       <Head>

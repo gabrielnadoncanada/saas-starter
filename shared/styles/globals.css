@@ -5,12 +5,12 @@
  */
 
 /* Tailwind CSS */
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* local styles - update the below if you add a new style */
-@import './theme.css';
-@import './theme.utilities.css';
-@import './shadcn-ui.css';
+@import "./theme.css";
+@import "./theme.utilities.css";
+@import "./shadcn-ui.css";
 
 /* plugins - update the below if you add a new plugin */
 
@@ -20,7 +20,9 @@
 @layer base {
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 
   *,

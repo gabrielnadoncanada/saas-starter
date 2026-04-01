@@ -1,6 +1,6 @@
+import { getAccountDeletionBlocker } from "@/features/account/server/get-account-deletion-blocker";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { db } from "@/shared/lib/db/prisma";
-import { getAccountDeletionBlocker } from "@/features/account/server/get-account-deletion-blocker";
 
 type DeleteAccountParams = {
   userId: string;

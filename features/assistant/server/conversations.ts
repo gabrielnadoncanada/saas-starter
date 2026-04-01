@@ -37,7 +37,7 @@ function getMessageText(message: UIMessage) {
     message.parts
       .filter((part) => part.type === "text")
       .map((part) => part.text)
-      .join(" ")
+      .join(" "),
   );
 }
 
@@ -149,7 +149,11 @@ export async function getAssistantConversation(conversationId: string) {
   }
 
   const record = await db.assistantConversation.findFirst({
-    where: { id: conversationId, organizationId: scope.organizationId, userId: scope.userId },
+    where: {
+      id: conversationId,
+      organizationId: scope.organizationId,
+      userId: scope.userId,
+    },
     select: {
       id: true,
       title: true,
@@ -188,7 +192,7 @@ export async function createAssistantConversation(messages: UIMessage[]) {
 
 export async function replaceAssistantConversation(
   conversationId: string,
-  messages: UIMessage[]
+  messages: UIMessage[],
 ) {
   const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
@@ -196,7 +200,11 @@ export async function replaceAssistantConversation(
   }
 
   const existing = await db.assistantConversation.findFirst({
-    where: { id: conversationId, organizationId: scope.organizationId, userId: scope.userId },
+    where: {
+      id: conversationId,
+      organizationId: scope.organizationId,
+      userId: scope.userId,
+    },
     select: { id: true },
   });
 
@@ -229,10 +237,12 @@ export async function deleteAssistantConversation(conversationId: string) {
   }
 
   const result = await db.assistantConversation.deleteMany({
-    where: { id: conversationId, organizationId: scope.organizationId, userId: scope.userId },
+    where: {
+      id: conversationId,
+      organizationId: scope.organizationId,
+      userId: scope.userId,
+    },
   });
 
   return result.count > 0;
 }
-
-

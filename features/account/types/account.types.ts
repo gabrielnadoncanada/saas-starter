@@ -17,7 +17,7 @@ export type LinkedAccountsActionState = FormActionState<{
 
 export type LinkedProviderOverview = {
   provider: OAuthProviderId;
-  linkedAt: Date | null;
+  linkedAt: string | null;
   isLinked: boolean;
   canUnlink: boolean;
 };

@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+
 import type { OrganizationInvitationView } from "@/features/organizations/types/membership.types";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
@@ -78,4 +79,41 @@ export async function cancelOrganizationInvitation(input: {
   });
 }
 
+export async function resendOrganizationInvitation(input: {
+  invitationId: string;
+  organizationId: string;
+}) {
+  const requestHeaders = await headers();
+  const invitations = await auth.api.listInvitations({
+    query: { organizationId: input.organizationId },
+    headers: requestHeaders,
+  });
+  const invitation = (invitations ?? []).find(
+    (item: { id: string; status: string }) =>
+      item.id === input.invitationId && item.status === "pending",
+  );
 
+  if (!invitation) {
+    return { error: "Invitation not found" };
+  }
+
+  try {
+    await auth.api.cancelInvitation({
+      headers: requestHeaders,
+      body: { invitationId: input.invitationId },
+    });
+
+    await auth.api.createInvitation({
+      headers: requestHeaders,
+      body: {
+        organizationId: input.organizationId,
+        email: invitation.email,
+        role: (invitation.role as "admin" | "member") ?? "member",
+      },
+    });
+  } catch {
+    return { error: "Failed to resend invitation" };
+  }
+
+  return { success: "Invitation resent" };
+}

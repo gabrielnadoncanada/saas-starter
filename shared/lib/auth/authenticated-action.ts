@@ -19,10 +19,7 @@ type ValidatedAuthenticatedActionHandler<
 export function validatedAuthenticatedAction<
   S extends z.ZodTypeAny,
   TExtraState extends object = {},
->(
-  schema: S,
-  action: ValidatedAuthenticatedActionHandler<S, TExtraState>,
-) {
+>(schema: S, action: ValidatedAuthenticatedActionHandler<S, TExtraState>) {
   type Values = z.infer<S>;
   type State = FormActionState<Values> & TExtraState;
 

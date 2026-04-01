@@ -1,7 +1,8 @@
-import { Heading, Text, Section } from "@react-email/components";
+import { Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { EmailLayout } from "./components/email-layout";
+
 import { EmailButton } from "./components/email-button";
+import { EmailLayout } from "./components/email-layout";
 
 type TeamInvitationEmailProps = {
   inviterName: string;
@@ -18,20 +19,19 @@ export function TeamInvitationEmail({
 }: TeamInvitationEmailProps) {
   return (
     <EmailLayout
-      preview={`${inviterName} vous invite à rejoindre ${organizationName}`}
-      footerText="Si vous n'attendiez pas cette invitation, vous pouvez ignorer cet email."
+      preview={`${inviterName} invited you to join ${organizationName}`}
+      footerText="If you were not expecting this invitation, you can ignore this email."
     >
-      <Heading style={heading}>Invitation à rejoindre {organizationName}</Heading>
+      <Heading style={heading}>Join {organizationName}</Heading>
       <Text style={paragraph}>
-        <strong>{inviterName}</strong> vous invite à rejoindre{" "}
-        <strong>{organizationName}</strong> en tant que {role}.
+        <strong>{inviterName}</strong> invited you to join{" "}
+        <strong>{organizationName}</strong> as {role}.
       </Text>
       <Section style={buttonContainer}>
-        <EmailButton href={invitationUrl}>Accepter l&apos;invitation</EmailButton>
+        <EmailButton href={invitationUrl}>Accept invitation</EmailButton>
       </Section>
       <Text style={link}>
-        Ou copiez ce lien dans votre navigateur :{" "}
-        {invitationUrl}
+        Or copy this link into your browser: {invitationUrl}
       </Text>
     </EmailLayout>
   );
@@ -63,4 +63,3 @@ const link: React.CSSProperties = {
   color: "#9ca3af",
   wordBreak: "break-all" as const,
 };
-

@@ -7,12 +7,10 @@ import { useActionState, useEffect } from "react";
 
 import {
   createTaskAction,
+  type CreateTaskActionState,
   updateTaskAction,
+  type UpdateTaskActionState,
 } from "@/features/tasks/server/task-actions";
-import {
-  CreateTaskActionState,
-  UpdateTaskActionState,
-} from "@/features/tasks/server/task-action-state";
 import {
   taskLabels,
   taskPriorities,

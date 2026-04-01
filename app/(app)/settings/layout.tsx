@@ -1,18 +1,22 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Header } from "@/shared/components/layout/shell/header";
-import { Search } from "@/shared/components/navigation/search";
-import { cn } from "@/shared/lib/utils";
-import { SearchProvider } from "@/shared/components/command/search-provider";
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
+
+import { ensureActiveOrganization } from "@/features/organizations/server/ensure-active-organization";
 import { SettingsSidebar } from "@/features/settings/components/settings-sidebar";
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
-import { ensureActiveOrganization } from "@/features/organizations/server/ensure-active-organization";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { SearchProvider } from "@/shared/components/command/search-provider";
+import { Header } from "@/shared/components/layout/shell/header";
+import { Search } from "@/shared/components/navigation/search";
 import { ActiveOrganizationProvider } from "@/shared/components/providers/active-organization-provider";
 import { UserProvider } from "@/shared/components/providers/user-provider";
+import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
+import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { routes } from "@/shared/constants/routes";
+import {
+  getCurrentUser,
+  toSidebarUser,
+} from "@/shared/lib/auth/get-current-user";
+import { cn } from "@/shared/lib/utils";
 
 export default async function SettingsLayout({
   children,
@@ -31,16 +35,9 @@ export default async function SettingsLayout({
     redirect(routes.auth.login);
   }
 
-  const sidebarUser = {
-    name: user.name ?? user.email ?? "User",
-    email: user.email ?? "",
-    image: user.image ?? null,
-    role: (user as any).role ?? null,
-  };
-
   return (
     <ActiveOrganizationProvider organizationId={activeOrgId}>
-      <UserProvider user={sidebarUser}>
+      <UserProvider user={toSidebarUser(user)}>
         <SearchProvider>
           <TooltipProvider>
             <SidebarProvider defaultOpen={defaultOpen}>
@@ -65,5 +62,3 @@ export default async function SettingsLayout({
     </ActiveOrganizationProvider>
   );
 }
-
-

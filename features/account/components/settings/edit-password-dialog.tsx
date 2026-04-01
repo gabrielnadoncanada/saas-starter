@@ -1,12 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useActionState, useEffect, useState } from "react";
 
 import { savePasswordAction } from "@/features/auth/actions/save-password.action";
-import type { SavePasswordInput } from "@/features/auth/schemas/save-password.schema";
-import { getFieldState } from "@/shared/lib/get-field-state";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import type { SavePasswordInput } from "@/features/auth/schemas/password-change.schema";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -19,12 +17,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/shared/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
 type EditPasswordDialogProps = {
@@ -52,7 +47,11 @@ export function EditPasswordDialog({
     }
   }, [state]);
 
-  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.error, {
+    kind: "error",
+    skip: Boolean(state.fieldErrors),
+    trigger: state,
+  });
   useToastMessage(state.success, { kind: "success", trigger: state });
 
   return (

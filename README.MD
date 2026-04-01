@@ -22,18 +22,18 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 
 ## Tech stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript (strict) |
-| UI | Tailwind CSS 4, shadcn/ui, Radix UI |
-| Auth | Better Auth |
-| Database | PostgreSQL, Prisma ORM |
-| Payments | Stripe |
-| Email | Resend, React Email |
-| Tables | TanStack React Table v8 |
-| Validation | Zod |
-| Testing | Vitest |
+| Layer      | Technology                          |
+| ---------- | ----------------------------------- |
+| Framework  | Next.js 16 (App Router)             |
+| Language   | TypeScript (strict)                 |
+| UI         | Tailwind CSS 4, shadcn/ui, Radix UI |
+| Auth       | Better Auth                         |
+| Database   | PostgreSQL, Prisma ORM              |
+| Payments   | Stripe                              |
+| Email      | Resend, React Email                 |
+| Tables     | TanStack React Table v8             |
+| Validation | Zod                                 |
+| Testing    | Vitest                              |
 
 ## Quick start
 
@@ -62,19 +62,21 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 Copy `.env.example` and configure:
 
-| Variable | Purpose |
-|---|---|
-| `POSTGRES_URL` | PostgreSQL connection string |
-| `AUTH_SECRET` | Better Auth secret for signing sessions and auth tokens |
-| `STRIPE_SECRET_KEY` | Stripe API key |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signature secret |
-| `BASE_URL` | Your app URL (`http://localhost:3000` locally) |
-| `RESEND_API_KEY` | Resend email API key (for magic links and auth email) |
-| `EMAIL_FROM` | Sender address for transactional emails |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional) |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional) |
+| Variable                                    | Purpose                                                 |
+| ------------------------------------------- | ------------------------------------------------------- |
+| `POSTGRES_URL`                              | PostgreSQL connection string                            |
+| `AUTH_SECRET`                               | Better Auth secret for signing sessions and auth tokens |
+| `STRIPE_SECRET_KEY`                         | Stripe API key                                          |
+| `STRIPE_WEBHOOK_SECRET`                     | Stripe webhook signature secret                         |
+| `BASE_URL`                                  | Your app URL (`http://localhost:3000` locally)          |
+| `RESEND_API_KEY`                            | Resend email API key (for magic links and auth email)   |
+| `EMAIL_FROM`                                | Sender address for transactional emails                 |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                 |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                 |
 
 See the [full environment reference](docs_end_user/02-getting-started/environment-variables.md) for details.
+
+Auth emails and team invitation emails now ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
 
 ## How billing works
 
@@ -131,15 +133,15 @@ Full documentation is in the [`docs_end_user/`](docs_end_user/) directory:
 
 ## Scripts
 
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | Start dev server with Turbopack |
-| `pnpm build` | Production build |
-| `pnpm test` | Run tests |
-| `pnpm db:migrate` | Run database migrations |
-| `pnpm db:seed` | Seed demo data |
-| `pnpm db:studio` | Open Prisma Studio |
-| `pnpm email:dev` | Preview email templates |
+| Command           | Purpose                         |
+| ----------------- | ------------------------------- |
+| `pnpm dev`        | Start dev server with Turbopack |
+| `pnpm build`      | Production build                |
+| `pnpm test`       | Run tests                       |
+| `pnpm db:migrate` | Run database migrations         |
+| `pnpm db:seed`    | Seed demo data                  |
+| `pnpm db:studio`  | Open Prisma Studio              |
+| `pnpm email:dev`  | Preview email templates         |
 
 ## License
 

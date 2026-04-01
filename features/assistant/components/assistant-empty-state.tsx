@@ -1,8 +1,9 @@
 "use client";
 
+import { FileText, Mail, Sparkles } from "lucide-react";
+
 import { ConversationEmptyState } from "@/shared/components/ai-elements/conversation";
 import { Button } from "@/shared/components/ui/button";
-import { FileText, Mail, Sparkles } from "lucide-react";
 
 const suggestedPrompts = [
   {

@@ -1,11 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Check } from 'lucide-react';
-import type { BillingInterval, PricingModel, PlanId } from '@/features/billing/plans';
-import { checkoutAction } from '@/features/billing/actions/checkout.action';
-import { SubmitPricingButton } from '@/features/billing/components/submit-pricing-button';
-import { Button } from '@/shared/components/ui/button';
+import { Check } from "lucide-react";
+import { useState } from "react";
+
+import { checkoutAction } from "@/features/billing/actions/checkout.action";
+import { SubmitPricingButton } from "@/features/billing/components/submit-pricing-button";
+import type {
+  BillingInterval,
+  PlanId,
+  PricingModel,
+} from "@/features/billing/plans";
+import { Button } from "@/shared/components/ui/button";
 
 type PriceSchedule = { unitAmount: number; trialDays?: number };
 
@@ -25,25 +30,28 @@ type PricingToggleProps = {
 };
 
 const recurringGridCols: Record<number, string> = {
-  1: 'max-w-md mx-auto',
-  2: 'max-w-3xl mx-auto md:grid-cols-2',
-  3: 'max-w-5xl mx-auto md:grid-cols-3',
+  1: "max-w-md mx-auto",
+  2: "max-w-3xl mx-auto md:grid-cols-2",
+  3: "max-w-5xl mx-auto md:grid-cols-3",
 };
 
 function formatAmount(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
+  return new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    style: "currency",
     minimumFractionDigits: 0,
   }).format(amount / 100);
 }
 
-function getIntervalLabel(interval: BillingInterval, pricingModel: PricingModel) {
-  if (pricingModel === 'per_seat') {
-    return interval === 'year' ? 'per seat / year' : 'per seat / month';
+function getIntervalLabel(
+  interval: BillingInterval,
+  pricingModel: PricingModel,
+) {
+  if (pricingModel === "per_seat") {
+    return interval === "year" ? "per seat / year" : "per seat / month";
   }
 
-  return interval === 'year' ? '/ year' : '/ month';
+  return interval === "year" ? "/ year" : "/ month";
 }
 
 function PricingCard({
@@ -53,7 +61,7 @@ function PricingCard({
   interval: BillingInterval;
   plan: PricePlan;
 }) {
-  const schedule = interval === 'year' ? plan.yearly : plan.monthly;
+  const schedule = interval === "year" ? plan.yearly : plan.monthly;
 
   if (!schedule) {
     return null;
@@ -61,22 +69,26 @@ function PricingCard({
 
   return (
     <div
-      className={`rounded-lg border p-6 ${plan.highlighted ? 'relative border-orange-500 ring-1 ring-orange-500 shadow-md' : 'border-border'}`}
+      className={`rounded-lg border p-6 ${plan.highlighted ? "relative border-orange-500 ring-1 ring-orange-500 shadow-md" : "border-border"}`}
     >
       {plan.highlighted ? (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-orange-500 px-3 py-0.5 text-xs font-semibold text-white">
           Most Popular
         </span>
       ) : null}
-      <h2 className="mb-2 text-2xl font-medium text-foreground">{plan.productName}</h2>
+      <h2 className="mb-2 text-2xl font-medium text-foreground">
+        {plan.productName}
+      </h2>
       {plan.description ? (
         <p className="mb-2 text-sm text-muted-foreground">{plan.description}</p>
       ) : null}
       <p className="mb-4 text-sm text-muted-foreground">
-        {schedule.trialDays ? `with ${schedule.trialDays} day free trial` : '\u00A0'}
+        {schedule.trialDays
+          ? `with ${schedule.trialDays} day free trial`
+          : "\u00A0"}
       </p>
       <p className="mb-6 text-4xl font-medium text-foreground">
-        {formatAmount(schedule.unitAmount)}{' '}
+        {formatAmount(schedule.unitAmount)}{" "}
         <span className="text-xl font-normal text-muted-foreground">
           {getIntervalLabel(interval, plan.pricingModel)}
         </span>
@@ -100,9 +112,9 @@ function PricingCard({
 
 export function PricingToggle({ plans }: PricingToggleProps) {
   const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
-  const [interval, setInterval] = useState<BillingInterval>('month');
+  const [interval, setInterval] = useState<BillingInterval>("month");
   const visiblePlans = plans.filter((plan) =>
-    interval === 'year' ? Boolean(plan.yearly) : Boolean(plan.monthly),
+    interval === "year" ? Boolean(plan.yearly) : Boolean(plan.monthly),
   );
   const gridClass =
     recurringGridCols[Math.min(visiblePlans.length, 3)] ?? recurringGridCols[3];
@@ -112,15 +124,15 @@ export function PricingToggle({ plans }: PricingToggleProps) {
       <div className="flex justify-center gap-3">
         <Button
           type="button"
-          variant={interval === 'month' ? 'default' : 'outline'}
-          onClick={() => setInterval('month')}
+          variant={interval === "month" ? "default" : "outline"}
+          onClick={() => setInterval("month")}
         >
           Monthly
         </Button>
         <Button
           type="button"
-          variant={interval === 'year' ? 'default' : 'outline'}
-          onClick={() => setInterval('year')}
+          variant={interval === "year" ? "default" : "outline"}
+          onClick={() => setInterval("year")}
           disabled={!annualEnabled}
         >
           Yearly
@@ -129,7 +141,11 @@ export function PricingToggle({ plans }: PricingToggleProps) {
 
       <div className={`grid gap-8 ${gridClass}`}>
         {visiblePlans.map((plan) => (
-          <PricingCard key={`${plan.planId}-${interval}`} interval={interval} plan={plan} />
+          <PricingCard
+            key={`${plan.planId}-${interval}`}
+            interval={interval}
+            plan={plan}
+          />
         ))}
       </div>
     </div>

@@ -11,7 +11,7 @@ function Page({ fixed, className, fluid, ...props }: PageProps) {
     <div
       className={cn(
         "px-4 py-6 flex flex-1 flex-col gap-4 sm:gap-6",
-        fixed && "flex grow flex-col overflow-hidden",
+        fixed && "flex grow flex-col overflow-hidden max-h-dvh",
         !fluid && "container flex min-w-0 flex-1 flex-col lg:px-4",
         className,
       )}
@@ -66,4 +66,4 @@ function PageHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-export { Page, PageTitle, PageDescription, PageHeaderActions, PageHeader };
+export { Page, PageDescription, PageHeader, PageHeaderActions, PageTitle };

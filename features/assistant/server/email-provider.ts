@@ -64,9 +64,7 @@ const mockGmailProvider: EmailProvider = {
         subject: "[saas-starter] PR #47 merged",
         snippet:
           "Pull request #47 'Add usage meters to dashboard' has been merged into main by @teammate.",
-        receivedAt: new Date(
-          now.getTime() - 12 * 60 * 60 * 1000
-        ).toISOString(),
+        receivedAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
       },
       {
         id: "msg-5",
@@ -74,9 +72,7 @@ const mockGmailProvider: EmailProvider = {
         subject: "Proposal for Q2 consulting engagement",
         snippet:
           "Please find attached our proposal for the Q2 engagement. Total: $18,500 for 3 months. Let me know if you'd like to discuss terms.",
-        receivedAt: new Date(
-          now.getTime() - 24 * 60 * 60 * 1000
-        ).toISOString(),
+        receivedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
       },
     ];
 

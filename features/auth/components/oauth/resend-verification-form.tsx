@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+
 import { resendVerificationEmail } from "@/features/auth/data/auth-requests";
 import { Button } from "@/shared/components/ui/button";
 
@@ -10,9 +11,7 @@ type ResendVerificationFormProps = {
   email: string;
 };
 
-export function ResendVerificationForm({
-  email,
-}: ResendVerificationFormProps) {
+export function ResendVerificationForm({ email }: ResendVerificationFormProps) {
   const [isPending, setIsPending] = useState(false);
 
   async function handleResend() {

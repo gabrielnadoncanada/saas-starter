@@ -7,14 +7,20 @@ export function getCallbackURL(callbackUrl: string | null | undefined): string {
     return callbackUrl;
   }
 
-  if (callbackUrl && allowedCallbackPrefixes.some((prefix) => callbackUrl.startsWith(prefix))) {
+  if (
+    callbackUrl &&
+    allowedCallbackPrefixes.some((prefix) => callbackUrl.startsWith(prefix))
+  ) {
     return callbackUrl;
   }
 
   return DEFAULT_CALLBACK_URL;
 }
 
-export function buildCallbackURL(pathname: string, callbackUrl: string | null | undefined) {
+export function buildCallbackURL(
+  pathname: string,
+  callbackUrl: string | null | undefined,
+) {
   const nextCallbackUrl = getCallbackURL(callbackUrl);
 
   if (nextCallbackUrl === DEFAULT_CALLBACK_URL) {

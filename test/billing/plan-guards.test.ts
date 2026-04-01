@@ -1,9 +1,19 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { billingConfig, getPlan, isPlanId } from "@/shared/config/billing.config";
-import { hasCapability, assertCapability, getPlanLimit, assertLimit, checkLimit } from "@/features/billing/guards/plan-guards";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import {
+  assertCapability,
+  assertLimit,
+  checkLimit,
+  getPlanLimit,
+  hasCapability,
+} from "@/features/billing/guards/plan-guards";
+import {
+  billingConfig,
+  getPlan,
+  isPlanId,
+} from "@/shared/config/billing.config";
 
 vi.mock("server-only", () => ({}));
 

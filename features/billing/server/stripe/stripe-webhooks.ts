@@ -1,10 +1,12 @@
 import type Stripe from "stripe";
+
 import {
+  type BillingInterval,
   findPlanPriceByPriceId,
   isPlanId,
-  type BillingInterval,
 } from "@/features/billing/plans";
 import { db } from "@/shared/lib/db/prisma";
+
 import {
   clearStripeCustomerBillingState,
   findOrganizationIdByStripeCustomerId,
@@ -99,7 +101,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     stripeScheduleId:
       typeof subscription.schedule === "string"
         ? subscription.schedule
-        : subscription.schedule?.id ?? null,
+        : (subscription.schedule?.id ?? null),
   };
 
   await db.subscription.upsert({
@@ -120,8 +122,10 @@ async function syncSubscription(subscription: Stripe.Subscription) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const organizationId = session.metadata?.organizationId ?? session.client_reference_id;
-  const customerId = typeof session.customer === "string" ? session.customer : null;
+  const organizationId =
+    session.metadata?.organizationId ?? session.client_reference_id;
+  const customerId =
+    typeof session.customer === "string" ? session.customer : null;
 
   if (!organizationId || !customerId) {
     return;
@@ -149,7 +153,9 @@ async function handleCustomerDeleted(customer: Stripe.Customer) {
 export async function handleStripeWebhookEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
-      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+      await handleCheckoutCompleted(
+        event.data.object as Stripe.Checkout.Session,
+      );
       return;
     case "customer.deleted":
       await handleCustomerDeleted(event.data.object as Stripe.Customer);

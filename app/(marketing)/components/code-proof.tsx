@@ -19,11 +19,11 @@ export function CodeProof() {
             </p>
             <ul className="mt-6 space-y-3">
               {[
-                'assertCapability() — gate features by plan',
-                'assertLimit() — enforce usage quotas',
-                'recordUsage() — track consumption automatically',
-                'Plans config — single source of truth for all plans',
-                'Three billing models — flat, per-seat, one-time',
+                "assertCapability() — gate features by plan",
+                "assertLimit() — enforce usage quotas",
+                "recordUsage() — track consumption automatically",
+                "Plans config — single source of truth for all plans",
+                "Three billing models — flat, per-seat, one-time",
               ].map((item) => (
                 <li
                   key={item}
@@ -43,7 +43,7 @@ export function CodeProof() {
                 // Gate a feature in your server action
               </p>
               <pre className="whitespace-pre leading-relaxed">
-{`const organizationPlan = await getOrganizationPlan();
+                {`const organizationPlan = await getOrganizationPlan();
 
 assertCapability(organizationPlan.planId, "team.invite");
 assertLimit(organizationPlan.planId, "teamMembers", memberCount);
@@ -58,7 +58,7 @@ assertLimit(organizationPlan.planId, "teamMembers", memberCount);
                 // plans.ts — single source of truth
               </p>
               <pre className="whitespace-pre leading-relaxed">
-{`export const plans = {
+                {`export const plans = {
   free: {
     capabilities: ["task.create", "billing.portal"],
     limits: { tasksPerMonth: 10, teamMembers: 1 },
@@ -77,4 +77,3 @@ assertLimit(organizationPlan.planId, "teamMembers", memberCount);
     </section>
   );
 }
-

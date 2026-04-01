@@ -1,15 +1,16 @@
-import type { Metadata } from 'next';
-import { PricingSection } from '@/features/billing/components/pricing-section';
-import { FaqSection } from '@/features/billing/components/faq-section';
+import type { Metadata } from "next";
+
+import { FaqSection } from "@/features/billing/components/faq-section";
+import { PricingSection } from "@/features/billing/components/pricing-section";
 
 export const metadata: Metadata = {
-  title: 'Pricing',
+  title: "Pricing",
   description:
-    'Simple, transparent pricing. Choose the plan that fits your team and start building today.',
+    "Simple, transparent pricing. Choose the plan that fits your team and start building today.",
   openGraph: {
-    title: 'Pricing - SaaS Starter',
+    title: "Pricing - SaaS Starter",
     description:
-      'Simple, transparent pricing for solo founders and small teams.',
+      "Simple, transparent pricing for solo founders and small teams.",
   },
 };
 

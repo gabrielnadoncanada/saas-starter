@@ -6,9 +6,9 @@ import {
   replaceAssistantConversation,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/conversations";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 
 type RouteContext = {
   params: Promise<{
@@ -16,7 +16,9 @@ type RouteContext = {
   }>;
 };
 
-function getScopeErrorResponse(scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>) {
+function getScopeErrorResponse(
+  scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,
+) {
   if (scope.kind === "unauthorized") {
     return new Response("Unauthorized", { status: 401 });
   }
@@ -77,14 +79,14 @@ export async function PATCH(req: Request, context: RouteContext) {
   if (!Array.isArray(body.messages) || body.messages.length === 0) {
     return Response.json(
       { error: "Conversation messages are required." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const { conversationId } = await context.params;
   const conversation = await replaceAssistantConversation(
     conversationId,
-    body.messages
+    body.messages,
   );
 
   if (!conversation) {

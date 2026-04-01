@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
+
+import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { OrganizationInvitationPage } from "@/features/organizations/components/organization-invitation-page";
 import { routes } from "@/shared/constants/routes";
-import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -30,6 +31,3 @@ export default async function AcceptInvitationPage({
 
   return <OrganizationInvitationPage invitationId={id} />;
 }
-
-
-

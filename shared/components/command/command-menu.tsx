@@ -2,11 +2,12 @@
 
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import React from "react";
 
 import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
-import { ScrollArea } from "@/shared/components/ui/scroll-area";
-
+import { useSearch } from "@/shared/components/command/search-provider";
+import type { SidebarNavGroup } from "@/shared/components/navigation/sidebar-types";
 import {
   CommandDialog,
   CommandEmpty,
@@ -16,9 +17,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/shared/components/ui/command";
-import { useSearch } from "@/shared/components/command/search-provider";
-import { useTheme } from "next-themes";
-import type { SidebarNavGroup } from "@/shared/components/navigation/sidebar-types";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 
 export function CommandMenu() {
   const router = useRouter();

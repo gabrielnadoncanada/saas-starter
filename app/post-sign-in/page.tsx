@@ -1,15 +1,12 @@
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { completePostSignIn } from '@/features/auth/server/complete-post-sign-in';
-import { resumeCheckoutAfterSignIn } from '@/features/billing/server/resume-checkout-after-sign-in';
-import {
-  isBillingInterval,
-  isPlanId,
-} from '@/features/billing/plans';
-import { routes } from '@/shared/constants/routes';
-import { getCallbackURL } from '@/shared/lib/auth/callback-url';
-import { getCurrentUser } from '@/shared/lib/auth/get-current-user';
+import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
+import { isBillingInterval, isPlanId } from "@/features/billing/plans";
+import { resumeCheckoutAfterSignIn } from "@/features/billing/server/resume-checkout-after-sign-in";
+import { routes } from "@/shared/constants/routes";
+import { getCallbackURL } from "@/shared/lib/auth/callback-url";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 type PostSignInPageProps = {
   searchParams: Promise<{
@@ -20,7 +17,9 @@ type PostSignInPageProps = {
   }>;
 };
 
-export default async function PostSignInPage({ searchParams }: PostSignInPageProps) {
+export default async function PostSignInPage({
+  searchParams,
+}: PostSignInPageProps) {
   const [
     user,
     {
@@ -29,26 +28,21 @@ export default async function PostSignInPage({ searchParams }: PostSignInPagePro
       billingInterval,
       callbackUrl: rawCallbackUrl,
     },
-  ] =
-    await Promise.all([getCurrentUser(), searchParams]);
+  ] = await Promise.all([getCurrentUser(), searchParams]);
 
   if (!user) {
     redirect(routes.auth.login);
   }
 
-  const currentUser = user as NonNullable<typeof user>;
   const callbackUrl = getCallbackURL(rawCallbackUrl);
-
-  const organizationId = await completePostSignIn({
-    email: currentUser.email,
-  });
+  const organizationId = await ensureUserWorkspace(user.email);
 
   if (
-    authRedirect === 'checkout' &&
+    authRedirect === "checkout" &&
     planId &&
     billingInterval &&
     isPlanId(planId) &&
-    planId !== 'free' &&
+    planId !== "free" &&
     isBillingInterval(billingInterval)
   ) {
     const url = await resumeCheckoutAfterSignIn({

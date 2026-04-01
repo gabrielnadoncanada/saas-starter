@@ -1,14 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useActionState, useEffect, useState } from "react";
 
 import { updateAccountAction } from "@/features/account/actions/update-account.action";
 import type { UpdateAccountActionState } from "@/features/account/types/account.types";
-import { getFieldState } from "@/shared/lib/get-field-state";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
-import { Button } from "@/shared/components/ui/button";
 import { PhoneInput } from "@/shared/components/forms/phone-input";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -19,13 +17,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/shared/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { getFieldState } from "@/shared/lib/get-field-state";
 
 type EditProfileDialogProps = {
   name: string;
@@ -61,7 +56,11 @@ export function EditProfileDialog({
     }
   }, [state]);
 
-  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.error, {
+    kind: "error",
+    skip: Boolean(state.fieldErrors),
+    trigger: state,
+  });
   useToastMessage(state.success, { kind: "success", trigger: state });
 
   return (

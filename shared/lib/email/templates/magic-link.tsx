@@ -1,7 +1,8 @@
-import { Heading, Text, Section, CodeInline } from "@react-email/components";
+import { Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { EmailLayout } from "./components/email-layout";
+
 import { EmailButton } from "./components/email-button";
+import { EmailLayout } from "./components/email-layout";
 
 type MagicLinkEmailProps = {
   url: string;
@@ -12,21 +13,18 @@ export function MagicLinkEmail({
 }: MagicLinkEmailProps) {
   return (
     <EmailLayout
-      preview="Votre lien de connexion"
-      footerText="Si vous n'avez pas demandé ce lien, vous pouvez ignorer cet email."
+      preview="Your sign-in link"
+      footerText="If you did not request this link, you can safely ignore this email."
     >
-      <Heading style={heading}>Connexion</Heading>
+      <Heading style={heading}>Sign in</Heading>
       <Text style={paragraph}>
-        Cliquez sur le bouton ci-dessous pour vous connecter à votre compte.
-        Ce lien expire dans 24 heures.
+        Click the button below to sign in to your account. This link expires in
+        24 hours.
       </Text>
       <Section style={buttonContainer}>
-        <EmailButton href={url}>Se connecter</EmailButton>
+        <EmailButton href={url}>Sign in</EmailButton>
       </Section>
-      <Text style={link}>
-        Ou copiez ce lien dans votre navigateur :{" "}
-        {url}
-      </Text>
+      <Text style={link}>Or copy this link into your browser: {url}</Text>
     </EmailLayout>
   );
 }

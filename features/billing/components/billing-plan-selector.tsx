@@ -1,26 +1,26 @@
 "use client";
 
+import { CircleCheckBigIcon } from "lucide-react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { checkoutAction } from "@/features/billing/actions/checkout.action";
 import { customerPortalAction } from "@/features/billing/actions/customer-portal.action";
-import { type BillingInterval, type PlanId } from "@/features/billing/plans";
 import {
   BillingIntervalSelector,
-  BillingPlanRadioGroup,
   type BillingPlanOption,
+  BillingPlanRadioGroup,
 } from "@/features/billing/components/billing-plan-selector-fields";
-import { Button } from "@/shared/components/ui/button";
+import { type BillingInterval, type PlanId } from "@/features/billing/plans";
 import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/shared/components/ui/card";
 import {
   Item,
   ItemContent,
-  ItemTitle,
   ItemDescription,
+  ItemTitle,
 } from "@/shared/components/ui/item";
-import { CircleCheckBigIcon } from "lucide-react";
 
 type BillingPlanSelectorProps = {
   plans: BillingPlanOption[];
@@ -132,8 +132,9 @@ export function BillingPlanSelector({
             Abonnement deja actif
           </Button>
           <p className="text-sm text-muted-foreground">
-            Cet espace a deja un abonnement en cours. Le portail Stripe n&apos;est
-            pas disponible tant que le client Stripe n&apos;est pas synchronise.
+            Cet espace a deja un abonnement en cours. Le portail Stripe
+            n&apos;est pas disponible tant que le client Stripe n&apos;est pas
+            synchronise.
           </p>
         </div>
       ) : (

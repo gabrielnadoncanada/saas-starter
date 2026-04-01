@@ -1,7 +1,7 @@
 import {
+  type BillingInterval,
   getPlan,
   isPlanId,
-  type BillingInterval,
   type PricingModel,
 } from "@/features/billing/plans";
 import { db } from "@/shared/lib/db/prisma";

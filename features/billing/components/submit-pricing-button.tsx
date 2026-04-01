@@ -1,11 +1,15 @@
-'use client';
+"use client";
 
-import { ArrowRight, Loader2 } from 'lucide-react';
-import { useFormStatus } from 'react-dom';
+import { ArrowRight, Loader2 } from "lucide-react";
+import { useFormStatus } from "react-dom";
 
-import { Button } from '@/shared/components/ui/button';
+import { Button } from "@/shared/components/ui/button";
 
-export function SubmitPricingButton({ label = 'Get Started' }: { label?: string }) {
+export function SubmitPricingButton({
+  label = "Get Started",
+}: {
+  label?: string;
+}) {
   const { pending } = useFormStatus();
 
   return (

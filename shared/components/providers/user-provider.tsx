@@ -2,12 +2,7 @@
 
 import { createContext, useContext } from "react";
 
-export type SidebarUser = {
-  name: string;
-  email: string;
-  image: string | null;
-  role: string | null;
-};
+import type { SidebarUser } from "@/shared/lib/auth/get-current-user";
 
 const UserContext = createContext<SidebarUser | null>(null);
 

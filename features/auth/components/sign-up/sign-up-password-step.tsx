@@ -4,13 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+
 import { AuthEmailSummary } from "@/features/auth/components/shared/auth-email-summary";
 import { signUpWithEmail } from "@/features/auth/data/auth-requests";
 import {
   signUpPasswordDefaultValues,
   signUpPasswordSchema,
   type SignUpPasswordValues,
-} from "@/features/auth/schemas/sign-up.schema";
+} from "@/features/auth/schemas/auth-forms.schema";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
@@ -93,7 +94,9 @@ export function SignUpPasswordStep({
         </Field>
 
         <Field data-invalid={Boolean(errors.confirmPassword)}>
-          <FieldLabel htmlFor="sign-up-confirm-password">Confirm password</FieldLabel>
+          <FieldLabel htmlFor="sign-up-confirm-password">
+            Confirm password
+          </FieldLabel>
           <PasswordInput
             id="sign-up-confirm-password"
             autoComplete="new-password"

@@ -2,17 +2,10 @@
 
 import type { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
-import {
-  bulkDeleteTasksSchema,
-  bulkUpdateTaskStatusSchema,
-  createTaskSchema,
-  deleteTaskSchema,
-  updateTaskSchema,
-  updateTaskStatusSchema,
-} from "@/features/tasks/task-schemas";
 import {
   bulkDeleteTasks,
   bulkUpdateTaskStatus,
@@ -21,8 +14,44 @@ import {
   updateTask,
   updateTaskStatus,
 } from "@/features/tasks/server/task-mutations";
+import {
+  bulkDeleteTasksSchema,
+  bulkUpdateTaskStatusSchema,
+  createTaskSchema,
+  deleteTaskSchema,
+  updateTaskSchema,
+  updateTaskStatusSchema,
+} from "@/features/tasks/task-schemas";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import type { FormActionState } from "@/shared/types/form-action-state";
+
+type CreateTaskValues = z.infer<typeof createTaskSchema>;
+type UpdateTaskValues = z.infer<typeof updateTaskSchema>;
+type DeleteTaskValues = z.infer<typeof deleteTaskSchema>;
+type BulkDeleteTaskValues = z.infer<typeof bulkDeleteTasksSchema>;
+type BulkUpdateTaskStatusValues = z.infer<typeof bulkUpdateTaskStatusSchema>;
+
+export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
+  task?: Task;
+};
+
+export type UpdateTaskActionState = FormActionState<UpdateTaskValues>;
+
+export type DeleteTaskActionState = FormActionState<DeleteTaskValues> & {
+  taskId?: number;
+};
+
+export type BulkDeleteTasksActionState =
+  FormActionState<BulkDeleteTaskValues> & {
+    taskIds?: number[];
+  };
+
+export type BulkUpdateTaskStatusActionState =
+  FormActionState<BulkUpdateTaskStatusValues> & {
+    status?: Task["status"];
+    taskIds?: number[];
+  };
 
 export const createTaskAction = validatedAuthenticatedAction<
   typeof createTaskSchema,

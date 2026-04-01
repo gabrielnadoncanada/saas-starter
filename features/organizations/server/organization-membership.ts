@@ -1,9 +1,10 @@
 import { headers } from "next/headers";
+
 import { auth } from "@/shared/lib/auth/auth-config";
 import {
   getPrimaryOrgRole,
-  parseOrgRoles,
   type OrgRole,
+  parseOrgRoles,
 } from "@/shared/lib/db/enums";
 
 export type ActiveOrganizationMembership = {

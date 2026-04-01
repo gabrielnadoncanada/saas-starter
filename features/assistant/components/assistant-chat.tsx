@@ -7,6 +7,16 @@ import { GlobeIcon, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import {
+  createAssistantConversationRequest,
+  replaceAssistantConversationRequest,
+} from "@/features/assistant/client/conversations";
+import { AssistantEmptyState } from "@/features/assistant/components/assistant-empty-state";
+import { AssistantErrorState } from "@/features/assistant/components/assistant-error-state";
+import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
+import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
+import { assistantModels } from "@/features/assistant/models";
+import type { AssistantConversation } from "@/features/assistant/types";
+import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
@@ -20,22 +30,12 @@ import {
   PromptInput,
   PromptInputBody,
   PromptInputFooter,
+  type PromptInputMessage,
   PromptInputProvider,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
-  type PromptInputMessage,
 } from "@/shared/components/ai-elements/prompt-input";
-import {
-  createAssistantConversationRequest,
-  replaceAssistantConversationRequest,
-} from "@/features/assistant/client/conversations";
-import { AssistantEmptyState } from "@/features/assistant/components/assistant-empty-state";
-import { AssistantErrorState } from "@/features/assistant/components/assistant-error-state";
-import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
-import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
-import { assistantModels } from "@/features/assistant/models";
-import type { AssistantConversation } from "@/features/assistant/types";
 import { Spinner } from "@/shared/components/ui/spinner";
 
 type AssistantChatProps = {
@@ -69,12 +69,13 @@ export function AssistantChat({
       new DefaultChatTransport({
         api: "/api/assistant",
         prepareSendMessagesRequest: async ({ messages, body }) => {
-          const { selectedModel, conversationId: currentConversationId } = stateRef.current;
+          const { selectedModel, conversationId: currentConversationId } =
+            stateRef.current;
 
           if (currentConversationId) {
             const conversation = await replaceAssistantConversationRequest(
               currentConversationId,
-              messages
+              messages,
             );
             stateRef.current.onConversationUpdated(conversation);
 
@@ -89,7 +90,8 @@ export function AssistantChat({
             };
           }
 
-          const conversation = await createAssistantConversationRequest(messages);
+          const conversation =
+            await createAssistantConversationRequest(messages);
           stateRef.current.conversationId = conversation.id;
           stateRef.current.onConversationCreated(conversation);
 
@@ -103,24 +105,36 @@ export function AssistantChat({
             },
           };
         },
-      })
+      }),
   );
-  const { clearError, error, messages, sendMessage, setMessages, status, stop } =
-    useChat({
-      onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
-        if (isAbort || isDisconnect || isError || !stateRef.current.conversationId) {
-          return;
-        }
+  const {
+    clearError,
+    error,
+    messages,
+    sendMessage,
+    setMessages,
+    status,
+    stop,
+  } = useChat({
+    onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
+      if (
+        isAbort ||
+        isDisconnect ||
+        isError ||
+        !stateRef.current.conversationId
+      ) {
+        return;
+      }
 
-        void replaceAssistantConversationRequest(
-          stateRef.current.conversationId,
-          nextMessages
-        ).then((conversation) => {
-          stateRef.current.onConversationUpdated(conversation);
-        });
-      },
-      transport,
-    });
+      void replaceAssistantConversationRequest(
+        stateRef.current.conversationId,
+        nextMessages,
+      ).then((conversation) => {
+        stateRef.current.onConversationUpdated(conversation);
+      });
+    },
+    transport,
+  });
 
   const isLoading = status === "streaming" || status === "submitted";
   const selectedModel =
@@ -169,7 +183,9 @@ export function AssistantChat({
           <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
             {messages.length === 0 && !error ? (
               <AssistantEmptyState
-                onPromptClick={(text) => sendAssistantMessage({ files: [], text })}
+                onPromptClick={(text) =>
+                  sendAssistantMessage({ files: [], text })
+                }
               />
             ) : (
               messages.map((message) => (
@@ -211,7 +227,8 @@ export function AssistantChat({
               ))
             )}
 
-            {isLoading && messages[messages.length - 1]?.role !== "assistant" ? (
+            {isLoading &&
+            messages[messages.length - 1]?.role !== "assistant" ? (
               <Message from="assistant">
                 <MessageContent className="rounded-lg border bg-muted/30 px-4 py-3">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -225,36 +242,38 @@ export function AssistantChat({
           <ConversationScrollButton />
         </Conversation>
 
-        {error ? <AssistantErrorState error={error} onDismiss={clearError} /> : null}
+        {error ? (
+          <AssistantErrorState error={error} onDismiss={clearError} />
+        ) : null}
 
         <div className="mx-auto w-full max-w-3xl px-4 pb-4">
-        <PromptInput className="w-full" onSubmit={sendAssistantMessage}>
-          <PromptInputBody>
-            <PromptInputTextarea
-              disabled={isLoading}
-              placeholder="Ask me to review the demo inbox, create a task, or draft an invoice..."
-            />
-          </PromptInputBody>
-          <PromptInputFooter>
-            <PromptInputTools>
-              <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
-                <Sparkles className="h-3.5 w-3.5 text-orange-500" />
-                Billing copilot
-              </div>
-              <div className="hidden items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground sm:flex">
-                <GlobeIcon className="h-3.5 w-3.5" />
-                Web off
-              </div>
-              <AssistantModelSelector
-                modelId={modelId}
-                onOpenChange={setModelSelectorOpen}
-                onSelect={setModelId}
-                open={modelSelectorOpen}
+          <PromptInput className="w-full" onSubmit={sendAssistantMessage}>
+            <PromptInputBody>
+              <PromptInputTextarea
+                disabled={isLoading}
+                placeholder="Ask me to review the demo inbox, create a task, or draft an invoice..."
               />
-            </PromptInputTools>
-            <PromptInputSubmit onStop={stop} status={status} />
-          </PromptInputFooter>
-        </PromptInput>
+            </PromptInputBody>
+            <PromptInputFooter>
+              <PromptInputTools>
+                <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
+                  <Sparkles className="h-3.5 w-3.5 text-orange-500" />
+                  Billing copilot
+                </div>
+                <div className="hidden items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground sm:flex">
+                  <GlobeIcon className="h-3.5 w-3.5" />
+                  Web off
+                </div>
+                <AssistantModelSelector
+                  modelId={modelId}
+                  onOpenChange={setModelSelectorOpen}
+                  onSelect={setModelId}
+                  open={modelSelectorOpen}
+                />
+              </PromptInputTools>
+              <PromptInputSubmit onStop={stop} status={status} />
+            </PromptInputFooter>
+          </PromptInput>
         </div>
       </div>
     </PromptInputProvider>

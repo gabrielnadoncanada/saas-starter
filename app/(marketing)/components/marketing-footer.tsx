@@ -1,22 +1,22 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 const productLinks = [
-  { label: 'Features', href: '/#features' },
-  { label: 'Screenshots', href: '/#screenshots' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'Comparison', href: '/#compare' },
-  { label: 'FAQ', href: '/#faq' },
+  { label: "Features", href: "/#features" },
+  { label: "Screenshots", href: "/#screenshots" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Comparison", href: "/#compare" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 const resourceLinks = [
-  { label: 'Demo', href: '/sign-in' },
-  { label: 'Documentation', href: '/#faq' },
-  { label: 'Tech Stack', href: '/#stack' },
+  { label: "Demo", href: "/sign-in" },
+  { label: "Documentation", href: "/#faq" },
+  { label: "Tech Stack", href: "/#stack" },
 ];
 
 const legalLinks = [
-  { label: 'Privacy Policy', href: '/privacy' },
-  { label: 'Terms of Service', href: '/terms' },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
 ];
 
 export function MarketingFooter() {
@@ -95,8 +95,7 @@ export function MarketingFooter() {
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} SaaS Starter. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} SaaS Starter. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
             Built with Next.js 16, React 19, TypeScript, and Tailwind v4.

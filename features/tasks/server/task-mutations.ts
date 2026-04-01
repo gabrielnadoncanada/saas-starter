@@ -3,10 +3,10 @@ import "server-only";
 import { Prisma, type Task } from "@prisma/client";
 import { z } from "zod";
 
-import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
-import { requireCurrentOrganizationId } from "@/features/organizations/server/require-current-organization-id";
+import { getActiveOrganizationId } from "@/features/organizations/server/get-active-organization-id";
 import {
   bulkDeleteTasksSchema,
   bulkUpdateTaskStatusSchema,
@@ -34,7 +34,7 @@ function isUniqueConstraintError(error: unknown) {
 }
 
 async function getOrganizationId() {
-  return requireCurrentOrganizationId();
+  return getActiveOrganizationId({ required: true });
 }
 
 export async function listTasks() {
@@ -160,9 +160,7 @@ export async function deleteTask(taskId: DeleteTaskInput["taskId"]) {
   }
 }
 
-export async function bulkUpdateTaskStatus(
-  input: BulkUpdateTaskStatusInput,
-) {
+export async function bulkUpdateTaskStatus(input: BulkUpdateTaskStatusInput) {
   const organizationId = await getOrganizationId();
 
   const { count } = await db.task.updateMany({

@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 
+import type { SavePasswordInput } from "@/features/auth/schemas/password-change.schema";
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
-import type { SavePasswordInput } from "@/features/auth/schemas/save-password.schema";
 
 type SavePasswordParams = {
   currentPassword: string;
@@ -42,7 +42,10 @@ export async function savePasswordServer({
     const message =
       error instanceof Error ? error.message : "Unable to update password.";
 
-    if (message.toLowerCase().includes("incorrect") || message.toLowerCase().includes("invalid")) {
+    if (
+      message.toLowerCase().includes("incorrect") ||
+      message.toLowerCase().includes("invalid")
+    ) {
       return {
         error: "Please fix the highlighted fields.",
         fieldErrors: {

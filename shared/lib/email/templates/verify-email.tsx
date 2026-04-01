@@ -1,5 +1,6 @@
 import { Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
+
 import { EmailButton } from "./components/email-button";
 import { EmailLayout } from "./components/email-layout";
 
@@ -12,17 +13,20 @@ export function VerifyEmailTemplate({
 }: VerifyEmailTemplateProps) {
   return (
     <EmailLayout
-      preview="Confirmez votre adresse email"
-      footerText="Si vous n'avez pas créé ce compte, ignorez simplement cet email."
+      preview="Verify your email address"
+      footerText="If you did not create this account, you can ignore this email."
     >
-      <Heading style={heading}>Confirmez votre adresse email</Heading>
+      <Heading style={heading}>Verify your email address</Heading>
       <Text style={paragraph}>
-        Cliquez sur le bouton ci-dessous pour activer votre compte. Ce lien expire dans 24 heures.
+        Click the button below to activate your account. This link expires in 24
+        hours.
       </Text>
       <Section style={buttonContainer}>
-        <EmailButton href={verificationUrl}>Confirmer mon email</EmailButton>
+        <EmailButton href={verificationUrl}>Verify email</EmailButton>
       </Section>
-      <Text style={link}>Ou copiez ce lien dans votre navigateur : {verificationUrl}</Text>
+      <Text style={link}>
+        Or copy this link into your browser: {verificationUrl}
+      </Text>
     </EmailLayout>
   );
 }

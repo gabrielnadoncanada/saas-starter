@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 
 import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
-import type { CurrentOrganizationView } from "@/features/organizations/types/organization.types";
 import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
+import type { CurrentOrganizationView } from "@/features/organizations/types/organization.types";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getAuthSession } from "@/shared/lib/auth/get-session";
 import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
@@ -34,7 +34,9 @@ function toIsoString(value?: Date | string | null) {
   return typeof value === "string" ? value : value.toISOString();
 }
 
-function mapOrganizationMember(member: RawOrganizationMember): OrganizationMemberView {
+function mapOrganizationMember(
+  member: RawOrganizationMember,
+): OrganizationMemberView {
   return {
     id: member.id,
     roles: parseOrgRoles(member.role),
@@ -95,5 +97,3 @@ export async function getCurrentOrganization(): Promise<CurrentOrganizationView 
 
   return mapCurrentOrganization(organization as RawOrganization, subscription);
 }
-
-

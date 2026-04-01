@@ -52,7 +52,11 @@ function buildAdminTaskDescription(index: number) {
   return `Seeded admin task ${index + 1} for table testing, bulk actions, filters, and pagination.`;
 }
 
-function buildAdminTaskRecords(organizationId: string, startCode: number, count: number) {
+function buildAdminTaskRecords(
+  organizationId: string,
+  startCode: number,
+  count: number,
+) {
   return Array.from({ length: count }, (_, offset) => {
     const index = startCode + offset;
 

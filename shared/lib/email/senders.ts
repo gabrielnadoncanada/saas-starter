@@ -37,4 +37,3 @@ export async function sendTeamInvitationEmail(input: {
     throw error;
   }
 }
-

@@ -1,15 +1,17 @@
 import "server-only";
 
-import type { OrgRole } from "@/shared/lib/db/enums";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import type { OrgRole } from "@/shared/lib/db/enums";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 
 export type CurrentOrganizationContext = {
   user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
   organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>;
   currentMember: NonNullable<
-    NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>["members"][number]
+    NonNullable<
+      Awaited<ReturnType<typeof getCurrentOrganization>>
+    >["members"][number]
   >;
   roles: OrgRole[];
   primaryRole: OrgRole;
@@ -53,5 +55,3 @@ export async function getCurrentOrganizationContext(): Promise<CurrentOrganizati
     canTransferOwnership: isOwner,
   };
 }
-
-

@@ -1,12 +1,5 @@
 "use client";
 
-import { Badge } from "@/shared/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shared/components/ui/collapsible";
-import { cn } from "@/shared/lib/utils";
 import type { DynamicToolUIPart, ToolUIPart } from "ai";
 import {
   CheckCircleIcon,
@@ -18,6 +11,14 @@ import {
 } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { isValidElement } from "react";
+
+import { Badge } from "@/shared/components/ui/badge";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/components/ui/collapsible";
+import { cn } from "@/shared/lib/utils";
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
@@ -75,7 +76,10 @@ export const ToolHeader = ({
 
   return (
     <CollapsibleTrigger
-      className={cn("flex w-full items-center justify-between gap-4 p-3", className)}
+      className={cn(
+        "flex w-full items-center justify-between gap-4 p-3",
+        className,
+      )}
       {...props}
     >
       <div className="flex items-center gap-2">
@@ -95,7 +99,10 @@ type ToolContentProps = ComponentProps<typeof CollapsibleContent>;
 
 export const ToolContent = ({ className, ...props }: ToolContentProps) => (
   <CollapsibleContent
-    className={cn("space-y-3 border-t p-4 text-popover-foreground outline-none", className)}
+    className={cn(
+      "space-y-3 border-t p-4 text-popover-foreground outline-none",
+      className,
+    )}
     {...props}
   />
 );
@@ -116,14 +123,20 @@ export const ToolOutput = ({
   }
 
   let content = output;
-  if (typeof output === "object" && output !== null && !isValidElement(output)) {
+  if (
+    typeof output === "object" &&
+    output !== null &&
+    !isValidElement(output)
+  ) {
     content = (
       <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs">
         {JSON.stringify(output, null, 2)}
       </pre>
     );
   } else if (typeof output === "string") {
-    content = <pre className="whitespace-pre-wrap font-mono text-xs">{output}</pre>;
+    content = (
+      <pre className="whitespace-pre-wrap font-mono text-xs">{output}</pre>
+    );
   }
 
   return (
@@ -136,7 +149,7 @@ export const ToolOutput = ({
           "overflow-x-auto rounded-md p-3 text-xs [&_table]:w-full",
           errorText
             ? "bg-destructive/10 text-destructive"
-            : "bg-muted/50 text-foreground"
+            : "bg-muted/50 text-foreground",
         )}
       >
         {errorText ? <div>{errorText}</div> : content}

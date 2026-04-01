@@ -1,7 +1,7 @@
 "use client";
 
-import type { UseFormRegisterReturn } from "react-hook-form";
 import type { SubmitEventHandler } from "react";
+import type { UseFormRegisterReturn } from "react-hook-form";
 
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";

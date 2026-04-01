@@ -1,19 +1,21 @@
 import { Heading, Text } from "@react-email/components";
 import * as React from "react";
+
 import { EmailLayout } from "./components/email-layout";
 
 export function PasswordChangedTemplate() {
   return (
     <EmailLayout
-      preview="Votre mot de passe a été modifié"
-      footerText="Si ce changement ne vient pas de vous, réinitialisez votre mot de passe immédiatement."
+      preview="Your password was changed"
+      footerText="If this was not you, reset your password immediately."
     >
-      <Heading style={heading}>Mot de passe mis à jour</Heading>
+      <Heading style={heading}>Password updated</Heading>
       <Text style={paragraph}>
-        Le mot de passe de votre compte vient d'être modifié avec succès.
+        Your account password was updated successfully.
       </Text>
       <Text style={paragraph}>
-        Si ce changement n'était pas prévu, utilisez le flow de réinitialisation du mot de passe dès maintenant.
+        If you did not expect this change, use the password reset flow right
+        away.
       </Text>
     </EmailLayout>
   );

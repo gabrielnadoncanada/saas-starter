@@ -6,7 +6,9 @@ import {
   type OAuthProviderId,
 } from "@/shared/lib/auth/oauth-config";
 
-type UserAccount = Awaited<ReturnType<typeof auth.api.listUserAccounts>>[number];
+type UserAccount = Awaited<
+  ReturnType<typeof auth.api.listUserAccounts>
+>[number];
 
 async function listCurrentUserAccounts() {
   return auth.api.listUserAccounts({

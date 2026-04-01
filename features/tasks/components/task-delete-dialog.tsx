@@ -4,9 +4,8 @@ import type { Task } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
 
+import type { DeleteTaskActionState } from "@/features/tasks/server/task-actions";
 import { deleteTaskAction } from "@/features/tasks/server/task-actions";
-import { DeleteTaskActionState } from "@/features/tasks/server/task-action-state";
-
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 

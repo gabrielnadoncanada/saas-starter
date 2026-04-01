@@ -15,7 +15,9 @@ type VerifyEmailPageProps = {
   }>;
 };
 
-export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageProps) {
+export default async function VerifyEmailPage({
+  searchParams,
+}: VerifyEmailPageProps) {
   const { error } = await searchParams;
 
   // Better Auth handles verification at /api/auth/verify-email and redirects here.
@@ -24,14 +26,19 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
     return (
       <Card className="gap-4">
         <CardHeader>
-          <CardTitle className="text-lg tracking-tight">Verification failed</CardTitle>
+          <CardTitle className="text-lg tracking-tight">
+            Verification failed
+          </CardTitle>
           <CardDescription>
             This verification link is invalid or has expired.
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <Link href={routes.auth.signup} className="text-sm underline underline-offset-4">
+          <Link
+            href={routes.auth.signup}
+            className="text-sm underline underline-offset-4"
+          >
             Back to sign up
           </Link>
         </CardContent>
@@ -49,7 +56,10 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
       </CardHeader>
 
       <CardContent>
-        <Link href={routes.auth.login} className="text-sm underline underline-offset-4">
+        <Link
+          href={routes.auth.login}
+          className="text-sm underline underline-offset-4"
+        >
           Go to sign in
         </Link>
       </CardContent>

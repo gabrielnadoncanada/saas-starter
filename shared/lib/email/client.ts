@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+
 import { getEmailConfig } from "@/shared/lib/email/config";
 import type { EmailPayload, SendEmailOptions } from "@/shared/lib/email/types";
 
@@ -36,9 +37,7 @@ export async function sendEmail(
   });
 
   if (error) {
-    throw new Error(
-      `Resend send failed: ${error.name} - ${error.message}`,
-    );
+    throw new Error(`Resend send failed: ${error.name} - ${error.message}`);
   }
 
   return { id: data!.id };

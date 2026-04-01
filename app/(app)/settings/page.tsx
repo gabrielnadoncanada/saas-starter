@@ -1,42 +1,42 @@
+import { KeyRound, Link2, Pencil, Trash, UserIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { routes } from "@/shared/constants/routes";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
+import { EditPasswordDialog } from "@/features/account/components/settings/edit-password-dialog";
+import { EditProfileDialog } from "@/features/account/components/settings/edit-profile-dialog";
+import { LinkedAccountsCard } from "@/features/account/components/settings/linked-accounts-card";
+import { getLinkedAccountsOverview } from "@/features/account/server/linked-accounts";
+import type {
+  LinkedProviderOverview,
+  SecuritySettingsFeedback,
+} from "@/features/account/types/account.types";
 import {
   Page,
+  PageDescription,
   PageHeader,
   PageTitle,
-  PageDescription,
 } from "@/shared/components/layout/page-layout";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/shared/components/ui/avatar";
-import type {
-  LinkedProviderOverview,
-  SecuritySettingsFeedback,
-} from "@/features/account/types/account.types";
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
+  CardAction,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardAction,
 } from "@/shared/components/ui/card";
-import { KeyRound, Link2, Pencil, Trash, UserIcon } from "lucide-react";
-import { LinkedAccountsCard } from "@/features/account/components/settings/linked-accounts-card";
-import { getLinkedAccountsOverview } from "@/features/account/server/linked-accounts";
+import { routes } from "@/shared/constants/routes";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import {
-  OAUTH_PROVIDER_LABELS,
   getEnabledOAuthProviderIds,
   isOAuthProviderId,
+  OAUTH_PROVIDER_LABELS,
 } from "@/shared/lib/auth/oauth-config";
-import { EditProfileDialog } from "@/features/account/components/settings/edit-profile-dialog";
-import { Button } from "@/shared/components/ui/button";
-import { EditPasswordDialog } from "@/features/account/components/settings/edit-password-dialog";
-import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
 type PageProps = {
   searchParams: Promise<{
     success?: string;
@@ -45,9 +45,14 @@ type PageProps = {
   }>;
 };
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  account_already_linked_to_different_user:
+    "This provider is already linked to another account.",
+  "email_doesn't_match":
+    "Use a provider account with the same email address as this account.",
   OAuthAccountNotLinked:
     "Unable to link this provider. Try a different sign-in method.",
   OAuthSignin: "Unable to start provider linking. Please try again.",
+  unable_to_link_account: "Unable to link this provider. Please try again.",
 };
 
 export default async function SettingsPage({ searchParams }: PageProps) {

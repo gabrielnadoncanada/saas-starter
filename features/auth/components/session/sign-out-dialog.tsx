@@ -1,41 +1,41 @@
-'use client'
+"use client";
 
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { authClient } from '@/shared/lib/auth/auth-client'
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { ConfirmDialog } from '@/shared/components/dialogs/confirm-dialog'
-import { routes } from '@/shared/constants/routes'
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import { routes } from "@/shared/constants/routes";
+import { authClient } from "@/shared/lib/auth/auth-client";
 
 interface SignOutDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   function buildSignInRedirectHref(currentPath: string) {
     const query = new URLSearchParams({
-      redirect: currentPath
-    })
+      redirect: currentPath,
+    });
 
-    return `${routes.auth.login}?${query.toString()}`
+    return `${routes.auth.login}?${query.toString()}`;
   }
 
   async function handleSignOut() {
-    setIsLoading(true)
+    setIsLoading(true);
 
-    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`
+    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
     try {
-      await authClient.signOut()
-      router.push(buildSignInRedirectHref(currentPath))
-      router.refresh()
+      await authClient.signOut();
+      router.push(buildSignInRedirectHref(currentPath));
+      router.refresh();
     } finally {
-      setIsLoading(false)
-      onOpenChange(false)
+      setIsLoading(false);
+      onOpenChange(false);
     }
   }
 
@@ -43,15 +43,15 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title='Sign out'
-      desc='Are you sure you want to sign out? You will need to sign in again to access your account.'
-      confirmText='Sign out'
+      title="Sign out"
+      desc="Are you sure you want to sign out? You will need to sign in again to access your account."
+      confirmText="Sign out"
       destructive
       handleConfirm={() => {
-        void handleSignOut()
+        void handleSignOut();
       }}
       isLoading={isLoading}
-      className='sm:max-w-sm'
+      className="sm:max-w-sm"
     />
-  )
+  );
 }

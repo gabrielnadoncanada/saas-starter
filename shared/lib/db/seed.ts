@@ -1,6 +1,7 @@
 import type { PlanId } from "@/shared/config/billing.config";
-import { db } from "./prisma";
 import { stripe } from "@/shared/lib/stripe/client";
+
+import { db } from "./prisma";
 import { seedAdminWorkspace } from "./seeds/admin-seed";
 
 type SeedStripePlan = {

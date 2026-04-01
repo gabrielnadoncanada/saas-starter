@@ -5,8 +5,6 @@ import { useActionState, useEffect, useState } from "react";
 import { deleteAccountAction } from "@/features/account/actions/delete-account.action";
 import { DELETE_CONFIRMATION_WORD } from "@/features/account/schemas/account.schema";
 import type { DeleteAccountActionState } from "@/features/account/types/account.types";
-import { getFieldState } from "@/shared/lib/get-field-state";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -20,6 +18,8 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { getFieldState } from "@/shared/lib/get-field-state";
 
 type DeleteAccountDialogProps = {
   children: React.ReactNode;
@@ -41,7 +41,11 @@ export function DeleteAccountDialog({ children }: DeleteAccountDialogProps) {
     }
   }, [state]);
 
-  useToastMessage(state.error, { kind: "error", skip: Boolean(state.fieldErrors), trigger: state });
+  useToastMessage(state.error, {
+    kind: "error",
+    skip: Boolean(state.fieldErrors),
+    trigger: state,
+  });
   useToastMessage(state.success, { kind: "success", trigger: state });
 
   return (
@@ -74,11 +78,7 @@ export function DeleteAccountDialog({ children }: DeleteAccountDialogProps) {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              type="submit"
-              variant="destructive"
-              disabled={isPending}
-            >
+            <Button type="submit" variant="destructive" disabled={isPending}>
               {isPending ? "Deleting..." : "Delete account"}
             </Button>
           </DialogFooter>

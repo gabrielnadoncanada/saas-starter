@@ -1,10 +1,5 @@
-import {
-  Page,
-  PageDescription,
-  PageHeader,
-  PageTitle,
-} from "@/shared/components/layout/page-layout";
 import { ThemePreferencesCard } from "@/features/account/components/settings/theme-preferences-card";
+import { Page } from "@/shared/components/layout/page-layout";
 
 export default function PreferencesPage() {
   return (

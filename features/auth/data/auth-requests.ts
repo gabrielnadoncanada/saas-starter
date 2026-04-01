@@ -1,9 +1,9 @@
 "use client";
 
+import { routes } from "@/shared/constants/routes";
 import { authClient } from "@/shared/lib/auth/auth-client";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
-import { routes } from "@/shared/constants/routes";
 
 export type SignInWithPasswordResult =
   | { status: "success" }
@@ -64,7 +64,10 @@ export async function sendMagicLink(email: string, callbackUrl: string) {
   }
 }
 
-export async function signInWithOAuth(provider: OAuthProviderId, callbackUrl: string) {
+export async function signInWithOAuth(
+  provider: OAuthProviderId,
+  callbackUrl: string,
+) {
   const { error } = await authClient.signIn.social({
     provider,
     callbackURL: callbackUrl,
@@ -89,7 +92,10 @@ export async function signInWithPassword(
   }
 
   const code = getAuthErrorCode(error);
-  const message = getAuthErrorMessage(error, "Unable to sign in. Please try again.");
+  const message = getAuthErrorMessage(
+    error,
+    "Unable to sign in. Please try again.",
+  );
 
   if (code === "EMAIL_NOT_VERIFIED") {
     return {
@@ -206,6 +212,9 @@ export async function savePassword(
     };
   }
 
-  const message = getAuthErrorMessage(result.error, "Unable to update password.");
+  const message = getAuthErrorMessage(
+    result.error,
+    "Unable to update password.",
+  );
   return { status: "error", message };
 }

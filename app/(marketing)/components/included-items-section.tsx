@@ -14,7 +14,8 @@ const includedItems = [
   },
   {
     label: "Plan gating",
-    detail: "Capability checks, usage limits, upgrade prompts, centralized config",
+    detail:
+      "Capability checks, usage limits, upgrade prompts, centralized config",
   },
   {
     label: "Team layer",
@@ -31,11 +32,13 @@ const includedItems = [
   },
   {
     label: "CRUD example",
-    detail: "Tasks with TanStack Table, server actions, Zod, plan-gated creation",
+    detail:
+      "Tasks with TanStack Table, server actions, Zod, plan-gated creation",
   },
   {
     label: "Database",
-    detail: "PostgreSQL + Prisma, migrations, seed script, feature-split schema",
+    detail:
+      "PostgreSQL + Prisma, migrations, seed script, feature-split schema",
   },
   {
     label: "72 docs",
@@ -58,8 +61,12 @@ export function IncludedItemsSection() {
         <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {includedItems.map((item) => (
             <div key={item.label} className="rounded-lg border bg-card p-4">
-              <p className="text-sm font-semibold text-foreground">{item.label}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{item.detail}</p>
+              <p className="text-sm font-semibold text-foreground">
+                {item.label}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {item.detail}
+              </p>
             </div>
           ))}
         </div>

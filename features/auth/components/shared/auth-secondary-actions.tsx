@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Mail } from "lucide-react";
+
 import { OAuthButtons } from "@/features/auth/components/oauth/oauth-buttons";
 import { Button } from "@/shared/components/ui/button";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
@@ -33,7 +34,9 @@ export function AuthSecondaryActions({
           <div className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+          <span className="bg-card px-2 text-muted-foreground">
+            Or continue with
+          </span>
         </div>
       </div>
 

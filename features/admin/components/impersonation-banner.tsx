@@ -1,10 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Eye, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { authClient } from "@/shared/lib/auth/auth-client";
+
 import { Button } from "@/shared/components/ui/button";
+import { authClient } from "@/shared/lib/auth/auth-client";
 
 export function ImpersonationBanner() {
   const router = useRouter();

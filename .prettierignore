@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.pnpm-store
+pnpm-lock.yaml
+tsconfig.tsbuildinfo
+prisma/migrations
+coverage
+dist
+build

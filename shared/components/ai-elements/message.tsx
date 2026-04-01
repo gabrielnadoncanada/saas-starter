@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/shared/lib/utils";
 import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
@@ -9,6 +8,8 @@ import type { UIMessage } from "ai";
 import type { HTMLAttributes } from "react";
 import { memo } from "react";
 import { Streamdown } from "streamdown";
+
+import { cn } from "@/shared/lib/utils";
 
 type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage["role"];
@@ -19,7 +20,7 @@ export const Message = ({ className, from, ...props }: MessageProps) => (
     className={cn(
       "group flex w-full max-w-[95%] flex-col gap-2",
       from === "user" ? "is-user ml-auto justify-end" : "is-assistant",
-      className
+      className,
     )}
     {...props}
   />
@@ -37,7 +38,7 @@ export const MessageContent = ({
       "is-user:dark flex min-w-0 max-w-full flex-col gap-3 overflow-hidden text-sm",
       "group-[.is-user]:ml-auto group-[.is-user]:rounded-lg group-[.is-user]:bg-secondary group-[.is-user]:px-4 group-[.is-user]:py-3",
       "group-[.is-assistant]:w-full group-[.is-assistant]:text-foreground",
-      className
+      className,
     )}
     {...props}
   >
@@ -54,7 +55,7 @@ export const MessageResponse = memo(
     <Streamdown
       className={cn(
         "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-        className
+        className,
       )}
       plugins={streamdownPlugins}
       {...props}
@@ -62,7 +63,7 @@ export const MessageResponse = memo(
   ),
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children &&
-    prevProps.isAnimating === nextProps.isAnimating
+    prevProps.isAnimating === nextProps.isAnimating,
 );
 
 MessageResponse.displayName = "MessageResponse";

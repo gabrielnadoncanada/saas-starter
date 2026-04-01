@@ -1,14 +1,14 @@
 import { z } from "zod";
 
-import type { FormActionState } from "@/shared/types/form-action-state";
-import {
-  type AuthenticatedUser,
-  validatedAuthenticatedAction,
-} from "@/shared/lib/auth/authenticated-action";
 import {
   getRequiredOrganizationMembership,
   OrganizationMembershipError,
 } from "@/features/organizations/server/get-required-organization-membership";
+import {
+  type AuthenticatedUser,
+  validatedAuthenticatedAction,
+} from "@/shared/lib/auth/authenticated-action";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
 type OrganizationOwnerActionContext = {
   organizationId: string;
@@ -27,10 +27,7 @@ type ValidatedOrganizationOwnerActionHandler<
 export function validatedOrganizationOwnerAction<
   S extends z.ZodTypeAny,
   TExtraState extends object = {},
->(
-  schema: S,
-  action: ValidatedOrganizationOwnerActionHandler<S, TExtraState>,
-) {
+>(schema: S, action: ValidatedOrganizationOwnerActionHandler<S, TExtraState>) {
   type Values = z.infer<S>;
   type State = FormActionState<Values> & TExtraState;
 
@@ -38,7 +35,9 @@ export function validatedOrganizationOwnerAction<
     schema,
     async (data, formData, user) => {
       try {
-        const membership = await getRequiredOrganizationMembership(user.id, ["owner"]);
+        const membership = await getRequiredOrganizationMembership(user.id, [
+          "owner",
+        ]);
 
         return action(data, formData, {
           organizationId: membership.organizationId,
@@ -54,5 +53,3 @@ export function validatedOrganizationOwnerAction<
     },
   );
 }
-
-

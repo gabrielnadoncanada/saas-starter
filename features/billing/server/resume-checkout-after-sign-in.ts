@@ -1,9 +1,9 @@
-import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import {
-  getPlanPrice,
   type BillingInterval,
+  getPlanPrice,
   type PaidPlanId,
 } from "@/features/billing/plans";
+import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 
@@ -33,8 +33,8 @@ export async function resumeCheckoutAfterSignIn({
     throw new Error("Organization not found after sign-in provisioning.");
   }
 
-  const currentMember = organization.members.find(
-    (m: { role: string }) => hasOrgRole(m.role, "owner"),
+  const currentMember = organization.members.find((m: { role: string }) =>
+    hasOrgRole(m.role, "owner"),
   );
 
   if (!currentMember) {

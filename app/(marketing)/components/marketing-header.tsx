@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
+import { Button } from "@/shared/components/ui/button";
 
 const navLinks = [
-  { label: 'Features', href: '/#features' },
-  { label: 'Screenshots', href: '/#screenshots' },
-  { label: 'Comparison', href: '/#compare' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'FAQ', href: '/#faq' },
+  { label: "Features", href: "/#features" },
+  { label: "Screenshots", href: "/#screenshots" },
+  { label: "Comparison", href: "/#compare" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export function MarketingHeader() {

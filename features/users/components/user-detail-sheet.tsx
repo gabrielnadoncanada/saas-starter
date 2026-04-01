@@ -11,6 +11,11 @@ import {
   X,
   XCircle,
 } from "lucide-react";
+
+import type {
+  AdminUser,
+  UserSession,
+} from "@/features/users/types/admin-users.types";
 import {
   Avatar,
   AvatarFallback,
@@ -27,10 +32,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/shared/components/ui/sheet";
-import type {
-  AdminUser,
-  UserSession,
-} from "@/features/users/types/admin-users.types";
 
 type UserDetailSheetProps = {
   currentUserId: string;

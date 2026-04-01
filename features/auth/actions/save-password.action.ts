@@ -1,7 +1,7 @@
 "use server";
 
+import { savePasswordSchema } from "@/features/auth/schemas/password-change.schema";
 import { savePasswordServer } from "@/features/auth/server/save-password";
-import { savePasswordSchema } from "@/features/auth/schemas/save-password.schema";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
 export const savePasswordAction = validatedAuthenticatedAction(

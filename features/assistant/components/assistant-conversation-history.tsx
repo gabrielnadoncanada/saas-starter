@@ -57,7 +57,7 @@ export function AssistantConversationHistory({
                   "group flex items-start gap-2 rounded-lg border p-2 transition-colors",
                   isSelected
                     ? "border-orange-500/40 bg-orange-500/5"
-                    : "border-transparent hover:bg-muted/40"
+                    : "border-transparent hover:bg-muted/40",
                 )}
                 key={conversation.id}
               >
@@ -67,7 +67,9 @@ export function AssistantConversationHistory({
                   onClick={() => onSelectConversation(conversation.id)}
                   type="button"
                 >
-                  <p className="truncate text-sm font-medium">{conversation.title}</p>
+                  <p className="truncate text-sm font-medium">
+                    {conversation.title}
+                  </p>
                   {conversation.preview ? (
                     <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                       {conversation.preview}

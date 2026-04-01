@@ -42,10 +42,10 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
 
 const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
-const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
-const { consumeMonthlyUsage } = await import(
-  "@/features/billing/usage/usage-service"
-);
+const { getOrganizationPlan } =
+  await import("@/features/billing/guards/get-organization-plan");
+const { consumeMonthlyUsage } =
+  await import("@/features/billing/usage/usage-service");
 const { POST } = await import("@/app/api/assistant/route");
 
 describe("POST /api/assistant", () => {
@@ -130,7 +130,9 @@ describe("POST /api/assistant", () => {
       new Request("http://localhost/api/assistant", {
         method: "POST",
         body: JSON.stringify({
-          messages: [{ id: "1", role: "user", parts: [{ type: "text", text: "Hello" }] }],
+          messages: [
+            { id: "1", role: "user", parts: [{ type: "text", text: "Hello" }] },
+          ],
         }),
       }),
     );
@@ -144,4 +146,3 @@ describe("POST /api/assistant", () => {
     );
   });
 });
-

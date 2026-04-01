@@ -8,6 +8,8 @@ import {
   Trash2,
   UserCheck,
 } from "lucide-react";
+
+import type { AdminUser } from "@/features/users/types/admin-users.types";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -16,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import type { AdminUser } from "@/features/users/types/admin-users.types";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 
 type UserRowActionsProps = {

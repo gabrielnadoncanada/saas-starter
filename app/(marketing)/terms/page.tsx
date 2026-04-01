@@ -1,8 +1,8 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Terms of Service',
-  description: 'Terms and conditions governing your use of our platform.',
+  title: "Terms of Service",
+  description: "Terms and conditions governing your use of our platform.",
 };
 
 export default function TermsPage() {

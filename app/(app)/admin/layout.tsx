@@ -1,14 +1,16 @@
 import { cookies } from "next/headers";
+
+import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
+import { requireAdmin } from "@/features/auth/server/require-admin";
+import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
+import { SearchProvider } from "@/shared/components/command/search-provider";
 import { Header } from "@/shared/components/layout/shell/header";
 import { Search } from "@/shared/components/navigation/search";
-import { cn } from "@/shared/lib/utils";
-import { SearchProvider } from "@/shared/components/command/search-provider";
+import { UserProvider } from "@/shared/components/providers/user-provider";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
-import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
-import { requireAdmin } from "@/features/auth/server/require-admin";
-import { UserProvider } from "@/shared/components/providers/user-provider";
+import { toSidebarUser } from "@/shared/lib/auth/get-current-user";
+import { cn } from "@/shared/lib/utils";
 
 export default async function AdminLayout({
   children,
@@ -20,15 +22,8 @@ export default async function AdminLayout({
 
   const user = await requireAdmin();
 
-  const sidebarUser = {
-    name: user.name ?? user.email ?? "Admin",
-    email: user.email ?? "",
-    image: user.image ?? null,
-    role: (user as any).role ?? null,
-  };
-
   return (
-    <UserProvider user={sidebarUser}>
+    <UserProvider user={toSidebarUser(user)}>
       <SearchProvider>
         <TooltipProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
@@ -52,4 +47,3 @@ export default async function AdminLayout({
     </UserProvider>
   );
 }
-

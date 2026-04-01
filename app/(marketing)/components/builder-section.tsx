@@ -15,11 +15,11 @@ export function BuilderSection() {
                 Built by [Your Name]
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {/* Replace this with your real bio */}
-                I build SaaS products and got tired of rewiring auth, billing,
-                and plan enforcement from scratch every time. So I built the
-                foundation I actually wanted — one where the billing system
-                controls what users can do, not just what they pay.
+                {/* Replace this with your real bio */}I build SaaS products and
+                got tired of rewiring auth, billing, and plan enforcement from
+                scratch every time. So I built the foundation I actually wanted
+                — one where the billing system controls what users can do, not
+                just what they pay.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 This starter is the base I use for my own products. It's

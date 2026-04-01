@@ -5,10 +5,10 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import { hasCapability } from "@/features/billing/guards/plan-guards";
 import { getPlan } from "@/features/billing/plans";
-import { getPlanLimit, hasCapability } from "@/features/billing/guards/plan-guards";
 
 vi.mock("server-only", () => ({}));
 
@@ -21,10 +21,9 @@ vi.mock("@/features/billing/guards/get-organization-plan", () => ({
 }));
 
 vi.mock("@/features/billing/guards/plan-guards", async () => {
-  const actual =
-    await vi.importActual<typeof import("@/features/billing/guards/plan-guards")>(
-      "@/features/billing/guards/plan-guards",
-    );
+  const actual = await vi.importActual<
+    typeof import("@/features/billing/guards/plan-guards")
+  >("@/features/billing/guards/plan-guards");
 
   return {
     ...actual,
@@ -40,7 +39,7 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 
-vi.mock("@/features/tasks/server/create-task-for-current-organization", () => ({
+vi.mock("@/features/tasks/server/task-mutations", () => ({
   createTaskForCurrentOrganization: vi.fn(),
 }));
 
@@ -51,18 +50,19 @@ vi.mock("@/features/assistant/server/email-provider", () => ({
   },
 }));
 
-const { getOrganizationPlan } = await import("@/features/billing/guards/get-organization-plan");
-const { consumeMonthlyUsage } = await import(
-  "@/features/billing/usage/usage-service"
-);
-const { createTaskForCurrentOrganization } = await import(
-  "@/features/tasks/server/create-task-for-current-organization"
-);
-const { emailProvider } = await import("@/features/assistant/server/email-provider");
+const { getOrganizationPlan } =
+  await import("@/features/billing/guards/get-organization-plan");
+const { consumeMonthlyUsage } =
+  await import("@/features/billing/usage/usage-service");
+const { createTaskForCurrentOrganization } =
+  await import("@/features/tasks/server/task-mutations");
+const { emailProvider } =
+  await import("@/features/assistant/server/email-provider");
 const { assistantTools } = await import("@/features/assistant/server/tools");
 
-const reviewInboxExecute = assistantTools.reviewInbox
-  .execute as (input: { limit?: number }) => Promise<ReviewInboxToolResult>;
+const reviewInboxExecute = assistantTools.reviewInbox.execute as (input: {
+  limit?: number;
+}) => Promise<ReviewInboxToolResult>;
 const createTaskExecute = assistantTools.createTask.execute as (input: {
   title: string;
   description?: string;

@@ -1,96 +1,96 @@
-import { Check, X, Minus } from 'lucide-react';
+import { Check, Minus, X } from "lucide-react";
 
 type ComparisonRow = {
   feature: string;
-  thisStarter: 'yes' | 'no' | 'partial';
-  freeBoilerplate: 'yes' | 'no' | 'partial';
-  heavierStarter: 'yes' | 'no' | 'partial';
-  buildFromScratch: 'yes' | 'no' | 'partial';
+  thisStarter: "yes" | "no" | "partial";
+  freeBoilerplate: "yes" | "no" | "partial";
+  heavierStarter: "yes" | "no" | "partial";
+  buildFromScratch: "yes" | "no" | "partial";
 };
 
 const rows: ComparisonRow[] = [
   {
-    feature: 'Auth (OAuth + magic link)',
-    thisStarter: 'yes',
-    freeBoilerplate: 'partial',
-    heavierStarter: 'yes',
-    buildFromScratch: 'no',
+    feature: "Auth (OAuth + magic link)",
+    thisStarter: "yes",
+    freeBoilerplate: "partial",
+    heavierStarter: "yes",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Stripe checkout + webhooks',
-    thisStarter: 'yes',
-    freeBoilerplate: 'partial',
-    heavierStarter: 'yes',
-    buildFromScratch: 'no',
+    feature: "Stripe checkout + webhooks",
+    thisStarter: "yes",
+    freeBoilerplate: "partial",
+    heavierStarter: "yes",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Enforced plan gating',
-    thisStarter: 'yes',
-    freeBoilerplate: 'no',
-    heavierStarter: 'no',
-    buildFromScratch: 'no',
+    feature: "Enforced plan gating",
+    thisStarter: "yes",
+    freeBoilerplate: "no",
+    heavierStarter: "no",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Usage limits + quotas',
-    thisStarter: 'yes',
-    freeBoilerplate: 'no',
-    heavierStarter: 'no',
-    buildFromScratch: 'no',
+    feature: "Usage limits + quotas",
+    thisStarter: "yes",
+    freeBoilerplate: "no",
+    heavierStarter: "no",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Three billing models (flat, per-seat, one-time)',
-    thisStarter: 'yes',
-    freeBoilerplate: 'no',
-    heavierStarter: 'partial',
-    buildFromScratch: 'no',
+    feature: "Three billing models (flat, per-seat, one-time)",
+    thisStarter: "yes",
+    freeBoilerplate: "no",
+    heavierStarter: "partial",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Team management + roles',
-    thisStarter: 'yes',
-    freeBoilerplate: 'no',
-    heavierStarter: 'yes',
-    buildFromScratch: 'no',
+    feature: "Team management + roles",
+    thisStarter: "yes",
+    freeBoilerplate: "no",
+    heavierStarter: "yes",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Feature-organized codebase (no framework lock-in)',
-    thisStarter: 'yes',
-    freeBoilerplate: 'partial',
-    heavierStarter: 'no',
-    buildFromScratch: 'yes',
+    feature: "Feature-organized codebase (no framework lock-in)",
+    thisStarter: "yes",
+    freeBoilerplate: "partial",
+    heavierStarter: "no",
+    buildFromScratch: "yes",
   },
   {
-    feature: '72 documentation files',
-    thisStarter: 'yes',
-    freeBoilerplate: 'no',
-    heavierStarter: 'partial',
-    buildFromScratch: 'no',
+    feature: "72 documentation files",
+    thisStarter: "yes",
+    freeBoilerplate: "no",
+    heavierStarter: "partial",
+    buildFromScratch: "no",
   },
   {
-    feature: 'AI-ready assistant pattern with plan gating + quotas',
-    thisStarter: 'yes',
-    freeBoilerplate: 'no',
-    heavierStarter: 'no',
-    buildFromScratch: 'no',
+    feature: "AI-ready assistant pattern with plan gating + quotas",
+    thisStarter: "yes",
+    freeBoilerplate: "no",
+    heavierStarter: "no",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Working CRUD example with plan gating',
-    thisStarter: 'yes',
-    freeBoilerplate: 'no',
-    heavierStarter: 'partial',
-    buildFromScratch: 'no',
+    feature: "Working CRUD example with plan gating",
+    thisStarter: "yes",
+    freeBoilerplate: "no",
+    heavierStarter: "partial",
+    buildFromScratch: "no",
   },
   {
-    feature: 'Setup time under 15 minutes',
-    thisStarter: 'yes',
-    freeBoilerplate: 'yes',
-    heavierStarter: 'partial',
-    buildFromScratch: 'no',
+    feature: "Setup time under 15 minutes",
+    thisStarter: "yes",
+    freeBoilerplate: "yes",
+    heavierStarter: "partial",
+    buildFromScratch: "no",
   },
 ];
 
-function StatusIcon({ value }: { value: 'yes' | 'no' | 'partial' }) {
-  if (value === 'yes') return <Check className="h-4 w-4 text-orange-500" />;
-  if (value === 'no') return <X className="h-4 w-4 text-muted-foreground/40" />;
+function StatusIcon({ value }: { value: "yes" | "no" | "partial" }) {
+  if (value === "yes") return <Check className="h-4 w-4 text-orange-500" />;
+  if (value === "no") return <X className="h-4 w-4 text-muted-foreground/40" />;
   return <Minus className="h-4 w-4 text-muted-foreground/60" />;
 }
 
@@ -113,7 +113,9 @@ export function ComparisonSection() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left">
-                <th className="pb-3 pr-4 font-medium text-foreground">Feature</th>
+                <th className="pb-3 pr-4 font-medium text-foreground">
+                  Feature
+                </th>
                 <th className="pb-3 px-4 text-center font-medium text-orange-500">
                   This Starter
                 </th>
@@ -131,7 +133,9 @@ export function ComparisonSection() {
             <tbody className="divide-y divide-border">
               {rows.map((row) => (
                 <tr key={row.feature}>
-                  <td className="py-3 pr-4 text-muted-foreground">{row.feature}</td>
+                  <td className="py-3 pr-4 text-muted-foreground">
+                    {row.feature}
+                  </td>
                   <td className="py-3 px-4 text-center">
                     <span className="inline-flex justify-center">
                       <StatusIcon value={row.thisStarter} />
@@ -162,11 +166,15 @@ export function ComparisonSection() {
         <div className="space-y-4 sm:hidden">
           {rows.map((row) => (
             <div key={row.feature} className="rounded-lg border bg-card p-4">
-              <p className="mb-2 text-sm font-medium text-foreground">{row.feature}</p>
+              <p className="mb-2 text-sm font-medium text-foreground">
+                {row.feature}
+              </p>
               <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <StatusIcon value={row.thisStarter} />
-                  <span className="text-orange-500 font-medium">This Starter</span>
+                  <span className="text-orange-500 font-medium">
+                    This Starter
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <StatusIcon value={row.freeBoilerplate} />

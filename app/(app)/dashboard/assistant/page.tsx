@@ -1,11 +1,14 @@
-import { Page } from "@/shared/components/layout/page-layout";
-import { resolveOrganizationPlan } from "@/features/billing/plans";
-import { hasCapability, checkLimit } from "@/features/billing/guards/plan-guards";
-import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
-import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import { getAssistantConversation } from "@/features/assistant/server/conversations";
+import { UpgradeCard } from "@/features/billing/components/upgrade-card";
+import {
+  checkLimit,
+  hasCapability,
+} from "@/features/billing/guards/plan-guards";
+import { resolveOrganizationPlan } from "@/features/billing/plans";
+import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
+import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { Page } from "@/shared/components/layout/page-layout";
 
 type AssistantPageProps = {
   searchParams: Promise<{
@@ -32,26 +35,22 @@ export default async function AssistantPage({
 
   return (
     <Page fixed>
-      <div className="flex flex-col ">
-        {!canUseAssistant ? (
-          <UpgradeCard
-            feature="AI Assistant"
-            description="The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts."
-          />
-        ) : !aiLimit.allowed ? (
-          <UpgradeCard
-            feature="AI Assistant"
-            description={`You've used all ${aiLimit.limit} AI requests this month. Upgrade your plan for a higher limit, or wait until next month.`}
-          />
-        ) : (
-          <AssistantWorkspace
-            initialConversation={initialConversation}
-            initialConversationId={initialConversation?.id ?? null}
-          />
-        )}
-      </div>
+      {!canUseAssistant ? (
+        <UpgradeCard
+          feature="AI Assistant"
+          description="The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts."
+        />
+      ) : !aiLimit.allowed ? (
+        <UpgradeCard
+          feature="AI Assistant"
+          description={`You've used all ${aiLimit.limit} AI requests this month. Upgrade your plan for a higher limit, or wait until next month.`}
+        />
+      ) : (
+        <AssistantWorkspace
+          initialConversation={initialConversation}
+          initialConversationId={initialConversation?.id ?? null}
+        />
+      )}
     </Page>
   );
 }
-
-

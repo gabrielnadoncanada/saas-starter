@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "@/shared/lib/utils";
+
 import { SidebarTrigger } from "@/shared/components/ui/sidebar";
+import { cn } from "@/shared/lib/utils";
 
 type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean;

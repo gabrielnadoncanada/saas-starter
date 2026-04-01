@@ -43,7 +43,7 @@ export function AiProof() {
                 // Route-level AI gating + provider resolution
               </p>
               <pre className="whitespace-pre leading-relaxed">
-{`const organizationPlan = await getOrganizationPlan();
+                {`const organizationPlan = await getOrganizationPlan();
 assertCapability(organizationPlan.planId, "ai.assistant");
 
 const usage = await getMonthlyUsage(
@@ -68,7 +68,7 @@ const result = streamText({
                 // Tool-level billing stays real too
               </p>
               <pre className="whitespace-pre leading-relaxed">
-{`assertCapability(organizationPlan.planId, "email.sync");
+                {`assertCapability(organizationPlan.planId, "email.sync");
 
 const usage = await getMonthlyUsage(
   organizationPlan.organizationId,
@@ -86,4 +86,3 @@ await recordUsage(organizationPlan.organizationId, "emailSyncsPerMonth");`}
     </section>
   );
 }
-

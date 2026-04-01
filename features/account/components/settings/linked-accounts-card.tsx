@@ -3,8 +3,14 @@
 import { format, parseISO } from "date-fns";
 import { useActionState, useState } from "react";
 
+import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.action";
+import { linkAuthProvider } from "@/features/account/data/link-auth-provider";
+import type {
+  LinkedAccountsActionState,
+  LinkedProviderOverview,
+  SecuritySettingsFeedback,
+} from "@/features/account/types/account.types";
 import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
-import { signInWithOAuth } from "@/features/auth/data/auth-requests";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
@@ -16,16 +22,9 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/shared/components/ui/item";
-import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.action";
-import type {
-  LinkedAccountsActionState,
-  LinkedProviderOverview,
-  SecuritySettingsFeedback,
-} from "@/features/account/types/account.types";
-import { routes } from "@/shared/constants/routes";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { getOAuthProviderConfig } from "@/shared/lib/auth/oauth-config";
 import { getFieldState } from "@/shared/lib/get-field-state";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
 
 type LinkedAccountsCardProps = {
   providers: LinkedProviderOverview[];
@@ -65,10 +64,7 @@ export function LinkedAccountsCard({
     setLinkingProvider(provider);
 
     try {
-      await signInWithOAuth(
-        provider,
-        `${routes.settings.profile}?provider=${provider}&success=linked`,
-      );
+      await linkAuthProvider(provider);
     } finally {
       setLinkingProvider(null);
     }
@@ -82,6 +78,9 @@ export function LinkedAccountsCard({
             selectedProvider === provider.provider && isPending;
           const isLinkingProvider = linkingProvider === provider.provider;
           const providerConfig = getOAuthProviderConfig(provider.provider);
+          const linkedAt = provider.linkedAt
+            ? parseISO(provider.linkedAt)
+            : null;
 
           return (
             <Item key={provider.provider} variant="outline">
@@ -97,8 +96,8 @@ export function LinkedAccountsCard({
                   ) : null}
                 </ItemTitle>
                 <ItemDescription>
-                  {provider.linkedAt
-                    ? `Linked on ${format(provider.linkedAt, "PP")}`
+                  {linkedAt
+                    ? `Linked on ${format(linkedAt, "PP")}`
                     : "Not linked yet"}
                 </ItemDescription>
               </ItemContent>

@@ -1,13 +1,13 @@
-import { streamText, convertToModelMessages, stepCountIs } from "ai";
+import { convertToModelMessages, stepCountIs, streamText } from "ai";
 
-import { getAssistantModel } from "@/features/assistant/server/get-assistant-model";
 import { getAssistantConversation } from "@/features/assistant/server/conversations";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
-import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { getAssistantModel } from "@/features/assistant/server/get-assistant-model";
 import { assistantTools } from "@/features/assistant/server/tools";
+import { LimitReachedError } from "@/features/billing/errors/limit-reached";
+import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { assertCapability } from "@/features/billing/guards/plan-guards";
+import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function POST(req: Request) {
@@ -32,15 +32,21 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     if (error instanceof UpgradeRequiredError) {
-      return Response.json({ error: error.message, code: "UPGRADE_REQUIRED" }, { status: 403 });
+      return Response.json(
+        { error: error.message, code: "UPGRADE_REQUIRED" },
+        { status: 403 },
+      );
     }
     if (error instanceof LimitReachedError) {
-      return Response.json({
-        error: error.message,
-        code: "LIMIT_REACHED",
-        limit: error.limit,
-        currentUsage: error.currentUsage,
-      }, { status: 429 });
+      return Response.json(
+        {
+          error: error.message,
+          code: "LIMIT_REACHED",
+          limit: error.limit,
+          currentUsage: error.currentUsage,
+        },
+        { status: 429 },
+      );
     }
     throw error;
   }
@@ -65,10 +71,11 @@ export async function POST(req: Request) {
   }
 
   for (const msg of messages) {
-    const text = msg?.parts
-      ?.filter((p: { type: string }) => p.type === "text")
-      ?.map((p: { text: string }) => p.text)
-      ?.join("") ?? "";
+    const text =
+      msg?.parts
+        ?.filter((p: { type: string }) => p.type === "text")
+        ?.map((p: { text: string }) => p.text)
+        ?.join("") ?? "";
     if (text.length > MAX_MESSAGE_LENGTH) {
       return Response.json(
         { error: `Message too long (max ${MAX_MESSAGE_LENGTH} characters).` },

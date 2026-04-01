@@ -1,17 +1,15 @@
-import Link from 'next/link';
+import Link from "next/link";
 
+import { ResendMagicLinkButton } from "@/features/auth/components/oauth/resend-magic-link-button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/shared/components/ui/card';
-import { ResendMagicLinkButton } from '@/features/auth/components/oauth/resend-magic-link-button';
-import {
-  buildCallbackURL,
-} from '@/shared/lib/auth/callback-url';
-import { routes } from '@/shared/constants/routes';
+} from "@/shared/components/ui/card";
+import { routes } from "@/shared/constants/routes";
+import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 
 type CheckEmailPageProps = {
   searchParams: Promise<{
@@ -20,7 +18,9 @@ type CheckEmailPageProps = {
   }>;
 };
 
-export default async function CheckEmailPage({ searchParams }: CheckEmailPageProps) {
+export default async function CheckEmailPage({
+  searchParams,
+}: CheckEmailPageProps) {
   const { email: rawEmail, callbackUrl } = await searchParams;
   const email = rawEmail?.trim() || null;
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
@@ -28,7 +28,9 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">Check your email</CardTitle>
+        <CardTitle className="text-lg tracking-tight">
+          Check your email
+        </CardTitle>
         <CardDescription>
           We sent a magic sign-in link to your email address.
         </CardDescription>
@@ -42,15 +44,12 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
         <p className="text-sm text-muted-foreground">
           {email ? (
             <>
-              Haven&apos;t received it?{' '}
-              <ResendMagicLinkButton
-                email={email}
-                callbackUrl={callbackUrl}
-              />
+              Haven&apos;t received it?{" "}
+              <ResendMagicLinkButton email={email} callbackUrl={callbackUrl} />
             </>
           ) : (
             <>
-              Missing the email address?{' '}
+              Missing the email address?{" "}
               <Link
                 href={signInHref}
                 className="font-medium underline underline-offset-4 hover:text-primary"

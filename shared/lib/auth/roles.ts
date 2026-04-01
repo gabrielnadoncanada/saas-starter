@@ -11,10 +11,7 @@ export function hasRole(value: unknown, role: string): boolean {
   return parseRoles(value).includes(role);
 }
 
-export function hasAnyRole(
-  value: unknown,
-  roles: readonly string[],
-): boolean {
+export function hasAnyRole(value: unknown, roles: readonly string[]): boolean {
   const parsedRoles = parseRoles(value);
 
   return roles.some((role) => parsedRoles.includes(role));

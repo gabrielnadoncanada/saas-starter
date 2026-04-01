@@ -1,6 +1,6 @@
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 
@@ -45,7 +45,10 @@ export default function HomePage() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Link href="#pricing">
-                <Button size="lg" className="w-full rounded-full text-lg sm:w-auto">
+                <Button
+                  size="lg"
+                  className="w-full rounded-full text-lg sm:w-auto"
+                >
                   View Pricing
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -117,7 +120,10 @@ export default function HomePage() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Link href="#pricing">
-                <Button size="lg" className="w-full rounded-full text-lg sm:w-auto">
+                <Button
+                  size="lg"
+                  className="w-full rounded-full text-lg sm:w-auto"
+                >
                   Get the Starter - $149
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>

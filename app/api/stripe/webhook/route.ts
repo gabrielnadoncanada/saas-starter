@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+
 import { handleStripeWebhookEvent } from "@/features/billing/server/stripe/stripe-webhooks";
 import { stripe } from "@/shared/lib/stripe/client";
 
@@ -8,7 +9,10 @@ export async function POST(request: Request) {
   const signature = (await headers()).get("stripe-signature");
 
   if (!signature) {
-    return NextResponse.json({ error: "Missing Stripe signature." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing Stripe signature." },
+      { status: 400 },
+    );
   }
 
   let event;
@@ -21,7 +25,9 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Invalid Stripe webhook payload.";
+      error instanceof Error
+        ? error.message
+        : "Invalid Stripe webhook payload.";
 
     return NextResponse.json({ error: message }, { status: 400 });
   }

@@ -3,19 +3,20 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+
+import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
+import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
+import { SignUpPasswordStep } from "@/features/auth/components/sign-up/sign-up-password-step";
 import {
   buildCheckEmailHref,
   sendMagicLink,
   signInWithOAuth,
 } from "@/features/auth/data/auth-requests";
-import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
-import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
-import { SignUpPasswordStep } from "@/features/auth/components/sign-up/sign-up-password-step";
 import { useAuthEmailStep } from "@/features/auth/hooks/use-auth-email-step";
-import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
-import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 import { routes } from "@/shared/constants/routes";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
+import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   OAuthAccountNotLinked:
@@ -37,9 +38,8 @@ export function SignUpForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-  const [pendingProvider, setPendingProvider] = useState<OAuthProviderId | null>(
-    null,
-  );
+  const [pendingProvider, setPendingProvider] =
+    useState<OAuthProviderId | null>(null);
   const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
   const {
     continueToPasswordStep,
@@ -53,9 +53,12 @@ export function SignUpForm({
   } = useAuthEmailStep();
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
 
-  const successHref = buildCallbackURL(routes.auth.verifyEmailSent, nextCallbackUrl);
+  const successHref = buildCallbackURL(
+    routes.auth.verifyEmailSent,
+    nextCallbackUrl,
+  );
   const oauthErrorMessage = error
-    ? OAUTH_ERROR_MESSAGES[error] ?? "Unable to continue. Please try again."
+    ? (OAUTH_ERROR_MESSAGES[error] ?? "Unable to continue. Please try again.")
     : null;
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });

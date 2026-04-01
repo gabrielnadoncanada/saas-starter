@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth/auth-config";
 import { accountFlags } from "@/shared/config/account.config";
+import { auth } from "@/shared/lib/auth/auth-config";
 
 export async function ensureUserWorkspace(email: string) {
   const reqHeaders = await headers();

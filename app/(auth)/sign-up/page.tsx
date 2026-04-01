@@ -1,14 +1,6 @@
 import Link from "next/link";
+
 import { SignUpForm } from "@/features/auth/components/sign-up/sign-up-form";
-import {
-  getEnabledOAuthProviderIds,
-  hasMagicLinkProvider,
-} from "@/shared/lib/auth/oauth-config";
-import {
-  buildCallbackURL,
-  getCallbackURL,
-} from "@/shared/lib/auth/callback-url";
-import { routes } from "@/shared/constants/routes";
 import {
   Card,
   CardContent,
@@ -17,6 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import { routes } from "@/shared/constants/routes";
+import {
+  buildCallbackURL,
+  getCallbackURL,
+} from "@/shared/lib/auth/callback-url";
+import {
+  getEnabledOAuthProviderIds,
+  hasMagicLinkProvider,
+} from "@/shared/lib/auth/oauth-config";
 
 type SignUpPageProps = {
   searchParams: Promise<{

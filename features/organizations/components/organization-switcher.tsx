@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Building2, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
-import { authClient } from "@/shared/lib/auth/auth-client";
 import {
   DropdownMenuGroup,
   DropdownMenuItem,
@@ -14,6 +13,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { authClient } from "@/shared/lib/auth/auth-client";
 
 export function OrganizationSwitcher() {
   const router = useRouter();

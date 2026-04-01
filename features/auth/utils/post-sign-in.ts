@@ -9,7 +9,9 @@ type PostSignInCallbackParams = {
   redirect?: "checkout" | null;
 };
 
-export function buildPostSignInCallbackURL(input: PostSignInCallbackParams = {}) {
+export function buildPostSignInCallbackURL(
+  input: PostSignInCallbackParams = {},
+) {
   const searchParams = new URLSearchParams();
 
   if (input.redirect === "checkout" && input.planId && input.billingInterval) {

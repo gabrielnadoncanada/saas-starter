@@ -2,10 +2,10 @@
 
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth/auth-config";
 import { updateAccountSchema } from "@/features/account/schemas/account.schema";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import type { UpdateAccountActionState } from "@/features/account/types/account.types";
+import { auth } from "@/shared/lib/auth/auth-config";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
 export const updateAccountAction = validatedAuthenticatedAction(
   updateAccountSchema,
