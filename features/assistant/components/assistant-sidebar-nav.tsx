@@ -1,17 +1,24 @@
 "use client";
 
-import { ChevronRight, MessageSquarePlus, Sparkles } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-
-import { listAssistantConversationsRequest } from "@/features/assistant/client/conversations";
-import type { AssistantConversationListItem } from "@/features/assistant/types";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shared/components/ui/collapsible";
+  ChevronRight,
+  Loader2,
+  MessageSquarePlus,
+  MoreHorizontal,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import {
+  deleteAssistantConversationRequest,
+  listAssistantConversationsRequest,
+} from "@/features/assistant/client/conversations";
+import type { AssistantConversationListItem } from "@/features/assistant/types";
+import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,16 +28,75 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import {
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/constants/routes";
+import { cn } from "@/shared/lib/utils";
+function getConversationHref(conversationId: string) {
+  return `${routes.app.assistant}?conversationId=${conversationId}`;
+}
+
+type ConversationActionsMenuProps = {
+  conversationId: string;
+  conversationTitle: string;
+  isDeleting: boolean;
+  onDelete: (conversationId: string) => void;
+  variant: "sidebar" | "dropdown";
+};
+
+function ConversationActionsMenu({
+  conversationId,
+  conversationTitle,
+  isDeleting,
+  onDelete,
+  variant,
+}: ConversationActionsMenuProps) {
+  const trigger =
+    variant === "sidebar" ? (
+      <SidebarMenuAction
+        aria-label={`Open actions for ${conversationTitle}`}
+        disabled={isDeleting}
+        showOnHover
+      >
+        {isDeleting ? <Loader2 className="animate-spin" /> : <MoreHorizontal />}
+        <span className="sr-only">Conversation actions</span>
+      </SidebarMenuAction>
+    ) : (
+      <Button
+        aria-label={`Open actions for ${conversationTitle}`}
+        className="size-8 shrink-0"
+        disabled={isDeleting}
+        size="icon"
+        type="button"
+        variant="ghost"
+      >
+        {isDeleting ? <Loader2 className="animate-spin" /> : <MoreHorizontal />}
+        <span className="sr-only">Conversation actions</span>
+      </Button>
+    );
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+      <DropdownMenuContent align="end" sideOffset={4}>
+        <DropdownMenuItem
+          className="text-destructive"
+          disabled={isDeleting}
+          onClick={() => onDelete(conversationId)}
+        >
+          <Trash2 />
+          Delete conversation
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function AssistantSidebarNav() {
+  const router = useRouter();
   const { state, isMobile, setOpenMobile } = useSidebar();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -38,12 +104,53 @@ export function AssistantSidebarNav() {
   const [conversations, setConversations] = useState<
     AssistantConversationListItem[]
   >([]);
+  const [deletingConversationId, setDeletingConversationId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
-    listAssistantConversationsRequest().then(setConversations);
-  }, [pathname]);
+    let isCancelled = false;
+
+    async function loadConversations() {
+      const nextConversations = await listAssistantConversationsRequest();
+
+      if (!isCancelled) {
+        setConversations(nextConversations);
+      }
+    }
+
+    void loadConversations();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [pathname, activeConversationId]);
 
   const isAssistantActive = pathname.startsWith(routes.app.assistant);
+
+  async function deleteConversation(conversationId: string) {
+    setDeletingConversationId(conversationId);
+
+    try {
+      await deleteAssistantConversationRequest(conversationId);
+      setConversations((current) =>
+        current.filter((conversation) => conversation.id !== conversationId),
+      );
+
+      if (activeConversationId === conversationId) {
+        router.replace(routes.app.assistant, { scroll: false });
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to delete conversation";
+
+      toast.error(message);
+    } finally {
+      setDeletingConversationId(null);
+    }
+  }
 
   if (state === "collapsed" && !isMobile) {
     return (
@@ -56,34 +163,67 @@ export function AssistantSidebarNav() {
             >
               <Sparkles />
               <span>AI Assistant</span>
-              <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+              <ChevronRight className="ms-auto transition-transform duration-200" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" align="start" sideOffset={4}>
-            <DropdownMenuLabel>AI Assistant</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+          <DropdownMenuContent align="start" className="w-72" side="right">
             <DropdownMenuItem asChild>
-              <Link href={routes.app.assistant}>
+              <Link
+                href={routes.app.assistant}
+                onClick={() => setOpenMobile(false)}
+              >
                 <MessageSquarePlus />
                 <span>New Conversation</span>
               </Link>
             </DropdownMenuItem>
-            {conversations.map((conversation) => (
-              <DropdownMenuItem key={conversation.id} asChild>
-                <Link
-                  href={`${routes.app.assistant}?conversationId=${conversation.id}`}
-                  className={
-                    activeConversationId === conversation.id
-                      ? "bg-secondary"
-                      : ""
-                  }
-                >
-                  <span className="max-w-52 truncate">
-                    {conversation.title}
-                  </span>
-                </Link>
-              </DropdownMenuItem>
-            ))}
+
+            <DropdownMenuSeparator />
+
+            {conversations.length === 0 ? (
+              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                No conversations yet.
+              </DropdownMenuLabel>
+            ) : (
+              <div className="space-y-1 p-1">
+                {conversations.map((conversation) => {
+                  const isDeleting = deletingConversationId === conversation.id;
+
+                  return (
+                    <div
+                      className={cn(
+                        "flex items-center gap-1 rounded-md",
+                        activeConversationId === conversation.id &&
+                          "bg-accent text-accent-foreground",
+                      )}
+                      key={conversation.id}
+                    >
+                      <Button
+                        asChild
+                        className="h-8 flex-1 justify-start px-2 font-normal overflow-hidden"
+                        variant="ghost"
+                      >
+                        <Link
+                          href={getConversationHref(conversation.id)}
+                          onClick={() => setOpenMobile(false)}
+                        >
+                          <span className="truncate">{conversation.title}</span>
+                        </Link>
+                      </Button>
+
+                      <ConversationActionsMenu
+                        conversationId={conversation.id}
+                        conversationTitle={conversation.title}
+                        isDeleting={isDeleting}
+                        onDelete={(conversationId) => {
+                          void deleteConversation(conversationId);
+                        }}
+                        variant="dropdown"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
@@ -91,53 +231,50 @@ export function AssistantSidebarNav() {
   }
 
   return (
-    <Collapsible
-      asChild
-      defaultOpen={isAssistantActive}
-      className="group/collapsible"
-    >
+    <>
       <SidebarMenuItem>
-        <CollapsibleTrigger asChild>
-          <SidebarMenuButton tooltip="AI Assistant">
-            <Sparkles />
-            <span>AI Assistant</span>
-            <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 rtl:rotate-180" />
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="CollapsibleContent">
-          <SidebarMenuSub>
-            <SidebarMenuSubItem>
-              <SidebarMenuSubButton
-                asChild
-                isActive={isAssistantActive && !activeConversationId}
-              >
-                <Link
-                  href={routes.app.assistant}
-                  onClick={() => setOpenMobile(false)}
-                >
-                  <MessageSquarePlus />
-                  <span>New Conversation</span>
-                </Link>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-            {conversations.map((conversation) => (
-              <SidebarMenuSubItem key={conversation.id}>
-                <SidebarMenuSubButton
-                  asChild
-                  isActive={activeConversationId === conversation.id}
-                >
-                  <Link
-                    href={`${routes.app.assistant}?conversationId=${conversation.id}`}
-                    onClick={() => setOpenMobile(false)}
-                  >
-                    <span className="truncate">{conversation.title}</span>
-                  </Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
-          </SidebarMenuSub>
-        </CollapsibleContent>
+        <SidebarMenuButton
+          asChild
+          isActive={isAssistantActive && !activeConversationId}
+        >
+          <Link
+            href={routes.app.assistant}
+            onClick={() => setOpenMobile(false)}
+          >
+            <MessageSquarePlus />
+            <span>New Conversation</span>
+          </Link>
+        </SidebarMenuButton>
       </SidebarMenuItem>
-    </Collapsible>
+
+      {conversations.map((conversation) => {
+        const isDeleting = deletingConversationId === conversation.id;
+
+        return (
+          <SidebarMenuItem key={conversation.id}>
+            <SidebarMenuButton
+              asChild
+              isActive={activeConversationId === conversation.id}
+            >
+              <Link
+                href={getConversationHref(conversation.id)}
+                onClick={() => setOpenMobile(false)}
+              >
+                <span className="truncate">{conversation.title}</span>
+              </Link>
+            </SidebarMenuButton>
+            <ConversationActionsMenu
+              conversationId={conversation.id}
+              conversationTitle={conversation.title}
+              isDeleting={isDeleting}
+              onDelete={(conversationId) => {
+                void deleteConversation(conversationId);
+              }}
+              variant="sidebar"
+            />
+          </SidebarMenuItem>
+        );
+      })}
+    </>
   );
 }

@@ -37,11 +37,7 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 
-export function NavGroup({
-  title,
-  items,
-  children,
-}: SidebarNavGroup & { children?: ReactNode }) {
+export function NavGroup({ title, items }: SidebarNavGroup) {
   const { state, isMobile } = useSidebar();
   const pathname = usePathname();
   const isCollapsedDesktop = state === "collapsed" && !isMobile;
@@ -72,8 +68,6 @@ export function NavGroup({
             <SidebarMenuCollapsible key={key} item={item} pathname={pathname} />
           );
         })}
-
-        {children}
       </SidebarMenu>
     </SidebarGroup>
   );
