@@ -19,8 +19,7 @@ import type {
   UserSession,
 } from "@/features/users/types/admin-users.types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
-import type { AdminConfirmState } from "@/shared/components/dialogs/admin-confirm-dialog";
-import { AdminConfirmDialog } from "@/shared/components/dialogs/admin-confirm-dialog";
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Input } from "@/shared/components/ui/input";
 import {
   Table,
@@ -40,7 +39,14 @@ type AdminUsersTableProps = {
   pageSize: number;
 };
 
-const emptyConfirmState: AdminConfirmState = {
+type ConfirmState = {
+  open: boolean;
+  title: string;
+  description: string;
+  action: () => Promise<void>;
+};
+
+const emptyConfirmState: ConfirmState = {
   open: false,
   title: "",
   description: "",
@@ -63,8 +69,9 @@ export function AdminUsersTable({
   const [sessions, setSessions] = useState<UserSession[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
-  const [confirmDialog, setConfirmDialog] =
-    useState<AdminConfirmState>(emptyConfirmState);
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmState>(
+    emptyConfirmState,
+  );
 
   async function loadUsers(nextOffset: number, nextSearch: string) {
     try {
@@ -287,8 +294,10 @@ export function AdminUsersTable({
         sessions={sessions}
       />
 
-      <AdminConfirmDialog
-        onConfirm={async () => {
+      <ConfirmDialog
+        confirmText="Confirm"
+        desc={confirmDialog.description}
+        handleConfirm={async () => {
           await confirmDialog.action();
           setConfirmDialog(emptyConfirmState);
         }}
@@ -298,7 +307,8 @@ export function AdminUsersTable({
             open,
           }));
         }}
-        state={confirmDialog}
+        open={confirmDialog.open}
+        title={confirmDialog.title}
       />
     </>
   );

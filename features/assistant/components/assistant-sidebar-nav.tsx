@@ -30,7 +30,7 @@ import {
 } from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/constants/routes";
 
-export function NavAssistant() {
+export function AssistantSidebarNav() {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const pathname = usePathname();
   const searchParams = useSearchParams();

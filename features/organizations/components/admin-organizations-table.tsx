@@ -22,8 +22,7 @@ import type {
   OrgSubscription,
 } from "@/features/organizations/types/admin-organizations.types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
-import type { AdminConfirmState } from "@/shared/components/dialogs/admin-confirm-dialog";
-import { AdminConfirmDialog } from "@/shared/components/dialogs/admin-confirm-dialog";
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import {
   Avatar,
   AvatarFallback,
@@ -62,7 +61,14 @@ type AdminOrganizationsTableProps = {
   pageSize: number;
 };
 
-const emptyConfirmState: AdminConfirmState = {
+type ConfirmState = {
+  open: boolean;
+  title: string;
+  description: string;
+  action: () => Promise<void>;
+};
+
+const emptyConfirmState: ConfirmState = {
   open: false,
   title: "",
   description: "",
@@ -86,8 +92,9 @@ export function AdminOrganizationsTable({
     useState<OrgSubscription>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const [confirmDialog, setConfirmDialog] =
-    useState<AdminConfirmState>(emptyConfirmState);
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmState>(
+    emptyConfirmState,
+  );
 
   const totalPages = Math.ceil(total / pageSize);
   const currentPage = Math.floor(offset / pageSize) + 1;
@@ -399,15 +406,18 @@ export function AdminOrganizationsTable({
         </SheetContent>
       </Sheet>
 
-      <AdminConfirmDialog
-        state={confirmDialog}
-        onOpenChange={(open) =>
-          setConfirmDialog((current) => ({ ...current, open }))
-        }
-        onConfirm={async () => {
+      <ConfirmDialog
+        confirmText="Confirm"
+        desc={confirmDialog.description}
+        handleConfirm={async () => {
           await confirmDialog.action();
           setConfirmDialog(emptyConfirmState);
         }}
+        onOpenChange={(open) =>
+          setConfirmDialog((current) => ({ ...current, open }))
+        }
+        open={confirmDialog.open}
+        title={confirmDialog.title}
       />
     </>
   );

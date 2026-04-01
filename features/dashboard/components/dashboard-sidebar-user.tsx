@@ -32,7 +32,7 @@ import { routes } from "@/shared/constants/routes";
 import { authClient } from "@/shared/lib/auth/auth-client";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 
-export function NavUser() {
+export function DashboardSidebarUser() {
   const { state } = useSidebar();
   const [open, setOpen] = useState(false);
   const user = useUser();

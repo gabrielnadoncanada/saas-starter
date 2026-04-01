@@ -2,17 +2,16 @@ import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AiProof } from "@/features/marketing/components/ai-proof";
+import { BuilderSection } from "@/features/marketing/components/builder-section";
+import { BuyerFaq } from "@/features/marketing/components/buyer-faq";
+import { CodeProof } from "@/features/marketing/components/code-proof";
+import { ComparisonSection } from "@/features/marketing/components/comparison-section";
+import { IncludedItemsSection } from "@/features/marketing/components/included-items-section";
+import { MarketingFeatureGrid } from "@/features/marketing/components/marketing-feature-grid";
+import { ScreenshotsGallery } from "@/features/marketing/components/screenshots-gallery";
+import { StarterPricing } from "@/features/marketing/components/starter-pricing";
 import { Button } from "@/shared/components/ui/button";
-
-import { AiProof } from "./components/ai-proof";
-import { BuilderSection } from "./components/builder-section";
-import { BuyerFaq } from "./components/buyer-faq";
-import { CodeProof } from "./components/code-proof";
-import { ComparisonSection } from "./components/comparison-section";
-import { IncludedItemsSection } from "./components/included-items-section";
-import { MarketingFeatureGrid } from "./components/marketing-feature-grid";
-import { ScreenshotsGallery } from "./components/screenshots-gallery";
-import { StarterPricing } from "./components/starter-pricing";
 
 export const metadata: Metadata = {
   title:

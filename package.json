@@ -5,6 +5,7 @@
     "dev": "next dev --turbopack",
     "email:dev": "email dev -d shared/lib/email/templates -p 3001",
     "build": "next build",
+    "dead-code": "pnpm exec knip",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write package.json tsconfig.json vitest.config.ts eslint.config.mjs .prettierrc.json README.MD AUDIT.md app features shared test",

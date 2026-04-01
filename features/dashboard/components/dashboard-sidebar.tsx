@@ -1,8 +1,6 @@
-"use client";
-
+import { AssistantSidebarNav } from "@/features/assistant/components/assistant-sidebar-nav";
+import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
 import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
-import { NavUser } from "@/shared/components/layout/user/nav-user";
-import { NavAssistant } from "@/shared/components/navigation/nav-assistant";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
 import {
   Sidebar,
@@ -16,12 +14,12 @@ export function DashboardSidebar() {
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
-        <NavUser />
+        <DashboardSidebarUser />
       </SidebarHeader>
       <SidebarContent>
         {navGroups.map((group) => (
           <NavGroup key={group.title} {...group}>
-            <NavAssistant />
+            <AssistantSidebarNav />
           </NavGroup>
         ))}
       </SidebarContent>
