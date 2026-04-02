@@ -43,8 +43,8 @@ vi.mock("@/features/tasks/server/task-mutations", () => ({
   createTaskForCurrentOrganization: vi.fn(),
 }));
 
-vi.mock("@/features/assistant/server/email-provider", () => ({
-  emailProvider: {
+vi.mock("@/features/assistant/server/demo-inbox", () => ({
+  assistantDemoInbox: {
     name: "Demo inbox",
     getRecentMessages: vi.fn(),
   },
@@ -56,8 +56,8 @@ const { consumeMonthlyUsage } =
   await import("@/features/billing/usage/usage-service");
 const { createTaskForCurrentOrganization } =
   await import("@/features/tasks/server/task-mutations");
-const { emailProvider } =
-  await import("@/features/assistant/server/email-provider");
+const { assistantDemoInbox } =
+  await import("@/features/assistant/server/demo-inbox");
 const { assistantTools } = await import("@/features/assistant/server/tools");
 
 const reviewInboxExecute = assistantTools.reviewInbox.execute as (input: {
@@ -103,14 +103,14 @@ describe("assistant tools", () => {
     if (!result.success) {
       expect(result.error.code).toBe("UPGRADE_REQUIRED");
     }
-    expect(emailProvider.getRecentMessages).not.toHaveBeenCalled();
+    expect(assistantDemoInbox.getRecentMessages).not.toHaveBeenCalled();
   });
 
   it("blocks reviewInbox when the email sync quota is exhausted", async () => {
     vi.mocked(consumeMonthlyUsage).mockRejectedValue(
       new LimitReachedError("emailSyncsPerMonth", 50, 50, "Pro"),
     );
-    vi.mocked(emailProvider.getRecentMessages).mockResolvedValue([]);
+    vi.mocked(assistantDemoInbox.getRecentMessages).mockResolvedValue([]);
 
     const result = await reviewInboxExecute({ limit: 3 });
 
@@ -118,11 +118,11 @@ describe("assistant tools", () => {
     if (!result.success) {
       expect(result.error.code).toBe("LIMIT_REACHED");
     }
-    expect(emailProvider.getRecentMessages).toHaveBeenCalledWith(3);
+    expect(assistantDemoInbox.getRecentMessages).toHaveBeenCalledWith(3);
   });
 
   it("consumes email sync usage before a successful inbox review", async () => {
-    vi.mocked(emailProvider.getRecentMessages).mockResolvedValue([
+    vi.mocked(assistantDemoInbox.getRecentMessages).mockResolvedValue([
       {
         id: "msg-1",
         from: "billing@vendor.com",

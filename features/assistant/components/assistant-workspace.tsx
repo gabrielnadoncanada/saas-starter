@@ -3,13 +3,16 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import type { AiConversation } from "@/features/ai/types/ai.types";
 import { fetchAssistantConversation } from "@/features/assistant/client/conversations";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
-import type { AssistantConversation } from "@/features/assistant/types";
+import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
 
 type AssistantWorkspaceProps = {
-  initialConversation: AssistantConversation | null;
+  initialConversation: AiConversation | null;
   initialConversationId: string | null;
+  initialDefaultModelId: AiModelId;
+  initialModelOptions: AiModelOption[];
 };
 
 function buildConversationUrl(pathname: string, conversationId: string | null) {
@@ -23,6 +26,8 @@ function buildConversationUrl(pathname: string, conversationId: string | null) {
 export function AssistantWorkspace({
   initialConversation,
   initialConversationId,
+  initialDefaultModelId,
+  initialModelOptions,
 }: AssistantWorkspaceProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -33,7 +38,7 @@ export function AssistantWorkspace({
   const [chatResetKey, setChatResetKey] = useState(0);
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [selectedConversation, setSelectedConversation] =
-    useState<AssistantConversation | null>(initialConversation);
+    useState<AiConversation | null>(initialConversation);
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(initialConversationId);
@@ -96,7 +101,9 @@ export function AssistantWorkspace({
   return (
     <AssistantChat
       conversationId={selectedConversationId}
+      defaultModelId={initialDefaultModelId}
       initialMessages={selectedConversation?.messages ?? []}
+      modelOptions={initialModelOptions}
       onConversationCreated={(conversation) => {
         setSelectedConversation(conversation);
         setSelectedConversationId(conversation.id);

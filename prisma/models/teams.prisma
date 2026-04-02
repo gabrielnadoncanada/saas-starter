@@ -13,7 +13,8 @@ model Organization {
   invitations            Invitation[]
   tasks                  Task[]
   usageCounters          UsageCounter[]
-  assistantConversations AssistantConversation[]
+  aiSettings             OrganizationAiSettings?
+  aiConversations        AiConversation[]
 }
 
 model Member {

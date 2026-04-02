@@ -1,5 +1,7 @@
+import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
+import { getAiConversation } from "@/features/ai/server/ai-conversations";
+import { getOrganizationAiSettings, listAllowedAiModelsForOrganization } from "@/features/ai/server/organization-ai-settings";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
-import { getAssistantConversation } from "@/features/assistant/server/conversations";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import {
   checkLimit,
@@ -30,8 +32,16 @@ export default async function AssistantPage({
   const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
   const initialConversation =
     canUseAssistant && aiLimit.allowed && conversationId
-      ? await getAssistantConversation(conversationId)
+      ? await getAiConversation(conversationId, aiConversationSurfaces.assistant)
       : null;
+  const aiSettings =
+    organization && canUseAssistant && aiLimit.allowed
+      ? await getOrganizationAiSettings(organization.id)
+      : null;
+  const modelOptions =
+    organization && canUseAssistant && aiLimit.allowed
+      ? await listAllowedAiModelsForOrganization(organization.id)
+      : [];
 
   return (
     <Page fixed>
@@ -47,8 +57,10 @@ export default async function AssistantPage({
         />
       ) : (
         <AssistantWorkspace
+          initialDefaultModelId={aiSettings?.defaultModelId ?? modelOptions[0].id}
           initialConversation={initialConversation}
           initialConversationId={initialConversation?.id ?? null}
+          initialModelOptions={modelOptions}
         />
       )}
     </Page>

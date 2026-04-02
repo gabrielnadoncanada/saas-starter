@@ -12,7 +12,7 @@ vi.mock("@/features/organizations/server/current-organization", () => ({
 
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {
-    assistantConversation: {
+    aiConversation: {
       create: vi.fn(),
       deleteMany: vi.fn(),
       findFirst: vi.fn(),
@@ -25,14 +25,15 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
 const { getCurrentOrganization } =
   await import("@/features/organizations/server/current-organization");
+const { aiConversationSurfaces } = await import("@/features/ai/ai-surfaces");
 const {
-  createAssistantConversation,
-  deleteAssistantConversation,
-  listAssistantConversations,
-} = await import("@/features/assistant/server/conversations");
+  createAiConversation,
+  deleteAiConversation,
+  listAiConversations,
+} = await import("@/features/ai/server/ai-conversations");
 const { db } = await import("@/shared/lib/db/prisma");
 
-describe("assistant conversations", () => {
+describe("ai conversations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -40,9 +41,10 @@ describe("assistant conversations", () => {
     vi.mocked(getCurrentOrganization).mockResolvedValue({ id: "19" } as never);
   });
 
-  it("creates a scoped conversation with a generated title", async () => {
-    vi.mocked(db.assistantConversation.create).mockResolvedValue({
+  it("creates a scoped assistant conversation with a generated title", async () => {
+    vi.mocked(db.aiConversation.create).mockResolvedValue({
       id: "conv_1",
+      surface: aiConversationSurfaces.assistant,
       title: "Draft an invoice for Acme Corp due next week.",
       messagesJson: [
         {
@@ -59,24 +61,28 @@ describe("assistant conversations", () => {
       lastMessageAt: new Date("2026-03-17T12:00:00.000Z"),
     } as never);
 
-    const conversation = await createAssistantConversation([
-      {
-        id: "m1",
-        role: "user",
-        parts: [
-          {
-            type: "text",
-            text: "   Draft   an invoice for Acme Corp due next week.   ",
-          },
-        ],
-      },
-    ]);
+    const conversation = await createAiConversation(
+      aiConversationSurfaces.assistant,
+      [
+        {
+          id: "m1",
+          role: "user",
+          parts: [
+            {
+              type: "text",
+              text: "   Draft   an invoice for Acme Corp due next week.   ",
+            },
+          ],
+        },
+      ],
+    );
 
-    expect(db.assistantConversation.create).toHaveBeenCalledWith(
+    expect(db.aiConversation.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
           organizationId: "19",
-          userId: "7",
+          createdByUserId: "7",
+          surface: aiConversationSurfaces.assistant,
           title: "Draft an invoice for Acme Corp due next week.",
         }),
       }),
@@ -84,16 +90,18 @@ describe("assistant conversations", () => {
     expect(conversation).toEqual(
       expect.objectContaining({
         id: "conv_1",
+        surface: aiConversationSurfaces.assistant,
         title: "Draft an invoice for Acme Corp due next week.",
         preview: "Draft an invoice for Acme Corp due next week.",
       }),
     );
   });
 
-  it("maps recent conversations with a text preview", async () => {
-    vi.mocked(db.assistantConversation.findMany).mockResolvedValue([
+  it("lists conversations inside the current assistant scope", async () => {
+    vi.mocked(db.aiConversation.findMany).mockResolvedValue([
       {
         id: "conv_1",
+        surface: aiConversationSurfaces.assistant,
         title: "Invoice",
         messagesJson: [
           {
@@ -106,16 +114,23 @@ describe("assistant conversations", () => {
       },
     ] as never);
 
-    const conversations = await listAssistantConversations();
+    const conversations = await listAiConversations(
+      aiConversationSurfaces.assistant,
+    );
 
-    expect(db.assistantConversation.findMany).toHaveBeenCalledWith(
+    expect(db.aiConversation.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { organizationId: "19", userId: "7" },
+        where: {
+          organizationId: "19",
+          createdByUserId: "7",
+          surface: aiConversationSurfaces.assistant,
+        },
       }),
     );
     expect(conversations).toEqual([
       {
         id: "conv_1",
+        surface: aiConversationSurfaces.assistant,
         title: "Invoice",
         preview: "Invoice ready for review.",
         lastMessageAt: "2026-03-17T13:00:00.000Z",
@@ -123,15 +138,23 @@ describe("assistant conversations", () => {
     ]);
   });
 
-  it("deletes conversations only inside the current user and organization scope", async () => {
-    vi.mocked(db.assistantConversation.deleteMany).mockResolvedValue({
+  it("deletes conversations only inside the current assistant scope", async () => {
+    vi.mocked(db.aiConversation.deleteMany).mockResolvedValue({
       count: 1,
     } as never);
 
-    const deleted = await deleteAssistantConversation("conv_1");
+    const deleted = await deleteAiConversation(
+      "conv_1",
+      aiConversationSurfaces.assistant,
+    );
 
-    expect(db.assistantConversation.deleteMany).toHaveBeenCalledWith({
-      where: { id: "conv_1", organizationId: "19", userId: "7" },
+    expect(db.aiConversation.deleteMany).toHaveBeenCalledWith({
+      where: {
+        id: "conv_1",
+        organizationId: "19",
+        createdByUserId: "7",
+        surface: aiConversationSurfaces.assistant,
+      },
     });
     expect(deleted).toBe(true);
   });

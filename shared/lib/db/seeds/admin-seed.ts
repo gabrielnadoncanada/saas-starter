@@ -1,5 +1,6 @@
 import { hashPassword } from "better-auth/crypto";
 
+import { defaultAiModelId, getAllAiModelIds } from "@/shared/lib/ai/models";
 import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
 
 import { db } from "../prisma";
@@ -176,11 +177,24 @@ async function ensureAdminTasks(organizationId: string) {
   console.log(`Seeded ${missingTaskCount} admin tasks.`);
 }
 
+async function ensureAdminAiSettings(organizationId: string) {
+  await db.organizationAiSettings.upsert({
+    where: { organizationId },
+    update: {},
+    create: {
+      organizationId,
+      defaultModelId: defaultAiModelId,
+      allowedModelIds: getAllAiModelIds(),
+    },
+  });
+}
+
 export async function seedAdminWorkspace() {
   const admin = await ensureAdminUser();
   const organization = await ensureAdminOrganization();
 
   await ensureAdminMembership(admin.id, organization.id);
+  await ensureAdminAiSettings(organization.id);
   await ensureAdminTasks(organization.id);
 
   console.log(`Admin user ready: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);

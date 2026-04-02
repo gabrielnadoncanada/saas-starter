@@ -24,7 +24,7 @@ model User {
   sessions               Session[]
   members                Member[]
   invitationsSent        Invitation[]            @relation("InvitationSender")
-  assistantConversations AssistantConversation[]
+  aiConversations        AiConversation[]        @relation("AiConversationToUser")
 }
 
 model Account {

@@ -2,7 +2,6 @@
 
 import { CheckIcon } from "lucide-react";
 
-import { assistantModels } from "@/features/assistant/models";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -16,22 +15,25 @@ import {
   ModelSelectorTrigger,
 } from "@/shared/components/ai-elements/model-selector";
 import { PromptInputButton } from "@/shared/components/ai-elements/prompt-input";
+import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
 
 type AssistantModelSelectorProps = {
-  modelId: string;
+  modelId: AiModelId;
+  modelOptions: AiModelOption[];
   onOpenChange: (open: boolean) => void;
-  onSelect: (modelId: string) => void;
+  onSelect: (modelId: AiModelId) => void;
   open: boolean;
 };
 
 export function AssistantModelSelector({
   modelId,
+  modelOptions,
   onOpenChange,
   onSelect,
   open,
 }: AssistantModelSelectorProps) {
   const selectedModel =
-    assistantModels.find((model) => model.id === modelId) ?? assistantModels[0];
+    modelOptions.find((model) => model.id === modelId) ?? modelOptions[0];
 
   return (
     <ModelSelector onOpenChange={onOpenChange} open={open}>
@@ -47,7 +49,7 @@ export function AssistantModelSelector({
           <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
           {["Google", "Groq"].map((providerLabel) => (
             <ModelSelectorGroup heading={providerLabel} key={providerLabel}>
-              {assistantModels
+              {modelOptions
                 .filter((model) => model.providerLabel === providerLabel)
                 .map((model) => (
                   <ModelSelectorItem

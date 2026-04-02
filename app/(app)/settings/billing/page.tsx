@@ -45,7 +45,7 @@ export default async function SettingsBillingPage() {
     .filter((plan) => plan.monthly !== null);
 
   return (
-    <Page fixed>
+    <Page fixed className="ml-0">
       <div className="max-w-4xl space-y-5">
         <Card>
           <CardHeader>

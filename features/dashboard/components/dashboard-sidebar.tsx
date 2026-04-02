@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronRight } from "lucide-react";
+
 import { AssistantSidebarNav } from "@/features/assistant/components/assistant-sidebar-nav";
 import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
 import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
@@ -9,7 +11,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/shared/components/ui/collapsible";
-import { ChevronRight } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,

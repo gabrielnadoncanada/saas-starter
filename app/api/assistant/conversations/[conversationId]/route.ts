@@ -1,14 +1,14 @@
 import type { UIMessage } from "ai";
 
+import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
 import {
-  deleteAssistantConversation,
-  getAssistantConversation,
-  replaceAssistantConversation,
-  resolveAssistantConversationScope,
-} from "@/features/assistant/server/conversations";
+  deleteAiConversation,
+  getAiConversation,
+  replaceAiConversation,
+  resolveAiConversationScope,
+} from "@/features/ai/server/ai-conversations";
+import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
 
 type RouteContext = {
   params: Promise<{
@@ -17,7 +17,7 @@ type RouteContext = {
 };
 
 function getScopeErrorResponse(
-  scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,
+  scope: Awaited<ReturnType<typeof resolveAiConversationScope>>,
 ) {
   if (scope.kind === "unauthorized") {
     return new Response("Unauthorized", { status: 401 });
@@ -27,13 +27,8 @@ function getScopeErrorResponse(
 }
 
 async function assertAssistantAccess() {
-  const organizationPlan = await getOrganizationPlan();
-  if (!organizationPlan) {
-    return new Response("Organization not found", { status: 403 });
-  }
-
   try {
-    assertCapability(organizationPlan.planId, "ai.assistant");
+    await assertOrganizationAiAccess();
   } catch (error) {
     if (error instanceof UpgradeRequiredError) {
       return Response.json(
@@ -48,7 +43,7 @@ async function assertAssistantAccess() {
 }
 
 export async function GET(_req: Request, context: RouteContext) {
-  const scope = await resolveAssistantConversationScope();
+  const scope = await resolveAiConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -57,7 +52,10 @@ export async function GET(_req: Request, context: RouteContext) {
   if (planError) return planError;
 
   const { conversationId } = await context.params;
-  const conversation = await getAssistantConversation(conversationId);
+  const conversation = await getAiConversation(
+    conversationId,
+    aiConversationSurfaces.assistant,
+  );
 
   if (!conversation) {
     return new Response("Conversation not found", { status: 404 });
@@ -67,7 +65,7 @@ export async function GET(_req: Request, context: RouteContext) {
 }
 
 export async function PATCH(req: Request, context: RouteContext) {
-  const scope = await resolveAssistantConversationScope();
+  const scope = await resolveAiConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -84,8 +82,9 @@ export async function PATCH(req: Request, context: RouteContext) {
   }
 
   const { conversationId } = await context.params;
-  const conversation = await replaceAssistantConversation(
+  const conversation = await replaceAiConversation(
     conversationId,
+    aiConversationSurfaces.assistant,
     body.messages,
   );
 
@@ -97,7 +96,7 @@ export async function PATCH(req: Request, context: RouteContext) {
 }
 
 export async function DELETE(_req: Request, context: RouteContext) {
-  const scope = await resolveAssistantConversationScope();
+  const scope = await resolveAiConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -106,7 +105,10 @@ export async function DELETE(_req: Request, context: RouteContext) {
   if (planError) return planError;
 
   const { conversationId } = await context.params;
-  const deleted = await deleteAssistantConversation(conversationId);
+  const deleted = await deleteAiConversation(
+    conversationId,
+    aiConversationSurfaces.assistant,
+  );
 
   if (!deleted) {
     return new Response("Conversation not found", { status: 404 });

@@ -1,18 +1,3 @@
-import type { UIMessage } from "ai";
-
-export type AssistantProvider = "google" | "groq";
-
-export type AssistantConversationListItem = {
-  id: string;
-  title: string;
-  preview: string | null;
-  lastMessageAt: string;
-};
-
-export type AssistantConversation = AssistantConversationListItem & {
-  messages: UIMessage[];
-};
-
 export type EmailMessage = {
   id: string;
   from: string;

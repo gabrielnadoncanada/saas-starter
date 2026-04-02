@@ -2,22 +2,20 @@
 
 import {
   ChevronRight,
-  Loader2,
   MessageSquarePlus,
-  MoreHorizontal,
   Sparkles,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import type { AiConversationListItem } from "@/features/ai/types/ai.types";
 import {
   deleteAssistantConversationRequest,
   listAssistantConversationsRequest,
 } from "@/features/assistant/client/conversations";
-import type { AssistantConversationListItem } from "@/features/assistant/types";
+import { AssistantConversationActionsMenu } from "@/features/assistant/components/assistant-conversation-actions-menu";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -27,72 +25,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import {
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/shared/components/ui/sidebar";
+import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/constants/routes";
 import { cn } from "@/shared/lib/utils";
+
 function getConversationHref(conversationId: string) {
   return `${routes.app.assistant}?conversationId=${conversationId}`;
-}
-
-type ConversationActionsMenuProps = {
-  conversationId: string;
-  conversationTitle: string;
-  isDeleting: boolean;
-  onDelete: (conversationId: string) => void;
-  variant: "sidebar" | "dropdown";
-};
-
-function ConversationActionsMenu({
-  conversationId,
-  conversationTitle,
-  isDeleting,
-  onDelete,
-  variant,
-}: ConversationActionsMenuProps) {
-  const trigger =
-    variant === "sidebar" ? (
-      <SidebarMenuAction
-        aria-label={`Open actions for ${conversationTitle}`}
-        disabled={isDeleting}
-        showOnHover
-      >
-        {isDeleting ? <Loader2 className="animate-spin" /> : <MoreHorizontal />}
-        <span className="sr-only">Conversation actions</span>
-      </SidebarMenuAction>
-    ) : (
-      <Button
-        aria-label={`Open actions for ${conversationTitle}`}
-        className="size-8 shrink-0"
-        disabled={isDeleting}
-        size="icon"
-        type="button"
-        variant="ghost"
-      >
-        {isDeleting ? <Loader2 className="animate-spin" /> : <MoreHorizontal />}
-        <span className="sr-only">Conversation actions</span>
-      </Button>
-    );
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={4}>
-        <DropdownMenuItem
-          className="text-destructive"
-          disabled={isDeleting}
-          onClick={() => onDelete(conversationId)}
-        >
-          <Trash2 />
-          Delete conversation
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
 }
 
 export function AssistantSidebarNav() {
@@ -101,9 +39,9 @@ export function AssistantSidebarNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeConversationId = searchParams.get("conversationId");
-  const [conversations, setConversations] = useState<
-    AssistantConversationListItem[]
-  >([]);
+  const [conversations, setConversations] = useState<AiConversationListItem[]>(
+    [],
+  );
   const [deletingConversationId, setDeletingConversationId] = useState<
     string | null
   >(null);
@@ -210,7 +148,7 @@ export function AssistantSidebarNav() {
                         </Link>
                       </Button>
 
-                      <ConversationActionsMenu
+                      <AssistantConversationActionsMenu
                         conversationId={conversation.id}
                         conversationTitle={conversation.title}
                         isDeleting={isDeleting}
@@ -263,7 +201,7 @@ export function AssistantSidebarNav() {
                 <span className="truncate">{conversation.title}</span>
               </Link>
             </SidebarMenuButton>
-            <ConversationActionsMenu
+            <AssistantConversationActionsMenu
               conversationId={conversation.id}
               conversationTitle={conversation.title}
               isDeleting={isDeleting}

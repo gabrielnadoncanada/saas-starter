@@ -3,7 +3,7 @@ import { Page } from "@/shared/components/layout/page-layout";
 
 export default function PreferencesPage() {
   return (
-    <Page fixed>
+    <Page fixed className="ml-0">
       <ThemePreferencesCard />
     </Page>
   );

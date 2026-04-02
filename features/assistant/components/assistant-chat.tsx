@@ -6,26 +6,19 @@ import { DefaultChatTransport } from "ai";
 import { GlobeIcon, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import type { AiConversation } from "@/features/ai/types/ai.types";
 import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
 } from "@/features/assistant/client/conversations";
-import { AssistantEmptyState } from "@/features/assistant/components/assistant-empty-state";
 import { AssistantErrorState } from "@/features/assistant/components/assistant-error-state";
+import { AssistantMessageList } from "@/features/assistant/components/assistant-message-list";
 import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
-import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
-import { assistantModels } from "@/features/assistant/models";
-import type { AssistantConversation } from "@/features/assistant/types";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/shared/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/shared/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
@@ -36,32 +29,42 @@ import {
   PromptInputTextarea,
   PromptInputTools,
 } from "@/shared/components/ai-elements/prompt-input";
-import { Spinner } from "@/shared/components/ui/spinner";
+import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
 
 type AssistantChatProps = {
   conversationId: string | null;
+  defaultModelId: AiModelId;
   initialMessages: UIMessage[];
-  onConversationCreated: (conversation: AssistantConversation) => void;
-  onConversationUpdated: (conversation: AssistantConversation) => void;
+  modelOptions: AiModelOption[];
+  onConversationCreated: (conversation: AiConversation) => void;
+  onConversationUpdated: (conversation: AiConversation) => void;
   resetKey: number;
 };
 
 export function AssistantChat({
   conversationId,
+  defaultModelId,
   initialMessages,
+  modelOptions,
   onConversationCreated,
   onConversationUpdated,
   resetKey,
 }: AssistantChatProps) {
-  const [modelId, setModelId] = useState<string>(assistantModels[0].id);
+  const [modelId, setModelId] = useState<AiModelId>(defaultModelId);
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
+  const selectedModel =
+    modelOptions.find((model) => model.id === modelId) ?? modelOptions[0];
+
+  if (!selectedModel) {
+    throw new Error("AssistantChat requires at least one AI model option.");
+  }
 
   const stateRef = useRef({
     conversationId,
     initialMessages,
+    modelId: selectedModel.id,
     onConversationCreated,
     onConversationUpdated,
-    selectedModel: assistantModels[0] as (typeof assistantModels)[number],
   });
 
   const [transport] = useState(
@@ -69,7 +72,7 @@ export function AssistantChat({
       new DefaultChatTransport({
         api: "/api/assistant",
         prepareSendMessagesRequest: async ({ messages, body }) => {
-          const { selectedModel, conversationId: currentConversationId } =
+          const { conversationId: currentConversationId, modelId: nextModelId } =
             stateRef.current;
 
           if (currentConversationId) {
@@ -84,8 +87,7 @@ export function AssistantChat({
                 ...body,
                 messages,
                 conversationId: currentConversationId,
-                modelId: selectedModel.id,
-                provider: selectedModel.provider,
+                modelId: nextModelId,
               },
             };
           }
@@ -100,53 +102,53 @@ export function AssistantChat({
               ...body,
               messages,
               conversationId: conversation.id,
-              modelId: selectedModel.id,
-              provider: selectedModel.provider,
+              modelId: nextModelId,
             },
           };
         },
       }),
   );
-  const {
-    clearError,
-    error,
-    messages,
-    sendMessage,
-    setMessages,
-    status,
-    stop,
-  } = useChat({
-    onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
-      if (
-        isAbort ||
-        isDisconnect ||
-        isError ||
-        !stateRef.current.conversationId
-      ) {
-        return;
-      }
+  const { clearError, error, messages, sendMessage, setMessages, status, stop } =
+    useChat({
+      onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
+        if (
+          isAbort ||
+          isDisconnect ||
+          isError ||
+          !stateRef.current.conversationId
+        ) {
+          return;
+        }
 
-      void replaceAssistantConversationRequest(
-        stateRef.current.conversationId,
-        nextMessages,
-      ).then((conversation) => {
-        stateRef.current.onConversationUpdated(conversation);
-      });
-    },
-    transport,
-  });
+        void replaceAssistantConversationRequest(
+          stateRef.current.conversationId,
+          nextMessages,
+        ).then((conversation) => {
+          stateRef.current.onConversationUpdated(conversation);
+        });
+      },
+      transport,
+    });
 
-  const isLoading = status === "streaming" || status === "submitted";
-  const selectedModel =
-    assistantModels.find((model) => model.id === modelId) ?? assistantModels[0];
+  useEffect(() => {
+    if (!modelOptions.some((model) => model.id === modelId)) {
+      setModelId(defaultModelId);
+    }
+  }, [defaultModelId, modelId, modelOptions]);
 
   useEffect(() => {
     stateRef.current.conversationId = conversationId;
     stateRef.current.initialMessages = initialMessages;
+    stateRef.current.modelId = selectedModel.id;
     stateRef.current.onConversationCreated = onConversationCreated;
     stateRef.current.onConversationUpdated = onConversationUpdated;
-    stateRef.current.selectedModel = selectedModel;
-  });
+  }, [
+    conversationId,
+    initialMessages,
+    onConversationCreated,
+    onConversationUpdated,
+    selectedModel.id,
+  ]);
 
   useEffect(() => {
     clearError();
@@ -162,6 +164,8 @@ export function AssistantChat({
     clearError();
     setMessages(stateRef.current.initialMessages);
   }, [clearError, resetKey, setMessages, stop]);
+
+  const isLoading = status === "streaming" || status === "submitted";
 
   const sendAssistantMessage = (message: PromptInputMessage) => {
     const text = message.text.trim();
@@ -181,63 +185,14 @@ export function AssistantChat({
       <div className="flex flex-1 flex-col overflow-hidden">
         <Conversation>
           <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
-            {messages.length === 0 && !error ? (
-              <AssistantEmptyState
-                onPromptClick={(text) =>
-                  sendAssistantMessage({ files: [], text })
-                }
-              />
-            ) : (
-              messages.map((message) => (
-                <Message from={message.role} key={message.id}>
-                  <MessageContent>
-                    {message.parts.map((part, index) => {
-                      if (part.type === "text" && part.text) {
-                        return (
-                          <MessageResponse key={`${message.id}-${index}`}>
-                            {part.text}
-                          </MessageResponse>
-                        );
-                      }
-
-                      if (part.type.startsWith("tool-")) {
-                        const toolPart = part as {
-                          output?: unknown;
-                          state?: string;
-                          type: string;
-                        };
-
-                        return (
-                          <AssistantToolResult
-                            done={
-                              toolPart.state === "output-available" ||
-                              toolPart.state === "output-error"
-                            }
-                            key={`${message.id}-${index}`}
-                            output={toolPart.output}
-                            toolName={toolPart.type.replace("tool-", "")}
-                          />
-                        );
-                      }
-
-                      return null;
-                    })}
-                  </MessageContent>
-                </Message>
-              ))
-            )}
-
-            {isLoading &&
-            messages[messages.length - 1]?.role !== "assistant" ? (
-              <Message from="assistant">
-                <MessageContent className="rounded-lg border bg-muted/30 px-4 py-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Spinner />
-                    <span>Working...</span>
-                  </div>
-                </MessageContent>
-              </Message>
-            ) : null}
+            <AssistantMessageList
+              error={error}
+              isLoading={isLoading}
+              messages={messages}
+              onPromptClick={(text) =>
+                sendAssistantMessage({ files: [], text })
+              }
+            />
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
@@ -266,6 +221,7 @@ export function AssistantChat({
                 </div>
                 <AssistantModelSelector
                   modelId={modelId}
+                  modelOptions={modelOptions}
                   onOpenChange={setModelSelectorOpen}
                   onSelect={setModelId}
                   open={modelSelectorOpen}

@@ -1,9 +1,9 @@
 import type { UIMessage } from "ai";
 
 import type {
-  AssistantConversation,
-  AssistantConversationListItem,
-} from "@/features/assistant/types";
+  AiConversation,
+  AiConversationListItem,
+} from "@/features/ai/types/ai.types";
 
 async function parseConversationResponse<T>(response: Response) {
   if (response.ok) {
@@ -17,14 +17,14 @@ async function parseConversationResponse<T>(response: Response) {
 export async function listAssistantConversationsRequest() {
   const response = await fetch("/api/assistant/conversations");
   if (!response.ok) return [];
-  return (await response.json()) as AssistantConversationListItem[];
+  return (await response.json()) as AiConversationListItem[];
 }
 
 export async function fetchAssistantConversation(conversationId: string) {
   const response = await fetch(
     `/api/assistant/conversations/${conversationId}`,
   );
-  return parseConversationResponse<AssistantConversation>(response);
+  return parseConversationResponse<AiConversation>(response);
 }
 
 export async function createAssistantConversationRequest(
@@ -36,7 +36,7 @@ export async function createAssistantConversationRequest(
     body: JSON.stringify({ messages }),
   });
 
-  return parseConversationResponse<AssistantConversation>(response);
+  return parseConversationResponse<AiConversation>(response);
 }
 
 export async function replaceAssistantConversationRequest(
@@ -52,7 +52,7 @@ export async function replaceAssistantConversationRequest(
     },
   );
 
-  return parseConversationResponse<AssistantConversation>(response);
+  return parseConversationResponse<AiConversation>(response);
 }
 
 export async function deleteAssistantConversationRequest(
@@ -72,11 +72,12 @@ export async function deleteAssistantConversationRequest(
 }
 
 export function upsertConversationListItem(
-  conversations: AssistantConversationListItem[],
-  conversation: AssistantConversation,
+  conversations: AiConversationListItem[],
+  conversation: AiConversation,
 ) {
-  const nextItem: AssistantConversationListItem = {
+  const nextItem: AiConversationListItem = {
     id: conversation.id,
+    surface: conversation.surface,
     title: conversation.title,
     preview: conversation.preview,
     lastMessageAt: conversation.lastMessageAt,

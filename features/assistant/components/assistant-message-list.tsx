@@ -1,0 +1,83 @@
+"use client";
+
+import type { UIMessage } from "ai";
+
+import { AssistantEmptyState } from "@/features/assistant/components/assistant-empty-state";
+import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "@/shared/components/ai-elements/message";
+import { Spinner } from "@/shared/components/ui/spinner";
+
+type AssistantMessageListProps = {
+  error: Error | undefined;
+  isLoading: boolean;
+  messages: UIMessage[];
+  onPromptClick: (text: string) => void;
+};
+
+export function AssistantMessageList({
+  error,
+  isLoading,
+  messages,
+  onPromptClick,
+}: AssistantMessageListProps) {
+  if (messages.length === 0 && !error) {
+    return <AssistantEmptyState onPromptClick={onPromptClick} />;
+  }
+
+  return (
+    <>
+      {messages.map((message) => (
+        <Message from={message.role} key={message.id}>
+          <MessageContent>
+            {message.parts.map((part, index) => {
+              if (part.type === "text" && part.text) {
+                return (
+                  <MessageResponse key={`${message.id}-${index}`}>
+                    {part.text}
+                  </MessageResponse>
+                );
+              }
+
+              if (part.type.startsWith("tool-")) {
+                const toolPart = part as {
+                  output?: unknown;
+                  state?: string;
+                  type: string;
+                };
+
+                return (
+                  <AssistantToolResult
+                    done={
+                      toolPart.state === "output-available" ||
+                      toolPart.state === "output-error"
+                    }
+                    key={`${message.id}-${index}`}
+                    output={toolPart.output}
+                    toolName={toolPart.type.replace("tool-", "")}
+                  />
+                );
+              }
+
+              return null;
+            })}
+          </MessageContent>
+        </Message>
+      ))}
+
+      {isLoading && messages[messages.length - 1]?.role !== "assistant" ? (
+        <Message from="assistant">
+          <MessageContent className="rounded-lg border bg-muted/30 px-4 py-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Spinner />
+              <span>Working...</span>
+            </div>
+          </MessageContent>
+        </Message>
+      ) : null}
+    </>
+  );
+}

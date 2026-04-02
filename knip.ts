@@ -1,6 +1,4 @@
-import type { KnipConfig } from "knip";
-
-const config: KnipConfig = {
+const config = {
   entry: ["app/**/*.{ts,tsx}", "test/**/*.{ts,tsx}"],
   project: [
     "app/**/*.{ts,tsx}",

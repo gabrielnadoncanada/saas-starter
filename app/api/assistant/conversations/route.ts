@@ -1,16 +1,16 @@
 import type { UIMessage } from "ai";
 
+import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
 import {
-  createAssistantConversation,
-  listAssistantConversations,
-  resolveAssistantConversationScope,
-} from "@/features/assistant/server/conversations";
+  createAiConversation,
+  listAiConversations,
+  resolveAiConversationScope,
+} from "@/features/ai/server/ai-conversations";
+import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
 
 function getScopeErrorResponse(
-  scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,
+  scope: Awaited<ReturnType<typeof resolveAiConversationScope>>,
 ) {
   if (scope.kind === "unauthorized") {
     return new Response("Unauthorized", { status: 401 });
@@ -20,13 +20,8 @@ function getScopeErrorResponse(
 }
 
 async function assertAssistantAccess() {
-  const organizationPlan = await getOrganizationPlan();
-  if (!organizationPlan) {
-    return new Response("Organization not found", { status: 403 });
-  }
-
   try {
-    assertCapability(organizationPlan.planId, "ai.assistant");
+    await assertOrganizationAiAccess();
   } catch (error) {
     if (error instanceof UpgradeRequiredError) {
       return Response.json(
@@ -41,7 +36,7 @@ async function assertAssistantAccess() {
 }
 
 export async function GET() {
-  const scope = await resolveAssistantConversationScope();
+  const scope = await resolveAiConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -49,12 +44,14 @@ export async function GET() {
   const planError = await assertAssistantAccess();
   if (planError) return planError;
 
-  const conversations = await listAssistantConversations();
+  const conversations = await listAiConversations(
+    aiConversationSurfaces.assistant,
+  );
   return Response.json(conversations);
 }
 
 export async function POST(req: Request) {
-  const scope = await resolveAssistantConversationScope();
+  const scope = await resolveAiConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -70,7 +67,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const conversation = await createAssistantConversation(body.messages);
+  const conversation = await createAiConversation(
+    aiConversationSurfaces.assistant,
+    body.messages,
+  );
   if (!conversation) {
     return new Response("Unable to create conversation", { status: 500 });
   }

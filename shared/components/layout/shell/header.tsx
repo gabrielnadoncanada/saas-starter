@@ -1,46 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { SidebarTrigger } from "@/shared/components/ui/sidebar";
-import { cn } from "@/shared/lib/utils";
 
-type HeaderProps = React.HTMLAttributes<HTMLElement> & {
-  fixed?: boolean;
-  ref?: React.Ref<HTMLElement>;
+type HeaderProps = {
+  children: React.ReactNode;
 };
 
-export function Header({ className, fixed, children, ...props }: HeaderProps) {
-  const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setOffset(document.body.scrollTop || document.documentElement.scrollTop);
-    };
-
-    document.addEventListener("scroll", onScroll, { passive: true });
-
-    return () => document.removeEventListener("scroll", onScroll);
-  }, []);
-
+export function Header({ children }: HeaderProps) {
   return (
-    <header
-      className={cn(
-        "z-50 h-16",
-        fixed && "header-fixed peer/header sticky top-0 w-[inherit]",
-        offset > 10 && fixed ? "shadow" : "shadow-none",
-        className,
-      )}
-      {...props}
-    >
-      <div
-        className={cn(
-          "relative flex h-full items-center gap-3 p-4 sm:gap-4 container",
-          offset > 10 &&
-            fixed &&
-            "after:absolute after:inset-0 after:-z-10 after:bg-background/20 after:backdrop-blur-lg",
-        )}
-      >
+    <header className="z-50 flex items-center gap-2 px-3 pt-2">
+      <div className="relative flex h-full items-center gap-3  py-2 sm:gap-4 ">
         <SidebarTrigger variant="outline" />
         {children}
       </div>

@@ -1,13 +1,15 @@
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
 
-import { getAssistantConversation } from "@/features/assistant/server/conversations";
-import { getAssistantModel } from "@/features/assistant/server/get-assistant-model";
+import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
+import { getAiConversation } from "@/features/ai/server/ai-conversations";
+import { AiModelSelectionError } from "@/features/ai/server/model-selection-error";
+import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
+import { resolveOrganizationModelSelection } from "@/features/ai/server/resolve-model-selection";
 import { assistantTools } from "@/features/assistant/server/tools";
 import { LimitReachedError } from "@/features/billing/errors/limit-reached";
 import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
+import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function POST(req: Request) {
@@ -18,13 +20,10 @@ export async function POST(req: Request) {
   }
 
   // 2. Check plan gating and usage limits
-  const organizationPlan = await getOrganizationPlan();
-  if (!organizationPlan) {
-    return new Response("Organization not found", { status: 403 });
-  }
+  let organizationPlan: Awaited<ReturnType<typeof assertOrganizationAiAccess>>;
 
   try {
-    assertCapability(organizationPlan.planId, "ai.assistant");
+    organizationPlan = await assertOrganizationAiAccess();
     await consumeMonthlyUsage(
       organizationPlan.organizationId,
       "aiRequestsPerMonth",
@@ -55,7 +54,7 @@ export async function POST(req: Request) {
   const MAX_MESSAGES = 100;
   const MAX_MESSAGE_LENGTH = 10_000;
 
-  const { messages, modelId, provider, conversationId } = await req.json();
+  const { messages, modelId, conversationId } = await req.json();
   if (!Array.isArray(messages) || messages.length === 0) {
     return Response.json(
       { error: "Conversation messages are required." },
@@ -85,16 +84,36 @@ export async function POST(req: Request) {
   }
 
   if (conversationId) {
-    const conversation = await getAssistantConversation(conversationId);
+    const conversation = await getAiConversation(
+      conversationId,
+      aiConversationSurfaces.assistant,
+    );
     if (!conversation) {
       return new Response("Conversation not found", { status: 404 });
     }
   }
 
   const modelMessages = await convertToModelMessages(messages);
+  let assistantModel;
+
+  try {
+    const selection = await resolveOrganizationModelSelection(
+      organizationPlan.organizationId,
+      modelId,
+    );
+    assistantModel = getAiModelInstance(selection.model.id);
+  } catch (error) {
+    if (error instanceof AiModelSelectionError) {
+      return Response.json(
+        { error: error.message, code: error.code },
+        { status: 400 },
+      );
+    }
+
+    throw error;
+  }
 
   // 4. Stream the AI response with tools
-  const assistantModel = getAssistantModel({ modelId, provider });
   const result = streamText({
     model: assistantModel.model,
     system: `You are a helpful business assistant integrated into a SaaS application.

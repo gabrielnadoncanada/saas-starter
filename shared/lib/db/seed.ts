@@ -1,4 +1,5 @@
 import type { PlanId } from "@/shared/config/billing.config";
+import { defaultAiModelId, getAllAiModelIds } from "@/shared/lib/ai/models";
 import { stripe } from "@/shared/lib/stripe/client";
 
 import { db } from "./prisma";
@@ -166,6 +167,16 @@ async function seed() {
       },
     });
   }
+
+  await db.organizationAiSettings.upsert({
+    where: { organizationId: org.id },
+    update: {},
+    create: {
+      organizationId: org.id,
+      defaultModelId: defaultAiModelId,
+      allowedModelIds: getAllAiModelIds(),
+    },
+  });
 
   await seedAdminWorkspace();
   await createStripeProducts();

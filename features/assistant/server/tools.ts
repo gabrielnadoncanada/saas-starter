@@ -13,7 +13,7 @@ import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { createTaskForCurrentOrganization } from "@/features/tasks/server/task-mutations";
 
-import { emailProvider } from "./email-provider";
+import { assistantDemoInbox } from "./demo-inbox";
 import { toAssistantToolFailure } from "./tool-result";
 
 type InvoiceDraftInput = {
@@ -54,7 +54,7 @@ export const assistantTools = {
       try {
         const organizationPlan = await getToolOrganizationPlan();
         assertCapability(organizationPlan.planId, "email.sync");
-        const messages = await emailProvider.getRecentMessages(limit ?? 5);
+        const messages = await assistantDemoInbox.getRecentMessages(limit ?? 5);
 
         await consumeMonthlyUsage(
           organizationPlan.organizationId,
@@ -65,7 +65,7 @@ export const assistantTools = {
         return {
           success: true,
           result: {
-            provider: emailProvider.name,
+            provider: assistantDemoInbox.name,
             messages,
             count: messages.length,
           },
