@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useState } from "react";
 
 import { updateAccountAction } from "@/features/account/actions/update-account.action";
@@ -33,6 +34,8 @@ export function EditProfileDialog({
   phoneNumber,
   children,
 }: EditProfileDialogProps) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
     UpdateAccountActionState,
@@ -68,19 +71,17 @@ export function EditProfileDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>
-            Update your name and phone number.
-          </DialogDescription>
+          <DialogTitle>{t("editProfile.title")}</DialogTitle>
+          <DialogDescription>{t("editProfile.description")}</DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" action={formAction}>
           <Field data-invalid={nameField.invalid}>
-            <FieldLabel htmlFor="name">Name</FieldLabel>
+            <FieldLabel htmlFor="name">{t("editProfile.name")}</FieldLabel>
             <Input
               id="name"
               name="name"
-              placeholder="Enter your name"
+              placeholder={t("editProfile.namePlaceholder")}
               defaultValue={currentName}
               aria-invalid={nameField.invalid}
               required
@@ -89,11 +90,11 @@ export function EditProfileDialog({
           </Field>
 
           <Field data-invalid={phoneNumberField.invalid}>
-            <FieldLabel htmlFor="phoneNumber">Phone number</FieldLabel>
+            <FieldLabel htmlFor="phoneNumber">{t("editProfile.phoneNumber")}</FieldLabel>
             <PhoneInput
               id="phoneNumber"
               name="phoneNumber"
-              placeholder="Enter your phone number"
+              placeholder={t("editProfile.phonePlaceholder")}
               value={phoneNumberValue}
               onChange={(value) => setPhoneNumberValue(value ?? "")}
               aria-invalid={phoneNumberField.invalid}
@@ -103,16 +104,16 @@ export function EditProfileDialog({
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{tc("cancel")}</Button>
             </DialogClose>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {tc("saving")}
                 </>
               ) : (
-                "Save Changes"
+                t("editProfile.saveChanges")
               )}
             </Button>
           </DialogFooter>

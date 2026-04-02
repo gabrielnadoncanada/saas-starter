@@ -1,0 +1,105 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "and": "et",
+    "save": "Enregistrer",
+    "close": "Fermer",
+    "back": "Retour",
+    "backToHome": "Retour a l'accueil",
+    "backToDashboard": "Retour au tableau de bord",
+    "loading": "Chargement...",
+    "saving": "Enregistrement...",
+    "creating": "Creation...",
+    "deleting": "Suppression...",
+    "sending": "Envoi...",
+    "retry": "Reessayer",
+    "continue": "Continuer",
+    "confirm": "Confirmer",
+    "reset": "Reinitialiser",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "search": "Rechercher",
+    "view": "Voir",
+    "submit": "Envoyer",
+    "copy": "Copier",
+    "copiedToClipboard": "Copie dans le presse-papier",
+    "noResults": "Aucun resultat.",
+    "thisActionCannotBeUndone": "Cette action est irreversible.",
+    "learnMore": "En savoir plus",
+    "tryAgain": "Reessayer",
+    "required": "Requis",
+    "optional": "Facultatif",
+    "active": "Actif",
+    "unlimited": "Illimite",
+    "free": "Gratuit",
+    "formValidationFailed": "Corrigez les champs indiques.",
+    "notAuthenticated": "Vous n'etes pas connecte.",
+    "dialogConfirm": "Confirmer"
+  },
+  "dataTable": {
+    "sortAsc": "Croissant",
+    "sortDesc": "Decroissant",
+    "hide": "Masquer",
+    "pageOf": "Page {current} sur {total}",
+    "rowsPerPage": "Lignes par page",
+    "goToFirst": "Premiere page",
+    "goToPrevious": "Page precedente",
+    "goToNext": "Page suivante",
+    "goToPage": "Aller a la page {page}",
+    "goToLast": "Derniere page",
+    "noResults": "Aucun resultat.",
+    "selected": "{count} selectionne(s)",
+    "clearFilters": "Effacer les filtres",
+    "toggleColumns": "Afficher/masquer les colonnes",
+    "clearSelection": "Effacer la selection",
+    "bulkActions": "Actions groupees pour {count} {entity} selectionne(s)"
+  },
+  "commandMenu": {
+    "placeholder": "Tapez une commande ou recherchez...",
+    "noResults": "Aucun resultat.",
+    "theme": "Theme",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Systeme"
+  },
+  "email": {
+    "verifyEmail": {
+      "subject": "Verifiez votre adresse email",
+      "heading": "Verifiez votre adresse email",
+      "body": "Cliquez sur le bouton ci-dessous pour activer votre compte. Ce lien expire dans 24 heures.",
+      "button": "Verifier l'email",
+      "fallback": "Ou copiez ce lien dans votre navigateur :",
+      "footer": "Si vous n'avez pas cree ce compte, vous pouvez ignorer cet email."
+    },
+    "resetPassword": {
+      "subject": "Reinitialisation de votre mot de passe",
+      "heading": "Reinitialisation de votre mot de passe",
+      "body": "Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans 1 heure.",
+      "button": "Reinitialiser le mot de passe",
+      "fallback": "Ou copiez ce lien dans votre navigateur :",
+      "footer": "Si vous n'avez pas demande de reinitialisation, vous pouvez ignorer cet email."
+    },
+    "magicLink": {
+      "subject": "Votre lien de connexion",
+      "heading": "Connexion",
+      "body": "Cliquez sur le bouton ci-dessous pour vous connecter. Ce lien expire dans 24 heures.",
+      "button": "Se connecter",
+      "fallback": "Ou copiez ce lien dans votre navigateur :",
+      "footer": "Si vous n'avez pas demande ce lien, vous pouvez ignorer cet email."
+    },
+    "teamInvitation": {
+      "heading": "Rejoindre {orgName}",
+      "body": "{inviterName} vous a invite a rejoindre {orgName} en tant que {role}.",
+      "button": "Accepter l'invitation",
+      "fallback": "Ou copiez ce lien dans votre navigateur :",
+      "footer": "Si vous n'attendiez pas cette invitation, vous pouvez ignorer cet email."
+    },
+    "passwordChanged": {
+      "subject": "Votre mot de passe a ete modifie",
+      "heading": "Mot de passe mis a jour",
+      "body": "Le mot de passe de votre compte a ete mis a jour avec succes.",
+      "warning": "Si vous n'avez pas effectue ce changement, utilisez la reinitialisation de mot de passe immediatement.",
+      "footer": "Si ce n'etait pas vous, reinitialisation votre mot de passe immediatement."
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
 import { getAiConversation } from "@/features/ai/server/ai-conversations";
 import {
@@ -24,6 +26,7 @@ type AssistantPageProps = {
 export default async function AssistantPage({
   searchParams,
 }: AssistantPageProps) {
+  const t = await getTranslations("assistant");
   const organization = await getCurrentOrganization();
   const planId = resolveOrganizationPlan(organization);
   const canUseAssistant = hasCapability(planId, "ai.assistant");
@@ -53,13 +56,15 @@ export default async function AssistantPage({
     <Page fixed>
       {!canUseAssistant ? (
         <UpgradeCard
-          feature="AI Assistant"
-          description="The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts."
+          feature={t("upgrade.notAvailableFeature")}
+          description={t("upgrade.notAvailableDescription")}
         />
       ) : !aiLimit.allowed ? (
         <UpgradeCard
-          feature="AI Assistant"
-          description={`You've used all ${aiLimit.limit} AI requests this month. Upgrade your plan for a higher limit, or wait until next month.`}
+          feature={t("upgrade.limitExceededFeature")}
+          description={t("upgrade.limitExceededDescription", {
+            limit: aiLimit.limit,
+          })}
         />
       ) : (
         <AssistantWorkspace

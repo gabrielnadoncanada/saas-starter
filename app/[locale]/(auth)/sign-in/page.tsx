@@ -17,6 +17,7 @@ import {
   hasMagicLinkProvider,
 } from "@/shared/lib/auth/oauth-config";
 import { Link } from "@/shared/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
 type SignInPageProps = {
   searchParams: Promise<{
@@ -30,18 +31,20 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
   const signUpHref = buildCallbackURL(routes.auth.signup, callbackUrl);
+  const t = await getTranslations("auth");
+  const tc = await getTranslations("common");
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">Sign in</CardTitle>
+        <CardTitle className="text-lg tracking-tight">{t("signin.title")}</CardTitle>
         <CardDescription>
-          Don&apos;t have an account?{" "}
+          {t("signin.noAccount")}{" "}
           <Link
             href={signUpHref}
             className="underline underline-offset-4 hover:text-primary"
           >
-            Sign up
+            {t("signin.signupLink")}
           </Link>
         </CardDescription>
       </CardHeader>
@@ -56,19 +59,19 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
       <CardFooter>
         <p className="w-full text-center text-sm text-muted-foreground">
-          By clicking sign in, you agree to our{" "}
+          {t("signin.termsAgreement")}{" "}
           <Link
             href={routes.marketing.terms}
             className="underline underline-offset-4 hover:text-primary"
           >
-            Terms of Service
+            {t("signin.termsLink")}
           </Link>{" "}
-          and{" "}
+          {tc("and")}{" "}
           <Link
             href={routes.marketing.privacy}
             className="underline underline-offset-4 hover:text-primary"
           >
-            Privacy Policy
+            {t("signin.privacyLink")}
           </Link>
           .
         </p>

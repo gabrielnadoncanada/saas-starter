@@ -2,6 +2,7 @@
 
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from "lucide-react";
 import { useRouter } from "@/shared/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import React from "react";
 
@@ -23,6 +24,7 @@ export function CommandMenu() {
   const router = useRouter();
   const { setTheme } = useTheme();
   const { open, setOpen } = useSearch();
+  const t = useTranslations("commandMenu");
 
   const runCommand = React.useCallback(
     (command: () => unknown) => {
@@ -34,10 +36,10 @@ export function CommandMenu() {
 
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Type a command or search..." />
+      <CommandInput placeholder={t("placeholder")} />
       <CommandList>
         <ScrollArea type="hover" className="h-72 pe-1">
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>{t("noResults")}</CommandEmpty>
           {dashboardSidebarData.navGroups.map((group: SidebarNavGroup) => (
             <CommandGroup key={group.title} heading={group.title}>
               {group.items.map((navItem, i) => {
@@ -75,17 +77,17 @@ export function CommandMenu() {
             </CommandGroup>
           ))}
           <CommandSeparator />
-          <CommandGroup heading="Theme">
+          <CommandGroup heading={t("theme")}>
             <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
-              <Sun /> <span>Light</span>
+              <Sun /> <span>{t("light")}</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
               <Moon className="scale-90" />
-              <span>Dark</span>
+              <span>{t("dark")}</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
               <Laptop />
-              <span>System</span>
+              <span>{t("system")}</span>
             </CommandItem>
           </CommandGroup>
         </ScrollArea>
@@ -93,4 +95,3 @@ export function CommandMenu() {
     </CommandDialog>
   );
 }
-

@@ -1,18 +1,16 @@
 "use client";
 
 import { AlertCircle, RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 
+import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
 
 type AssistantRouteError = {
   code?: string;
   error?: string;
-};
-
-type AssistantErrorStateProps = {
-  error: Error;
-  onDismiss: () => void;
 };
 
 function parseAssistantError(error: Error): AssistantRouteError {
@@ -23,49 +21,48 @@ function parseAssistantError(error: Error): AssistantRouteError {
   }
 }
 
-function getErrorTitle(code?: string) {
-  if (code === "LIMIT_REACHED") {
-    return "Monthly limit reached";
-  }
-
-  if (code === "UPGRADE_REQUIRED") {
-    return "Upgrade required";
-  }
-
-  return "Something went wrong";
-}
-
-export function AssistantErrorState({
+function AssistantChatErrorState({
   error,
   onDismiss,
-}: AssistantErrorStateProps) {
+}: {
+  error: Error;
+  onDismiss: () => void;
+}) {
+  const t = useTranslations("assistant");
   const errorInfo = parseAssistantError(error);
   const isUpgradeError =
     errorInfo.code === "LIMIT_REACHED" || errorInfo.code === "UPGRADE_REQUIRED";
+
+  const title =
+    errorInfo.code === "LIMIT_REACHED"
+      ? t("error.limitReached")
+      : errorInfo.code === "UPGRADE_REQUIRED"
+        ? t("error.upgradeRequired")
+        : t("error.somethingWentWrong");
 
   return (
     <Card className="border-destructive/50 bg-destructive/5">
       <CardContent className="flex items-start gap-3 py-3">
         <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-destructive">
-            {getErrorTitle(errorInfo.code)}
-          </p>
+          <p className="text-sm font-medium text-destructive">{title}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {errorInfo.error}
           </p>
         </div>
         {isUpgradeError ? (
           <Button size="sm" variant="outline" asChild>
-            <a href="/pricing">Upgrade</a>
+            <Link href={routes.marketing.pricing}>{t("error.upgrade")}</Link>
           </Button>
         ) : (
           <Button size="sm" variant="outline" onClick={onDismiss}>
             <RotateCcw className="mr-1 h-3 w-3" />
-            Dismiss
+            {t("error.dismiss")}
           </Button>
         )}
       </CardContent>
     </Card>
   );
 }
+
+export { AssistantChatErrorState };

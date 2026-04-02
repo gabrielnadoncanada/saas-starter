@@ -1,7 +1,10 @@
 "use client";
+
 import { useRouter } from "@/shared/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+
 import {
   banUserAction,
   getAdminUserDetailAction,
@@ -27,6 +30,7 @@ import { authClient } from "@/shared/lib/auth/auth-client";
 import { AdminUsersSearch } from "./admin-users-search";
 import { UserDetailSheet } from "./user-detail-sheet";
 import { UsersTableRows } from "./users-table-rows";
+
 type AdminUsersTableProps = {
   currentUserId: string;
   initialTotal: number;
@@ -40,6 +44,7 @@ type ConfirmState = {
   description: string;
   action: () => Promise<void>;
 };
+
 const emptyConfirmState: ConfirmState = {
   open: false,
   title: "",
@@ -54,6 +59,8 @@ export function AdminUsersTable({
   pageSize,
 }: AdminUsersTableProps) {
   const router = useRouter();
+  const t = useTranslations("users");
+  const tc = useTranslations("common");
   const [users, setUsers] = useState(initialUsers);
   const [total, setTotal] = useState(initialTotal);
   const [offset, setOffset] = useState(0);
@@ -64,6 +71,7 @@ export function AdminUsersTable({
   const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(emptyConfirmState);
   const [isPending, startTransition] = useTransition();
+
   async function loadUsers(nextOffset: number, nextSearch = search) {
     try {
       const result = await listAdminUsersAction({
@@ -71,9 +79,9 @@ export function AdminUsersTable({
         offset: nextOffset,
         ...(nextSearch
           ? {
-            searchField: "email" as const,
-            searchOperator: "contains" as const,
-            searchValue: nextSearch,
+              searchField: "email" as const,
+              searchOperator: "contains" as const,
+              searchValue: nextSearch,
             }
           : {}),
       });
@@ -81,99 +89,122 @@ export function AdminUsersTable({
       setTotal(result.total);
       setOffset(nextOffset);
     } catch {
-      toast.error("Failed to fetch users");
+      toast.error(t("errors.fetchFailed"));
     }
   }
+
   function runTableRefresh(nextOffset: number, nextSearch = search) {
     startTransition(async () => void (await loadUsers(nextOffset, nextSearch)));
   }
+
   function openConfirmation(title: string, description: string, action: () => Promise<void>) {
     setConfirmDialog({ open: true, title, description, action });
   }
+
   async function openUserDetail(user: AdminUser) {
     setSelectedUser(user);
     setSessions([]);
     setIsSheetOpen(true);
     setIsLoadingUserDetail(true);
+
     try {
       const detail = await getAdminUserDetailAction(user.id);
+
       if (detail.user) {
         setSelectedUser(detail.user as AdminUser);
       }
+
       setSessions(detail.sessions);
     } catch {
-      toast.error("Failed to load user details");
+      toast.error(t("errors.detailFailed"));
     } finally {
       setIsLoadingUserDetail(false);
     }
   }
+
   async function handleImpersonate(userId: string) {
     const { error } = await authClient.admin.impersonateUser({ userId });
+
     if (error) {
-      toast.error(error.message ?? "Failed to impersonate user");
+      toast.error(error.message ?? t("errors.impersonateFailed"));
       return;
     }
-    toast.success("Now impersonating user");
+
+    toast.success(t("errors.impersonateSuccess"));
     router.push("/dashboard");
     router.refresh();
   }
-  function copyToClipboard(value: string) { navigator.clipboard.writeText(value); toast.success("Copied to clipboard"); }
-  function closeUserDetailAndRefresh() { setIsSheetOpen(false); runTableRefresh(offset); }
+
+  function copyToClipboard(value: string) {
+    void navigator.clipboard.writeText(value);
+    toast.success(tc("copiedToClipboard"));
+  }
+
+  function closeUserDetailAndRefresh() {
+    setIsSheetOpen(false);
+    runTableRefresh(offset);
+  }
+
   function confirmBanUser(userId: string) {
     openConfirmation(
-      "Ban user",
-      "This will ban the user and revoke all their sessions. Are you sure?",
+      t("confirmations.banTitle"),
+      t("confirmations.banMessage"),
       async () => {
         await banUserAction(userId);
-        toast.success("User banned");
+        toast.success(t("confirmations.banSuccess"));
         closeUserDetailAndRefresh();
       },
     );
   }
+
   function confirmDeleteUser(userId: string) {
     openConfirmation(
-      "Delete user",
-      "This will permanently delete this user and all their data. This cannot be undone.",
+      t("confirmations.deleteTitle"),
+      t("confirmations.deleteMessage"),
       async () => {
         await removeUserAction(userId);
-        toast.success("User deleted");
+        toast.success(t("confirmations.deleteSuccess"));
         closeUserDetailAndRefresh();
       },
     );
   }
+
   function confirmSetUserRole(userId: string, role: "user" | "admin") {
     openConfirmation(
-      `Set role to "${role}"`,
-      `Are you sure you want to change this user's role to "${role}"?`,
+      t("confirmations.roleTitle", { role }),
+      t("confirmations.roleMessage", { role }),
       async () => {
         await setUserRoleAction(userId, role);
-        toast.success("Role updated");
+        toast.success(t("confirmations.roleSuccess"));
         closeUserDetailAndRefresh();
       },
     );
   }
+
   function confirmUnbanUser(userId: string) {
     openConfirmation(
-      "Unban user",
-      "This will unban the user and allow them to sign in again.",
+      t("confirmations.unbanTitle"),
+      t("confirmations.unbanMessage"),
       async () => {
         await unbanUserAction(userId);
-        toast.success("User unbanned");
+        toast.success(t("confirmations.unbanSuccess"));
         closeUserDetailAndRefresh();
       },
     );
   }
+
   function confirmRevokeAllSessions(userId: string) {
     openConfirmation(
-      "Revoke all sessions",
-      "This will sign the user out of all devices.",
+      t("confirmations.revokeTitle"),
+      t("confirmations.revokeMessage"),
       async () => {
         await revokeAllUserSessionsAction(userId);
-        toast.success("All sessions revoked");
+        toast.success(t("confirmations.revokeSuccess"));
         setSessions([]);
       },
     );
   }
+
   return (
     <>
       <AdminUsersSearch
@@ -187,10 +218,10 @@ export function AdminUsersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>{t("columnUser")}</TableHead>
+              <TableHead>{t("columnRole")}</TableHead>
+              <TableHead>{t("columnStatus")}</TableHead>
+              <TableHead>{t("columnCreated")}</TableHead>
               <TableHead className="w-12" />
             </TableRow>
           </TableHeader>
@@ -229,7 +260,7 @@ export function AdminUsersTable({
         sessions={sessions}
       />
       <ConfirmDialog
-        confirmText="Confirm"
+        confirmText={tc("dialogConfirm")}
         desc={confirmDialog.description}
         handleConfirm={async () => {
           await confirmDialog.action();

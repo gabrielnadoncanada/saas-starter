@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/shared/i18n/navigation";
 import { useState } from "react";
@@ -31,12 +32,6 @@ import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
-const OAUTH_ERROR_MESSAGES: Record<string, string> = {
-  OAuthAccountNotLinked:
-    "Unable to continue with this provider. Try a different sign-up method.",
-  OAuthSignin: "Unable to continue. Please try again.",
-};
-
 type SignUpFormProps = {
   oauthProviders?: OAuthProviderId[];
   allowMagicLink?: boolean;
@@ -48,6 +43,8 @@ export function SignUpForm({
   allowMagicLink = false,
   callbackUrl = "/post-sign-in",
 }: SignUpFormProps) {
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
@@ -91,7 +88,9 @@ export function SignUpForm({
     nextCallbackUrl,
   );
   const oauthErrorMessage = error
-    ? (OAUTH_ERROR_MESSAGES[error] ?? "Unable to continue. Please try again.")
+    ? error === "OAuthAccountNotLinked"
+      ? t("signup.unableToSignUpProvider")
+      : t("signup.unableToSignUp")
     : null;
   const passwordErrors = passwordForm.formState.errors;
   const isSubmitting = passwordForm.formState.isSubmitting;
@@ -132,7 +131,7 @@ export function SignUpForm({
       await sendMagicLink(email, nextCallbackUrl);
       router.push(buildCheckEmailHref(email, nextCallbackUrl));
     } catch {
-      toast.error("Unable to send the sign-up link. Please try again.");
+      toast.error(t("toast.signUpLinkFailed"));
     } finally {
       setIsSendingMagicLink(false);
     }
@@ -143,7 +142,7 @@ export function SignUpForm({
       setPendingProvider(provider);
       await signInWithOAuth(provider, nextCallbackUrl);
     } catch {
-      toast.error("Unable to continue. Please try again.");
+      toast.error(t("signup.unableToSignUp"));
     } finally {
       setPendingProvider(null);
     }
@@ -178,7 +177,7 @@ export function SignUpForm({
       } catch {
         passwordForm.setError("root", {
           type: "server",
-          message: "Unable to create account. Please try again.",
+          message: t("signup.unableToCreateAccount"),
         });
       }
     },
@@ -191,13 +190,13 @@ export function SignUpForm({
           email={submittedEmail}
           errorMessage={passwordErrors.root?.message}
           isSubmitting={isSubmitting}
-          pendingLabel="Creating account..."
-          submitLabel="Create account"
+          pendingLabel={t("signup.creatingAccount")}
+          submitLabel={t("signUp")}
           onChangeEmail={() => setShowPasswordStep(false)}
           onSubmit={handlePasswordSubmit}
         >
           <Field data-invalid={Boolean(passwordErrors.password)}>
-            <FieldLabel htmlFor="sign-up-password">Password</FieldLabel>
+            <FieldLabel htmlFor="sign-up-password">{t("password")}</FieldLabel>
             <PasswordInput
               id="sign-up-password"
               autoComplete="new-password"
@@ -210,7 +209,7 @@ export function SignUpForm({
 
           <Field data-invalid={Boolean(passwordErrors.confirmPassword)}>
             <FieldLabel htmlFor="sign-up-confirm-password">
-              Confirm password
+              {t("confirmPassword")}
             </FieldLabel>
             <PasswordInput
               id="sign-up-confirm-password"
@@ -225,8 +224,8 @@ export function SignUpForm({
       ) : (
         <AuthEmailStep
           formId="sign-up-email"
-          label="Email"
-          submitLabel="Continue"
+          label={t("email")}
+          submitLabel={tc("continue")}
           emailField={emailField}
           emailError={errors.email?.message}
           onSubmit={(event) => {

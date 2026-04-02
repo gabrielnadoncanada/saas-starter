@@ -17,6 +17,7 @@ import {
   hasMagicLinkProvider,
 } from "@/shared/lib/auth/oauth-config";
 import { Link } from "@/shared/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
 type SignUpPageProps = {
   searchParams: Promise<{
@@ -30,20 +31,20 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
+  const t = await getTranslations("auth");
+  const tc = await getTranslations("common");
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">
-          Create an account
-        </CardTitle>
+        <CardTitle className="text-lg tracking-tight">{t("signup.title")}</CardTitle>
         <CardDescription>
-          Already have an account?{" "}
+          {t("signup.hasAccount")}{" "}
           <Link
             href={signInHref}
             className="underline underline-offset-4 hover:text-primary"
           >
-            Sign in
+            {t("signup.signinLink")}
           </Link>
         </CardDescription>
       </CardHeader>
@@ -58,19 +59,19 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
 
       <CardFooter>
         <p className="w-full text-center text-sm text-muted-foreground">
-          By creating an account, you agree to our{" "}
+          {t("signup.termsAgreement")}{" "}
           <Link
             href={routes.marketing.terms}
             className="underline underline-offset-4 hover:text-primary"
           >
-            Terms of Service
+            {t("signup.termsLink")}
           </Link>{" "}
-          and{" "}
+          {tc("and")}{" "}
           <Link
             href={routes.marketing.privacy}
             className="underline underline-offset-4 hover:text-primary"
           >
-            Privacy Policy
+            {t("signup.privacyLink")}
           </Link>
           .
         </p>

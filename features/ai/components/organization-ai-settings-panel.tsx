@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -48,6 +49,8 @@ export function OrganizationAiSettingsPanel({
   modelOptions,
   settings,
 }: OrganizationAiSettingsPanelProps) {
+  const t = useTranslations("ai");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [state, action, isPending] = useActionState<ActionState, FormData>(
     updateOrganizationAiSettingsAction,
@@ -112,7 +115,7 @@ export function OrganizationAiSettingsPanel({
           <input name="defaultModelId" type="hidden" value={defaultModelId} />
 
           <div className="space-y-3">
-            <Label>Allowed models</Label>
+            <Label>{t("settings.allowedModels")}</Label>
             <div className="space-y-3">
               {modelOptions.map((model) => {
                 const isChecked = allowedModelIds.includes(model.id);
@@ -142,14 +145,14 @@ export function OrganizationAiSettingsPanel({
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="defaultModelId">Default model</Label>
+            <Label htmlFor="defaultModelId">{t("settings.defaultModel")}</Label>
             <Select
               disabled={!canManage || isPending || defaultOptions.length === 0}
               onValueChange={(value) => setDefaultModelId(value as AiModelId)}
               value={defaultModelId}
             >
               <SelectTrigger className="w-full" id="defaultModelId">
-                <SelectValue placeholder="Select a default model" />
+                <SelectValue placeholder={t("settings.defaultModelPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {defaultOptions.map((model) => (
@@ -160,8 +163,7 @@ export function OrganizationAiSettingsPanel({
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              New AI surfaces use this model unless they explicitly choose
-              another allowed model.
+              {t("settings.defaultModelHelp")}
             </p>
           </div>
 
@@ -169,19 +171,17 @@ export function OrganizationAiSettingsPanel({
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {tc("saving")}
               </>
             ) : (
-              "Save"
+              tc("save")
             )}
           </Button>
         </form>
       </CardContent>
       {!canManage ? (
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
-            Only organization owners can manage AI settings.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("settings.ownerOnly")}</p>
         </CardFooter>
       ) : null}
     </Card>

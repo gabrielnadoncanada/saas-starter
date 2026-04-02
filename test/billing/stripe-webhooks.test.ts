@@ -2,6 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {
+    member: {
+      findMany: vi.fn(),
+    },
     subscription: {
       findFirst: vi.fn(),
       upsert: vi.fn(),
@@ -10,6 +13,7 @@ vi.mock("@/shared/lib/db/prisma", () => ({
     organization: {
       updateMany: vi.fn(),
       findFirst: vi.fn(),
+      findMany: vi.fn(),
     },
   },
 }));
@@ -20,12 +24,24 @@ vi.mock("@/features/billing/server/stripe/stripe-customers", () => ({
   syncOrganizationStripeCustomer: vi.fn(),
 }));
 
+vi.mock("@/features/audit/server/record-audit-log", () => ({
+  recordAuditLog: vi.fn(),
+}));
+
+vi.mock("@/features/notifications/server/notification-service", () => ({
+  createNotificationsForUsers: vi.fn(),
+}));
+
 const { db } = await import("@/shared/lib/db/prisma");
 const {
   clearStripeCustomerBillingState,
   findOrganizationIdByStripeCustomerId,
   syncOrganizationStripeCustomer,
 } = await import("@/features/billing/server/stripe/stripe-customers");
+const { recordAuditLog } = await import("@/features/audit/server/record-audit-log");
+const { createNotificationsForUsers } = await import(
+  "@/features/notifications/server/notification-service"
+);
 const { handleStripeWebhookEvent } =
   await import("@/features/billing/server/stripe/stripe-webhooks");
 
@@ -77,9 +93,11 @@ describe("handleStripeWebhookEvent", () => {
     vi.mocked(db.subscription.upsert).mockResolvedValue({
       id: "sub_123",
     } as never);
+    vi.mocked(db.member.findMany).mockResolvedValue([{ userId: "user_123" }] as never);
     vi.mocked(db.organization.updateMany).mockResolvedValue({
       count: 1,
     } as never);
+    vi.mocked(db.organization.findMany).mockResolvedValue([{ id: "org_123" }] as never);
     vi.mocked(findOrganizationIdByStripeCustomerId).mockResolvedValue(
       "org_123",
     );
@@ -88,6 +106,18 @@ describe("handleStripeWebhookEvent", () => {
       clearedOrganizations: 1,
       deletedSubscriptions: 1,
     });
+    vi.mocked(recordAuditLog).mockResolvedValue({
+      id: "audit_123",
+      organizationId: "org_123",
+      actorUserId: null,
+      event: "billing.checkout_completed",
+      entityType: "checkout",
+      entityId: "evt_checkout",
+      summary: "Completed a Stripe checkout session",
+      metadataJson: null,
+      createdAt: new Date(),
+    } as never);
+    vi.mocked(createNotificationsForUsers).mockResolvedValue(undefined as never);
   });
 
   it("syncs the Stripe customer when checkout completes", async () => {
@@ -108,6 +138,12 @@ describe("handleStripeWebhookEvent", () => {
       organizationId: "org_123",
       customerId: "cus_123",
     });
+    expect(recordAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organizationId: "org_123",
+        event: "billing.checkout_completed",
+      }),
+    );
   });
 
   it("syncs subscriptions from the Stripe price id mapping", async () => {
@@ -127,6 +163,13 @@ describe("handleStripeWebhookEvent", () => {
           billingInterval: "month",
           seats: 3,
         }),
+      }),
+    );
+    expect(createNotificationsForUsers).toHaveBeenCalledWith(
+      "org_123",
+      ["user_123"],
+      expect.objectContaining({
+        title: "Billing updated",
       }),
     );
   });

@@ -9,6 +9,7 @@ import {
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { Link } from "@/shared/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
 type CheckEmailPageProps = {
   searchParams: Promise<{
@@ -23,37 +24,32 @@ export default async function CheckEmailPage({
   const { email: rawEmail, callbackUrl } = await searchParams;
   const email = rawEmail?.trim() || null;
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
+  const t = await getTranslations("auth");
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">
-          Check your email
-        </CardTitle>
-        <CardDescription>
-          We sent a magic sign-in link to your email address.
-        </CardDescription>
+        <CardTitle className="text-lg tracking-tight">{t("checkEmail.title")}</CardTitle>
+        <CardDescription>{t("checkEmail.description")}</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3">
-        <p className="text-sm text-muted-foreground">
-          Open the email and click the link to complete sign-in.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("checkEmail.instructions")}</p>
 
         <p className="text-sm text-muted-foreground">
           {email ? (
             <>
-              Haven&apos;t received it?{" "}
+              {t("checkEmail.notReceived")}{" "}
               <ResendMagicLinkButton email={email} callbackUrl={callbackUrl} />
             </>
           ) : (
             <>
-              Missing the email address?{" "}
+              {t("checkEmail.missingEmailQuestion")}{" "}
               <Link
                 href={signInHref}
                 className="font-medium underline underline-offset-4 hover:text-primary"
               >
-                Go back to sign in
+                {t("checkEmail.goBackToSignIn")}
               </Link>
             </>
           )}

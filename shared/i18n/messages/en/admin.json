@@ -1,0 +1,85 @@
+{
+  "admin": {
+    "title": "Administration",
+    "description": "Platform overview and user management.",
+    "totalUsers": "Total Users",
+    "totalUsersDesc": "Registered users",
+    "activeUsers": "Active Users",
+    "activeUsersDesc": "Non-banned users",
+    "bannedUsers": "Banned Users",
+    "bannedUsersDesc": "Currently banned",
+    "organizations": "Organizations",
+    "organizationsDesc": "Total organizations",
+    "impersonatingBanner": "You are impersonating a user",
+    "stopImpersonating": "Stop impersonating",
+    "impersonationToast": {
+      "stopped": "Stopped impersonating",
+      "stopFailed": "Failed to stop impersonating"
+    },
+    "usersPage": {
+      "title": "Users",
+      "description": "Manage platform users, roles, and access."
+    },
+    "organizationsPage": {
+      "title": "Organizations",
+      "description": "View and manage all platform organizations."
+    }
+  },
+  "users": {
+    "searchPlaceholder": "Search users...",
+    "columnUser": "User",
+    "columnRole": "Role",
+    "columnStatus": "Status",
+    "columnCreated": "Created",
+    "noUsers": "No users found.",
+    "actions": "User actions",
+    "impersonate": "Impersonate",
+    "removeAdmin": "Remove admin",
+    "makeAdmin": "Make admin",
+    "banUser": "Ban user",
+    "unbanUser": "Unban user",
+    "deleteUser": "Delete user",
+    "detail": {
+      "title": "User Details",
+      "description": "Comprehensive information about this user",
+      "impersonateUser": "Impersonate User",
+      "noName": "No name",
+      "email": "Email",
+      "statusActive": "Active",
+      "statusBanned": "Banned",
+      "emailVerified": "Email Verified",
+      "accountInfo": "Account Information",
+      "userId": "User ID",
+      "created": "Created",
+      "lastUpdated": "Last Updated",
+      "activeSessions": "Active Sessions",
+      "revokeAll": "Revoke All",
+      "loadingSessions": "Loading sessions...",
+      "noSessions": "No active sessions",
+      "sessionCount": "{count, plural, one {# active session} other {# active sessions}}"
+    },
+    "confirmations": {
+      "banTitle": "Ban user",
+      "banMessage": "This will ban the user and revoke all their sessions. Are you sure?",
+      "banSuccess": "User banned",
+      "deleteTitle": "Delete user",
+      "deleteMessage": "This will permanently delete this user and all their data. This cannot be undone.",
+      "deleteSuccess": "User deleted",
+      "roleTitle": "Set role to \"{role}\"",
+      "roleMessage": "Are you sure you want to change this user's role to \"{role}\"?",
+      "roleSuccess": "Role updated",
+      "unbanTitle": "Unban user",
+      "unbanMessage": "This will unban the user and allow them to sign in again.",
+      "unbanSuccess": "User unbanned",
+      "revokeTitle": "Revoke all sessions",
+      "revokeMessage": "This will sign the user out of all devices.",
+      "revokeSuccess": "All sessions revoked"
+    },
+    "errors": {
+      "fetchFailed": "Failed to fetch users",
+      "detailFailed": "Failed to load user details",
+      "impersonateFailed": "Failed to impersonate user",
+      "impersonateSuccess": "Now impersonating user"
+    }
+  }
+}

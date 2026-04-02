@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
+
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Field,
@@ -50,20 +52,24 @@ type BillingPlanCardProps = {
   interval: BillingInterval;
 };
 
-function formatPrice(unitAmount: number) {
-  return new Intl.NumberFormat("fr-FR", {
+function formatPrice(unitAmount: number, locale: string) {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
   }).format(unitAmount / 100);
 }
 
-function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
+function getPriceSuffix(
+  interval: BillingInterval,
+  pricingModel: PricingModel,
+  t: (key: string) => string,
+) {
   if (pricingModel === "per_seat") {
-    return interval === "year" ? "par siege / an" : "par siege / mois";
+    return interval === "year" ? t("plan.perSeatYear") : t("plan.perSeatMonth");
   }
 
-  return interval === "year" ? "par an" : "par mois";
+  return interval === "year" ? t("plan.perYear") : t("plan.perMonth");
 }
 
 function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
@@ -83,15 +89,18 @@ function BillingPlanPrice({
   interval: BillingInterval;
   pricingModel: PricingModel;
 }) {
+  const locale = useLocale();
+  const t = useTranslations("billing");
+
   return (
     <div className="space-y-1 md:text-right">
       <div className="text-xl font-semibold tracking-tight">
-        {price ? formatPrice(price.unitAmount) : "Indisponible"}
+        {price ? formatPrice(price.unitAmount, locale) : t("plan.unavailable")}
       </div>
 
       {price ? (
         <FieldDescription>
-          {getPriceSuffix(interval, pricingModel)}
+          {getPriceSuffix(interval, pricingModel, t)}
         </FieldDescription>
       ) : null}
     </div>
@@ -104,6 +113,7 @@ function BillingPlanCard({
   currentPlanId,
   interval,
 }: BillingPlanCardProps) {
+  const t = useTranslations("billing");
   const price = getPlanPrice(plan, interval);
   const isCurrentSelection =
     plan.id === currentPlanId &&
@@ -125,7 +135,7 @@ function BillingPlanCard({
               <FieldTitle>{plan.name}</FieldTitle>
 
               {isCurrentSelection ? (
-                <Badge variant="secondary">Selection actuelle</Badge>
+                <Badge variant="secondary">{t("plan.currentSelection")}</Badge>
               ) : null}
             </div>
 
@@ -148,9 +158,11 @@ export function BillingIntervalSelector({
   annualEnabled,
   onValueChange,
 }: BillingIntervalSelectorProps) {
+  const t = useTranslations("billing");
+
   return (
     <FieldSet className="gap-3">
-      <FieldLegend variant="label">Frequence de facturation</FieldLegend>
+      <FieldLegend variant="label">{t("interval.legend")}</FieldLegend>
 
       <RadioGroup
         value={interval}
@@ -165,8 +177,8 @@ export function BillingIntervalSelector({
           <Field orientation="horizontal">
             <RadioGroupItem value="month" id="billing-interval-month" />
             <FieldContent>
-              <FieldTitle>Mensuel</FieldTitle>
-              <FieldDescription>Paiement chaque mois.</FieldDescription>
+              <FieldTitle>{t("interval.monthly")}</FieldTitle>
+              <FieldDescription>{t("interval.monthlyDesc")}</FieldDescription>
             </FieldContent>
           </Field>
         </FieldLabel>
@@ -179,11 +191,11 @@ export function BillingIntervalSelector({
               disabled={!annualEnabled}
             />
             <FieldContent>
-              <FieldTitle>Annuel</FieldTitle>
+              <FieldTitle>{t("interval.yearly")}</FieldTitle>
               <FieldDescription>
                 {annualEnabled
-                  ? "Paiement annuel."
-                  : "Aucun prix annuel disponible."}
+                  ? t("interval.yearlyDesc")
+                  : t("interval.noYearlyPrice")}
               </FieldDescription>
             </FieldContent>
           </Field>
@@ -201,9 +213,11 @@ export function BillingPlanRadioGroup({
   selectedPlanId,
   onValueChange,
 }: BillingPlanRadioGroupProps) {
+  const t = useTranslations("billing");
+
   return (
     <FieldSet className="gap-3">
-      <FieldLegend variant="label">Choisissez un forfait</FieldLegend>
+      <FieldLegend variant="label">{t("plan.legend")}</FieldLegend>
 
       <RadioGroup
         value={selectedPlanId}

@@ -10,9 +10,11 @@ import {
   PageHeaderActions,
   PageTitle,
 } from "@/shared/components/layout/page-layout";
+import { getTranslations } from "next-intl/server";
 
 export default async function MembersPage() {
   const context = await getCurrentOrganizationContext();
+  const t = await getTranslations("settings");
 
   if (!context) {
     return null;
@@ -25,10 +27,8 @@ export default async function MembersPage() {
   return (
     <Page fixed className="ml-0">
       <PageHeader>
-        <PageTitle>Members</PageTitle>
-        <PageDescription>
-          Manage your organization members and invitations.
-        </PageDescription>
+        <PageTitle>{t("members.title")}</PageTitle>
+        <PageDescription>{t("members.description")}</PageDescription>
         <PageHeaderActions>
           <InviteOrganizationMemberDialog
             canInviteMembers={context.canInviteMembers}
@@ -46,11 +46,10 @@ export default async function MembersPage() {
         <section className="space-y-3">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">
-              Pending Invitations
+              {t("members.pendingTitle")}
             </h2>
             <p className="text-muted-foreground">
-              {invitations.length} invitation
-              {invitations.length === 1 ? "" : "s"} pending
+              {t("members.pendingCount", { count: invitations.length })}
             </p>
           </div>
           <OrganizationInvitationsTable

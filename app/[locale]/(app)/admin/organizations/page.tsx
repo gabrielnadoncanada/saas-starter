@@ -7,10 +7,12 @@ import {
   PageHeader,
   PageTitle,
 } from "@/shared/components/layout/page-layout";
+import { getTranslations } from "next-intl/server";
 
 const PAGE_SIZE = 25;
 
 export default async function AdminOrganizationsPage() {
+  const t = await getTranslations("admin");
   const currentUser = await requireAdmin();
   const { organizations, total } = await listAdminOrganizations({
     limit: PAGE_SIZE,
@@ -20,10 +22,8 @@ export default async function AdminOrganizationsPage() {
   return (
     <Page>
       <PageHeader>
-        <PageTitle>Organizations</PageTitle>
-        <PageDescription>
-          View and manage all platform organizations.
-        </PageDescription>
+        <PageTitle>{t("organizationsPage.title")}</PageTitle>
+        <PageDescription>{t("organizationsPage.description")}</PageDescription>
       </PageHeader>
 
       <AdminOrganizationsTable

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, useMemo, useState } from "react";
 
 import {
@@ -47,6 +48,7 @@ export function ApiKeysPanel({
   apiKeys,
   availableCapabilities,
 }: ApiKeysPanelProps) {
+  const t = useTranslations("apiKeysPanel");
   const [selectedCapabilities, setSelectedCapabilities] = useState<string[]>(
     availableCapabilities.slice(0, 1),
   );
@@ -77,15 +79,13 @@ export function ApiKeysPanel({
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <Card>
         <CardHeader>
-          <CardTitle>Create API key</CardTitle>
-          <CardDescription>
-            API keys inherit your organization scope. The secret is shown once.
-          </CardDescription>
+          <CardTitle>{t("createTitle")}</CardTitle>
+          <CardDescription>{t("createDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {createState.secret ? (
             <Alert>
-              <AlertTitle>Copy this secret now</AlertTitle>
+              <AlertTitle>{t("copySecret")}</AlertTitle>
               <AlertDescription className="break-all font-mono text-xs">
                 {createState.secret}
               </AlertDescription>
@@ -95,13 +95,18 @@ export function ApiKeysPanel({
           <form action={createFormAction} className="space-y-4">
             <FieldGroup className="gap-4">
               <Field data-invalid={Boolean(createState.fieldErrors?.name?.length)}>
-                <FieldLabel htmlFor="api-key-name">Name</FieldLabel>
-                <Input id="api-key-name" name="name" placeholder="CI deploy key" required />
+                <FieldLabel htmlFor="api-key-name">{t("name")}</FieldLabel>
+                <Input
+                  id="api-key-name"
+                  name="name"
+                  placeholder={t("namePlaceholder")}
+                  required
+                />
                 <FieldError>{createState.fieldErrors?.name?.[0]}</FieldError>
               </Field>
 
               <Field data-invalid={Boolean(createState.fieldErrors?.capabilities?.length)}>
-                <FieldLabel>Capabilities</FieldLabel>
+                <FieldLabel>{t("capabilities")}</FieldLabel>
                 <input type="hidden" name="capabilities" value={selectedValue} readOnly />
                 <div className="space-y-3 rounded-lg border p-3">
                   {availableCapabilities.map((capability) => {
@@ -132,7 +137,7 @@ export function ApiKeysPanel({
             </FieldGroup>
 
             <Button type="submit" disabled={isCreating}>
-              {isCreating ? "Creating..." : "Create API key"}
+              {isCreating ? t("creating") : t("create")}
             </Button>
           </form>
         </CardContent>
@@ -140,14 +145,12 @@ export function ApiKeysPanel({
 
       <Card>
         <CardHeader>
-          <CardTitle>Existing keys</CardTitle>
-          <CardDescription>
-            Revoke keys you no longer use. Revoked keys stop working immediately.
-          </CardDescription>
+          <CardTitle>{t("listTitle")}</CardTitle>
+          <CardDescription>{t("listDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {apiKeys.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No API keys yet.</p>
+            <p className="text-sm text-muted-foreground">{t("empty")}</p>
           ) : (
             apiKeys.map((apiKey) => (
               <div
@@ -164,12 +167,12 @@ export function ApiKeysPanel({
                   </div>
 
                   {apiKey.revokedAt ? (
-                    <span className="text-xs text-muted-foreground">Revoked</span>
+                    <span className="text-xs text-muted-foreground">{t("revoked")}</span>
                   ) : (
                     <form action={revokeFormAction}>
                       <input type="hidden" name="apiKeyId" value={apiKey.id} />
                       <Button type="submit" variant="outline" size="sm" disabled={isRevoking}>
-                        Revoke
+                        {t("revoke")}
                       </Button>
                     </form>
                   )}

@@ -1,0 +1,105 @@
+{
+  "marketing": {
+    "nav": {
+      "features": "Fonctionnalites",
+      "screenshots": "Captures d'ecran",
+      "comparison": "Comparaison",
+      "pricing": "Tarifs",
+      "faq": "FAQ",
+      "getStarter": "Obtenir le Starter"
+    },
+    "hero": {
+      "title": "Le starter Next.js avec facturation et controle d'acces integres",
+      "highlight": "et controle d'acces",
+      "description": "Les autres starters connectent Stripe et s'arretent la. Celui-ci livre un vrai controle d'acces par plan — verification des fonctionnalites, limites d'utilisation et controle d'acces lie a la facturation. Il montre aussi comment appliquer le meme pattern aux workflows IA sans ajouter un second systeme.",
+      "buttonPricing": "Voir les tarifs",
+      "buttonFeatures": "Voir le contenu",
+      "techStack": "Next.js 16 · React 19 · TypeScript · Tailwind v4 · Prisma · Stripe · 149 $ unique"
+    },
+    "cta": {
+      "title": "Arretez de reconstruire. Commencez a livrer.",
+      "description": "Auth, facturation, controle d'acces, equipes, patterns de monetisation IA et 72 docs. Achat unique, code complet, lancez votre SaaS cette semaine.",
+      "button": "Obtenir le Starter - 149 $",
+      "footer": "Achat unique · Code source complet · Remboursement sous 30 jours"
+    },
+    "features": {
+      "title": "Tout ce qu'il faut pour lancer — rien a apprendre",
+      "subtitle": "Code organise par fonctionnalite, pas un framework custom. Vous connaissez deja la stack.",
+      "planGating": {
+        "title": "Controle d'acces",
+        "description": "Feature flags par capacite et limites d'utilisation. Protegez toute fonctionnalite en un appel."
+      },
+      "stripeBilling": {
+        "title": "Facturation Stripe",
+        "description": "Abonnements, paiements uniques, facturation par siege. Trois modeles prets a l'emploi."
+      },
+      "authentication": {
+        "title": "Authentification",
+        "description": "Lien magique, OAuth Google et GitHub. Liaison de comptes et gestion de sessions incluses."
+      },
+      "teamManagement": {
+        "title": "Gestion d'equipe",
+        "description": "Multi-equipe avec roles, invitations et limites de membres."
+      },
+      "dashboardShell": {
+        "title": "Dashboard",
+        "description": "Navigation laterale, menu de commandes, mode sombre et pages de parametres."
+      },
+      "database": {
+        "title": "Base de donnees + ORM",
+        "description": "PostgreSQL avec Prisma. Migrations, seeds et schemas par fonctionnalite."
+      },
+      "settingsAccount": {
+        "title": "Parametres + Compte",
+        "description": "Modification de profil, fournisseurs lies, choix du theme et suppression de compte."
+      },
+      "aiAssistant": {
+        "title": "Assistant IA",
+        "description": "Assistant controle par plan avec actions de taches, boite de reception demo et brouillons de factures."
+      },
+      "crudExample": {
+        "title": "Exemple CRUD",
+        "description": "Module complet de taches avec TanStack Table, server actions, Zod et creation controlee."
+      }
+    },
+    "comparison": {
+      "feature": "Fonctionnalite",
+      "thisStarter": "Ce Starter",
+      "freeBoilerplate": "Boilerplate gratuit",
+      "heavierStarter": "Starter plus lourd",
+      "buildFromScratch": "Partir de zero"
+    },
+    "footer": {
+      "tagline": "Le starter Next.js avec auth, facturation et controle d'acces integres. Achat unique, code complet.",
+      "product": "Produit",
+      "resources": "Ressources",
+      "legal": "Mentions legales",
+      "demo": "Demo",
+      "documentation": "Documentation",
+      "techStack": "Stack technique",
+      "privacyPolicy": "Politique de confidentialite",
+      "termsOfService": "Conditions d'utilisation",
+      "builtWith": "Construit avec Next.js 16, React 19, TypeScript et Tailwind v4."
+    },
+    "screenshots": {
+      "title": "Voyez ce que vous obtenez",
+      "subtitle": "Chaque ecran est reel, fonctionnel et pret a personnaliser."
+    },
+    "pricing": {
+      "title": "Tarifs",
+      "description": "Tarification simple et transparente. Choisissez le plan adapte a votre equipe et commencez a construire aujourd'hui."
+    },
+    "privacy": {
+      "title": "Politique de confidentialite",
+      "metaDescription": "Comment nous collectons, utilisons et protegeons vos informations personnelles.",
+      "placeholderWarning": "Ceci est une page de remplacement. Remplacez ce contenu par votre veritable politique de confidentialite avant le lancement.",
+      "intro": "Cette politique de confidentialite decrit comment nous collectons, utilisons et protegeons vos informations personnelles lors de l'utilisation de notre plateforme."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "metaDescription": "Modalites regissant votre utilisation de notre plateforme.",
+      "placeholderWarning": "Ceci est une page de remplacement. Remplacez ce contenu par vos veritables conditions d'utilisation avant le lancement.",
+      "intro": "Ces conditions d'utilisation regissent votre utilisation de notre plateforme. En accedant ou en utilisant le service, vous acceptez d'etre lie par ces conditions."
+    }
+  }
+}

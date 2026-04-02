@@ -5,6 +5,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
@@ -31,15 +32,21 @@ import {
 import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
 
-function formatPlanPrice(unitAmount: number) {
-  return new Intl.NumberFormat("en-US", {
+function formatPlanPrice(unitAmount: number, locale: string) {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(unitAmount / 100);
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations("dashboard");
   const {
     organization,
     planId,
@@ -56,7 +63,7 @@ export default async function DashboardPage() {
     usageChart,
     checklist,
     apiKeyCount,
-  } = await getDashboardOverview();
+  } = await getDashboardOverview(locale);
 
   const activeInterval =
     organization?.billingInterval && plan.prices[organization.billingInterval]
@@ -68,15 +75,17 @@ export default async function DashboardPage() {
           : null;
   const activePrice = activeInterval ? plan.prices[activeInterval] : null;
   const priceLabel = activePrice
-    ? formatPlanPrice(activePrice.unitAmount)
-    : "Free";
+    ? formatPlanPrice(activePrice.unitAmount, locale)
+    : t("planPriceFree");
+  const organizationNameSuffix = organization?.name ? ` ${organization.name}` : "";
+  const workspaceName = organization?.name ?? t("workspaceFallback");
 
   return (
     <Page>
       <PageHeader>
-        <PageTitle>Dashboard</PageTitle>
+        <PageTitle>{t("title")}</PageTitle>
         <PageDescription>
-          Welcome back{organization?.name ? ` to ${organization.name}` : ""}.
+          {t("description", { organizationName: organizationNameSuffix })}
         </PageDescription>
       </PageHeader>
 
@@ -90,7 +99,7 @@ export default async function DashboardPage() {
                 {planId}
               </span>
             </CardTitle>
-            <CardDescription>Current Plan</CardDescription>
+            <CardDescription>{t("currentPlan")}</CardDescription>
             <div className="font-heading text-2xl font-semibold">
               {priceLabel}
             </div>
@@ -99,7 +108,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardDescription>Task creations this month</CardDescription>
+            <CardDescription>{t("tasksThisMonth")}</CardDescription>
             <CardTitle className="flex items-center gap-2 text-2xl">
               <CheckCircle2 className="h-5 w-5 text-orange-500" />
               {taskCount}
@@ -107,7 +116,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <UsageMeter
-              label="Monthly quota"
+              label={t("monthlyQuota")}
               current={tasksUsage}
               limit={taskLimit.limit}
             />
@@ -116,7 +125,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardDescription>Organization Members</CardDescription>
+            <CardDescription>{t("members")}</CardDescription>
             <CardTitle className="flex items-center gap-2 text-2xl">
               <Users className="h-5 w-5 text-orange-500" />
               {memberCount}
@@ -127,15 +136,15 @@ export default async function DashboardPage() {
         {canUseAI && (
           <Card>
             <CardHeader>
-              <CardDescription>AI Assistant</CardDescription>
+              <CardDescription>{t("aiAssistant")}</CardDescription>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Sparkles className="h-5 w-5 text-orange-500" />
-                {aiUsage} requests
+                {t("aiRequests", { count: aiUsage })}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <UsageMeter
-                label="Monthly quota"
+                label={t("monthlyQuota")}
                 current={aiUsage}
                 limit={aiLimit.limit}
               />
@@ -147,10 +156,8 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Task activity this week</CardTitle>
-            <CardDescription>
-              A quick view of how much work is landing in the workspace.
-            </CardDescription>
+            <CardTitle>{t("taskActivityTitle")}</CardTitle>
+            <CardDescription>{t("taskActivityDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardUsageChart data={usageChart} />
@@ -159,10 +166,8 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Getting started</CardTitle>
-            <CardDescription>
-              Use this checklist to turn the starter into a real workspace quickly.
-            </CardDescription>
+            <CardTitle>{t("checklistTitle")}</CardTitle>
+            <CardDescription>{t("checklistDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardOnboardingChecklist items={checklist} />
@@ -173,9 +178,9 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent tasks</CardTitle>
+            <CardTitle>{t("recentTasksTitle")}</CardTitle>
             <CardDescription>
-              The latest task work happening in {organization?.name ?? "your workspace"}.
+              {t("recentTasksDescription", { organizationName: workspaceName })}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -185,10 +190,8 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Activity feed</CardTitle>
-            <CardDescription>
-              Audit-backed events across tasks, invitations, keys, and security.
-            </CardDescription>
+            <CardTitle>{t("activityTitle")}</CardTitle>
+            <CardDescription>{t("activityDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardActivityFeed activity={recentActivity} />
@@ -198,34 +201,34 @@ export default async function DashboardPage() {
 
       {!hasCapability(planId, "team.analytics") && (
         <UpgradeCard
-          feature="Organization Analytics"
-          description="Upgrade your plan to access advanced analytics for your organization."
+          feature={t("upgradeAnalyticsFeature")}
+          description={t("upgradeAnalyticsDescription")}
         />
       )}
 
       <div className="flex flex-wrap gap-4">
         <Link href={routes.app.tasks}>
           <Button variant="outline">
-            View Tasks
+            {t("viewTasks")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
         <Link href={routes.app.assistant}>
           <Button variant="outline">
-            AI Assistant
+            {t("openAssistant")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
         <Link href={routes.settings.organization}>
           <Button variant="outline">
-            Organization Settings
+            {t("organizationSettings")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
         {hasCapability(planId, "api.access") && (
           <Link href={routes.settings.apiKeys}>
             <Button variant="outline">
-              API Keys ({apiKeyCount})
+              {t("apiKeys", { count: apiKeyCount })}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>

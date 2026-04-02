@@ -2,6 +2,7 @@
 
 import type { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { recordAuditLog } from "@/features/audit/server/record-audit-log";
 import {
@@ -54,12 +55,16 @@ export type BulkUpdateTaskStatusActionState =
   taskIds?: number[];
 };
 
+const taskActionOptions = { validationNamespace: "tasks" } as const;
+
 export const createTaskAction = validatedAuthenticatedAction<
   typeof createTaskSchema,
   { task?: Task }
 >(
   createTaskSchema,
   async (data, _, user) => {
+    const t = await getTranslations("tasks");
+
     try {
       const task = await createTaskForCurrentOrganization(data);
       const membership = await requireActiveOrganizationMembership();
@@ -77,8 +82,8 @@ export const createTaskAction = validatedAuthenticatedAction<
           organizationId: membership.organizationId,
           userId: user.id,
           type: "task.created",
-          title: "Task created",
-          body: `${task.code} is now in your workspace.`,
+          title: t("notification.createdTitle"),
+          body: t("notification.createdBody", { code: task.code }),
           href: routes.app.tasks,
           metadata: { taskId: task.id },
         }),
@@ -87,7 +92,7 @@ export const createTaskAction = validatedAuthenticatedAction<
       revalidatePath(routes.app.tasks);
 
       return {
-        success: "Task created",
+        success: t("toast.created"),
         task,
       };
     } catch (error) {
@@ -102,6 +107,7 @@ export const createTaskAction = validatedAuthenticatedAction<
       throw error;
     }
   },
+  taskActionOptions,
 );
 
 export const updateTaskAction = validatedAuthenticatedAction<
@@ -110,6 +116,7 @@ export const updateTaskAction = validatedAuthenticatedAction<
 >(
   updateTaskSchema,
   async (data, _, user) => {
+    const t = await getTranslations("tasks");
     await updateTask(data);
     const membership = await requireActiveOrganizationMembership();
 
@@ -124,8 +131,9 @@ export const updateTaskAction = validatedAuthenticatedAction<
 
     revalidatePath(routes.app.tasks);
 
-    return { success: "Task updated" };
+    return { success: t("toast.updated") };
   },
+  taskActionOptions,
 );
 
 export const deleteTaskAction = validatedAuthenticatedAction<
@@ -134,6 +142,7 @@ export const deleteTaskAction = validatedAuthenticatedAction<
 >(
   deleteTaskSchema,
   async ({ taskId }, _, user) => {
+    const t = await getTranslations("tasks");
     await deleteTask(taskId);
     const membership = await requireActiveOrganizationMembership();
 
@@ -150,8 +159,8 @@ export const deleteTaskAction = validatedAuthenticatedAction<
         organizationId: membership.organizationId,
         userId: user.id,
         type: "task.deleted",
-        title: "Task deleted",
-        body: `Task ${taskId} was removed from the workspace.`,
+        title: t("notification.deletedTitle"),
+        body: t("notification.deletedBody", { id: taskId }),
         href: routes.app.tasks,
         metadata: { taskId },
       }),
@@ -160,10 +169,11 @@ export const deleteTaskAction = validatedAuthenticatedAction<
     revalidatePath(routes.app.tasks);
 
     return {
-      success: "Task deleted",
+      success: t("toast.deleted"),
       taskId,
     };
   },
+  taskActionOptions,
 );
 
 export const updateTaskStatusAction = validatedAuthenticatedAction<
@@ -172,6 +182,7 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
 >(
   updateTaskStatusSchema,
   async (data, _, user) => {
+    const t = await getTranslations("tasks");
     await updateTaskStatus(data);
     const membership = await requireActiveOrganizationMembership();
 
@@ -187,10 +198,11 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
     revalidatePath(routes.app.tasks);
 
     return {
-      success: "Task updated",
+      success: t("toast.updated"),
       refreshKey: Date.now(),
     };
   },
+  taskActionOptions,
 );
 
 export const bulkDeleteTasksAction = validatedAuthenticatedAction<
@@ -199,6 +211,7 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
 >(
   bulkDeleteTasksSchema,
   async ({ taskIds }, _, user) => {
+    const t = await getTranslations("tasks");
     const deletedCount = await bulkDeleteTasks(taskIds);
     const membership = await requireActiveOrganizationMembership();
 
@@ -214,10 +227,11 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
     revalidatePath(routes.app.tasks);
 
     return {
-      success: `${deletedCount} task${deletedCount > 1 ? "s" : ""} deleted`,
+      success: t("toast.bulkDeleted", { count: deletedCount }),
       taskIds,
     };
   },
+  taskActionOptions,
 );
 
 export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
@@ -226,6 +240,7 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
 >(
   bulkUpdateTaskStatusSchema,
   async (data, _, user) => {
+    const t = await getTranslations("tasks");
     const updatedCount = await bulkUpdateTaskStatus(data);
     const membership = await requireActiveOrganizationMembership();
 
@@ -241,9 +256,10 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
     revalidatePath(routes.app.tasks);
 
     return {
-      success: `${updatedCount} task${updatedCount > 1 ? "s" : ""} updated`,
+      success: t("toast.bulkUpdated", { count: updatedCount }),
       status: data.status,
       taskIds: data.taskIds,
     };
   },
+  taskActionOptions,
 );

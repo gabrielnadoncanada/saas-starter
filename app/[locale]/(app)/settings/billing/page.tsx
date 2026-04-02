@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 import { hasCurrentStripeSubscription } from "@/features/billing/plans/subscription-status";
 import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization";
@@ -22,6 +23,7 @@ export default async function SettingsBillingPage({
     params,
     getCurrentOrganizationContext(),
   ]);
+  const t = await getTranslations("settings.billing");
 
   if (!context) {
     redirectToLocale(locale, routes.auth.login);
@@ -52,11 +54,8 @@ export default async function SettingsBillingPage({
       <div className="max-w-4xl space-y-5">
         <Card>
           <CardHeader>
-            <CardTitle>Gerez votre forfait d'equipe</CardTitle>
-            <CardDescription>
-              Choisissez un plan qui repond aux besoins de votre equipe. Vous
-              pouvez passer a un plan superieur ou inferieur a tout moment.
-            </CardDescription>
+            <CardTitle>{t("title")}</CardTitle>
+            <CardDescription>{t("description")}</CardDescription>
           </CardHeader>
 
           <CardContent>

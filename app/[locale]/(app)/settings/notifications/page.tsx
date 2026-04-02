@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getUnreadNotificationCount, listUserNotifications } from "@/features/notifications/server/notification-service";
 import {
   Page,
@@ -15,6 +16,7 @@ export default async function NotificationsSettingsPage({
   params: Promise<{ locale: string }>;
 }) {
   const [{ locale }, user] = await Promise.all([params, getCurrentUser()]);
+  const t = await getTranslations("settings.notifications");
 
   if (!user) {
     redirectToLocale(locale, routes.auth.login);
@@ -28,20 +30,20 @@ export default async function NotificationsSettingsPage({
   return (
     <Page>
       <PageHeader>
-        <PageTitle>Notifications</PageTitle>
-        <PageDescription>
-          Review product activity, security changes, and billing events for your workspace.
-        </PageDescription>
+        <PageTitle>{t("title")}</PageTitle>
+        <PageDescription>{t("description")}</PageDescription>
       </PageHeader>
 
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          {unreadCount} unread notification{unreadCount === 1 ? "" : "s"}.
+          {t(unreadCount === 1 ? "unreadCount" : "unreadCount_plural", {
+            count: unreadCount,
+          })}
         </p>
 
         {notifications.length === 0 ? (
           <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-            No notifications yet.
+            {t("empty")}
           </div>
         ) : (
           notifications.map((notification) => (

@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -33,6 +34,8 @@ type InviteOrganizationMemberDialogProps = {
 export function InviteOrganizationMemberDialog({
   canInviteMembers,
 }: InviteOrganizationMemberDialogProps) {
+  const t = useTranslations("organizations");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
@@ -64,25 +67,23 @@ export function InviteOrganizationMemberDialog({
       <DialogTrigger asChild>
         <Button disabled={!canInviteMembers}>
           <UserPlus className="size-4" />
-          Invite Members
+          {t("invite.button")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite a member</DialogTitle>
-          <DialogDescription>
-            Send an invitation to join your organization.
-          </DialogDescription>
+          <DialogTitle>{t("invite.title")}</DialogTitle>
+          <DialogDescription>{t("invite.description")}</DialogDescription>
         </DialogHeader>
 
         <form action={formAction} className="space-y-4">
           <Field data-invalid={emailField.invalid}>
-            <FieldLabel htmlFor="invite-member-email">Email</FieldLabel>
+            <FieldLabel htmlFor="invite-member-email">{t("invite.emailLabel")}</FieldLabel>
             <Input
               id="invite-member-email"
               name="email"
               type="email"
-              placeholder="name@company.com"
+              placeholder={t("invite.emailPlaceholder")}
               defaultValue={defaultEmail}
               aria-invalid={emailField.invalid}
               disabled={!canInviteMembers}
@@ -92,7 +93,7 @@ export function InviteOrganizationMemberDialog({
           </Field>
 
           <div className="space-y-3">
-            <Label>Role</Label>
+            <Label>{t("invite.roleLabel")}</Label>
             <RadioGroup
               name="role"
               defaultValue={defaultRole}
@@ -100,27 +101,27 @@ export function InviteOrganizationMemberDialog({
             >
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="member" id="invite-role-member" />
-                <Label htmlFor="invite-role-member">Member</Label>
+                <Label htmlFor="invite-role-member">{t("invite.roleMember")}</Label>
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="admin" id="invite-role-admin" />
-                <Label htmlFor="invite-role-admin">Admin</Label>
+                <Label htmlFor="invite-role-admin">{t("invite.roleAdmin")}</Label>
               </div>
             </RadioGroup>
           </div>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{tc("cancel")}</Button>
             </DialogClose>
             <Button type="submit" disabled={isPending || !canInviteMembers}>
               {isPending ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Sending...
+                  {t("invite.sending")}
                 </>
               ) : (
-                "Send Invite"
+                t("invite.sendInvite")
               )}
             </Button>
           </DialogFooter>

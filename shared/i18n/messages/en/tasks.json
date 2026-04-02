@@ -1,0 +1,75 @@
+{
+  "tasks": {
+    "title": "Tasks",
+    "rowCount": "{count, plural, one {# task} other {# tasks}}",
+    "description": "Here's a list of your tasks for this month!",
+    "create": "Create",
+    "deleteConfirmTitle": "Delete {code}?",
+    "deleteConfirmMessage": "You are about to delete {title}.",
+    "sheetTitleUpdate": "Update Task",
+    "sheetTitleCreate": "Create Task",
+    "sheetDescriptionUpdate": "Edit {code} for the current organization.",
+    "sheetDescriptionCreate": "Add a task for the current organization.",
+    "fieldTitle": "Title",
+    "fieldTitlePlaceholder": "Ship the onboarding polish",
+    "fieldDescription": "Description",
+    "fieldDescriptionPlaceholder": "Optional context for the task",
+    "fieldLabel": "Label",
+    "fieldLabelPlaceholder": "Select a label",
+    "fieldPriority": "Priority",
+    "fieldPriorityPlaceholder": "Select a priority",
+    "fieldStatus": "Status",
+    "fieldStatusPlaceholder": "Select a status",
+    "saveChanges": "Save Changes",
+    "createTask": "Create Task",
+    "searchPlaceholder": "Filter by title or ID...",
+    "bulkUpdateStatus": "Update status",
+    "bulkDeleteTooltip": "Delete selected tasks",
+    "bulkDeleteTitle": "Delete {count, plural, one {# task} other {# tasks}}?",
+    "bulkDeleteMessage": "This action will permanently delete the selected tasks.",
+    "columnTask": "Task",
+    "columnTitle": "Title",
+    "columnStatus": "Status",
+    "columnPriority": "Priority",
+    "selectAll": "Select all",
+    "selectRow": "Select row",
+    "openRowMenu": "Open menu",
+    "validation": {
+      "titleRequired": "Title is required",
+      "titleMaxLength": "Title must be 255 characters or less",
+      "selectTaskRequired": "Select at least one task"
+    },
+    "toast": {
+      "created": "Task created",
+      "updated": "Task updated",
+      "deleted": "Task deleted",
+      "bulkDeleted": "{count, plural, one {# task deleted} other {# tasks deleted}}",
+      "bulkUpdated": "{count, plural, one {# task updated} other {# tasks updated}}"
+    },
+    "notification": {
+      "createdTitle": "Task created",
+      "createdBody": "{code} is now in your workspace.",
+      "deletedTitle": "Task deleted",
+      "deletedBody": "Task {id} was removed from the workspace."
+    },
+    "attachments": {
+      "title": "Attachments",
+      "upload": "Upload file",
+      "uploading": "Uploading...",
+      "noAttachments": "No attachments yet.",
+      "deleteConfirm": "Delete this attachment?",
+      "download": "Download"
+    }
+  },
+  "taskAttachments": {
+    "title": "Attachments",
+    "description": "Upload task files up to 10 MB. Storage usage counts against your plan.",
+    "add": "Add file",
+    "loading": "Loading attachments...",
+    "empty": "No attachments yet.",
+    "uploaded": "Attachment uploaded.",
+    "removed": "Attachment removed.",
+    "download": "Download attachment",
+    "delete": "Delete attachment"
+  }
+}

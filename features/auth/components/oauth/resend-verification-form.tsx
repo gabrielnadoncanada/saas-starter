@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ type ResendVerificationFormProps = {
 };
 
 export function ResendVerificationForm({ email }: ResendVerificationFormProps) {
+  const t = useTranslations("auth");
   const [isPending, setIsPending] = useState(false);
 
   async function handleResend() {
@@ -19,9 +21,9 @@ export function ResendVerificationForm({ email }: ResendVerificationFormProps) {
 
     try {
       await resendVerificationEmail(email);
-      toast.success("A new verification email has been sent.");
+      toast.success(t("verifyEmailSent.resendSuccess"));
     } catch {
-      toast.error("Unable to send verification email. Please try again.");
+      toast.error(t("verifyEmailSent.resendError"));
     } finally {
       setIsPending(false);
     }
@@ -38,10 +40,10 @@ export function ResendVerificationForm({ email }: ResendVerificationFormProps) {
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Sending email...
+          {t("verifyEmailSent.sendingEmail")}
         </>
       ) : (
-        "Resend verification email"
+        t("verifyEmailSent.resendButton")
       )}
     </Button>
   );

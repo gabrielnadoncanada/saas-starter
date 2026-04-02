@@ -9,8 +9,10 @@ import {
   PageTitle,
 } from "@/shared/components/layout/page-layout";
 import { getAiModelOptions } from "@/shared/lib/ai/models";
+import { getTranslations } from "next-intl/server";
 
 export default async function SettingsPage() {
+  const t = await getTranslations("settings");
   const context = await getCurrentOrganizationContext();
   const aiSettings = context
     ? await getOrganizationAiSettings(context.organization.id)
@@ -19,10 +21,8 @@ export default async function SettingsPage() {
   return (
     <Page fixed>
       <PageHeader>
-        <PageTitle>Organization Settings</PageTitle>
-        <PageDescription>
-          Manage your organization details and subscription.
-        </PageDescription>
+        <PageTitle>{t("organization.title")}</PageTitle>
+        <PageDescription>{t("organization.description")}</PageDescription>
       </PageHeader>
       {context ? (
         <div className="space-y-6">

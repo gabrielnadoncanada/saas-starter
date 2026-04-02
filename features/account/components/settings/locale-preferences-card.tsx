@@ -1,6 +1,7 @@
 "use client";
 
 import { Languages } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { updateLocaleAction } from "@/features/account/actions/update-locale.action";
@@ -21,6 +22,7 @@ type LocalePreferencesCardProps = {
 export function LocalePreferencesCard({
   preferredLocale,
 }: LocalePreferencesCardProps) {
+  const t = useTranslations("settings");
   const [state, formAction, isPending] = useActionState(updateLocaleAction, {});
 
   useToastMessage(state.success, { kind: "success", trigger: state });
@@ -31,11 +33,9 @@ export function LocalePreferencesCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Languages className="size-4" />
-          Language
+          {t("locale.title")}
         </CardTitle>
-        <CardDescription>
-          Choose the default language for the app and transactional emails.
-        </CardDescription>
+        <CardDescription>{t("locale.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction} className="flex gap-3">
@@ -45,7 +45,7 @@ export function LocalePreferencesCard({
             variant={preferredLocale === "en" ? "default" : "outline"}
             disabled={isPending}
           >
-            English
+            {t("locale.english")}
           </Button>
         </form>
         <form action={formAction} className="mt-3 flex gap-3">
@@ -55,7 +55,7 @@ export function LocalePreferencesCard({
             variant={preferredLocale === "fr" ? "default" : "outline"}
             disabled={isPending}
           >
-            Francais
+            {t("locale.french")}
           </Button>
         </form>
       </CardContent>

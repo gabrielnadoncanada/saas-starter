@@ -8,6 +8,7 @@ import {
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
 type ResetPasswordPageProps = {
   searchParams: Promise<{
@@ -20,15 +21,14 @@ export default async function ResetPasswordPage({
 }: ResetPasswordPageProps) {
   const { token: rawToken } = await searchParams;
   const token = rawToken?.trim();
+  const t = await getTranslations("auth");
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Reset password</CardTitle>
+        <CardTitle>{t("resetPassword.title")}</CardTitle>
         <CardDescription>
-          {token
-            ? "Choose a new password for your account."
-            : "This reset link is invalid or incomplete."}
+          {token ? t("resetPassword.description") : t("resetPassword.invalidDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -40,7 +40,7 @@ export default async function ResetPasswordPage({
               href={routes.auth.forgotPassword}
               className="underline underline-offset-4"
             >
-              Request a new reset link
+              {t("resetPassword.requestNewLink")}
             </Link>
           </p>
         )}

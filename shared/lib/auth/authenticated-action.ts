@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -6,6 +7,10 @@ import type { FormActionState } from "@/shared/types/form-action-state";
 export type AuthenticatedUser = NonNullable<
   Awaited<ReturnType<typeof getCurrentUser>>
 >;
+
+type ValidatedAuthenticatedOptions = {
+  validationNamespace?: string;
+};
 
 type ValidatedAuthenticatedActionHandler<
   S extends z.ZodTypeAny,
@@ -19,16 +24,21 @@ type ValidatedAuthenticatedActionHandler<
 export function validatedAuthenticatedAction<
   S extends z.ZodTypeAny,
   TExtraState extends object = {},
->(schema: S, action: ValidatedAuthenticatedActionHandler<S, TExtraState>) {
+>(
+  schema: S,
+  action: ValidatedAuthenticatedActionHandler<S, TExtraState>,
+  options?: ValidatedAuthenticatedOptions,
+) {
   type Values = z.infer<S>;
   type State = FormActionState<Values> & TExtraState;
 
   return async (_prevState: State, formData: FormData): Promise<State> => {
+    const tCommon = await getTranslations("common");
     const user = await getCurrentUser();
 
     if (!user) {
       return {
-        error: "User is not authenticated.",
+        error: tCommon("notAuthenticated"),
       } as State;
     }
 
@@ -36,10 +46,34 @@ export function validatedAuthenticatedAction<
     const parsed = schema.safeParse(rawValues);
 
     if (!parsed.success) {
+      const flat = parsed.error.flatten();
+      const fieldErrors = { ...flat.fieldErrors } as Record<
+        string,
+        string[] | undefined
+      >;
+
+      if (options?.validationNamespace) {
+        const t = await getTranslations(options.validationNamespace);
+
+        for (const [field, issues] of Object.entries(fieldErrors)) {
+          if (!issues) {
+            continue;
+          }
+
+          fieldErrors[field] = issues.map((msg) => {
+            if (!msg || msg.includes(" ")) {
+              return msg;
+            }
+
+            return t(`validation.${msg}` as never);
+          });
+        }
+      }
+
       return {
-        error: "Please fix the highlighted fields.",
+        error: tCommon("formValidationFailed"),
         values: rawValues as Partial<Values>,
-        fieldErrors: parsed.error.flatten().fieldErrors as State["fieldErrors"],
+        fieldErrors: fieldErrors as State["fieldErrors"],
       } as State;
     }
 

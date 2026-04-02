@@ -1,4 +1,5 @@
 import { KeyRound, Link2, Pencil, Trash, UserIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
 import { EditPasswordDialog } from "@/features/account/components/settings/edit-password-dialog";
@@ -37,6 +38,7 @@ import {
   isOAuthProviderId,
   OAUTH_PROVIDER_LABELS,
 } from "@/shared/lib/auth/oauth-config";
+
 type PageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{
@@ -45,48 +47,56 @@ type PageProps = {
     error?: string;
   }>;
 };
-const OAUTH_ERROR_MESSAGES: Record<string, string> = {
-  account_already_linked_to_different_user:
-    "This provider is already linked to another account.",
-  "email_doesn't_match":
-    "Use a provider account with the same email address as this account.",
-  OAuthAccountNotLinked:
-    "Unable to link this provider. Try a different sign-in method.",
-  OAuthSignin: "Unable to start provider linking. Please try again.",
-  unable_to_link_account: "Unable to link this provider. Please try again.",
-};
+
+function oauthLinkErrorKey(error: string) {
+  switch (error) {
+    case "account_already_linked_to_different_user":
+      return "oauthErrors.accountAlreadyLinked" as const;
+    case "email_doesn't_match":
+      return "oauthErrors.emailMismatch" as const;
+    case "OAuthAccountNotLinked":
+      return "oauthErrors.notLinked" as const;
+    case "OAuthSignin":
+      return "oauthErrors.signinFailed" as const;
+    case "unable_to_link_account":
+      return "oauthErrors.linkFailed" as const;
+    default:
+      return "oauthErrors.default" as const;
+  }
+}
 
 export default async function SettingsPage({
   params,
   searchParams,
 }: PageProps) {
-  const [{ locale }, user, { success, provider, error }] = await Promise.all([
+  const [{ locale }, user, { success, provider, error }, t] = await Promise.all([
     params,
     getCurrentUser(),
     searchParams,
+    getTranslations("settings"),
   ]);
+
+  if (!user) {
+    redirectToLocale(locale, routes.auth.login);
+  }
+
   const oauthProviders = getEnabledOAuthProviderIds();
   const linkedAccounts = await getLinkedAccountsOverview(oauthProviders);
 
   const providerLabel =
     provider && isOAuthProviderId(provider)
       ? OAUTH_PROVIDER_LABELS[provider]
-      : "Provider";
+      : t("linkedAccounts.providerFallback");
+
   const feedback: SecuritySettingsFeedback = {
-    error: error
-      ? (OAUTH_ERROR_MESSAGES[error] ?? "Unable to link this provider.")
-      : undefined,
+    error: error ? t(oauthLinkErrorKey(error)) : undefined,
     success:
       success === "linked"
-        ? `${providerLabel} linked successfully.`
+        ? t("oauthSuccess.linked", { provider: providerLabel })
         : success === "unlinked"
-          ? `${providerLabel} unlinked successfully.`
+          ? t("oauthSuccess.unlinked", { provider: providerLabel })
           : undefined,
   };
-
-  if (!user) {
-    redirectToLocale(locale, routes.auth.login);
-  }
 
   function mapLinkedProviders(
     providers: Array<{
@@ -96,32 +106,28 @@ export default async function SettingsPage({
       canUnlink: boolean;
     }>,
   ): LinkedProviderOverview[] {
-    return providers.map((provider) => ({
-      provider: provider.provider,
-      linkedAt: provider.linkedAt?.toISOString() ?? null,
-      isLinked: provider.isLinked,
-      canUnlink: provider.canUnlink,
+    return providers.map((providerItem) => ({
+      provider: providerItem.provider,
+      linkedAt: providerItem.linkedAt?.toISOString() ?? null,
+      isLinked: providerItem.isLinked,
+      canUnlink: providerItem.canUnlink,
     }));
   }
 
   return (
     <Page fixed>
       <PageHeader>
-        <PageTitle>Account Settings</PageTitle>
-        <PageDescription>
-          Manage your personal account settings and preferences.
-        </PageDescription>
+        <PageTitle>{t("title")}</PageTitle>
+        <PageDescription>{t("description")}</PageDescription>
       </PageHeader>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserIcon className="size-4" />
-            Profile
+            {t("profile.title")}
           </CardTitle>
-          <CardDescription>
-            Your personal information and profile details
-          </CardDescription>
+          <CardDescription>{t("profile.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
@@ -143,7 +149,7 @@ export default async function SettingsPage({
             >
               <Button variant="outline" size="sm" className="ml-auto">
                 <Pencil className="mr-2 h-3.5 w-3.5" />
-                Edit Profile
+                {t("profile.edit")}
               </Button>
             </EditProfileDialog>
           </div>
@@ -153,11 +159,9 @@ export default async function SettingsPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Link2 className="size-4" />
-            Linked Accounts
+            {t("linkedAccounts.title")}
           </CardTitle>
-          <CardDescription>
-            Connect your account with external providers for easier sign-in
-          </CardDescription>
+          <CardDescription>{t("linkedAccounts.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <LinkedAccountsCard
@@ -170,14 +174,14 @@ export default async function SettingsPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <KeyRound className="size-4" />
-            Password
+            {t("passwordSection.title")}
           </CardTitle>
-          <CardDescription>Change your account password</CardDescription>
+          <CardDescription>{t("passwordSection.description")}</CardDescription>
           <CardAction>
             <EditPasswordDialog hasPassword={linkedAccounts.hasPassword}>
               <Button variant="outline" size="sm">
                 <KeyRound className="mr-2 h-3.5 w-3.5" />
-                Change Password
+                {t("passwordSection.change")}
               </Button>
             </EditPasswordDialog>
           </CardAction>
@@ -187,16 +191,14 @@ export default async function SettingsPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trash className="size-4" />
-            Delete Account
+            {t("deleteAccount.title")}
           </CardTitle>
-          <CardDescription>
-            Delete your account and all your data
-          </CardDescription>
+          <CardDescription>{t("deleteAccount.description")}</CardDescription>
           <CardAction>
             <DeleteAccountDialog>
               <Button variant="destructive" size="sm">
                 <KeyRound className="mr-2 h-3.5 w-3.5" />
-                Delete Account
+                {t("deleteAccount.button")}
               </Button>
             </DeleteAccountDialog>
           </CardAction>
@@ -205,4 +207,3 @@ export default async function SettingsPage({
     </Page>
   );
 }
-

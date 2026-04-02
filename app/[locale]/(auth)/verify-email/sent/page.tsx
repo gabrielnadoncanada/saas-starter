@@ -8,6 +8,7 @@ import {
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { Link } from "@/shared/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
 type VerifyEmailSentPageProps = {
   searchParams: Promise<{
@@ -20,23 +21,20 @@ export default async function VerifyEmailSentPage({
 }: VerifyEmailSentPageProps) {
   const { callbackUrl } = await searchParams;
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
+  const t = await getTranslations("auth");
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">
-          Check your email
-        </CardTitle>
-        <CardDescription>
-          We sent you a verification link. Open it to activate your account.
-        </CardDescription>
+        <CardTitle className="text-lg tracking-tight">{t("verifyEmailSent.title")}</CardTitle>
+        <CardDescription>{t("verifyEmailSent.description")}</CardDescription>
       </CardHeader>
 
       <CardContent>
         <p className="text-sm text-muted-foreground">
-          After verification,{" "}
+          {t("verifyEmailSent.afterVerificationLead")}{" "}
           <Link href={signInHref} className="underline underline-offset-4">
-            return to sign in
+            {t("verifyEmailSent.returnToSignIn")}
           </Link>
           .
         </p>

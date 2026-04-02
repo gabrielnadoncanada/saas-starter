@@ -1,24 +1,27 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Input } from "@/shared/components/ui/input";
 
 type AdminOrganizationsSearchProps = {
-  onChange: (value: string) => void;
   value: string;
+  onChange: (value: string) => void;
 };
 
 export function AdminOrganizationsSearch({
-  onChange,
   value,
+  onChange,
 }: AdminOrganizationsSearchProps) {
+  const t = useTranslations("organizations");
+
   return (
-    <div className="relative flex-1">
+    <div className="relative">
       <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         className="pl-9"
-        placeholder="Search organizations..."
+        placeholder={t("table.searchPlaceholder")}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />

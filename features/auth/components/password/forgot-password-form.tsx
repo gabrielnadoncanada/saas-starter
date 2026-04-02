@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth");
   const [sent, setSent] = useState(false);
   const {
     register,
@@ -33,19 +35,16 @@ export function ForgotPasswordForm() {
       await requestPasswordReset(email);
       setSent(true);
       reset(emailDefaultValues);
-      toast.success(
-        "If an account exists for this email, a reset link has been sent.",
-      );
+      toast.success(t("forgotPasswordPage.successMessage"));
     } catch {
-      toast.error("Unable to send reset link. Please try again.");
+      toast.error(t("forgotPasswordPage.errorMessage"));
     }
   });
 
   if (sent) {
     return (
       <p className="text-sm text-muted-foreground">
-        If an account exists for this email, a reset link has been sent. Check
-        your inbox.
+        {t("forgotPasswordPage.successMessage")}
       </p>
     );
   }
@@ -53,7 +52,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <Field data-invalid={Boolean(errors.email)}>
-        <FieldLabel htmlFor="forgot-password-email">Email</FieldLabel>
+        <FieldLabel htmlFor="forgot-password-email">{t("email")}</FieldLabel>
         <Input
           id="forgot-password-email"
           type="email"
@@ -68,10 +67,10 @@ export function ForgotPasswordForm() {
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Sending reset link...
+            {t("forgotPasswordPage.sendingResetLink")}
           </>
         ) : (
-          "Send reset link"
+          t("forgotPasswordPage.sendResetLink")
         )}
       </Button>
     </form>

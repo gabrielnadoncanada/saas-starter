@@ -1,0 +1,132 @@
+{
+  "settings": {
+    "title": "Account Settings",
+    "description": "Manage your personal account settings and preferences.",
+    "profile": {
+      "title": "Profile",
+      "description": "Your personal information and profile details",
+      "edit": "Edit Profile"
+    },
+    "linkedAccounts": {
+      "title": "Linked Accounts",
+      "description": "Connect your account with external providers for easier sign-in",
+      "providerFallback": "Provider",
+      "linked": "Linked",
+      "notLinkedYet": "Not linked yet",
+      "linkedOn": "Linked on {date}",
+      "unlink": "Unlink",
+      "unlinking": "Unlinking...",
+      "link": "Link",
+      "redirecting": "Redirecting...",
+      "required": "Required",
+      "providerFieldLabel": "Provider"
+    },
+    "passwordSection": {
+      "title": "Password",
+      "description": "Change your account password",
+      "change": "Change Password"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Delete your account and all your data",
+      "button": "Delete Account",
+      "confirmDescription": "Type {word} to confirm. This action cannot be undone.",
+      "confirmLabel": "Confirmation"
+    },
+    "editProfile": {
+      "title": "Edit Profile",
+      "description": "Update your name and phone number.",
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "phoneNumber": "Phone number",
+      "phonePlaceholder": "Enter your phone number",
+      "saveChanges": "Save Changes"
+    },
+    "changePassword": {
+      "titleChange": "Change password",
+      "titleCreate": "Create a password",
+      "descriptionChange": "Enter your current password and choose a new one.",
+      "descriptionCreate": "Create a password for your account.",
+      "updatePassword": "Update password",
+      "createPassword": "Create password"
+    },
+    "locale": {
+      "title": "Language",
+      "description": "Choose the default language for the app and transactional emails.",
+      "english": "English",
+      "french": "Francais"
+    },
+    "theme": {
+      "title": "Theme",
+      "description": "Choose how the app looks to you. Pick a single theme, or sync with your system and switch automatically.",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "twoFactor": {
+      "title": "Two-factor authentication",
+      "description": "Protect your account with an authenticator app and backup codes.",
+      "setup": "Set up two-factor",
+      "preparing": "Preparing...",
+      "verificationCode": "Verification code",
+      "verifyAndEnable": "Verify and enable",
+      "active": "Two-factor authentication is active for this account.",
+      "regenerateBackupCodes": "Regenerate backup codes",
+      "disable": "Disable two-factor",
+      "backupCodes": "Backup codes",
+      "qrAlt": "Authenticator QR code",
+      "scanQrInstruction": "Scan the QR code, then verify with a code from your authenticator app.",
+      "enabledSuccess": "Two-factor authentication enabled.",
+      "disabledSuccess": "Two-factor authentication disabled.",
+      "codesRegenerated": "Backup codes regenerated.",
+      "setupError": "Unable to start two-factor setup.",
+      "invalidCode": "Invalid verification code.",
+      "disableError": "Unable to disable two-factor authentication.",
+      "regenError": "Unable to regenerate backup codes."
+    },
+    "billing": {
+      "title": "Manage your team plan",
+      "description": "Choose a plan that fits your team's needs. You can upgrade or downgrade at any time."
+    },
+    "organization": {
+      "title": "Organization Settings",
+      "description": "Manage your organization details and subscription."
+    },
+    "members": {
+      "title": "Members",
+      "description": "Manage your organization members and invitations.",
+      "pendingTitle": "Pending Invitations",
+      "pendingCount": "{count, plural, one {# invitation} other {# invitations}} pending"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Review the security controls that protect your account."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Review product activity, security changes, and billing events for your workspace.",
+      "unreadCount": "{count, plural, one {# unread notification} other {# unread notifications}}.",
+      "noNotifications": "No notifications yet."
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "description": "Create organization-scoped API keys for scripts, CI, and private integrations."
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Customize your display and language preferences."
+    },
+    "oauthErrors": {
+      "accountAlreadyLinked": "This provider is already linked to another account.",
+      "emailMismatch": "Use a provider account with the same email address as this account.",
+      "notLinked": "Unable to link this provider. Try a different sign-in method.",
+      "signinFailed": "Unable to start provider linking. Please try again.",
+      "linkFailed": "Unable to link this provider. Please try again.",
+      "default": "Unable to link this provider."
+    },
+    "oauthSuccess": {
+      "linked": "{provider} linked successfully.",
+      "unlinked": "{provider} unlinked successfully."
+    }
+  }
+}

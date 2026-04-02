@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +16,7 @@ export function ResendMagicLinkButton({
   email,
   callbackUrl = "/post-sign-in",
 }: ResendMagicLinkButtonProps) {
+  const t = useTranslations("auth");
   const [isPending, setIsPending] = useState(false);
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
 
@@ -22,9 +24,9 @@ export function ResendMagicLinkButton({
     try {
       setIsPending(true);
       await sendMagicLink(email, nextCallbackUrl);
-      toast.success("A new sign-in link has been sent.");
+      toast.success(t("checkEmail.resendSuccess"));
     } catch {
-      toast.error("Unable to send a new sign-in link. Please try again.");
+      toast.error(t("checkEmail.resendError"));
     } finally {
       setIsPending(false);
     }
@@ -40,10 +42,10 @@ export function ResendMagicLinkButton({
       {isPending ? (
         <span className="inline-flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Sending...
+          {t("checkEmail.sending")}
         </span>
       ) : (
-        "Resend a new one"
+        t("checkEmail.resendLink")
       )}
     </button>
   );

@@ -1,0 +1,75 @@
+{
+  "tasks": {
+    "title": "Taches",
+    "rowCount": "{count, plural, one {# tache} other {# taches}}",
+    "description": "Voici la liste de vos taches pour ce mois !",
+    "create": "Creer",
+    "deleteConfirmTitle": "Supprimer {code} ?",
+    "deleteConfirmMessage": "Vous etes sur le point de supprimer {title}.",
+    "sheetTitleUpdate": "Modifier la tache",
+    "sheetTitleCreate": "Creer une tache",
+    "sheetDescriptionUpdate": "Modifier {code} pour l'organisation actuelle.",
+    "sheetDescriptionCreate": "Ajouter une tache pour l'organisation actuelle.",
+    "fieldTitle": "Titre",
+    "fieldTitlePlaceholder": "Peaufiner l'onboarding",
+    "fieldDescription": "Description",
+    "fieldDescriptionPlaceholder": "Contexte optionnel pour la tache",
+    "fieldLabel": "Label",
+    "fieldLabelPlaceholder": "Choisir un label",
+    "fieldPriority": "Priorite",
+    "fieldPriorityPlaceholder": "Choisir une priorite",
+    "fieldStatus": "Statut",
+    "fieldStatusPlaceholder": "Choisir un statut",
+    "saveChanges": "Enregistrer",
+    "createTask": "Creer la tache",
+    "searchPlaceholder": "Filtrer par titre ou ID...",
+    "bulkUpdateStatus": "Modifier le statut",
+    "bulkDeleteTooltip": "Supprimer les taches selectionnees",
+    "bulkDeleteTitle": "Supprimer {count, plural, one {# tache} other {# taches}} ?",
+    "bulkDeleteMessage": "Cette action supprimera definitivement les taches selectionnees.",
+    "columnTask": "Tache",
+    "columnTitle": "Titre",
+    "columnStatus": "Statut",
+    "columnPriority": "Priorite",
+    "selectAll": "Tout selectionner",
+    "selectRow": "Selectionner la ligne",
+    "openRowMenu": "Ouvrir le menu",
+    "validation": {
+      "titleRequired": "Le titre est requis",
+      "titleMaxLength": "Le titre doit faire au plus 255 caracteres",
+      "selectTaskRequired": "Selectionnez au moins une tache"
+    },
+    "toast": {
+      "created": "Tache creee",
+      "updated": "Tache mise a jour",
+      "deleted": "Tache supprimee",
+      "bulkDeleted": "{count, plural, one {# tache supprimee} other {# taches supprimees}}",
+      "bulkUpdated": "{count, plural, one {# tache mise a jour} other {# taches mises a jour}}"
+    },
+    "notification": {
+      "createdTitle": "Tache creee",
+      "createdBody": "{code} est disponible dans votre espace.",
+      "deletedTitle": "Tache supprimee",
+      "deletedBody": "La tache {id} a ete retiree de l'espace."
+    },
+    "attachments": {
+      "title": "Pieces jointes",
+      "upload": "Telecharger un fichier",
+      "uploading": "Telechargement...",
+      "noAttachments": "Aucune piece jointe.",
+      "deleteConfirm": "Supprimer cette piece jointe ?",
+      "download": "Telecharger"
+    }
+  },
+  "taskAttachments": {
+    "title": "Pieces jointes",
+    "description": "Ajoutez des fichiers de tache jusqu'a 10 Mo. Le stockage compte dans le quota de votre plan.",
+    "add": "Ajouter un fichier",
+    "loading": "Chargement des pieces jointes...",
+    "empty": "Aucune piece jointe pour le moment.",
+    "uploaded": "Piece jointe envoyee.",
+    "removed": "Piece jointe supprimee.",
+    "download": "Telecharger la piece jointe",
+    "delete": "Supprimer la piece jointe"
+  }
+}

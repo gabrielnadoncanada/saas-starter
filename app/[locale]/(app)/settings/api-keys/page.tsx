@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { ApiKeysPanel } from "@/features/api-keys/components/api-keys-panel";
 import { listOrganizationApiKeys } from "@/features/api-keys/server/api-key-service";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
@@ -22,6 +23,7 @@ export default async function ApiKeysSettingsPage({
     getCurrentUser(),
     getOrganizationPlan(),
   ]);
+  const t = await getTranslations("settings.apiKeys");
 
   if (!user || !organizationPlan) {
     redirectToLocale(locale, routes.auth.login);
@@ -35,10 +37,8 @@ export default async function ApiKeysSettingsPage({
   return (
     <Page>
       <PageHeader>
-        <PageTitle>API Keys</PageTitle>
-        <PageDescription>
-          Create organization-scoped API keys for scripts, CI, and private integrations.
-        </PageDescription>
+        <PageTitle>{t("title")}</PageTitle>
+        <PageDescription>{t("description")}</PageDescription>
       </PageHeader>
 
       <ApiKeysPanel

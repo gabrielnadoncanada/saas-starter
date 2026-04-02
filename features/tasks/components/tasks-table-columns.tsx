@@ -25,16 +25,22 @@ import {
 type TasksTableColumnsOptions = {
   onEditTask: (task: Task) => void;
   onDeleteTask: (task: Task) => void;
+  t: (key: string) => string;
+  tc: (key: string) => string;
 };
 
 function TasksRowActions({
   row,
   onEditTask,
   onDeleteTask,
+  t,
+  tc,
 }: {
   row: Row<Task>;
   onEditTask: (task: Task) => void;
   onDeleteTask: (task: Task) => void;
+  t: (key: string) => string;
+  tc: (key: string) => string;
 }) {
   return (
     <DropdownMenu modal={false}>
@@ -44,16 +50,16 @@ function TasksRowActions({
           className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
         >
           <MoreHorizontalIcon className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
+          <span className="sr-only">{t("openRowMenu")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem onClick={() => onEditTask(row.original)}>
-          Edit
+          {tc("edit")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => onDeleteTask(row.original)}>
-          Delete
+          {tc("delete")}
           <DropdownMenuShortcut>
             <Trash2 size={16} />
           </DropdownMenuShortcut>
@@ -66,6 +72,8 @@ function TasksRowActions({
 export function getTasksColumns({
   onEditTask,
   onDeleteTask,
+  t,
+  tc,
 }: TasksTableColumnsOptions): ColumnDef<Task>[] {
   return [
     {
@@ -79,7 +87,7 @@ export function getTasksColumns({
           onCheckedChange={(value) =>
             table.toggleAllPageRowsSelected(Boolean(value))
           }
-          aria-label="Select all"
+          aria-label={t("selectAll")}
           className="translate-y-[2px]"
         />
       ),
@@ -87,7 +95,7 @@ export function getTasksColumns({
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-          aria-label="Select row"
+          aria-label={t("selectRow")}
           className="translate-y-[2px]"
         />
       ),
@@ -97,7 +105,7 @@ export function getTasksColumns({
     {
       accessorKey: "code",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Task" />
+        <DataTableColumnHeader column={column} title={t("columnTask")} />
       ),
       cell: ({ row }) => <div className="w-[96px]">{row.getValue("code")}</div>,
       enableSorting: false,
@@ -106,7 +114,7 @@ export function getTasksColumns({
     {
       accessorKey: "title",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title={t("columnTitle")} />
       ),
       meta: { className: "ps-1 max-w-0 w-2/3", tdClassName: "ps-4" },
       cell: ({ row }) => {
@@ -125,7 +133,7 @@ export function getTasksColumns({
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
+        <DataTableColumnHeader column={column} title={t("columnStatus")} />
       ),
       meta: { className: "ps-1", tdClassName: "ps-4" },
       cell: ({ row }) => {
@@ -149,7 +157,7 @@ export function getTasksColumns({
     {
       accessorKey: "priority",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Priority" />
+        <DataTableColumnHeader column={column} title={t("columnPriority")} />
       ),
       meta: { className: "ps-1", tdClassName: "ps-3" },
       cell: ({ row }) => {
@@ -178,6 +186,8 @@ export function getTasksColumns({
           row={row}
           onEditTask={onEditTask}
           onDeleteTask={onDeleteTask}
+          t={t}
+          tc={tc}
         />
       ),
     },

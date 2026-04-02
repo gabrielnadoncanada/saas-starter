@@ -1,6 +1,7 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.action";
@@ -35,6 +36,7 @@ export function LinkedAccountsCard({
   providers,
   feedback,
 }: LinkedAccountsCardProps) {
+  const t = useTranslations("settings");
   const [linkingProvider, setLinkingProvider] = useState<
     LinkedProviderOverview["provider"] | null
   >(null);
@@ -116,11 +118,13 @@ export function LinkedAccountsCard({
                         variant="outline"
                         disabled={isUnlinkingProvider}
                       >
-                        {isUnlinkingProvider ? "Unlinking..." : "Unlink"}
+                        {isUnlinkingProvider
+                          ? t("linkedAccounts.unlinking")
+                          : t("linkedAccounts.unlink")}
                       </Button>
                     </form>
                   ) : (
-                    <Badge>Required</Badge>
+                    <Badge>{t("linkedAccounts.required")}</Badge>
                   )
                 ) : (
                   <Button
@@ -129,7 +133,9 @@ export function LinkedAccountsCard({
                     disabled={isLinkingProvider}
                     onClick={() => void handleLinkAccount(provider.provider)}
                   >
-                    {isLinkingProvider ? "Redirecting..." : "Link"}
+                    {isLinkingProvider
+                      ? t("linkedAccounts.redirecting")
+                      : t("linkedAccounts.link")}
                   </Button>
                 )}
               </ItemActions>
@@ -140,7 +146,7 @@ export function LinkedAccountsCard({
 
       <Field data-invalid={providerField.invalid} className="gap-1">
         <FieldLabel className="sr-only" htmlFor="linked-account-provider">
-          Provider
+          {t("linkedAccounts.providerFieldLabel")}
         </FieldLabel>
         <input
           id="linked-account-provider"

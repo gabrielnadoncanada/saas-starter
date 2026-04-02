@@ -5,8 +5,8 @@ import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
 const taskTitleSchema = z
   .string()
   .trim()
-  .min(1, "Title is required")
-  .max(255, "Title must be 255 characters or less");
+  .min(1, { message: "titleRequired" })
+  .max(255, { message: "titleMaxLength" });
 
 const taskDescriptionSchema = z.string().trim().max(5000).optional();
 const taskStatusSchema = z.nativeEnum(TaskStatus);
@@ -15,7 +15,7 @@ const taskPrioritySchema = z.nativeEnum(TaskPriority);
 const taskIdsSchema = z
   .string()
   .trim()
-  .min(1, "Select at least one task")
+  .min(1, { message: "selectTaskRequired" })
   .transform((value) =>
     value
       .split(",")
@@ -25,7 +25,7 @@ const taskIdsSchema = z
   .pipe(
     z
       .array(z.coerce.number().int().positive())
-      .min(1, "Select at least one task"),
+      .min(1, { message: "selectTaskRequired" }),
   );
 
 export const createTaskSchema = z.object({

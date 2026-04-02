@@ -7,6 +7,7 @@ import {
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
 type VerifyEmailPageProps = {
   searchParams: Promise<{
@@ -18,17 +19,16 @@ export default async function VerifyEmailPage({
   searchParams,
 }: VerifyEmailPageProps) {
   const { error } = await searchParams;
+  const t = await getTranslations("auth");
 
   if (error) {
     return (
       <Card className="gap-4">
         <CardHeader>
           <CardTitle className="text-lg tracking-tight">
-            Verification failed
+            {t("verifyEmail.failedTitle")}
           </CardTitle>
-          <CardDescription>
-            This verification link is invalid or has expired.
-          </CardDescription>
+          <CardDescription>{t("verifyEmail.failedDescription")}</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -36,7 +36,7 @@ export default async function VerifyEmailPage({
             href={routes.auth.signup}
             className="text-sm underline underline-offset-4"
           >
-            Back to sign up
+            {t("verifyEmail.backToSignup")}
           </Link>
         </CardContent>
       </Card>
@@ -46,10 +46,10 @@ export default async function VerifyEmailPage({
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">Email verified</CardTitle>
-        <CardDescription>
-          Your email address is now confirmed. You can sign in.
-        </CardDescription>
+        <CardTitle className="text-lg tracking-tight">
+          {t("verifyEmail.successTitle")}
+        </CardTitle>
+        <CardDescription>{t("verifyEmail.successDescription")}</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -57,7 +57,7 @@ export default async function VerifyEmailPage({
           href={routes.auth.login}
           className="text-sm underline underline-offset-4"
         >
-          Go to sign in
+          {t("verifyEmail.goToSignin")}
         </Link>
       </CardContent>
     </Card>

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { subDays } from "date-fns";
+import { getTranslations } from "next-intl/server";
 
 import { listOrganizationApiKeys } from "@/features/api-keys/server/api-key-service";
 import { listOrganizationAuditLogs } from "@/features/audit/server/record-audit-log";
@@ -13,13 +14,13 @@ import { getPlan } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 
-function buildUsageChart(tasks: { createdAt: Date }[]) {
+function buildUsageChart(tasks: { createdAt: Date }[], locale: string) {
   const buckets = Array.from({ length: 7 }, (_, index) => {
     const date = subDays(new Date(), 6 - index);
 
     return {
       dateKey: date.toISOString().slice(0, 10),
-      label: date.toLocaleDateString("en-US", { weekday: "short" }),
+      label: date.toLocaleDateString(locale, { weekday: "short" }),
       tasks: 0,
     };
   });
@@ -36,7 +37,8 @@ function buildUsageChart(tasks: { createdAt: Date }[]) {
   return buckets.map(({ dateKey: _dateKey, ...item }) => item);
 }
 
-export async function getDashboardOverview() {
+export async function getDashboardOverview(locale: string) {
+  const t = await getTranslations("dashboard");
   const organization = await getCurrentOrganization();
   const tasks = await listTasks();
   const planId = resolveOrganizationPlan(organization);
@@ -73,27 +75,27 @@ export async function getDashboardOverview() {
   const checklist = [
     {
       id: "first-task",
-      title: "Create your first task",
+      title: t("checklist.firstTask"),
       done: taskCount > 0,
       href: routes.app.tasks,
     },
     {
       id: "invite-team",
-      title: "Invite a teammate",
+      title: t("checklist.inviteTeam"),
       done: memberCount > 1,
       href: routes.settings.members,
       hidden: !hasCapability(planId, "team.invite"),
     },
     {
       id: "create-api-key",
-      title: "Create an API key",
+      title: t("checklist.apiKey"),
       done: apiKeys.length > 0,
       href: routes.settings.apiKeys,
       hidden: !hasCapability(planId, "api.access"),
     },
     {
       id: "try-assistant",
-      title: "Use the AI assistant",
+      title: t("checklist.tryAssistant"),
       done: aiUsage > 0,
       href: routes.app.assistant,
       hidden: !canUseAI,
@@ -113,7 +115,7 @@ export async function getDashboardOverview() {
     canUseAI,
     recentActivity,
     recentTasks: tasks.slice(0, 5),
-    usageChart: buildUsageChart(recentTaskHistory),
+    usageChart: buildUsageChart(recentTaskHistory, locale),
     checklist,
     apiKeyCount: apiKeys.length,
   };

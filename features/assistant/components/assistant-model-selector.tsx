@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   ModelSelector,
@@ -32,6 +33,7 @@ export function AssistantModelSelector({
   onSelect,
   open,
 }: AssistantModelSelectorProps) {
+  const t = useTranslations("assistant");
   const selectedModel =
     modelOptions.find((model) => model.id === modelId) ?? modelOptions[0];
 
@@ -44,9 +46,9 @@ export function AssistantModelSelector({
         </PromptInputButton>
       </ModelSelectorTrigger>
       <ModelSelectorContent>
-        <ModelSelectorInput placeholder="Search models..." />
+        <ModelSelectorInput placeholder={t("modelSelector.searchPlaceholder")} />
         <ModelSelectorList>
-          <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+          <ModelSelectorEmpty>{t("modelSelector.noModels")}</ModelSelectorEmpty>
           {["Google", "Groq"].map((providerLabel) => (
             <ModelSelectorGroup heading={providerLabel} key={providerLabel}>
               {modelOptions

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -45,6 +46,8 @@ export function AdminOrganizationsTable({
   initialTotal,
   pageSize,
 }: AdminOrganizationsTableProps) {
+  const t = useTranslations("organizations");
+  const tc = useTranslations("common");
   const [organizations, setOrganizations] = useState(initialOrganizations);
   const [total, setTotal] = useState(initialTotal);
   const [offset, setOffset] = useState(0);
@@ -74,7 +77,7 @@ export function AdminOrganizationsTable({
         setTotal(result.total);
         setOffset(nextOffset);
       } catch {
-        toast.error("Failed to fetch organizations");
+        toast.error(t("table.fetchFailed"));
       }
     });
   }
@@ -90,7 +93,7 @@ export function AdminOrganizationsTable({
       setSelectedOrganization(detail.organization as AdminOrganization);
       setSubscription(detail.subscription as OrgSubscription);
     } catch {
-      toast.error("Failed to load organization details");
+      toast.error(t("table.detailFailed"));
     } finally {
       setLoadingDetail(false);
     }
@@ -99,20 +102,17 @@ export function AdminOrganizationsTable({
   function confirmDelete(organization: AdminOrganization) {
     setConfirmDialog({
       open: true,
-      title: `Delete "${organization.name}"`,
-      description:
-        "This will permanently delete this organization, all its members, tasks, and data. This cannot be undone.",
+      title: t("table.deleteConfirmTitle", { name: organization.name }),
+      description: t("table.deleteConfirmMessage"),
       action: async () => {
         try {
           await deleteOrganizationAction(organization.id);
-          toast.success("Organization deleted");
+          toast.success(t("table.deleteSuccess"));
           fetchOrganizations(offset);
           setDetailOpen(false);
         } catch (error) {
           toast.error(
-            error instanceof Error
-              ? error.message
-              : "Failed to delete organization",
+            error instanceof Error ? error.message : t("table.deleteFailed"),
           );
         }
       },
@@ -158,7 +158,7 @@ export function AdminOrganizationsTable({
       />
 
       <ConfirmDialog
-        confirmText="Confirm"
+        confirmText={tc("dialogConfirm")}
         desc={confirmDialog.description}
         handleConfirm={async () => {
           await confirmDialog.action();

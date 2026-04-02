@@ -1,0 +1,52 @@
+{
+  "assistant": {
+    "emptyState": {
+      "title": "AI-ready billing pattern",
+      "description": "Review the demo inbox, create tasks, or draft invoices from natural language."
+    },
+    "suggestedPrompts": {
+      "reviewInbox": "Review the demo inbox",
+      "reviewInboxPrompt": "Review the demo inbox and suggest tasks for today based on emails that need action.",
+      "draftInvoice": "Draft an invoice",
+      "draftInvoicePrompt": "Draft an invoice for Acme Corp for 10 hours of consulting at $150/hour, due in 30 days."
+    },
+    "error": {
+      "limitReached": "Monthly limit reached",
+      "upgradeRequired": "Upgrade required",
+      "somethingWentWrong": "Something went wrong",
+      "dismiss": "Dismiss",
+      "upgrade": "Upgrade"
+    },
+    "chat": {
+      "working": "Working...",
+      "placeholder": "Ask me to review the demo inbox, create a task, or draft an invoice...",
+      "billingCopilot": "Billing copilot",
+      "webOff": "Web off",
+      "sentWithAttachments": "Sent with attachments"
+    },
+    "sidebar": {
+      "newConversation": "New Conversation",
+      "noConversationsYet": "No conversations yet.",
+      "deleteConversation": "Delete conversation",
+      "conversationActions": "Conversation actions",
+      "unableToDelete": "Unable to delete conversation"
+    },
+    "tools": {
+      "createInvoice": "Create invoice draft",
+      "createTask": "Create task",
+      "reviewInbox": "Review inbox",
+      "copyInvoice": "Copy invoice summary",
+      "downloadInvoice": "Download invoice draft"
+    },
+    "modelSelector": {
+      "searchPlaceholder": "Search models...",
+      "noModels": "No models found."
+    },
+    "upgrade": {
+      "notAvailableFeature": "AI Assistant",
+      "notAvailableDescription": "The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts.",
+      "limitExceededFeature": "AI Assistant",
+      "limitExceededDescription": "You've used all {limit} AI requests this month. Upgrade your plan for a higher limit, or wait until next month."
+    }
+  }
+}

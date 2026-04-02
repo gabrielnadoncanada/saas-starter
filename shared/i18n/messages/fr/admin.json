@@ -1,0 +1,85 @@
+{
+  "admin": {
+    "title": "Administration",
+    "description": "Vue d'ensemble de la plateforme et gestion des utilisateurs.",
+    "totalUsers": "Utilisateurs totaux",
+    "totalUsersDesc": "Utilisateurs inscrits",
+    "activeUsers": "Utilisateurs actifs",
+    "activeUsersDesc": "Utilisateurs non bannis",
+    "bannedUsers": "Utilisateurs bannis",
+    "bannedUsersDesc": "Actuellement bannis",
+    "organizations": "Organisations",
+    "organizationsDesc": "Total des organisations",
+    "impersonatingBanner": "Vous empruntez l'identite d'un utilisateur",
+    "stopImpersonating": "Arreter l'emprunt d'identite",
+    "impersonationToast": {
+      "stopped": "Emprunt d'identite arrete",
+      "stopFailed": "Impossible d'arreter l'emprunt d'identite"
+    },
+    "usersPage": {
+      "title": "Utilisateurs",
+      "description": "Gerez les utilisateurs, roles et acces de la plateforme."
+    },
+    "organizationsPage": {
+      "title": "Organisations",
+      "description": "Consultez et gerez toutes les organisations de la plateforme."
+    }
+  },
+  "users": {
+    "searchPlaceholder": "Rechercher des utilisateurs...",
+    "columnUser": "Utilisateur",
+    "columnRole": "Role",
+    "columnStatus": "Statut",
+    "columnCreated": "Cree le",
+    "noUsers": "Aucun utilisateur trouve.",
+    "actions": "Actions utilisateur",
+    "impersonate": "Emprunter l'identite",
+    "removeAdmin": "Retirer les droits admin",
+    "makeAdmin": "Donner les droits admin",
+    "banUser": "Bannir l'utilisateur",
+    "unbanUser": "Debannir l'utilisateur",
+    "deleteUser": "Supprimer l'utilisateur",
+    "detail": {
+      "title": "Details de l'utilisateur",
+      "description": "Informations completes sur cet utilisateur",
+      "impersonateUser": "Emprunter l'identite",
+      "noName": "Sans nom",
+      "email": "Email",
+      "statusActive": "Actif",
+      "statusBanned": "Banni",
+      "emailVerified": "Email verifie",
+      "accountInfo": "Informations du compte",
+      "userId": "ID utilisateur",
+      "created": "Cree le",
+      "lastUpdated": "Derniere mise a jour",
+      "activeSessions": "Sessions actives",
+      "revokeAll": "Revoquer toutes",
+      "loadingSessions": "Chargement des sessions...",
+      "noSessions": "Aucune session active",
+      "sessionCount": "{count, plural, one {# session active} other {# sessions actives}}"
+    },
+    "confirmations": {
+      "banTitle": "Bannir l'utilisateur",
+      "banMessage": "Cela bannira l'utilisateur et revoquera toutes ses sessions. Etes-vous sur ?",
+      "banSuccess": "Utilisateur banni",
+      "deleteTitle": "Supprimer l'utilisateur",
+      "deleteMessage": "Cela supprimera definitivement cet utilisateur et toutes ses donnees. Cette action est irreversible.",
+      "deleteSuccess": "Utilisateur supprime",
+      "roleTitle": "Definir le role a \"{role}\"",
+      "roleMessage": "Etes-vous sur de vouloir changer le role de cet utilisateur a \"{role}\" ?",
+      "roleSuccess": "Role mis a jour",
+      "unbanTitle": "Debannir l'utilisateur",
+      "unbanMessage": "Cela debannira l'utilisateur et lui permettra de se reconnecter.",
+      "unbanSuccess": "Utilisateur debanni",
+      "revokeTitle": "Revoquer toutes les sessions",
+      "revokeMessage": "Cela deconnectera l'utilisateur de tous les appareils.",
+      "revokeSuccess": "Toutes les sessions revoquees"
+    },
+    "errors": {
+      "fetchFailed": "Echec du chargement des utilisateurs",
+      "detailFailed": "Echec du chargement des details",
+      "impersonateFailed": "Echec de l'emprunt d'identite",
+      "impersonateSuccess": "Emprunt d'identite en cours"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "noNotifications": "No notifications yet.",
+    "openCenter": "Open notification center"
+  },
+  "notificationsMenu": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications yet.",
+    "openCenter": "Open notification center"
+  }
+}

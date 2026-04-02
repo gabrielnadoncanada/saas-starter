@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Loader2, Paperclip, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -60,6 +61,7 @@ function formatBytes(sizeBytes: number) {
 export function TaskAttachmentsPanel({
   taskId,
 }: TaskAttachmentsPanelProps) {
+  const t = useTranslations("taskAttachments");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [attachments, setAttachments] = useState<TaskAttachment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,9 +86,7 @@ export function TaskAttachmentsPanel({
 
       setAttachments(result.attachments);
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Unable to load attachments.",
-      );
+      toast.error(error instanceof Error ? error.message : t("loading"));
     } finally {
       setIsLoading(false);
     }
@@ -120,12 +120,10 @@ export function TaskAttachmentsPanel({
         throw new Error(result.error ?? "Unable to upload attachment.");
       }
 
-      toast.success("Attachment uploaded.");
+      toast.success(t("uploaded"));
       await loadAttachments();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Unable to upload attachment.",
-      );
+      toast.error(error instanceof Error ? error.message : t("uploaded"));
     } finally {
       event.target.value = "";
       setIsUploading(false);
@@ -147,12 +145,10 @@ export function TaskAttachmentsPanel({
         throw new Error(result.error ?? "Unable to remove attachment.");
       }
 
-      toast.success("Attachment removed.");
+      toast.success(t("removed"));
       await loadAttachments();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Unable to remove attachment.",
-      );
+      toast.error(error instanceof Error ? error.message : t("removed"));
     } finally {
       setDeletingId(null);
     }
@@ -162,10 +158,8 @@ export function TaskAttachmentsPanel({
     <div className="space-y-3 rounded-lg border p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="font-medium text-sm">Attachments</h3>
-          <p className="text-muted-foreground text-xs">
-            Upload task files up to 10 MB. Storage usage counts against your plan.
-          </p>
+          <h3 className="font-medium text-sm">{t("title")}</h3>
+          <p className="text-muted-foreground text-xs">{t("description")}</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -188,7 +182,7 @@ export function TaskAttachmentsPanel({
             ) : (
               <Paperclip className="mr-2 size-4" />
             )}
-            Add file
+            {t("add")}
           </Button>
         </div>
       </div>
@@ -196,11 +190,11 @@ export function TaskAttachmentsPanel({
       {isLoading ? (
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <Loader2 className="size-4 animate-spin" />
-          Loading attachments...
+          {t("loading")}
         </div>
       ) : attachments.length === 0 ? (
         <div className="rounded-md border border-dashed px-3 py-4 text-muted-foreground text-sm">
-          No attachments yet.
+          {t("empty")}
         </div>
       ) : (
         <div className="space-y-2">
@@ -222,7 +216,7 @@ export function TaskAttachmentsPanel({
                 <Button asChild type="button" variant="ghost" size="icon">
                   <a href={`/api/files/${attachment.storedFile.id}`}>
                     <Download className="size-4" />
-                    <span className="sr-only">Download attachment</span>
+                    <span className="sr-only">{t("download")}</span>
                   </a>
                 </Button>
                 <Button
@@ -237,7 +231,7 @@ export function TaskAttachmentsPanel({
                   ) : (
                     <Trash2 className="size-4" />
                   )}
-                  <span className="sr-only">Delete attachment</span>
+                  <span className="sr-only">{t("delete")}</span>
                 </Button>
               </div>
             </div>

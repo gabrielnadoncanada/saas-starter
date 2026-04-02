@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { TwoFactorSettingsCard } from "@/features/account/components/settings/two-factor-settings-card";
 import {
   Page,
@@ -15,6 +16,7 @@ export default async function SecuritySettingsPage({
   params: Promise<{ locale: string }>;
 }) {
   const [{ locale }, user] = await Promise.all([params, getCurrentUser()]);
+  const t = await getTranslations("settings.security");
 
   if (!user) {
     redirectToLocale(locale, routes.auth.login);
@@ -23,10 +25,8 @@ export default async function SecuritySettingsPage({
   return (
     <Page>
       <PageHeader>
-        <PageTitle>Security</PageTitle>
-        <PageDescription>
-          Review the security controls that protect your account.
-        </PageDescription>
+        <PageTitle>{t("title")}</PageTitle>
+        <PageDescription>{t("description")}</PageDescription>
       </PageHeader>
 
       <TwoFactorSettingsCard enabled={user.twoFactorEnabled} />

@@ -2,7 +2,7 @@
 
 import type { Task } from "@prisma/client";
 import { useRouter } from "@/shared/i18n/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import { TaskAttachmentsPanel } from "@/features/tasks/components/task-attachments-panel";
 import { TaskForm } from "@/features/tasks/components/task-form";
@@ -31,6 +31,10 @@ type TaskFormSheetProps = CreateTaskFormSheetProps | UpdateTaskFormSheetProps;
 
 export function TaskFormSheet(props: TaskFormSheetProps) {
   const router = useRouter();
+  const { onOpenChange } = props;
+  const lastHandledStateRef = useRef<
+    CreateTaskActionState | UpdateTaskActionState | null
+  >(null);
   const createState = useActionState<CreateTaskActionState, FormData>(
     createTaskAction,
     {},
@@ -54,9 +58,14 @@ export function TaskFormSheet(props: TaskFormSheetProps) {
       return;
     }
 
+    if (lastHandledStateRef.current === state) {
+      return;
+    }
+
+    lastHandledStateRef.current = state;
     router.refresh();
-    props.onOpenChange(false);
-  }, [props, router, state.success]);
+    onOpenChange(false);
+  }, [onOpenChange, router, state]);
 
   return props.mode === "create" ? (
     <TaskForm

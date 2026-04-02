@@ -4,6 +4,7 @@ import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "@/shared/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useMemo, useState } from "react";
 
 import {
@@ -39,6 +40,8 @@ function serializeTaskIds(tasks: Task[]) {
 
 export function TasksBulkActions({ table }: TasksBulkActionsProps) {
   const router = useRouter();
+  const t = useTranslations("tasks");
+  const tc = useTranslations("common");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const selectedTasks = useMemo(
     () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
@@ -88,7 +91,7 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
                   variant="outline"
                   size="icon"
                   className="size-8"
-                  aria-label="Update status"
+                  aria-label={t("bulkUpdateStatus")}
                   disabled={isStatusPending || isDeletePending}
                 >
                   {isStatusPending ? (
@@ -100,7 +103,7 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
               </DropdownMenuTrigger>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Update status</p>
+              <p>{t("bulkUpdateStatus")}</p>
             </TooltipContent>
           </Tooltip>
 
@@ -132,14 +135,14 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
               size="icon"
               onClick={() => setIsDeleteOpen(true)}
               className="size-8"
-              aria-label="Delete selected tasks"
+              aria-label={t("bulkDeleteTooltip")}
               disabled={isStatusPending || isDeletePending}
             >
               {isDeletePending ? <Loader2 className="animate-spin" /> : <Trash2 />}
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Delete selected tasks</p>
+            <p>{t("bulkDeleteTooltip")}</p>
           </TooltipContent>
         </Tooltip>
       </DataTableBulkActions>
@@ -154,15 +157,14 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
         }}
         destructive
         isLoading={isDeletePending}
-        title={`Delete ${selectedTasks.length} task${selectedTasks.length > 1 ? "s" : ""}?`}
+        title={t("bulkDeleteTitle", { count: selectedTasks.length })}
         desc={
           <div className="space-y-3">
-            <p>This action will permanently delete the selected tasks.</p>
+            <p>{t("bulkDeleteMessage")}</p>
           </div>
         }
-        confirmText="Delete"
+        confirmText={tc("delete")}
       />
     </>
   );
 }
-

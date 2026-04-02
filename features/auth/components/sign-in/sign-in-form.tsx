@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { Link } from "@/shared/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/shared/i18n/navigation";
@@ -32,12 +33,6 @@ import { routes } from "@/shared/constants/routes";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
-const OAUTH_ERROR_MESSAGES: Record<string, string> = {
-  OAuthAccountNotLinked:
-    "Unable to sign in with this provider. Try a different sign-in method.",
-  OAuthSignin: "Unable to sign in. Please try again.",
-};
-
 type SignInFormProps = {
   oauthProviders?: OAuthProviderId[];
   allowMagicLink?: boolean;
@@ -49,6 +44,7 @@ export function SignInForm({
   allowMagicLink = false,
   callbackUrl = "/post-sign-in",
 }: SignInFormProps) {
+  const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
@@ -88,7 +84,9 @@ export function SignInForm({
     },
   });
   const oauthErrorMessage = error
-    ? (OAUTH_ERROR_MESSAGES[error] ?? "Unable to sign in. Please try again.")
+    ? error === "OAuthAccountNotLinked"
+      ? t("signin.unableToSignInProvider")
+      : t("signin.unableToSignIn")
     : null;
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
 
@@ -129,7 +127,7 @@ export function SignInForm({
       await sendMagicLink(email, nextCallbackUrl);
       router.push(buildCheckEmailHref(email, nextCallbackUrl));
     } catch {
-      toast.error("Unable to send the sign-in link. Please try again.");
+      toast.error(t("toast.magicLinkFailed"));
     } finally {
       setIsSendingMagicLink(false);
     }
@@ -140,7 +138,7 @@ export function SignInForm({
       setPendingProvider(provider);
       await signInWithOAuth(provider, nextCallbackUrl);
     } catch {
-      toast.error("Unable to sign in. Please try again.");
+      toast.error(t("toast.oauthSignInFailed"));
     } finally {
       setPendingProvider(null);
     }
@@ -167,7 +165,7 @@ export function SignInForm({
       } catch {
         passwordForm.setError("root", {
           type: "server",
-          message: "Unable to sign in. Please try again.",
+          message: t("signin.unableToSignIn"),
         });
       }
     },
@@ -180,19 +178,19 @@ export function SignInForm({
           email={submittedEmail}
           errorMessage={passwordForm.formState.errors.root?.message}
           isSubmitting={passwordForm.formState.isSubmitting}
-          pendingLabel="Signing in..."
-          submitLabel="Sign in"
+          pendingLabel={t("signin.signingIn")}
+          submitLabel={t("signIn")}
           onChangeEmail={() => setShowPasswordStep(false)}
           onSubmit={handlePasswordSubmit}
         >
           <Field data-invalid={Boolean(passwordForm.formState.errors.password)}>
             <div className="flex items-center justify-between gap-3">
-              <FieldLabel htmlFor="sign-in-password">Password</FieldLabel>
+              <FieldLabel htmlFor="sign-in-password">{t("password")}</FieldLabel>
               <Link
                 href={routes.auth.forgotPassword}
                 className="text-sm text-muted-foreground underline underline-offset-4"
               >
-                Forgot password?
+                {t("forgotPassword")}
               </Link>
             </div>
             <PasswordInput
@@ -210,8 +208,8 @@ export function SignInForm({
       ) : (
         <AuthEmailStep
           formId="sign-in-email"
-          label="Email"
-          submitLabel="Sign in"
+          label={t("email")}
+          submitLabel={t("signIn")}
           emailField={emailField}
           emailError={errors.email?.message}
           onSubmit={(event) => {

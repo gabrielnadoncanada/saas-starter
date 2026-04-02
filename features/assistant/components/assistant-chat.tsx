@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
 import { GlobeIcon, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import type { AiConversation } from "@/features/ai/types/ai.types";
@@ -11,8 +12,8 @@ import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
 } from "@/features/assistant/client/conversations";
-import { AssistantErrorState } from "@/features/assistant/components/assistant-error-state";
-import { AssistantMessageList } from "@/features/assistant/components/assistant-message-list";
+import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
+import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
 import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
 import {
   Conversation,
@@ -50,6 +51,7 @@ export function AssistantChat({
   onConversationUpdated,
   resetKey,
 }: AssistantChatProps) {
+  const t = useTranslations("assistant");
   const [modelId, setModelId] = useState<AiModelId>(defaultModelId);
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const selectedModel =
@@ -176,7 +178,7 @@ export function AssistantChat({
     clearError();
     sendMessage({
       files: message.files,
-      text: text || "Sent with attachments",
+      text: text || t("chat.sentWithAttachments"),
     });
   };
 
@@ -185,7 +187,7 @@ export function AssistantChat({
       <div className="flex flex-1 flex-col overflow-hidden">
         <Conversation>
           <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
-            <AssistantMessageList
+            <AssistantChatMessageList
               error={error}
               isLoading={isLoading}
               messages={messages}
@@ -198,7 +200,7 @@ export function AssistantChat({
         </Conversation>
 
         {error ? (
-          <AssistantErrorState error={error} onDismiss={clearError} />
+          <AssistantChatErrorState error={error} onDismiss={clearError} />
         ) : null}
 
         <div className="mx-auto w-full max-w-3xl px-4 pb-4">
@@ -206,18 +208,18 @@ export function AssistantChat({
             <PromptInputBody>
               <PromptInputTextarea
                 disabled={isLoading}
-                placeholder="Ask me to review the demo inbox, create a task, or draft an invoice..."
+                placeholder={t("chat.placeholder")}
               />
             </PromptInputBody>
             <PromptInputFooter>
               <PromptInputTools>
                 <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
                   <Sparkles className="h-3.5 w-3.5 text-orange-500" />
-                  Billing copilot
+                  {t("chat.billingCopilot")}
                 </div>
                 <div className="hidden items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground sm:flex">
                   <GlobeIcon className="h-3.5 w-3.5" />
-                  Web off
+                  {t("chat.webOff")}
                 </div>
                 <AssistantModelSelector
                   modelId={modelId}

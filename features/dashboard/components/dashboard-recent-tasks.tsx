@@ -1,13 +1,16 @@
 import type { Task } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/shared/i18n/navigation";
 import { routes } from "@/shared/constants/routes";
 
-export function DashboardRecentTasks({ tasks }: { tasks: Task[] }) {
+export async function DashboardRecentTasks({ tasks }: { tasks: Task[] }) {
+  const t = await getTranslations("dashboard");
+
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        No tasks yet. Create one to start shaping the workspace.
+        {t("noTasks")}
       </p>
     );
   }

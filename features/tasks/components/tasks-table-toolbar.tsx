@@ -4,6 +4,7 @@ import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { XIcon } from "lucide-react";
 import { usePathname, useRouter } from "@/shared/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { taskPriorities, taskStatuses } from "@/features/tasks/task-options";
@@ -29,6 +30,8 @@ export function TasksTableToolbar({
 }: TasksTableToolbarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations("tasks");
+  const tc = useTranslations("common");
   const [searchValue, setSearchValue] = useState(params.q ?? "");
   const isFiltered =
     Boolean(params.q) || table.getState().columnFilters.length > 0;
@@ -63,7 +66,7 @@ export function TasksTableToolbar({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2">
         <Input
-          placeholder="Filter by title or ID..."
+          placeholder={t("searchPlaceholder")}
           value={searchValue}
           onChange={(event) => setSearchValue(event.target.value)}
           className="h-8 w-[150px] lg:w-[250px]"
@@ -72,12 +75,12 @@ export function TasksTableToolbar({
         <div className="flex gap-x-2">
           <DataTableFacetedFilter
             column={table.getColumn("status")}
-            title="Status"
+            title={t("fieldStatus")}
             options={taskStatuses}
           />
           <DataTableFacetedFilter
             column={table.getColumn("priority")}
-            title="Priority"
+            title={t("fieldPriority")}
             options={taskPriorities}
           />
         </div>
@@ -100,7 +103,7 @@ export function TasksTableToolbar({
             }}
             className="h-8 px-2 lg:px-3"
           >
-            Reset
+            {tc("reset")}
             <XIcon className="ms-2 h-4 w-4" />
           </Button>
         ) : null}
@@ -110,4 +113,3 @@ export function TasksTableToolbar({
     </div>
   );
 }
-

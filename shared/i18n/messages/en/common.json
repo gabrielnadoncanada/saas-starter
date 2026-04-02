@@ -1,0 +1,105 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "and": "and",
+    "save": "Save",
+    "close": "Close",
+    "back": "Go back",
+    "backToHome": "Back to home",
+    "backToDashboard": "Back to dashboard",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "creating": "Creating...",
+    "deleting": "Deleting...",
+    "sending": "Sending...",
+    "retry": "Retry",
+    "continue": "Continue",
+    "confirm": "Continue",
+    "reset": "Reset",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "view": "View",
+    "submit": "Submit",
+    "copy": "Copy",
+    "copiedToClipboard": "Copied to clipboard",
+    "noResults": "No results found.",
+    "thisActionCannotBeUndone": "This action cannot be undone.",
+    "learnMore": "Learn more",
+    "tryAgain": "Try again",
+    "required": "Required",
+    "optional": "Optional",
+    "active": "Active",
+    "unlimited": "Unlimited",
+    "free": "Free",
+    "formValidationFailed": "Please fix the highlighted fields.",
+    "notAuthenticated": "You are not signed in.",
+    "dialogConfirm": "Confirm"
+  },
+  "dataTable": {
+    "sortAsc": "Asc",
+    "sortDesc": "Desc",
+    "hide": "Hide",
+    "pageOf": "Page {current} of {total}",
+    "rowsPerPage": "Rows per page",
+    "goToFirst": "Go to first page",
+    "goToPrevious": "Go to previous page",
+    "goToNext": "Go to next page",
+    "goToPage": "Go to page {page}",
+    "goToLast": "Go to last page",
+    "noResults": "No results.",
+    "selected": "{count} selected",
+    "clearFilters": "Clear filters",
+    "toggleColumns": "Toggle columns",
+    "clearSelection": "Clear selection",
+    "bulkActions": "Bulk actions for {count} selected {entity}"
+  },
+  "commandMenu": {
+    "placeholder": "Type a command or search...",
+    "noResults": "No results found.",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "email": {
+    "verifyEmail": {
+      "subject": "Verify your email address",
+      "heading": "Verify your email address",
+      "body": "Click the button below to activate your account. This link expires in 24 hours.",
+      "button": "Verify email",
+      "fallback": "Or copy this link into your browser:",
+      "footer": "If you did not create this account, you can ignore this email."
+    },
+    "resetPassword": {
+      "subject": "Reset your password",
+      "heading": "Reset your password",
+      "body": "Click the button below to choose a new password. This link expires in 1 hour.",
+      "button": "Reset password",
+      "fallback": "Or copy this link into your browser:",
+      "footer": "If you did not request a password reset, you can ignore this email."
+    },
+    "magicLink": {
+      "subject": "Your sign-in link",
+      "heading": "Sign in",
+      "body": "Click the button below to sign in to your account. This link expires in 24 hours.",
+      "button": "Sign in",
+      "fallback": "Or copy this link into your browser:",
+      "footer": "If you did not request this link, you can safely ignore this email."
+    },
+    "teamInvitation": {
+      "heading": "Join {orgName}",
+      "body": "{inviterName} invited you to join {orgName} as {role}.",
+      "button": "Accept invitation",
+      "fallback": "Or copy this link into your browser:",
+      "footer": "If you were not expecting this invitation, you can ignore this email."
+    },
+    "passwordChanged": {
+      "subject": "Your password was changed",
+      "heading": "Password updated",
+      "body": "Your account password was updated successfully.",
+      "warning": "If you did not expect this change, use the password reset flow right away.",
+      "footer": "If this was not you, reset your password immediately."
+    }
+  }
+}

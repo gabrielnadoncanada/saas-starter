@@ -1,0 +1,14 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "noNotifications": "Aucune notification pour le moment.",
+    "openCenter": "Ouvrir le centre de notifications"
+  },
+  "notificationsMenu": {
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "empty": "Aucune notification pour le moment.",
+    "openCenter": "Ouvrir le centre de notifications"
+  }
+}

@@ -8,29 +8,30 @@ import {
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  const t = await getTranslations("auth");
+
   return (
     <Card className="gap-4">
       <CardHeader>
         <CardTitle className="text-lg tracking-tight">
-          Forgot password
+          {t("forgotPasswordPage.title")}
         </CardTitle>
-        <CardDescription>
-          Enter your email address and we will send you a reset link.
-        </CardDescription>
+        <CardDescription>{t("forgotPasswordPage.description")}</CardDescription>
       </CardHeader>
 
       <CardContent>
         <div className="space-y-4">
           <ForgotPasswordForm />
           <p className="text-sm text-muted-foreground">
-            Remembered your password?{" "}
+            {t("forgotPasswordPage.rememberedPrompt")}{" "}
             <Link
               href={routes.auth.login}
               className="underline underline-offset-4"
             >
-              Back to sign in
+              {t("forgotPasswordPage.backToSignIn")}
             </Link>
           </p>
         </div>

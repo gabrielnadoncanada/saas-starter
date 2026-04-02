@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
 import { Link } from "@/shared/i18n/navigation";
@@ -25,6 +26,7 @@ type NotificationItem = {
 };
 
 export function NotificationMenu() {
+  const t = useTranslations("notificationsMenu");
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isPending, startTransition] = useTransition();
@@ -83,7 +85,7 @@ export function NotificationMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-96">
         <div className="flex items-center justify-between px-2 py-1.5">
-          <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
+          <DropdownMenuLabel className="p-0">{t("title")}</DropdownMenuLabel>
           <Button
             type="button"
             variant="ghost"
@@ -91,13 +93,13 @@ export function NotificationMenu() {
             disabled={isPending || notifications.length === 0}
             onClick={() => startTransition(() => void markAllAsRead())}
           >
-            Mark all read
+            {t("markAllRead")}
           </Button>
         </div>
         <DropdownMenuSeparator />
         {notifications.length === 0 ? (
           <div className="px-2 py-6 text-sm text-muted-foreground">
-            No notifications yet.
+            {t("empty")}
           </div>
         ) : (
           notifications.map((notification) => (
@@ -127,7 +129,7 @@ export function NotificationMenu() {
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={routes.settings.notifications}>Open notification center</Link>
+          <Link href={routes.settings.notifications}>{t("openCenter")}</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

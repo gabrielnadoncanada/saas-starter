@@ -2,6 +2,7 @@
 
 import type { Task } from "@prisma/client";
 import { useRouter } from "@/shared/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef } from "react";
 
 import {
@@ -23,6 +24,8 @@ export function TaskDeleteDialog({
   onOpenChange,
 }: TaskDeleteDialogProps) {
   const router = useRouter();
+  const t = useTranslations("tasks");
+  const tc = useTranslations("common");
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState<
     DeleteTaskActionState,
@@ -56,18 +59,15 @@ export function TaskDeleteDialog({
         isLoading={isPending}
         handleConfirm={() => formRef.current?.requestSubmit()}
         className="max-w-md"
-        title={`Delete ${task.code}?`}
+        title={t("deleteConfirmTitle", { code: task.code })}
         desc={
           <div className="space-y-3">
-            <p>
-              You are about to delete <strong>{task.title}</strong>.
-            </p>
-            <p>This action cannot be undone.</p>
+            <p>{t("deleteConfirmMessage", { title: task.title })}</p>
+            <p>{tc("thisActionCannotBeUndone")}</p>
           </div>
         }
-        confirmText="Delete"
+        confirmText={tc("delete")}
       />
     </>
   );
 }
-

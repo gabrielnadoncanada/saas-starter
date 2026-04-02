@@ -2,6 +2,7 @@
 
 import type { Task } from "@prisma/client";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   taskLabels,
@@ -66,6 +67,8 @@ export function TaskForm({
   isPending,
   task,
 }: TaskFormProps) {
+  const t = useTranslations("tasks");
+  const tc = useTranslations("common");
   const titleField = getFieldState(state, "title");
   const descriptionField = getFieldState(state, "description");
   const labelField = getFieldState(state, "label");
@@ -88,11 +91,13 @@ export function TaskForm({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex flex-col">
         <SheetHeader className="text-start">
-          <SheetTitle>{isUpdate ? "Update Task" : "Create Task"}</SheetTitle>
+          <SheetTitle>
+            {isUpdate ? t("sheetTitleUpdate") : t("sheetTitleCreate")}
+          </SheetTitle>
           <SheetDescription>
             {isUpdate
-              ? `Edit ${task?.code} for the current organization.`
-              : "Add a task for the current organization."}
+              ? t("sheetDescriptionUpdate", { code: task?.code ?? "" })
+              : t("sheetDescriptionCreate")}
           </SheetDescription>
         </SheetHeader>
 
@@ -104,12 +109,12 @@ export function TaskForm({
 
           <FieldGroup className="gap-4">
             <Field data-invalid={titleField.invalid}>
-              <FieldLabel htmlFor="task-title">Title</FieldLabel>
+              <FieldLabel htmlFor="task-title">{t("fieldTitle")}</FieldLabel>
               <Input
                 id="task-title"
                 name="title"
                 defaultValue={title}
-                placeholder="Ship the onboarding polish"
+                placeholder={t("fieldTitlePlaceholder")}
                 aria-invalid={titleField.invalid}
                 required
               />
@@ -117,26 +122,28 @@ export function TaskForm({
             </Field>
 
             <Field data-invalid={descriptionField.invalid}>
-              <FieldLabel htmlFor="task-description">Description</FieldLabel>
+              <FieldLabel htmlFor="task-description">
+                {t("fieldDescription")}
+              </FieldLabel>
               <Textarea
                 id="task-description"
                 name="description"
                 defaultValue={description}
-                placeholder="Optional context for the task"
+                placeholder={t("fieldDescriptionPlaceholder")}
                 aria-invalid={descriptionField.invalid}
               />
               <FieldError>{descriptionField.error}</FieldError>
             </Field>
 
             <Field data-invalid={labelField.invalid}>
-              <FieldLabel htmlFor="task-label">Label</FieldLabel>
+              <FieldLabel htmlFor="task-label">{t("fieldLabel")}</FieldLabel>
               <Select name="label" defaultValue={label}>
                 <SelectTrigger
                   id="task-label"
                   className="w-full"
                   aria-invalid={labelField.invalid}
                 >
-                  <SelectValue placeholder="Select a label" />
+                  <SelectValue placeholder={t("fieldLabelPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {taskLabels.map((option) => (
@@ -150,14 +157,16 @@ export function TaskForm({
             </Field>
 
             <Field data-invalid={priorityField.invalid}>
-              <FieldLabel htmlFor="task-priority">Priority</FieldLabel>
+              <FieldLabel htmlFor="task-priority">
+                {t("fieldPriority")}
+              </FieldLabel>
               <Select name="priority" defaultValue={priority}>
                 <SelectTrigger
                   id="task-priority"
                   className="w-full"
                   aria-invalid={priorityField.invalid}
                 >
-                  <SelectValue placeholder="Select a priority" />
+                  <SelectValue placeholder={t("fieldPriorityPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {taskPriorities.map((option) => (
@@ -172,14 +181,14 @@ export function TaskForm({
 
             {isUpdate ? (
               <Field data-invalid={statusField.invalid}>
-                <FieldLabel htmlFor="task-status">Status</FieldLabel>
+                <FieldLabel htmlFor="task-status">{t("fieldStatus")}</FieldLabel>
                 <Select name="status" defaultValue={status}>
                   <SelectTrigger
                     id="task-status"
                     className="w-full"
                     aria-invalid={statusField.invalid}
                   >
-                    <SelectValue placeholder="Select a status" />
+                    <SelectValue placeholder={t("fieldStatusPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {taskStatuses.map((option) => (
@@ -199,19 +208,19 @@ export function TaskForm({
           <SheetFooter className="mt-auto gap-2 px-0">
             <SheetClose asChild>
               <Button type="button" variant="outline" disabled={isPending}>
-                Cancel
+                {tc("cancel")}
               </Button>
             </SheetClose>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {tc("saving")}
                 </>
               ) : isUpdate ? (
-                "Save Changes"
+                t("saveChanges")
               ) : (
-                "Create Task"
+                t("createTask")
               )}
             </Button>
           </SheetFooter>
