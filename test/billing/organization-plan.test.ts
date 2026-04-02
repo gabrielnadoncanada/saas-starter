@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  hasPlanAccess,
-  resolveOrganizationPlan,
-} from "@/features/billing/plans";
+import { resolveOrganizationPlan } from "@/features/billing/plans/resolve-organization-plan";
+import { hasPlanAccess } from "@/features/billing/plans/subscription-status";
 
 describe("resolveOrganizationPlan", () => {
   it("returns the paid plan only while billing access is active", () => {

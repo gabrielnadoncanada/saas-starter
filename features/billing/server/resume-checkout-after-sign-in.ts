@@ -2,7 +2,7 @@ import {
   type BillingInterval,
   getPlanPrice,
   type PaidPlanId,
-} from "@/features/billing/plans";
+} from "@/shared/config/billing.config";
 import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { hasOrgRole } from "@/shared/lib/db/enums";

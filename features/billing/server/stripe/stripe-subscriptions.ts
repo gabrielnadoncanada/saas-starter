@@ -3,7 +3,7 @@ import {
   getPlan,
   isPlanId,
   type PricingModel,
-} from "@/features/billing/plans";
+} from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
 type SubscriptionSnapshot = {

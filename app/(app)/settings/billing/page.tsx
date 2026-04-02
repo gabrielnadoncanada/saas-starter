@@ -1,12 +1,8 @@
 import { redirect } from "next/navigation";
 
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
-import {
-  getPricingPlans,
-  hasCurrentStripeSubscription,
-  isPlanId,
-} from "@/features/billing/plans";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
+import { hasCurrentStripeSubscription } from "@/features/billing/plans/subscription-status";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization";
 import { Page } from "@/shared/components/layout/page-layout";
 import {
   Card,
@@ -16,6 +12,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
+import { getPricingPlans, isPlanId } from "@/shared/config/billing.config";
 
 export default async function SettingsBillingPage() {
   const context = await getCurrentOrganizationContext();

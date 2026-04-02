@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { ensureActiveOrganization } from "@/features/organizations/server/ensure-active-organization";
+import { ensureActiveOrganization } from "@/features/organizations/server/organization-membership";
 import { SettingsSidebar } from "@/features/settings/components/settings-sidebar";
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
 import { SearchProvider } from "@/shared/components/command/search-provider";

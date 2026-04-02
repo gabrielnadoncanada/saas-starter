@@ -2,8 +2,12 @@ import {
   LimitReachedError,
   UpgradeRequiredError,
 } from "../errors/billing-errors";
-import type { Capability, LimitKey, PlanId } from "../plans";
-import { getPlan } from "../plans";
+import {
+  getPlan,
+  type Capability,
+  type LimitKey,
+  type PlanId,
+} from "@/shared/config/billing.config";
 
 export function hasCapability(planId: PlanId, capability: Capability): boolean {
   return getPlan(planId).capabilities.includes(capability);

@@ -1,13 +1,16 @@
 import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
 import { getAiConversation } from "@/features/ai/server/ai-conversations";
-import { getOrganizationAiSettings, listAllowedAiModelsForOrganization } from "@/features/ai/server/organization-ai-settings";
+import {
+  getOrganizationAiSettings,
+  listAllowedAiModelsForOrganization,
+} from "@/features/ai/server/organization-ai-settings";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import {
   checkLimit,
   hasCapability,
 } from "@/features/billing/guards/plan-guards";
-import { resolveOrganizationPlan } from "@/features/billing/plans";
+import { resolveOrganizationPlan } from "@/features/billing/plans/resolve-organization-plan";
 import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { Page } from "@/shared/components/layout/page-layout";
@@ -32,7 +35,10 @@ export default async function AssistantPage({
   const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
   const initialConversation =
     canUseAssistant && aiLimit.allowed && conversationId
-      ? await getAiConversation(conversationId, aiConversationSurfaces.assistant)
+      ? await getAiConversation(
+          conversationId,
+          aiConversationSurfaces.assistant,
+        )
       : null;
   const aiSettings =
     organization && canUseAssistant && aiLimit.allowed
@@ -57,7 +63,9 @@ export default async function AssistantPage({
         />
       ) : (
         <AssistantWorkspace
-          initialDefaultModelId={aiSettings?.defaultModelId ?? modelOptions[0].id}
+          initialDefaultModelId={
+            aiSettings?.defaultModelId ?? modelOptions[0].id
+          }
           initialConversation={initialConversation}
           initialConversationId={initialConversation?.id ?? null}
           initialModelOptions={modelOptions}

@@ -5,6 +5,8 @@ import { authClient } from "@/shared/lib/auth/auth-client";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
+// Client components use this file instead of calling authClient directly so every
+// auth flow gets the same normalized result shape and buyer-friendly messages.
 export type SignInWithPasswordResult =
   | { status: "success" }
   | { status: "verification_required"; message: string }

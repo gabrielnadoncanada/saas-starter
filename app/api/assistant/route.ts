@@ -2,9 +2,11 @@ import { convertToModelMessages, stepCountIs, streamText } from "ai";
 
 import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
 import { getAiConversation } from "@/features/ai/server/ai-conversations";
-import { AiModelSelectionError } from "@/features/ai/server/model-selection-error";
 import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
-import { resolveOrganizationModelSelection } from "@/features/ai/server/resolve-model-selection";
+import {
+  AiModelSelectionError,
+  resolveOrganizationModelSelection,
+} from "@/features/ai/server/resolve-model-selection";
 import { assistantTools } from "@/features/assistant/server/tools";
 import {
   LimitReachedError,

@@ -28,12 +28,18 @@ type UpdateTaskFormSheetProps = {
 
 type TaskFormSheetProps = CreateTaskFormSheetProps | UpdateTaskFormSheetProps;
 
-function CreateTaskSheet(props: CreateTaskFormSheetProps) {
+export function TaskFormSheet(props: TaskFormSheetProps) {
   const router = useRouter();
-  const [state, formAction, isPending] = useActionState<
-    CreateTaskActionState,
-    FormData
-  >(createTaskAction, {});
+  const createState = useActionState<CreateTaskActionState, FormData>(
+    createTaskAction,
+    {},
+  );
+  const updateState = useActionState<UpdateTaskActionState, FormData>(
+    updateTaskAction,
+    {},
+  );
+  const [state, formAction, isPending] =
+    props.mode === "create" ? createState : updateState;
 
   useToastMessage(state.error, {
     kind: "error",
@@ -51,7 +57,7 @@ function CreateTaskSheet(props: CreateTaskFormSheetProps) {
     props.onOpenChange(false);
   }, [props, router, state.success]);
 
-  return (
+  return props.mode === "create" ? (
     <TaskForm
       mode="create"
       open={props.open}
@@ -60,33 +66,7 @@ function CreateTaskSheet(props: CreateTaskFormSheetProps) {
       formAction={formAction}
       isPending={isPending}
     />
-  );
-}
-
-function UpdateTaskSheet(props: UpdateTaskFormSheetProps) {
-  const router = useRouter();
-  const [state, formAction, isPending] = useActionState<
-    UpdateTaskActionState,
-    FormData
-  >(updateTaskAction, {});
-
-  useToastMessage(state.error, {
-    kind: "error",
-    skip: Boolean(state.fieldErrors),
-    trigger: state,
-  });
-  useToastMessage(state.success, { kind: "success", trigger: state });
-
-  useEffect(() => {
-    if (!state.success) {
-      return;
-    }
-
-    router.refresh();
-    props.onOpenChange(false);
-  }, [props, router, state.success]);
-
-  return (
+  ) : (
     <TaskForm
       mode="update"
       open={props.open}
@@ -97,12 +77,4 @@ function UpdateTaskSheet(props: UpdateTaskFormSheetProps) {
       isPending={isPending}
     />
   );
-}
-
-export function TaskFormSheet(props: TaskFormSheetProps) {
-  if (props.mode === "create") {
-    return <CreateTaskSheet {...props} />;
-  }
-
-  return <UpdateTaskSheet {...props} />;
 }

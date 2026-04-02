@@ -3,7 +3,7 @@ import {
   getPlan,
   getPlanPrice,
   type PaidPlanId,
-} from "@/features/billing/plans";
+} from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 import { stripe } from "@/shared/lib/stripe/client";

@@ -2,9 +2,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
-import { isBillingInterval, isPlanId } from "@/features/billing/plans";
 import { resumeCheckoutAfterSignIn } from "@/features/billing/server/resume-checkout-after-sign-in";
 import { routes } from "@/shared/constants/routes";
+import { isBillingInterval, isPlanId } from "@/shared/config/billing.config";
 import { getCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -35,6 +35,10 @@ export default async function PostSignInPage({
   }
 
   const callbackUrl = getCallbackURL(rawCallbackUrl);
+  // This page does more than "finish auth":
+  // 1. it guarantees every new user gets a workspace,
+  // 2. it resumes a pending Stripe checkout when sign-in started from pricing,
+  // 3. it only falls back to the app/dashboard redirect after those critical steps.
   const organizationId = await ensureUserWorkspace(user.email);
 
   if (

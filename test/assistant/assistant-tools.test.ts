@@ -10,7 +10,7 @@ import {
   UpgradeRequiredError,
 } from "@/features/billing/errors/billing-errors";
 import { hasCapability } from "@/features/billing/guards/plan-guards";
-import { getPlan } from "@/features/billing/plans";
+import { getPlan } from "@/shared/config/billing.config";
 
 vi.mock("server-only", () => ({}));
 

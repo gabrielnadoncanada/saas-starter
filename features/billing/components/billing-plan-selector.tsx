@@ -11,7 +11,6 @@ import {
   type BillingPlanOption,
   BillingPlanRadioGroup,
 } from "@/features/billing/components/billing-plan-selector-fields";
-import { type BillingInterval, type PlanId } from "@/features/billing/plans";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/shared/components/ui/card";
@@ -21,6 +20,10 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/shared/components/ui/item";
+import {
+  type BillingInterval,
+  type PlanId,
+} from "@/shared/config/billing.config";
 
 type BillingPlanSelectorProps = {
   plans: BillingPlanOption[];

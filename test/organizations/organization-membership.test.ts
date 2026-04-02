@@ -40,10 +40,10 @@ describe("organization membership", () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       id: "user_1",
     } as never);
-    vi.mocked(auth.api.getActiveMember).mockResolvedValue(null);
+    vi.mocked(auth.api.getActiveMember).mockResolvedValue(null as never);
 
     await expect(requireActiveOrganizationMembership()).rejects.toEqual(
-      expect.objectContaining<Partial<OrganizationMembershipError>>({
+      expect.objectContaining({
         message: "User is not part of an organization",
       }),
     );
@@ -56,10 +56,10 @@ describe("organization membership", () => {
     vi.mocked(auth.api.getActiveMember).mockResolvedValue({
       organizationId: "org_1",
       role: "member",
-    });
+    } as never);
 
     await expect(requireActiveOrganizationRole(["owner"])).rejects.toEqual(
-      expect.objectContaining<Partial<OrganizationMembershipError>>({
+      expect.objectContaining({
         message: "You do not have permission to perform this action",
       }),
     );
@@ -72,7 +72,7 @@ describe("organization membership", () => {
     vi.mocked(auth.api.getActiveMember).mockResolvedValue({
       organizationId: "org_1",
       role: "owner,admin",
-    });
+    } as never);
 
     await expect(requireActiveOrganizationMembership()).resolves.toEqual({
       organizationId: "org_1",

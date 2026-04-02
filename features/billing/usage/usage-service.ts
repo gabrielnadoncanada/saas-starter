@@ -1,9 +1,12 @@
 import { db } from "@/shared/lib/db/prisma";
+import {
+  getPlan,
+  type LimitKey,
+  type PlanId,
+} from "@/shared/config/billing.config";
 
 import { LimitReachedError } from "../errors/billing-errors";
 import { getPlanLimit } from "../guards/plan-guards";
-import type { LimitKey, PlanId } from "../plans";
-import { getPlan } from "../plans";
 
 function getPeriodStart(date = new Date()) {
   return new Date(date.getFullYear(), date.getMonth(), 1);

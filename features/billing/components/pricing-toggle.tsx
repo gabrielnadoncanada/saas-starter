@@ -5,12 +5,12 @@ import { useState } from "react";
 
 import { checkoutAction } from "@/features/billing/actions/checkout.action";
 import { SubmitPricingButton } from "@/features/billing/components/submit-pricing-button";
+import { Button } from "@/shared/components/ui/button";
 import type {
   BillingInterval,
   PlanId,
   PricingModel,
-} from "@/features/billing/plans";
-import { Button } from "@/shared/components/ui/button";
+} from "@/shared/config/billing.config";
 
 type PriceSchedule = { unitAmount: number; trialDays?: number };
 

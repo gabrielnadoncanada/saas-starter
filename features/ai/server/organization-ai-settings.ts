@@ -3,7 +3,7 @@ import "server-only";
 import type { z } from "zod";
 
 import { organizationAiSettingsSchema } from "@/features/ai/schemas/organization-ai-settings.schema";
-import { AiModelSelectionError } from "@/features/ai/server/model-selection-error";
+import { AiModelSelectionError } from "@/features/ai/server/resolve-model-selection";
 import type { OrganizationAiSettingsView } from "@/features/ai/types/ai.types";
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
 import { assertCapability } from "@/features/billing/guards/plan-guards";
@@ -27,7 +27,9 @@ function getDefaultOrganizationAiSettings() {
   };
 }
 
-function assertKnownModelIds(modelIds: string[]): asserts modelIds is AiModelId[] {
+function assertKnownModelIds(
+  modelIds: string[],
+): asserts modelIds is AiModelId[] {
   const unknownModelId = modelIds.find((modelId) => !isAiModelId(modelId));
 
   if (unknownModelId) {
@@ -132,7 +134,9 @@ export async function updateOrganizationAiSettings(
   return toOrganizationAiSettingsView(record);
 }
 
-export async function listAllowedAiModelsForOrganization(organizationId: string) {
+export async function listAllowedAiModelsForOrganization(
+  organizationId: string,
+) {
   const settings = await getOrganizationAiSettings(organizationId);
   return getAiModelOptions(settings.allowedModelIds);
 }

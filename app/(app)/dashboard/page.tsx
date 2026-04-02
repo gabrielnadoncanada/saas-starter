@@ -13,7 +13,7 @@ import {
   checkLimit,
   hasCapability,
 } from "@/features/billing/guards/plan-guards";
-import { getPlan, resolveOrganizationPlan } from "@/features/billing/plans";
+import { resolveOrganizationPlan } from "@/features/billing/plans/resolve-organization-plan";
 import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { listTasks } from "@/features/tasks/server/task-mutations";
@@ -33,6 +33,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
+import { getPlan } from "@/shared/config/billing.config";
 
 function formatPlanPrice(unitAmount: number) {
   return new Intl.NumberFormat("en-US", {

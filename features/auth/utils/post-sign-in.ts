@@ -1,5 +1,8 @@
-import type { BillingInterval, PaidPlanId } from "@/features/billing/plans";
 import { routes } from "@/shared/constants/routes";
+import type {
+  BillingInterval,
+  PaidPlanId,
+} from "@/shared/config/billing.config";
 import { getCallbackURL } from "@/shared/lib/auth/callback-url";
 
 type PostSignInCallbackParams = {
@@ -12,6 +15,8 @@ type PostSignInCallbackParams = {
 export function buildPostSignInCallbackURL(
   input: PostSignInCallbackParams = {},
 ) {
+  // Preserve checkout intent across auth so post-sign-in can finish workspace
+  // provisioning first, then resume Stripe with the same plan selection.
   const searchParams = new URLSearchParams();
 
   if (input.redirect === "checkout" && input.planId && input.billingInterval) {

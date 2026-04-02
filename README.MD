@@ -16,9 +16,8 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 - **Organization management** - Multi-organization support with roles (Owner, Admin, Member), invitations, and active organization switching.
 - **Dashboard shell** - Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
 - **Tasks CRUD example** - Full working feature with TanStack Table (sort, filter, paginate, bulk actions), server actions, Zod validation, and plan-gated creation.
-- **Activity logging** - Audit trail for sign-ins, account changes, team actions, and provider linking.
 - **Email** - Resend integration with React Email templates for auth emails and team invitations.
-- **Documentation** - 72 docs including 31 step-by-step customization guides covering auth, billing, branding, dashboard, data model, and workspace changes.
+- **Starter docs** - Local guides for environment setup, adding a feature, testing, and assistant tool integration.
 
 ## Tech stack
 
@@ -74,13 +73,13 @@ Copy `.env.example` and configure:
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                 |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                 |
 
-See the [full environment reference](docs_end_user/02-getting-started/environment-variables.md) for details.
+See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for the local setup checklist.
 
 Auth emails and organization invitation emails ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
 
 ## How billing works
 
-Plans are defined in `shared/config/billing.config.ts`. `features/billing/plans/index.ts` is the public entry point used across the app. Stripe price IDs from env select the checkout targets, and the billing config decides what each plan unlocks.
+Plans are defined in `shared/config/billing.config.ts`. Stripe price IDs from env select the checkout targets, and the billing config decides what each plan unlocks.
 
 ```
 Stripe decides which plan is active.
@@ -119,17 +118,17 @@ docs_end_user/      -> Setup, customization, and reference guides
 - **Launch faster** - Auth, billing, organizations, and a dashboard shell are already wired together. Start building your product features on day one.
 - **Understand quickly** - Feature-organized code, thin routes, and short files. No custom frameworks to learn.
 - **Modify safely** - Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
-- **Customize freely** - 31 customization guides cover common changes: rename organizations, add auth providers, change plans, rebrand the UI.
+- **Customize freely** - The repo now includes focused docs for environment setup, feature creation, testing, and assistant tool replacement.
 - **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
 
 ## Documentation
 
-Full documentation is in the [`docs_end_user/`](docs_end_user/) directory:
+Core documentation lives in this repo:
 
-- [Getting started](docs_end_user/02-getting-started/getting-started.md)
-- [Architecture overview](docs_end_user/03-understanding-the-starter/architecture-overview.md)
-- [Customization guides](docs_end_user/04-customization/)
-- [Reference](docs_end_user/05-reference/)
+- [Environment setup](docs/ENVIRONMENT_SETUP.md)
+- [Adding a feature](features/ADDING_A_FEATURE.md)
+- [Testing a feature](docs/TESTING_A_FEATURE.md)
+- [Assistant tool integration](features/assistant/TOOL_INTEGRATION.md)
 
 ## Scripts
 

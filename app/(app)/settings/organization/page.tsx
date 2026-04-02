@@ -1,7 +1,7 @@
 import { OrganizationAiSettingsPanel } from "@/features/ai/components/organization-ai-settings-panel";
 import { getOrganizationAiSettings } from "@/features/ai/server/organization-ai-settings";
 import { RenameOrganizationPanel } from "@/features/organizations/components/rename-organization-panel";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization-context";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization";
 import {
   Page,
   PageDescription,

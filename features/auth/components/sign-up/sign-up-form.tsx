@@ -10,15 +10,21 @@ import {
   buildCheckEmailHref,
   sendMagicLink,
   signInWithOAuth,
+  signUpWithEmail,
 } from "@/features/auth/client/auth-requests";
 import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
+import { AuthPasswordStep } from "@/features/auth/components/shared/auth-password-step";
 import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
-import { SignUpPasswordStep } from "@/features/auth/components/sign-up/sign-up-password-step";
 import {
   emailDefaultValues,
   emailSchema,
   type EmailValues,
+  signUpPasswordDefaultValues,
+  signUpPasswordSchema,
+  type SignUpPasswordValues,
 } from "@/features/auth/schemas/auth-forms.schema";
+import { PasswordInput } from "@/shared/components/forms/password-input";
+import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { routes } from "@/shared/constants/routes";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
@@ -49,6 +55,14 @@ export function SignUpForm({
   const [pendingProvider, setPendingProvider] =
     useState<OAuthProviderId | null>(null);
   const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
+  const emailForm = useForm<EmailValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: emailDefaultValues,
+  });
+  const passwordForm = useForm<SignUpPasswordValues>({
+    resolver: zodResolver(signUpPasswordSchema),
+    defaultValues: signUpPasswordDefaultValues,
+  });
   const {
     clearErrors,
     formState: { errors },
@@ -57,15 +71,18 @@ export function SignUpForm({
     setError,
     setValue,
     trigger,
-  } = useForm<EmailValues>({
-    resolver: zodResolver(emailSchema),
-    defaultValues: emailDefaultValues,
-  });
+  } = emailForm;
 
   const emailField = register("email", {
     onChange: () => {
       clearErrors();
     },
+  });
+  const passwordField = passwordForm.register("password", {
+    onChange: () => passwordForm.clearErrors(),
+  });
+  const confirmPasswordField = passwordForm.register("confirmPassword", {
+    onChange: () => passwordForm.clearErrors(),
   });
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
   const successHref = buildCallbackURL(
@@ -75,6 +92,8 @@ export function SignUpForm({
   const oauthErrorMessage = error
     ? (OAUTH_ERROR_MESSAGES[error] ?? "Unable to continue. Please try again.")
     : null;
+  const passwordErrors = passwordForm.formState.errors;
+  const isSubmitting = passwordForm.formState.isSubmitting;
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });
 
@@ -129,19 +148,79 @@ export function SignUpForm({
     }
   }
 
+  const handlePasswordSubmit = passwordForm.handleSubmit(
+    async ({ password }) => {
+      passwordForm.clearErrors();
+
+      try {
+        const result = await signUpWithEmail(
+          submittedEmail,
+          password,
+          nextCallbackUrl,
+        );
+
+        if (result.status !== "success") {
+          if (result.status === "email_taken") {
+            setShowPasswordStep(false);
+            setError("email", { type: "server", message: result.message });
+            return;
+          }
+
+          passwordForm.setError("root", {
+            type: "server",
+            message: result.message,
+          });
+          return;
+        }
+
+        router.push(successHref);
+      } catch {
+        passwordForm.setError("root", {
+          type: "server",
+          message: "Unable to create account. Please try again.",
+        });
+      }
+    },
+  );
+
   return (
     <>
       {showPasswordStep ? (
-        <SignUpPasswordStep
+        <AuthPasswordStep
           email={submittedEmail}
-          callbackUrl={nextCallbackUrl}
-          successHref={successHref}
+          errorMessage={passwordErrors.root?.message}
+          isSubmitting={isSubmitting}
+          pendingLabel="Creating account..."
+          submitLabel="Create account"
           onChangeEmail={() => setShowPasswordStep(false)}
-          onEmailTaken={(message) => {
-            setShowPasswordStep(false);
-            setError("email", { type: "server", message });
-          }}
-        />
+          onSubmit={handlePasswordSubmit}
+        >
+          <Field data-invalid={Boolean(passwordErrors.password)}>
+            <FieldLabel htmlFor="sign-up-password">Password</FieldLabel>
+            <PasswordInput
+              id="sign-up-password"
+              autoComplete="new-password"
+              aria-invalid={Boolean(passwordErrors.password)}
+              required
+              {...passwordField}
+            />
+            <FieldError>{passwordErrors.password?.message}</FieldError>
+          </Field>
+
+          <Field data-invalid={Boolean(passwordErrors.confirmPassword)}>
+            <FieldLabel htmlFor="sign-up-confirm-password">
+              Confirm password
+            </FieldLabel>
+            <PasswordInput
+              id="sign-up-confirm-password"
+              autoComplete="new-password"
+              aria-invalid={Boolean(passwordErrors.confirmPassword)}
+              required
+              {...confirmPasswordField}
+            />
+            <FieldError>{passwordErrors.confirmPassword?.message}</FieldError>
+          </Field>
+        </AuthPasswordStep>
       ) : (
         <AuthEmailStep
           formId="sign-up-email"

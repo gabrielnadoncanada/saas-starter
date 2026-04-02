@@ -4,8 +4,14 @@ import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/s
 import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
 import type { CurrentOrganizationView } from "@/features/organizations/types/organization.types";
 import { auth } from "@/shared/lib/auth/auth-config";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getAuthSession } from "@/shared/lib/auth/get-session";
-import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
+import {
+  getPrimaryOrgRole,
+  hasOrgRole,
+  type OrgRole,
+  parseOrgRoles,
+} from "@/shared/lib/db/enums";
 
 type RawOrganizationMember = {
   id: string;
@@ -24,6 +30,22 @@ type RawOrganization = {
   name: string;
   stripeCustomerId?: string | null;
   members?: RawOrganizationMember[];
+};
+
+export type CurrentOrganizationContext = {
+  user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
+  organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>;
+  currentMember: NonNullable<
+    NonNullable<
+      Awaited<ReturnType<typeof getCurrentOrganization>>
+    >["members"][number]
+  >;
+  roles: OrgRole[];
+  primaryRole: OrgRole;
+  canInviteMembers: boolean;
+  canManageBilling: boolean;
+  canManageMembers: boolean;
+  canTransferOwnership: boolean;
 };
 
 function toIsoString(value?: Date | string | null) {
@@ -96,4 +118,39 @@ export async function getCurrentOrganization(): Promise<CurrentOrganizationView 
   }
 
   return mapCurrentOrganization(organization as RawOrganization, subscription);
+}
+
+export async function getCurrentOrganizationContext(): Promise<CurrentOrganizationContext | null> {
+  const [user, organization] = await Promise.all([
+    getCurrentUser(),
+    getCurrentOrganization(),
+  ]);
+
+  if (!user || !organization) {
+    return null;
+  }
+
+  const currentMember = organization.members.find(
+    (member) => member.user.id === user.id,
+  );
+
+  if (!currentMember) {
+    return null;
+  }
+
+  const roles = currentMember.roles;
+  const primaryRole = currentMember.primaryRole;
+  const isOwner = hasOrgRole(roles, "owner");
+
+  return {
+    user,
+    organization,
+    currentMember,
+    roles,
+    primaryRole,
+    canInviteMembers: isOwner,
+    canManageBilling: isOwner,
+    canManageMembers: isOwner,
+    canTransferOwnership: isOwner,
+  };
 }

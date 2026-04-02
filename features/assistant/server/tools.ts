@@ -54,6 +54,8 @@ export const assistantTools = {
       try {
         const organizationPlan = await getToolOrganizationPlan();
         assertCapability(organizationPlan.planId, "email.sync");
+        // TODO: Swap the demo inbox for a real provider adapter (Gmail, Outlook,
+        // IMAP, etc.) before exposing this workflow outside local demos.
         const messages = await assistantDemoInbox.getRecentMessages(limit ?? 5);
 
         await consumeMonthlyUsage(
@@ -167,6 +169,8 @@ export const assistantTools = {
         const organizationPlan = await getToolOrganizationPlan();
         assertCapability(organizationPlan.planId, "invoice.create");
 
+        // TODO: Persist drafts in a real invoicing backend instead of returning
+        // computed demo data directly from the tool call.
         const subtotal = items.reduce(
           (sum, item) => sum + item.quantity * item.unitPrice,
           0,

@@ -22,8 +22,6 @@ export const limitKeys = [
 
 export type Capability = (typeof capabilities)[number];
 export type LimitKey = (typeof limitKeys)[number];
-export type PlanId = "free" | "pro" | "team";
-export type PaidPlanId = Exclude<PlanId, "free">;
 export type PricingModel = "flat" | "per_seat";
 export type BillingInterval = "month" | "year";
 
@@ -33,8 +31,13 @@ export type BillingPrice = {
   trialDays?: number;
 };
 
-export type BillingPlan = {
-  id: PlanId;
+type BillingPlanPrices = {
+  month?: BillingPrice;
+  year?: BillingPrice;
+};
+
+type BillingPlanDefinition = {
+  id: string;
   name: string;
   description: string;
   highlighted?: boolean;
@@ -42,21 +45,24 @@ export type BillingPlan = {
   features: string[];
   capabilities: Capability[];
   limits: Record<LimitKey, number>;
-  prices: {
-    month?: BillingPrice;
-    year?: BillingPrice;
-  };
+  prices: BillingPlanPrices;
 };
 
 export type BillingConfig = {
   currency: "USD";
-  plans: BillingPlan[];
+  plans: readonly BillingPlanDefinition[];
 };
 
-export const billingConfig: BillingConfig = {
+function defineBillingPlan<const TPlanId extends string>(
+  plan: BillingPlanDefinition & { id: TPlanId },
+) {
+  return plan;
+}
+
+export const billingConfig = {
   currency: "USD",
   plans: [
-    {
+    defineBillingPlan({
       id: "free",
       name: "Free",
       description: "For trying the starter without paid billing.",
@@ -71,8 +77,8 @@ export const billingConfig: BillingConfig = {
         emailSyncsPerMonth: 0,
       },
       prices: {},
-    },
-    {
+    }),
+    defineBillingPlan({
       id: "pro",
       name: "Pro",
       description: "For solo builders and small teams shipping quickly.",
@@ -121,12 +127,12 @@ export const billingConfig: BillingConfig = {
             }
           : {}),
       },
-    },
-    {
+    }),
+    defineBillingPlan({
       id: "team",
       name: "Team",
       description: "For teams that need seats, analytics, and higher limits.",
-      pricingModel: "flat",
+      pricingModel: "per_seat",
       features: [
         "Per-seat billing",
         "Team analytics",
@@ -171,9 +177,13 @@ export const billingConfig: BillingConfig = {
             }
           : {}),
       },
-    },
+    }),
   ],
-};
+} as const satisfies BillingConfig;
+
+export type BillingPlan = (typeof billingConfig.plans)[number];
+export type PlanId = BillingPlan["id"];
+export type PaidPlanId = Exclude<PlanId, "free">;
 
 const plansById = Object.fromEntries(
   billingConfig.plans.map((plan) => [plan.id, plan]),

@@ -4,7 +4,7 @@ import {
   type BillingInterval,
   findPlanPriceByPriceId,
   isPlanId,
-} from "@/features/billing/plans";
+} from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
 import {

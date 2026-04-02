@@ -3,11 +3,6 @@
 import { redirect } from "next/navigation";
 
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
-import {
-  getPlanPrice,
-  isBillingInterval,
-  isPlanId,
-} from "@/features/billing/plans";
 import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import {
@@ -15,6 +10,11 @@ import {
   requireActiveOrganizationRole,
 } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
+import {
+  getPlanPrice,
+  isBillingInterval,
+  isPlanId,
+} from "@/shared/config/billing.config";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 

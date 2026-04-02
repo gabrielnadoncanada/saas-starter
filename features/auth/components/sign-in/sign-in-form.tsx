@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -10,16 +11,23 @@ import {
   buildCheckEmailHref,
   sendMagicLink,
   signInWithOAuth,
+  signInWithPassword,
 } from "@/features/auth/client/auth-requests";
 import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
 import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
+import { AuthPasswordStep } from "@/features/auth/components/shared/auth-password-step";
 import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
-import { SignInPasswordStep } from "@/features/auth/components/sign-in/sign-in-password-step";
 import {
   emailDefaultValues,
   emailSchema,
   type EmailValues,
+  signInPasswordDefaultValues,
+  signInPasswordSchema,
+  type SignInPasswordValues,
 } from "@/features/auth/schemas/auth-forms.schema";
+import { PasswordInput } from "@/shared/components/forms/password-input";
+import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
+import { routes } from "@/shared/constants/routes";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
@@ -49,6 +57,14 @@ export function SignInForm({
   const [pendingProvider, setPendingProvider] =
     useState<OAuthProviderId | null>(null);
   const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
+  const emailForm = useForm<EmailValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: emailDefaultValues,
+  });
+  const passwordForm = useForm<SignInPasswordValues>({
+    resolver: zodResolver(signInPasswordSchema),
+    defaultValues: signInPasswordDefaultValues,
+  });
   const {
     clearErrors,
     formState: { errors },
@@ -56,14 +72,17 @@ export function SignInForm({
     register,
     setValue,
     trigger,
-  } = useForm<EmailValues>({
-    resolver: zodResolver(emailSchema),
-    defaultValues: emailDefaultValues,
-  });
+  } = emailForm;
 
   const emailField = register("email", {
     onChange: () => {
       clearErrors();
+      setShowVerification(false);
+    },
+  });
+  const passwordField = passwordForm.register("password", {
+    onChange: () => {
+      passwordForm.clearErrors();
       setShowVerification(false);
     },
   });
@@ -126,15 +145,67 @@ export function SignInForm({
     }
   }
 
+  const handlePasswordSubmit = passwordForm.handleSubmit(
+    async ({ password }) => {
+      passwordForm.clearErrors();
+      setShowVerification(false);
+
+      try {
+        const result = await signInWithPassword(submittedEmail, password);
+
+        if (result.status !== "success") {
+          passwordForm.setError("root", {
+            type: "server",
+            message: result.message,
+          });
+          setShowVerification(result.status === "verification_required");
+          return;
+        }
+
+        window.location.href = nextCallbackUrl;
+      } catch {
+        passwordForm.setError("root", {
+          type: "server",
+          message: "Unable to sign in. Please try again.",
+        });
+      }
+    },
+  );
+
   return (
     <>
       {showPasswordStep ? (
-        <SignInPasswordStep
+        <AuthPasswordStep
           email={submittedEmail}
-          callbackUrl={nextCallbackUrl}
+          errorMessage={passwordForm.formState.errors.root?.message}
+          isSubmitting={passwordForm.formState.isSubmitting}
+          pendingLabel="Signing in..."
+          submitLabel="Sign in"
           onChangeEmail={() => setShowPasswordStep(false)}
-          onVerificationChange={setShowVerification}
-        />
+          onSubmit={handlePasswordSubmit}
+        >
+          <Field data-invalid={Boolean(passwordForm.formState.errors.password)}>
+            <div className="flex items-center justify-between gap-3">
+              <FieldLabel htmlFor="sign-in-password">Password</FieldLabel>
+              <Link
+                href={routes.auth.forgotPassword}
+                className="text-sm text-muted-foreground underline underline-offset-4"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <PasswordInput
+              id="sign-in-password"
+              autoComplete="current-password"
+              aria-invalid={Boolean(passwordForm.formState.errors.password)}
+              required
+              {...passwordField}
+            />
+            <FieldError>
+              {passwordForm.formState.errors.password?.message}
+            </FieldError>
+          </Field>
+        </AuthPasswordStep>
       ) : (
         <AuthEmailStep
           formId="sign-in-email"

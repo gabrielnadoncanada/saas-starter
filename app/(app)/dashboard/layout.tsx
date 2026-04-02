@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { DashboardSidebar } from "@/features/dashboard/components/dashboard-sidebar";
-import { ensureActiveOrganization } from "@/features/organizations/server/ensure-active-organization";
+import { ensureActiveOrganization } from "@/features/organizations/server/organization-membership";
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
 import { SearchProvider } from "@/shared/components/command/search-provider";
 import { Header } from "@/shared/components/layout/shell/header";

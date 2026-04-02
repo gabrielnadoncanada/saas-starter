@@ -1,12 +1,20 @@
 import "server-only";
 
-import { AiModelSelectionError } from "@/features/ai/server/model-selection-error";
 import { getOrganizationAiSettings } from "@/features/ai/server/organization-ai-settings";
 import {
   getAiModelDefinition,
   getAiModelOptions,
   isAiModelId,
 } from "@/shared/lib/ai/models";
+
+export class AiModelSelectionError extends Error {
+  code: "MODEL_NOT_ALLOWED" | "UNKNOWN_MODEL";
+
+  constructor(code: "MODEL_NOT_ALLOWED" | "UNKNOWN_MODEL", message: string) {
+    super(message);
+    this.code = code;
+  }
+}
 
 export async function resolveOrganizationModelSelection(
   organizationId: string,

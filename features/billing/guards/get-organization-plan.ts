@@ -1,7 +1,7 @@
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import type { PlanId, PricingModel } from "@/shared/config/billing.config";
 
-import type { PlanId, PricingModel } from "../plans";
-import { resolveOrganizationPlan } from "../plans";
+import { resolveOrganizationPlan } from "../plans/resolve-organization-plan";
 
 type OrganizationPlanInfo = {
   planId: PlanId;

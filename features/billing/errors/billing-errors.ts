@@ -1,4 +1,4 @@
-import type { Capability, LimitKey } from "../plans";
+import type { Capability, LimitKey } from "@/shared/config/billing.config";
 
 export class LimitReachedError extends Error {
   public readonly limitKey: LimitKey;

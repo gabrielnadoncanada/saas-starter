@@ -5,6 +5,8 @@ import type { EmailMessage } from "@/features/assistant/types";
 export const assistantDemoInbox = {
   name: "Demo inbox",
   async getRecentMessages(limit = 5): Promise<EmailMessage[]> {
+    // TODO: Replace this demo data source with a real inbox provider integration
+    // before shipping email sync in production.
     const now = new Date();
     const messages: EmailMessage[] = [
       {

@@ -1,11 +1,5 @@
 "use client";
 
-import type {
-  BillingInterval,
-  BillingPrice,
-  PlanId,
-  PricingModel,
-} from "@/features/billing/plans";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Field,
@@ -17,6 +11,12 @@ import {
   FieldTitle,
 } from "@/shared/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+import type {
+  BillingInterval,
+  BillingPrice,
+  PlanId,
+  PricingModel,
+} from "@/shared/config/billing.config";
 
 export type BillingPlanOption = {
   id: PlanId;

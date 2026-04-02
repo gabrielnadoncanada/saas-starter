@@ -1,0 +1,63 @@
+# Adding a Feature
+
+Use `features/tasks/` as the default template. It already shows the full starter pattern: schema, guarded mutation, server action, route entry, UI, and tests.
+
+## Default Build Order
+
+1. Create a feature folder such as `features/invoices/`.
+2. Add the schema first so form validation and server validation share one contract.
+3. Add server functions for reads and writes inside the feature.
+4. Add server actions only for user-triggered mutations.
+5. Add components that render the feature UI.
+6. Add a thin route in `app/` that fetches data and renders the feature.
+
+## Copy This Shape
+
+For CRUD work, copy the task flow in this order:
+
+1. `features/tasks/task-form.schema.ts`
+2. `features/tasks/server/task-mutations.ts`
+3. `features/tasks/server/task-server-actions.ts`
+4. `features/tasks/components/task-form.tsx`
+5. `features/tasks/components/tasks-page.tsx`
+6. `app/(app)/dashboard/tasks/page.tsx`
+
+## Billing and Limits
+
+If the feature is monetized:
+
+1. Add the new capability or limit key in `shared/config/billing.config.ts`.
+2. Assign it to plans in the same file.
+3. Guard writes with `assertCapability(planId, "your.capability")`.
+4. Track monthly usage with `consumeMonthlyUsage(orgId, "yourLimit", planId)` when needed.
+
+## Organization Scope
+
+Use these two rules:
+
+1. Read the hydrated organization with `getCurrentOrganization()` when the UI needs members, plan, or subscription state.
+2. Use `requireActiveOrganizationMembership()` or `requireActiveOrganizationRole()` when a mutation only needs a guard.
+
+## Route Pattern
+
+Keep the route thin:
+
+```tsx
+import { FeaturePage } from "@/features/invoices/components/feature-page";
+import { getInvoicesPage } from "@/features/invoices/server/get-invoices-page";
+
+export default async function InvoicesRoute() {
+  const page = await getInvoicesPage();
+  return <FeaturePage page={page} />;
+}
+```
+
+## Test Pattern
+
+Add at least one feature-local test file under `test/` for:
+
+1. the guard or permission path
+2. the main success path
+3. one failure path that buyers are likely to hit
+
+Use `test/organizations/organization-membership.test.ts` and `test/assistant/assistant-tools.test.ts` as simple mock-first examples.

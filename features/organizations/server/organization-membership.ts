@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { getAuthSession } from "@/shared/lib/auth/get-session";
 import {
   getPrimaryOrgRole,
   hasAnyOrgRole,
@@ -22,6 +23,37 @@ export class OrganizationMembershipError extends Error {
     super(message);
     this.name = "OrganizationMembershipError";
   }
+}
+
+// Layouts call this when they only need an active organization id.
+// Actions and server queries should use the membership helpers below instead.
+export async function ensureActiveOrganization(): Promise<string | null> {
+  const session = await getAuthSession();
+
+  if (!session?.user) {
+    return null;
+  }
+
+  if (session.session.activeOrganizationId) {
+    return session.session.activeOrganizationId;
+  }
+
+  const reqHeaders = await headers();
+  const organizations = await auth.api.listOrganizations({
+    headers: reqHeaders,
+  });
+  const organizationId = organizations?.[0]?.id ?? null;
+
+  if (!organizationId) {
+    return null;
+  }
+
+  await auth.api.setActiveOrganization({
+    headers: reqHeaders,
+    body: { organizationId },
+  });
+
+  return organizationId;
 }
 
 export async function getActiveOrganizationMembership(): Promise<ActiveOrganizationMembership | null> {

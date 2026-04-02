@@ -1,5 +1,5 @@
-import type { BillingInterval } from "@/features/billing/plans";
 import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
+import type { BillingInterval } from "@/shared/config/billing.config";
 
 export type CurrentOrganizationView = {
   id: string;

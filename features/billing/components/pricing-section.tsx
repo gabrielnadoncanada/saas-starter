@@ -1,5 +1,5 @@
 import { PricingToggle } from "@/features/billing/components/pricing-toggle";
-import { getPricingPlans } from "@/features/billing/plans";
+import { getPricingPlans } from "@/shared/config/billing.config";
 
 export async function PricingSection() {
   const paidPlans = getPricingPlans()
