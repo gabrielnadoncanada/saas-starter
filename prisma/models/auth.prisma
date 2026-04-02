@@ -11,6 +11,8 @@ model User {
   image            String?
   platformRole     PlatformRole @default(USER)
   role             String?      @default("user")
+  preferredLocale  String       @default("en") @db.VarChar(5)
+  twoFactorEnabled Boolean      @default(false)
   banned           Boolean?     @default(false)
   banReason        String?
   banExpires       DateTime?
@@ -25,6 +27,11 @@ model User {
   members                Member[]
   invitationsSent        Invitation[]            @relation("InvitationSender")
   aiConversations        AiConversation[]        @relation("AiConversationToUser")
+  notifications          Notification[]
+  auditLogs              AuditLog[]              @relation("AuditActor")
+  apiKeysCreated         ApiKey[]
+  storedFilesUploaded    StoredFile[]
+  twoFactor              TwoFactor?
 }
 
 model Account {

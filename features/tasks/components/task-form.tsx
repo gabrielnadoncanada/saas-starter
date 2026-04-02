@@ -36,6 +36,7 @@ import { Textarea } from "@/shared/components/ui/textarea";
 import { getFieldState } from "@/shared/lib/get-field-state";
 
 type TaskFormProps = {
+  attachmentsSlot?: React.ReactNode;
   mode: "create" | "update";
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -56,6 +57,7 @@ function getFieldValue(
 }
 
 export function TaskForm({
+  attachmentsSlot,
   mode,
   open,
   onOpenChange,
@@ -191,6 +193,8 @@ export function TaskForm({
               </Field>
             ) : null}
           </FieldGroup>
+
+          {attachmentsSlot}
 
           <SheetFooter className="mt-auto gap-2 px-0">
             <SheetClose asChild>

@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import type { AiConversation } from "@/features/ai/types/ai.types";
@@ -118,3 +119,4 @@ export function AssistantWorkspace({
     />
   );
 }
+

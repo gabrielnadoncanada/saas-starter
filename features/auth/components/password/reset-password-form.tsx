@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/shared/i18n/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -122,3 +122,4 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     </form>
   );
 }
+

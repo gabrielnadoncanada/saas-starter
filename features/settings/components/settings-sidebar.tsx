@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/shared/i18n/navigation";
 
 import { settingsSidebarData } from "@/features/settings/config/settings-navigation";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
@@ -37,3 +37,4 @@ export function SettingsSidebar() {
     </Sidebar>
   );
 }
+

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/shared/i18n/navigation";
 
 const productLinks = [
   { label: "Features", href: "/#features" },
@@ -105,3 +105,4 @@ export function MarketingFooter() {
     </footer>
   );
 }
+

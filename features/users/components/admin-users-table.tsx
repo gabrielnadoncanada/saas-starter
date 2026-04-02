@@ -1,10 +1,7 @@
 "use client";
-
-import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-
 import {
   banUserAction,
   getAdminUserDetailAction,
@@ -20,7 +17,6 @@ import type {
 } from "@/features/users/types/admin-users.types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
-import { Input } from "@/shared/components/ui/input";
 import {
   Table,
   TableHead,
@@ -28,10 +24,9 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { authClient } from "@/shared/lib/auth/auth-client";
-
+import { AdminUsersSearch } from "./admin-users-search";
 import { UserDetailSheet } from "./user-detail-sheet";
 import { UsersTableRows } from "./users-table-rows";
-
 type AdminUsersTableProps = {
   currentUserId: string;
   initialTotal: number;
@@ -45,7 +40,6 @@ type ConfirmState = {
   description: string;
   action: () => Promise<void>;
 };
-
 const emptyConfirmState: ConfirmState = {
   open: false,
   title: "",
@@ -64,31 +58,25 @@ export function AdminUsersTable({
   const [total, setTotal] = useState(initialTotal);
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState("");
-  const [isPending, startTransition] = useTransition();
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [sessions, setSessions] = useState<UserSession[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState<ConfirmState>(
-    emptyConfirmState,
-  );
-
-  async function loadUsers(nextOffset: number, nextSearch: string) {
+  const [confirmDialog, setConfirmDialog] = useState(emptyConfirmState);
+  const [isPending, startTransition] = useTransition();
+  async function loadUsers(nextOffset: number, nextSearch = search) {
     try {
-      const query = {
+      const result = await listAdminUsersAction({
         limit: pageSize,
         offset: nextOffset,
         ...(nextSearch
           ? {
-              searchField: "email" as const,
-              searchOperator: "contains" as const,
-              searchValue: nextSearch,
+            searchField: "email" as const,
+            searchOperator: "contains" as const,
+            searchValue: nextSearch,
             }
           : {}),
-      };
-
-      const result = await listAdminUsersAction(query);
-
+      });
       setUsers(result.users as AdminUser[]);
       setTotal(result.total);
       setOffset(nextOffset);
@@ -96,53 +84,22 @@ export function AdminUsersTable({
       toast.error("Failed to fetch users");
     }
   }
-
-  function refreshUsers() {
-    startTransition(async () => {
-      await loadUsers(offset, search);
-    });
+  function runTableRefresh(nextOffset: number, nextSearch = search) {
+    startTransition(async () => void (await loadUsers(nextOffset, nextSearch)));
   }
-
-  function goToPage(nextOffset: number) {
-    startTransition(async () => {
-      await loadUsers(nextOffset, search);
-    });
+  function openConfirmation(title: string, description: string, action: () => Promise<void>) {
+    setConfirmDialog({ open: true, title, description, action });
   }
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-
-    startTransition(async () => {
-      await loadUsers(0, value);
-    });
-  }
-
-  function openConfirmation(
-    title: string,
-    description: string,
-    action: () => Promise<void>,
-  ) {
-    setConfirmDialog({
-      open: true,
-      title,
-      description,
-      action,
-    });
-  }
-
   async function openUserDetail(user: AdminUser) {
     setSelectedUser(user);
     setSessions([]);
     setIsSheetOpen(true);
     setIsLoadingUserDetail(true);
-
     try {
       const detail = await getAdminUserDetailAction(user.id);
-
       if (detail.user) {
         setSelectedUser(detail.user as AdminUser);
       }
-
       setSessions(detail.sessions);
     } catch {
       toast.error("Failed to load user details");
@@ -150,30 +107,18 @@ export function AdminUsersTable({
       setIsLoadingUserDetail(false);
     }
   }
-
   async function handleImpersonate(userId: string) {
     const { error } = await authClient.admin.impersonateUser({ userId });
-
     if (error) {
       toast.error(error.message ?? "Failed to impersonate user");
       return;
     }
-
     toast.success("Now impersonating user");
     router.push("/dashboard");
     router.refresh();
   }
-
-  function copyToClipboard(value: string) {
-    navigator.clipboard.writeText(value);
-    toast.success("Copied to clipboard");
-  }
-
-  function closeUserDetailAndRefresh() {
-    setIsSheetOpen(false);
-    refreshUsers();
-  }
-
+  function copyToClipboard(value: string) { navigator.clipboard.writeText(value); toast.success("Copied to clipboard"); }
+  function closeUserDetailAndRefresh() { setIsSheetOpen(false); runTableRefresh(offset); }
   function confirmBanUser(userId: string) {
     openConfirmation(
       "Ban user",
@@ -185,7 +130,6 @@ export function AdminUsersTable({
       },
     );
   }
-
   function confirmDeleteUser(userId: string) {
     openConfirmation(
       "Delete user",
@@ -197,11 +141,10 @@ export function AdminUsersTable({
       },
     );
   }
-
   function confirmSetUserRole(userId: string, role: "user" | "admin") {
     openConfirmation(
-      `Set role to \"${role}\"`,
-      `Are you sure you want to change this user's role to \"${role}\"?`,
+      `Set role to "${role}"`,
+      `Are you sure you want to change this user's role to "${role}"?`,
       async () => {
         await setUserRoleAction(userId, role);
         toast.success("Role updated");
@@ -209,7 +152,6 @@ export function AdminUsersTable({
       },
     );
   }
-
   function confirmUnbanUser(userId: string) {
     openConfirmation(
       "Unban user",
@@ -221,7 +163,6 @@ export function AdminUsersTable({
       },
     );
   }
-
   function confirmRevokeAllSessions(userId: string) {
     openConfirmation(
       "Revoke all sessions",
@@ -233,19 +174,15 @@ export function AdminUsersTable({
       },
     );
   }
-
   return (
     <>
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          className="pl-9"
-          onChange={(event) => handleSearchChange(event.target.value)}
-          placeholder="Search users..."
-          value={search}
-        />
-      </div>
-
+      <AdminUsersSearch
+        value={search}
+        onChange={(value) => {
+          setSearch(value);
+          runTableRefresh(0, value);
+        }}
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -271,17 +208,15 @@ export function AdminUsersTable({
           />
         </Table>
       </div>
-
       <AdminTablePagination
         currentPage={Math.floor(offset / pageSize) + 1}
         disabled={isPending}
         offset={offset}
-        onChange={goToPage}
+        onChange={(nextOffset) => runTableRefresh(nextOffset)}
         pageSize={pageSize}
         total={total}
         totalPages={Math.ceil(total / pageSize)}
       />
-
       <UserDetailSheet
         copyToClipboard={copyToClipboard}
         currentUserId={currentUserId}
@@ -293,7 +228,6 @@ export function AdminUsersTable({
         selectedUser={selectedUser}
         sessions={sessions}
       />
-
       <ConfirmDialog
         confirmText="Confirm"
         desc={confirmDialog.description}
@@ -301,12 +235,9 @@ export function AdminUsersTable({
           await confirmDialog.action();
           setConfirmDialog(emptyConfirmState);
         }}
-        onOpenChange={(open) => {
-          setConfirmDialog((current) => ({
-            ...current,
-            open,
-          }));
-        }}
+        onOpenChange={(open) =>
+          setConfirmDialog((current) => ({ ...current, open }))
+        }
         open={confirmDialog.open}
         title={confirmDialog.title}
       />

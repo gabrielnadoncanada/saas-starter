@@ -9,6 +9,9 @@ import {
   requireActiveOrganizationMembership,
 } from "@/features/organizations/server/organization-membership";
 import type {
+  PlanId,
+} from "@/shared/config/billing.config";
+import type {
   BulkDeleteTasksValues,
   BulkUpdateTaskStatusValues,
   CreateTaskValues,
@@ -33,6 +36,64 @@ async function getOrganizationId() {
   return membership.organizationId;
 }
 
+async function createTaskForOrganization(input: {
+  organizationId: string;
+  planId: PlanId;
+  title: string;
+  description?: string | null;
+  label: CreateTaskValues["label"];
+  priority: CreateTaskValues["priority"];
+}) {
+  assertCapability(input.planId, "task.create");
+
+  return db.$transaction(async (tx) => {
+    await consumeMonthlyUsage(
+      input.organizationId,
+      "tasksPerMonth",
+      input.planId,
+      { db: tx },
+    );
+
+    for (let attempt = 0; attempt < MAX_TASK_CODE_ATTEMPTS; attempt += 1) {
+      const latestTask = await tx.task.findFirst({
+        where: {
+          organizationId: input.organizationId,
+        },
+        orderBy: {
+          id: "desc",
+        },
+        select: {
+          code: true,
+        },
+      });
+
+      const latestCode = latestTask?.code ?? "TASK-0";
+      const latestNumber = Number(latestCode.replace("TASK-", "")) || 0;
+      const nextCode = `TASK-${latestNumber + 1}`;
+
+      try {
+        return await tx.task.create({
+          data: {
+            organizationId: input.organizationId,
+            code: nextCode,
+            title: input.title,
+            description: input.description ?? null,
+            label: input.label,
+            priority: input.priority,
+            status: "TODO",
+          },
+        });
+      } catch (error) {
+        if (!isUniqueConstraintError(error)) {
+          throw error;
+        }
+      }
+    }
+
+    throw new Error("Could not generate a unique task code");
+  });
+}
+
 export async function listTasks() {
   const organizationId = await getOrganizationId();
 
@@ -51,53 +112,28 @@ export async function createTaskForCurrentOrganization(
     throw new Error("Organization not found");
   }
 
-  assertCapability(organizationPlan.planId, "task.create");
+  return createTaskForOrganization({
+    organizationId: organizationPlan.organizationId,
+    planId: organizationPlan.planId,
+    title: input.title,
+    description: input.description ?? null,
+    label: input.label,
+    priority: input.priority,
+  });
+}
 
-  return db.$transaction(async (tx) => {
-    await consumeMonthlyUsage(
-      organizationPlan.organizationId,
-      "tasksPerMonth",
-      organizationPlan.planId,
-      { db: tx },
-    );
-
-    for (let attempt = 0; attempt < MAX_TASK_CODE_ATTEMPTS; attempt += 1) {
-      const latestTask = await tx.task.findFirst({
-        where: {
-          organizationId: organizationPlan.organizationId,
-        },
-        orderBy: {
-          id: "desc",
-        },
-        select: {
-          code: true,
-        },
-      });
-
-      const latestCode = latestTask?.code ?? "TASK-0";
-      const latestNumber = Number(latestCode.replace("TASK-", "")) || 0;
-      const nextCode = `TASK-${latestNumber + 1}`;
-
-      try {
-        return await tx.task.create({
-          data: {
-            organizationId: organizationPlan.organizationId,
-            code: nextCode,
-            title: input.title,
-            description: input.description ?? null,
-            label: input.label,
-            priority: input.priority,
-            status: "TODO",
-          },
-        });
-      } catch (error) {
-        if (!isUniqueConstraintError(error)) {
-          throw error;
-        }
-      }
-    }
-
-    throw new Error("Could not generate a unique task code");
+export async function createTaskByOrganizationId(
+  organizationId: string,
+  planId: PlanId,
+  input: CreateTaskValues,
+) {
+  return createTaskForOrganization({
+    organizationId,
+    planId,
+    title: input.title,
+    description: input.description ?? null,
+    label: input.label,
+    priority: input.priority,
   });
 }
 

@@ -5,8 +5,9 @@ import {
   MessageSquarePlus,
   Sparkles,
 } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Link } from "@/shared/i18n/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -216,3 +217,5 @@ export function AssistantSidebarNav() {
     </>
   );
 }
+
+

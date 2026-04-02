@@ -1,7 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
@@ -15,11 +13,14 @@ import {
   isBillingInterval,
   isPlanId,
 } from "@/shared/config/billing.config";
+import { redirectToLocale } from "@/shared/i18n/href";
+import { getRequestLocale } from "@/shared/i18n/server-locale";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function checkoutAction(formData: FormData) {
   const user = await getCurrentUser();
+  const locale = user?.preferredLocale ?? (await getRequestLocale());
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
   const planId = typeof rawPlanId === "string" ? rawPlanId : null;
@@ -27,7 +28,8 @@ export async function checkoutAction(formData: FormData) {
     typeof rawBillingInterval === "string" ? rawBillingInterval : null;
 
   if (!user) {
-    redirect(
+    redirectToLocale(
+      locale,
       buildCallbackURL(
         routes.auth.login,
         buildPostSignInCallbackURL({
@@ -47,7 +49,7 @@ export async function checkoutAction(formData: FormData) {
     await requireActiveOrganizationRole(["owner"]);
   } catch (error) {
     if (error instanceof OrganizationMembershipError) {
-      redirect(routes.settings.members);
+      redirectToLocale(locale, routes.settings.members);
     }
 
     throw error;
@@ -74,5 +76,6 @@ export async function checkoutAction(formData: FormData) {
     seatQuantity: organization.members.length,
   });
 
-  redirect(url);
+  redirectToLocale(locale, url);
 }
+

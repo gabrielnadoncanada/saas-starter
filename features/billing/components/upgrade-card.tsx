@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/shared/i18n/navigation";
 
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -37,3 +37,4 @@ export function UpgradeCard({ feature, description }: UpgradeCardProps) {
     </Card>
   );
 }
+

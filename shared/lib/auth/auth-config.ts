@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { admin, magicLink } from "better-auth/plugins";
 import { organization } from "better-auth/plugins";
+import { twoFactor } from "better-auth/plugins";
 import { createElement } from "react";
 
 import { accountFlags } from "@/shared/config/account.config";
@@ -30,6 +31,16 @@ export const auth = betterAuth({
       },
       phoneNumber: {
         type: "string",
+        required: false,
+        returned: true,
+      },
+      preferredLocale: {
+        type: "string",
+        required: false,
+        returned: true,
+      },
+      twoFactorEnabled: {
+        type: "boolean",
         required: false,
         returned: true,
       },
@@ -129,6 +140,9 @@ export const auth = betterAuth({
           invitationToken: invitation.id,
         });
       },
+    }),
+    twoFactor({
+      issuer: "SaaS Starter",
     }),
     nextCookies(),
   ],

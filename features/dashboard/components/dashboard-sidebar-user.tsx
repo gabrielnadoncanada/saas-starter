@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronsUpDown, Cog, LogOut, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/shared/i18n/navigation";
 import { useState } from "react";
 
 import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
@@ -134,3 +134,4 @@ export function DashboardSidebarUser() {
     </>
   );
 }
+

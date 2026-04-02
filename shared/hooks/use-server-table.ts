@@ -14,7 +14,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { useEffect, useState } from "react";
 
 // --- Types ---
@@ -167,3 +167,4 @@ export function useServerTable<TData, TParams extends BaseTableParams>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 }
+

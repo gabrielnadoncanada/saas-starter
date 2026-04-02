@@ -1,0 +1,95 @@
+model Notification {
+  id             String    @id @default(cuid())
+  organizationId String
+  userId         String
+  type           String    @db.VarChar(80)
+  title          String    @db.VarChar(160)
+  body           String    @db.Text
+  href           String?   @db.VarChar(255)
+  metadataJson   Json?
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, userId, createdAt(sort: Desc)])
+  @@index([userId, readAt, createdAt(sort: Desc)])
+}
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  actorUserId    String?
+  event          String   @db.VarChar(100)
+  entityType     String   @db.VarChar(60)
+  entityId       String?  @db.VarChar(100)
+  summary        String   @db.VarChar(200)
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?        @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([organizationId, event, createdAt(sort: Desc)])
+  @@index([entityType, entityId])
+}
+
+model ApiKey {
+  id             String    @id @default(cuid())
+  organizationId String
+  createdByUserId String
+  name           String    @db.VarChar(100)
+  prefix         String    @unique @db.VarChar(20)
+  hashedKey      String    @unique @db.VarChar(128)
+  capabilities   String[]
+  lastUsedAt     DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, revokedAt, createdAt(sort: Desc)])
+}
+
+model StoredFile {
+  id               String    @id @default(cuid())
+  organizationId   String
+  uploadedByUserId String
+  storageKey       String    @unique @db.VarChar(255)
+  fileName         String    @db.VarChar(255)
+  contentType      String    @db.VarChar(120)
+  sizeBytes        Int
+  createdAt        DateTime  @default(now())
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  uploadedBy   User            @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  taskAttachments TaskAttachment[]
+
+  @@index([organizationId, createdAt(sort: Desc)])
+}
+
+model TaskAttachment {
+  id           String   @id @default(cuid())
+  taskId       Int
+  storedFileId String
+  createdAt    DateTime @default(now())
+
+  task       Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  storedFile StoredFile @relation(fields: [storedFileId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, storedFileId])
+  @@index([storedFileId])
+}
+
+model TwoFactor {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  secret      String  @db.Text
+  backupCodes String  @db.Text
+  enabled     Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

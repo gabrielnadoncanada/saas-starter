@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { ImpersonationBannerWrapper } from "@/features/admin/components/impersonation-banner-wrapper";
 import { ThemeProvider } from "@/shared/components/app/theme-provider";
 import { Toaster } from "@/shared/components/ui/sonner";
+import { getRequestLocale } from "@/shared/i18n/server-locale";
 
 export const metadata: Metadata = {
   title: {
@@ -31,13 +32,15 @@ const inter = Inter({
   fallback: ["system-ui,Helvetica Neue,Helvetica,Arial"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getRequestLocale();
+
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang={locale} suppressHydrationWarning className={inter.variable}>
       <body>
         <ThemeProvider
           attribute="class"

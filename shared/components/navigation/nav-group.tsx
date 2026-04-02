@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/shared/i18n/navigation";
+import { usePathname } from "@/shared/i18n/navigation";
 import { type ReactNode } from "react";
 
 import {
@@ -229,3 +229,5 @@ function isCollapsibleOpen(pathname: string, item: SidebarNavCollapsible) {
     (subItem) => subItem.url && path.startsWith(subItem.url),
   );
 }
+
+

@@ -15,6 +15,10 @@ model Organization {
   usageCounters          UsageCounter[]
   aiSettings             OrganizationAiSettings?
   aiConversations        AiConversation[]
+  notifications          Notification[]
+  auditLogs              AuditLog[]
+  apiKeys                ApiKey[]
+  storedFiles            StoredFile[]
 }
 
 model Member {

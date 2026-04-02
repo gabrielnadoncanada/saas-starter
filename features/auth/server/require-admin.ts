@@ -1,7 +1,8 @@
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 import { routes } from "@/shared/constants/routes";
+import { redirectToLocale } from "@/shared/i18n/href";
+import { getRequestLocale } from "@/shared/i18n/server-locale";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
@@ -10,11 +11,11 @@ export async function requireAdmin() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect(routes.auth.login);
+    redirectToLocale(await getRequestLocale(), routes.auth.login);
   }
 
   if (!isPlatformAdmin(user.role)) {
-    redirect(routes.app.dashboard);
+    redirectToLocale(user.preferredLocale, routes.app.dashboard);
   }
 
   return user;
@@ -35,3 +36,4 @@ export async function requireAdminAction(): Promise<string> {
 
   return session.user.id;
 }
+

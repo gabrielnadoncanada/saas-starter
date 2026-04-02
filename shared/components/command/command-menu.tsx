@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useTheme } from "next-themes";
 import React from "react";
 
@@ -93,3 +93,4 @@ export function CommandMenu() {
     </CommandDialog>
   );
 }
+

@@ -1,9 +1,10 @@
 "use client";
 
 import type { Task } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect } from "react";
 
+import { TaskAttachmentsPanel } from "@/features/tasks/components/task-attachments-panel";
 import { TaskForm } from "@/features/tasks/components/task-form";
 import {
   createTaskAction,
@@ -71,6 +72,7 @@ export function TaskFormSheet(props: TaskFormSheetProps) {
       mode="update"
       open={props.open}
       onOpenChange={props.onOpenChange}
+      attachmentsSlot={<TaskAttachmentsPanel taskId={props.task.id} />}
       task={props.task}
       state={state}
       formAction={formAction}
@@ -78,3 +80,4 @@ export function TaskFormSheet(props: TaskFormSheetProps) {
     />
   );
 }
+

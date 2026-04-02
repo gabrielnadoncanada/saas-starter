@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/shared/i18n/navigation";
 import { useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -104,3 +104,4 @@ export function MarketingHeader() {
     </header>
   );
 }
+

@@ -3,7 +3,7 @@
 import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect, useMemo, useState } from "react";
 
 import {
@@ -165,3 +165,4 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
     </>
   );
 }
+

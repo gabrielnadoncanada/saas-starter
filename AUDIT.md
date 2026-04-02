@@ -1,690 +1,352 @@
-# SaaS Starter — Deep Audit Report
+# Executive Verdict
 
-> Audit date: 2026-04-01
-> Auditor perspective: ruthless senior product engineer, buyer-fit auditor
-> Target buyer: solo founders, consultants, freelancers, indie hackers, small technical teams
-> Target price point: $149–$299
+This is a **strong and sellable** Next.js SaaS starter. The feature architecture is genuinely buyer-friendly: feature-first organization, thin routes, proportionate file counts, real billing gating with usage limits, and a working CRUD reference. The billing system alone — config-driven plan definitions, capability guards, atomic usage metering, Stripe webhook handling — is production-grade and would take a buyer weeks to build. There is minor over-componentization in the assistant feature and a few tiny files that could be merged, but nothing that would cause buyer regret. The biggest gap is that the dashboard page is a static stats view rather than a dynamic, impressive landing experience. At the $149 price point, this is a strong buy with clear time savings. It competes well against shipfast-style starters and differentiates on billing depth, org management, and AI integration.
 
 ---
 
-## Table of Contents
+# Buyer-Fit Scorecard
 
-- [Executive Verdict](#executive-verdict)
-- [Buyer-Fit Scorecard](#buyer-fit-scorecard)
-- [Deep Dive: Features Folder](#deep-dive-features-folder)
-  - [Structural Strengths](#structural-strengths)
-  - [Structural Weaknesses](#structural-weaknesses)
-  - [Overbuilt Areas (Features)](#overbuilt-areas-features)
-  - [Risky Patterns](#risky-patterns)
-  - [Easiest Wins](#easiest-wins)
-  - [Feature Groups: Hardest to Modify](#feature-groups-hardest-to-modify)
-  - [Feature Groups: Easiest to Modify](#feature-groups-easiest-to-modify)
-  - [File-Count / Indirection / Navigation Problems](#file-count--indirection--navigation-problems)
-  - [Naming Problems](#naming-problems)
-  - [Candidate Merges or Simplifications](#candidate-merges-or-simplifications)
-- [Top 10 Problems in the Repo](#top-10-problems-in-the-repo)
-- [Overbuilt or Too Sophisticated Areas](#overbuilt-or-too-sophisticated-areas)
-- [Strong / Sellable Areas](#strong--sellable-areas)
-- [Missing or Weak Features](#missing-or-weak-features)
-- [Highest ROI Fixes](#highest-roi-fixes)
-- [File-Level Simplification Targets](#file-level-simplification-targets)
-- [Final Recommendation](#final-recommendation)
+| Dimension | Score | Rationale |
+|---|---|---|
+| **Buyer fit** | 8/10 | Clearly designed for solo/small-team builders. No enterprise ceremony. Feature-first layout maps to how indie devs think. |
+| **Time to understand** | 8/10 | Feature folders are obvious. Routes are thin. `ADDING_A_FEATURE.md` provides a copy-this-shape recipe. A competent Next.js dev could trace any flow in under 10 minutes. |
+| **Time to modify** | 8/10 | Adding a new gated feature is genuinely a 6-file, 30-minute task following the tasks template. Billing gating is a 2-line addition. Most edits are local to a single feature folder. |
+| **Cognitive simplicity** | 7/10 | One HOF pattern to learn (`validatedAuthenticatedAction`), one billing pattern (`assertCapability` + `consumeMonthlyUsage`). The assistant/ai split adds mild confusion. A few 48-line component files increase navigation tax slightly. |
+| **Feature credibility** | 9/10 | Auth (BetterAuth + OAuth + magic link + email verification), billing (Stripe subscriptions + per-seat + usage limits + webhooks), orgs (multi-tenant + invitations + roles), CRUD reference, AI assistant, admin panel, email templates — all real and working. |
+| **Perceived value at $149** | 8/10 | Billing system alone justifies the price. Org management with roles and invitations adds significant value. AI assistant with tool integration is a differentiator. The tasks CRUD example as a copy template is genuinely useful. |
+| **Differentiation** | 7/10 | Plan-gated usage metering, per-seat billing, AI assistant with tools, and the `ADDING_A_FEATURE.md` guide differentiate from generic starters. Marketing page components are a nice touch. Lacks i18n and more dashboard widgets. |
+| **Launch readiness** | 7/10 | Working auth, billing, orgs, dashboard, admin, email, and a CRUD template. Needs: richer dashboard, stronger marketing page customization docs, and deployment guide. Close to shippable. |
 
 ---
 
-## Executive Verdict
+# Deep Dive: Features Folder
 
-This is a **strong and sellable** Next.js SaaS starter. The feature architecture is genuinely feature-first, with proportionate structure that earns its complexity. Billing with real plan gating and usage limits is the standout differentiator — most starters fake this or leave it as boilerplate. The tasks feature serves as a proper CRUD template showing billing integration, multi-tenancy, and bulk operations. The AI assistant with tool-calling, streaming, and per-org model settings is a genuine value-add. At $149–$299, this is a confident purchase for a technical indie founder. The main risks are: a few areas where org context layering creates confusion, the auth form split is slightly verbose, and documentation for "how to add your first feature" is absent. These are polish issues, not structural ones. **Sellable with minor fixes.**
+## Structural Strengths
 
----
+**1. Feature-first organization is genuine and consistent**
+All 12 features follow the same shape: `components/`, `server/`, `actions/`, `schemas/`, `types/` — but only when the feature needs them. Settings has 2 files. Admin has 5. Billing has 22. The structure scales with complexity, not ceremony.
 
-## Buyer-Fit Scorecard
+**2. The tasks feature is an excellent buyer template**
+`features/tasks/` is 14 files, ~1,746 LOC, and demonstrates: Zod validation shared between client and server, server actions with auth + billing guards, TanStack Table with server-side pagination/sort/filter, bulk operations, and plan-gated creation with usage metering. Combined with `ADDING_A_FEATURE.md`, a buyer can clone a new CRUD feature in 30 minutes.
 
-| Dimension                        | Score | Notes                                                                                       |
-| -------------------------------- | ----- | ------------------------------------------------------------------------------------------- |
-| **Buyer fit**                    | 8/10  | Built for solo/small-team builders. Feature-first, not framework-first.                     |
-| **Time to understand**           | 7/10  | Clear structure, but org context and auth multi-step require tracing.                       |
-| **Time to modify**               | 8/10  | Tasks pattern is copy-paste-able. Billing gating is 2–3 lines to add.                      |
-| **Cognitive simplicity**         | 7/10  | Low ceremony overall. Org server files and ai/assistant split add mild friction.            |
-| **Feature credibility**          | 9/10  | Auth, billing, plan gating, usage limits, teams, AI assistant, admin panel — all real.      |
-| **Perceived value at target price** | 9/10  | At $149–$299 this looks impressive. Billing + AI + admin + teams is substantial.           |
-| **Differentiation**              | 8/10  | Plan gating as a first-class concept (assertCapability, consumeMonthlyUsage) is rare.       |
-| **Launch readiness**             | 7/10  | Needs: screenshot images, builder bio, env docs, and a "how to add a feature" guide.       |
+**3. Billing architecture is production-grade**
+`shared/config/billing.config.ts` (240 LOC) is a single source of truth: plan definitions, capabilities, limits, pricing — all type-safe with `as const satisfies`. `plan-guards.ts` (67 LOC) provides `assertCapability()`, `assertLimit()`, and `checkLimit()`. `usage-service.ts` uses atomic Prisma operations to prevent race conditions on concurrent usage increments. This is the kind of infrastructure that takes weeks to get right and would be the first thing to break in a homebrew solution.
 
----
+**4. Thin routes pattern is enforced consistently**
+Every `app/` page file delegates to features. The largest page (`settings/page.tsx`, 201 LOC) is purely JSX composition — no business logic. The `dashboard/page.tsx` (187 LOC) fetches data via `Promise.all` and renders cards. API routes validate then delegate. Zero fat routes found.
 
-## Deep Dive: Features Folder
+**5. Auth is comprehensive without being over-architected**
+Sign-in, sign-up, magic link, OAuth (Google/GitHub), email verification, password reset, account linking, session management, admin roles, impersonation — all working. The `validatedAuthenticatedAction` HOF (48 LOC) eliminates auth/validation boilerplate in every server action. BetterAuth handles the heavy lifting; the feature layer adds forms and orchestration.
 
-### Codebase Stats
+**6. Organization management is real multi-tenancy**
+Multi-org support with switching, role-based access (owner/admin/member), invitation flow with email templates, membership guards, admin organization management. Billing is scoped to organization, not user. This is a genuine B2B capability, not a toy.
 
-| Area     | Files | LOC    |
-| -------- | ----- | ------ |
-| features | 148   | 13,502 |
-| shared   | —     | 10,449 |
-| app      | —     | 2,425  |
-| test     | 15    | 1,517  |
+## Structural Weaknesses
 
-| Feature       | Files | Assessment                                         |
-| ------------- | ----- | -------------------------------------------------- |
-| tasks         | 14    | Proportionate. Full CRUD with bulk ops + table.    |
-| billing       | 23    | Proportionate. Stripe integration requires this.   |
-| organizations | 22    | Slightly high. 8 server files could be 6.          |
-| auth          | 21    | Slightly high. 12 form components could be 9.      |
-| assistant     | 15    | Proportionate. Chat UI with tools, sidebar, model. |
-| ai            | 10    | Justified if multi-surface planned. Else mergeable. |
-| account       | 14    | Clean. Every file earns its place.                 |
-| marketing     | 11    | Clean. All presentation.                           |
-| users         | 8     | Clean.                                             |
-| admin         | 5     | Lean.                                              |
-| dashboard     | 3     | Lean.                                              |
-| settings      | 2     | Correct. Navigation config only.                   |
+### 1. Assistant feature is over-componentized
 
----
+- **Severity: medium**
+- **Evidence:** 9 component files for a single chat interface. `assistant-message-list.tsx` (84 LOC) just maps messages. `assistant-error-state.tsx` (72 LOC) is 3 conditional blocks. `assistant-empty-state.tsx` (70 LOC) is static suggested prompts. `assistant-conversation-actions-menu.tsx` (69 LOC) is a simple dropdown.
+- **Why it matters:** A buyer looking at this feature sees 16 files and has to jump through 5+ components to understand the chat flow. The `assistant-chat.tsx` (237 LOC) is the real file — the rest are micro-fragments that could live inside it or be merged into 2-3 files.
+- **Buyer impact:** Increases navigation tax when customizing the AI chat. A buyer wanting to change the empty state or error display has to find and open a separate file for what's essentially 10 lines of JSX.
+- **Smallest fix:** Merge `assistant-message-list.tsx`, `assistant-empty-state.tsx`, and `assistant-error-state.tsx` into `assistant-chat.tsx`. Merge `assistant-conversation-actions-menu.tsx` into `assistant-sidebar-nav.tsx`. Reduces 9 component files to 5.
 
-### Structural Strengths
+### 2. AI / Assistant feature split creates mild confusion
 
-#### 1. Feature-first organization is genuine, not decorative
+- **Severity: low-medium**
+- **Evidence:** `features/ai/` (9 files) handles conversation storage, org-level AI settings, and model resolution. `features/assistant/` (16 files) handles the chat UI, tools, and sidebar. The split is technically sound (infrastructure vs. UI), but `ai-surfaces.ts` currently has only one surface, and a buyer's first instinct is to look for AI code in `features/assistant/`.
+- **Why it matters:** When a buyer wants to change how conversations are stored or which models are available, they have to know to look in `features/ai/`, not `features/assistant/`. The mental model isn't immediately obvious.
+- **Buyer impact:** Low-to-moderate. A buyer will figure it out after one session, but it creates an initial "where does this live?" moment.
+- **Smallest fix:** Add a 2-line comment at the top of `features/assistant/types.ts` or a README note: "AI infrastructure (conversations, settings, models) lives in `features/ai/`. This feature contains the chat UI and tools."
 
-Every feature directory owns its full vertical slice: components, server logic, actions, schemas, types. There are no leaky `services/` or `repositories/` technical buckets. A buyer looking at the sidebar can mentally map features to business domains.
+### 3. Users feature has unnecessary component splitting
 
-#### 2. The tasks feature is an excellent CRUD template
+- **Severity: low**
+- **Evidence:** `users-table-rows.tsx` is only used by `admin-users-table.tsx`. `user-row-actions.tsx` is only used by `users-table-rows.tsx`. Neither is reused anywhere else.
+- **Why it matters:** Three files where one would suffice. A buyer editing the admin users table has to open 3 files to understand the rendering chain.
+- **Buyer impact:** Minor navigation tax in the admin panel. Not critical since admin is infrequently modified.
+- **Smallest fix:** Inline `users-table-rows.tsx` and `user-row-actions.tsx` into `admin-users-table.tsx`.
 
-`features/tasks/` (14 files, ~1,774 LOC) demonstrates: Zod validation, server actions with auth, Prisma mutations with org-scoping, billing capability checks, usage consumption, bulk operations, and a professional data table with filtering/sorting/pagination. This is the feature buyers will clone, and it's production-quality.
+## Overbuilt Areas
 
-**Evidence**: `features/tasks/server/task-mutations.ts:46-101` — `createTaskForCurrentOrganization` shows billing integration (`assertCapability` + `consumeMonthlyUsage`), auto-incrementing codes with retry logic, and transactional safety. This is not toy CRUD.
+**1. `task-form-sheet.tsx` wrapper (80 LOC)**
+- This file exists only to wrap `TaskForm` with `useActionState` and handle `router.refresh()` on success. The same logic could live inside `TaskForm` itself or be handled by the parent `TasksPage`. It adds one extra file and one extra hop in the create/edit flow.
+- **Assessment:** Borderline. The wrapper isolates state management concerns, which is clean — but for a starter buyer, it's one more file to understand.
 
-**Task creation flow** (files to read in order):
+**2. `task-options.ts` (71 LOC)**
+- Contains icon/label mappings for task status and priority enums. Only used by `tasks-table-columns.tsx` and `task-form.tsx`. Small enough to live in `task-form.schema.ts`.
+- **Assessment:** Too small for its own file. Creates navigation tax.
 
-1. `app/(app)/dashboard/tasks/page.tsx` — entry point, fetches data (31 lines)
-2. `features/tasks/components/tasks-page.tsx` — manages dialog state (127 lines)
-3. `features/tasks/components/task-form-sheet.tsx` — wires form to server action (108 lines)
-4. `features/tasks/components/task-form.tsx` — form UI with 5 fields (218 lines)
-5. `features/tasks/server/task-server-actions.ts` — server action orchestration (158 lines)
-6. `features/tasks/server/task-mutations.ts` — database write + billing checks (200 lines)
-7. `features/tasks/task-form.schema.ts` — validation (72 lines)
-8. `features/tasks/task-options.ts` — configuration (71 lines)
+**3. `ai-surfaces.ts` with single surface**
+- Defines a surface type system for AI conversations, but currently only has one surface ("assistant"). Premature abstraction for a starter.
+- **Assessment:** Defensible as future-proofing but adds conceptual weight for no current payoff.
 
-**To add a new field to tasks** (e.g., `estimate: number`), files to modify:
+## Risky Patterns
 
-1. Prisma schema (not in feature directory)
-2. `task-form.schema.ts` — add estimateSchema
-3. `task-form.tsx` — add Field component
-4. `tasks-table-columns.tsx` — add column definition
-5. `task-mutations.ts` — add estimate to create/update data
-6. `task-options.ts` — if predefined options needed
+### 1. `admin-organizations-table.tsx` (15 KB) — God component
 
-**Minimum: 5 files. A solo dev needs 15–20 minutes to understand this feature.**
+- **Severity: medium**
+- This single component handles: table rendering, search, pagination, detail sheet with subscription display, member list, delete confirmation, and three server actions. It's the largest component in the entire features folder.
+- **Buyer impact:** A buyer wanting to modify the admin org view has to navigate a 15 KB file with mixed concerns (data fetching, state management, and rendering).
+- **Smallest fix:** Extract the detail sheet into `admin-organization-detail-sheet.tsx`.
 
-#### 3. Billing gating is a first-class pattern, not an afterthought
+### 2. No deletion refund for usage quotas
 
-Adding plan gating to any feature is 2–3 lines:
+- **Severity: low-medium**
+- `createTaskForCurrentOrganization` calls `consumeMonthlyUsage()`, but `deleteTask` doesn't decrement the counter. If a user creates 10 tasks and deletes 5, they've still consumed 10 of their monthly quota.
+- **Buyer impact:** Buyers building on this pattern may not realize usage is one-directional. Could lead to customer complaints.
+- **Smallest fix:** Document this as intentional ("creation-based metering") or add a `releaseMonthlyUsage()` function.
 
-```ts
-assertCapability(plan.planId, "task.create");
-await consumeMonthlyUsage(orgId, "tasksPerMonth", plan.planId);
-```
+## Easiest Wins
 
-This is config-driven from `shared/config/billing.config.ts`. Capabilities and limits are typed. The `checkLimit()` non-throwing variant exists for UI-friendly usage displays. **This is the strongest selling point of the starter.**
+1. **Merge 3 assistant micro-components into `assistant-chat.tsx`** — saves 3 files, makes the chat flow readable in one place.
+2. **Merge `task-options.ts` into `task-form.schema.ts`** — saves 1 file, reduces navigation.
+3. **Add a comment or mini-README to `features/assistant/`** explaining the ai/assistant split — prevents buyer confusion.
+4. **Inline `users-table-rows.tsx` and `user-row-actions.tsx`** — saves 2 files, simplifies admin.
+5. **Move `app/terminal.tsx` to `features/marketing/components/`** — it's a marketing demo component misplaced at the app root.
 
-**To gate a new feature:**
+## Feature Groups: Hardest to Modify
 
-1. Add capability in `billing.config.ts`:
-   ```ts
-   export const capabilities = [
-     // ... existing
-     "custom.reports", // NEW
-   ] as const;
-   ```
-2. Assign to plans in the same file.
-3. Guard in server action:
-   ```ts
-   assertCapability(org.planId, "custom.reports");
-   ```
-4. UI shows upgrade card automatically via `UpgradeRequiredError`.
+| Feature | Difficulty | Why |
+|---|---|---|
+| **billing** | Medium | 22 files with Stripe integration, webhook handling, and plan config. Well-structured but requires understanding the full Stripe <-> billing.config <-> plan-guards chain. |
+| **assistant** | Medium | 16 files across assistant + 9 in ai. The ai/assistant split means two feature folders to navigate. AI SDK integration adds framework-specific concepts. |
+| **organizations** | Medium | 20 files with role-based access, invitation flows, and admin views. The `validatedOrganizationOwnerAction` HOF adds a layer to learn. |
 
-**To add a new plan:**
+## Feature Groups: Easiest to Modify
 
-1. Add to `billingConfig.plans` array with id, name, capabilities, limits.
-2. Add Stripe price IDs to `.env`.
-3. All downstream logic (pricing page, settings, checkout) automatically includes the plan.
-4. Total time: 10–15 minutes.
+| Feature | Difficulty | Why |
+|---|---|---|
+| **tasks** | Easy | Clear template. `ADDING_A_FEATURE.md` walks you through it. 6-file copy recipe. |
+| **settings** | Trivial | 2 files of navigation config. Add a new settings page by adding a route and a nav entry. |
+| **dashboard** | Easy | 3 files. Add a card by adding a data fetch and a `<Card>` block. |
+| **marketing** | Easy | 11 self-contained presentational components. Edit copy directly. |
+| **admin** | Easy | 5 files. Navigation config + sidebar. Add admin pages by adding routes. |
 
-#### 4. Server actions are thin and consistent
+## File-Count / Indirection / Navigation Problems
 
-Every feature uses the same `validatedAuthenticatedAction` wrapper (`shared/lib/auth/authenticated-action.ts`, 49 lines). Actions validate schema, check auth, delegate to mutations, and call `revalidatePath`. No variation, no surprises. A buyer learns the pattern once and applies it everywhere.
+| Problem | Location | Impact |
+|---|---|---|
+| 9 components for one chat UI | `features/assistant/components/` | High navigation tax |
+| 3 files for admin users table rendering chain | `features/users/components/` | Mild navigation tax |
+| `task-options.ts` is 71 LOC standalone | `features/tasks/` | Unnecessary file |
+| `task-form-sheet.tsx` wrapper | `features/tasks/components/` | One extra hop |
+| `terminal.tsx` at app root | `app/terminal.tsx` | Misplaced marketing component |
 
-**Pattern:**
+## Naming Problems
 
-```ts
-export const createTaskAction = validatedAuthenticatedAction(
-  createTaskSchema,
-  async (data) => {
-    const task = await createTaskForCurrentOrganization(data);
-    revalidatePath(routes.app.tasks);
-    return { success: "Task created", task };
-  },
-);
-```
+- **None critical.** Naming is consistent and predictable across features. File names match their exports. Feature names are obvious business domains. The `ai` vs `assistant` distinction is the only name that might confuse, and even that follows a clear infrastructure/UI split once understood.
+- Minor: `task-mutations.ts` contains both reads (`listTasks`) and writes. Name suggests writes only.
 
-#### 5. Naming is predictable across features
+## Candidate Merges or Simplifications
 
-Pattern: `{feature}/actions/{name}.action.ts`, `{feature}/server/{name}.ts`, `{feature}/components/{name}.tsx`, `{feature}/schemas/{name}.schema.ts`. Consistent enough to navigate by convention without documentation.
-
-#### 6. Route pages are correctly thin
-
-`app/(app)/dashboard/tasks/page.tsx` (31 lines) does only: parse search params, fetch data, render feature component. Business logic lives in features. This is the correct Next.js pattern.
-
-#### 7. Billing config is fully config-driven
-
-`shared/config/billing.config.ts` (230 lines) defines everything: 3 plans (free, pro, team), capabilities, limits, Stripe price IDs from env vars, pricing model, trial days. Helper functions (`getPlan`, `isPlanId`, `findPlanPriceByPriceId`) are clean and focused.
-
-**Strengths of the billing system:**
-
-- Config-driven entire system — no hardcoded prices/features
-- Clean Stripe integration — follows best practices, single webhook entry
-- Type-safe feature gating — impossible to gate non-existent features
-- Atomic usage tracking — correct handling of concurrent requests
-- Pragmatic abstractions — no over-engineering, clear module boundaries
-- Per-seat billing support — built in, not bolted on
-- Trial support — configurable per price
-- Portal integration — users can upgrade/downgrade without touching code
-
-#### 8. Stripe webhook handling is robust
-
-Two files, both necessary:
-
-- `app/api/stripe/webhook/route.ts` (38 lines) — HTTP entry point, validates signature
-- `features/billing/server/stripe/stripe-webhooks.ts` (178 lines) — event dispatcher
-
-Handles: checkout.session.completed, customer.subscription.* (created/updated/deleted), customer.deleted, invoice.payment_failed, trial_will_end. Subscription sync uses upsert for retry safety.
-
-#### 9. Dashboard page has real content
-
-`app/(app)/dashboard/page.tsx` (186 lines) shows: plan status card with price, task count with usage meter, member count, AI usage meter (conditional on capability), upgrade prompts for missing capabilities, and quick action buttons. Not a placeholder.
-
-#### 10. Marketing landing page is production-quality
-
-11 components with: hero section, code proof sections (actual plan gating patterns), feature grid, comparison table, screenshots gallery, 3-tier pricing, 12-question FAQ, builder bio section, tech stack strip, footer. Copy is sales-focused and honest.
+| Action | Files Affected | Result |
+|---|---|---|
+| Merge message-list + empty-state + error-state into assistant-chat | 3 files removed | 9 -> 6 components |
+| Merge conversation-actions-menu into sidebar-nav | 1 file removed | Sidebar is self-contained |
+| Merge task-options into task-form.schema | 1 file removed | Schema + display config in one place |
+| Inline users-table-rows + user-row-actions | 2 files removed | Admin table is self-contained |
+| Move terminal.tsx to marketing feature | 1 file moved | Correct ownership |
 
 ---
 
-### Structural Weaknesses
+# Top 10 Problems in the Repo
 
-#### 1. Organizations server directory has too many files for overlapping concerns
+### 1. Assistant feature over-componentization
 
-**Severity**: medium
+- **Severity:** Medium
+- **Category:** Feature architecture
+- **Evidence:** 9 component files in `features/assistant/components/`. `assistant-message-list.tsx` (84 LOC), `assistant-empty-state.tsx` (70 LOC), `assistant-error-state.tsx` (72 LOC), and `assistant-conversation-actions-menu.tsx` (69 LOC) are all micro-fragments used in exactly one place.
+- **Buyer impact:** A buyer wanting to customize the AI chat has to navigate 9 files to understand a single-page feature. The main flow is obscured by fragmentation.
+- **Smallest fix:** Merge 4 micro-components into their parent components. Reduces to 5 files.
 
-**Evidence**: `features/organizations/server/` has 8 files:
+### 2. Dashboard page is a static stats view, not an impressive landing
 
-- `current-organization.ts` — fetches full org + members + subscription
-- `current-organization-context.ts` — wraps above + derives permissions (canInvite, canManage)
-- `ensure-active-organization.ts` — sets active org if unset
-- `organization-membership.ts` — gets membership, enforces role requirements
-- `organization-invitations.ts` — invite/cancel/resend operations
-- `get-admin-organization-detail.ts` — admin view
-- `list-admin-organizations.ts` — admin list
+- **Severity:** High (commercially)
+- **Category:** Perceived value
+- **Evidence:** `app/(app)/dashboard/page.tsx` (187 LOC) renders 4 stat cards (plan, tasks, members, AI usage) and 3 link buttons. No charts, no activity feed, no recent items, no onboarding wizard.
+- **Buyer impact:** The dashboard is the first thing a buyer sees after setup. A flat stats page doesn't demonstrate the starter's capabilities. Competing starters (shipfast, etc.) show richer dashboards.
+- **Smallest fix:** Add a "Recent tasks" list and a simple usage chart (recharts is already a dependency). 50-100 LOC addition.
 
-**Why it's a problem**: `getCurrentOrganization()` and `getCurrentOrganizationContext()` do related work but are separate files. A buyer editing org context must decide which to use and trace through both. `ensureActiveOrganization` and `getActiveOrganizationMembership` also overlap conceptually.
+### 3. No deployment documentation
 
-**Buyer impact**: Confusion about which org-context function to call. Medium navigation tax.
+- **Severity:** Medium-High
+- **Category:** Launch readiness
+- **Evidence:** `docs/ENVIRONMENT_SETUP.md` covers local setup only. No Vercel/Railway/Docker deployment guide. No production checklist (env vars, Stripe live mode, domain config, email sender verification).
+- **Buyer impact:** A buyer who purchased this to ship fast will hit a wall at deployment. This is a common drop-off point for starters.
+- **Smallest fix:** Add a `docs/DEPLOYMENT.md` covering Vercel deployment (the most common target) with env var mapping and Stripe webhook URL setup.
 
-**Smallest fix**: Merge `current-organization.ts` and `current-organization-context.ts` into a single file. Merge `ensure-active-organization.ts` into `organization-membership.ts`. Result: 6 files instead of 8, clearer ownership.
+### 4. AI / Assistant split requires explanation
 
-#### 2. Auth form components are slightly over-split for a multi-step flow
+- **Severity:** Low-Medium
+- **Category:** Cognitive overhead
+- **Evidence:** `features/ai/` (9 files) and `features/assistant/` (16 files) handle what a buyer thinks of as "the AI feature." No in-repo documentation explains the split.
+- **Buyer impact:** First-time confusion. "Where do I change the model?" -> `features/ai/`. "Where do I change the chat UI?" -> `features/assistant/`. Discoverable but not obvious.
+- **Smallest fix:** Add a 3-line comment in `features/assistant/types.ts` or at the top of `features/ai/ai-surfaces.ts`.
 
-**Severity**: low-medium
+### 5. `admin-organizations-table.tsx` is a 15KB god component
 
-**Evidence**: Sign-in flow spans 6+ components:
+- **Severity:** Medium
+- **Category:** Feature architecture
+- **Evidence:** Single file handles table, search, pagination, detail sheet (with subscription display + member list), delete confirmation, and three server action calls.
+- **Buyer impact:** Intimidating to modify. A buyer wanting to add a field to the org detail sheet has to navigate a 15KB file.
+- **Smallest fix:** Extract the detail sheet into its own component (~200 LOC move).
 
-- `SignInForm` (167 LOC)
-- `AuthEmailStep` (49 LOC)
-- `SignInPasswordStep` (132 LOC)
-- `AuthSecondaryActions` (75 LOC)
-- `OAuthButtons` (49 LOC)
-- `ResendVerificationForm` (49 LOC)
+### 6. No i18n support
 
-**Why it's a problem**: A buyer wanting to customize the sign-in page needs to trace through 4–5 files minimum. The email step is shared between sign-in and sign-up (good reuse), but the total component count creates navigation tax.
+- **Severity:** Medium (commercially)
+- **Category:** Missing feature
+- **Evidence:** All strings are hardcoded in English. Some French text found in billing UI (`"Mensuel"`, `"Annuel"`, `"par siege"`) — appears to be remnant or inconsistency. No i18n library or translation file structure.
+- **Buyer impact:** Non-English-market buyers can't use this without significant rework. Competing starters increasingly offer i18n.
+- **Smallest fix:** Not small — but documenting "all user-facing strings are in components, no i18n library, here's how to add next-intl" would help.
 
-**Buyer impact**: 15–20 minutes to understand sign-in flow instead of 5–10.
+### 7. Usage metering is one-directional (no refund on delete)
 
-**Smallest fix**: Merge `SignInForm` + `SignInPasswordStep` into one component. Keep `AuthEmailStep` as shared. Reduces sign-in from 6 to 4 components.
+- **Severity:** Low-Medium
+- **Category:** Billing logic
+- **Evidence:** `task-mutations.ts` calls `consumeMonthlyUsage()` on create but nothing on delete. Users who hit their monthly limit can't free up quota by deleting tasks.
+- **Buyer impact:** Buyers building on this pattern may ship a confusing billing experience to their customers.
+- **Smallest fix:** Add a 1-line comment in `consumeMonthlyUsage` explaining this is intentional creation-based metering, or add a `releaseMonthlyUsage()` function.
 
-#### 3. The "ai" vs "assistant" feature split is theoretically justified but practically confusing
+### 8. No error boundary on settings or admin pages
 
-**Severity**: low-medium
+- **Severity:** Low-Medium
+- **Category:** UX polish
+- **Evidence:** `app/(app)/dashboard/error.tsx` and `loading.tsx` exist. No equivalent for `app/(app)/settings/` or `app/(app)/admin/`. If a settings page throws, the user sees the default Next.js error.
+- **Buyer impact:** Inconsistent error UX. Minor, but a polished starter should handle this.
+- **Smallest fix:** Copy `dashboard/error.tsx` and `loading.tsx` to `settings/` and `admin/`.
 
-**Evidence**: `features/ai/` (10 files) contains "AI infrastructure" (conversations, model selection, settings). `features/assistant/` (15 files) contains the specific assistant UI and tools. The split is designed for multiple "surfaces" but only one exists (`ai-surfaces.ts` has a single entry: `"assistant"`).
+### 9. Test coverage is good but doesn't cover components
 
-**Why it's a problem**: Buyers will ask "why are there two AI folders?" The answer — "ai/ is infrastructure for multiple chat surfaces" — requires reading `ai-surfaces.ts` to discover that only one surface exists. This is premature abstraction for a starter.
+- **Severity:** Low
+- **Category:** Testing
+- **Evidence:** 13 test files covering server logic: billing (5 tests), AI (3), assistant (2), tasks (2), organizations (1). Zero component tests or E2E tests.
+- **Buyer impact:** Server logic is well-tested. But a buyer extending UI can't run component tests as regression guards. Not blocking, but reduces confidence.
+- **Smallest fix:** Add 1-2 component test examples using Vitest + React Testing Library.
 
-**Buyer impact**: 5–10 minutes wasted understanding the split. Low risk of modification errors, but adds cognitive overhead.
+### 10. `terminal.tsx` is misplaced at app root
 
-**Smallest fix**: Add a 3-line comment in `features/ai/ai-surfaces.ts` explaining the split and when a buyer would add a second surface. Or merge into a single `features/assistant/` with a `server/` subdirectory for infrastructure.
-
-#### 4. auth-requests.ts is a 221-line client wrapper
-
-**Severity**: low
-
-**Evidence**: `features/auth/client/auth-requests.ts` wraps every `authClient` call with error handling and result typing. Functions: `signInWithPassword`, `signUpWithPassword`, `signInWithOAuth`, `sendMagicLink`, `requestPasswordReset`, `resetPassword`.
-
-**Why it's a problem**: The wrapper adds a layer between components and the auth client. Each function is 15–30 lines of error handling + type narrowing. A buyer must read this file to understand what auth operations are available and how errors are returned.
-
-**Buyer impact**: Low. The error handling is genuinely useful. But a buyer might not realize this file exists and try to call `authClient` directly.
-
-**Smallest fix**: None required. Consider adding a comment at the top explaining this is the auth operations layer for client components.
-
----
-
-### Overbuilt Areas (Features)
-
-#### 1. PromptInput component family (12 exports, context provider)
-
-**Severity**: low
-
-`shared/components/ai-elements/prompt-input.tsx` exports 12 named components (PromptInput, PromptInputBody, PromptInputTextarea, PromptInputFooter, PromptInputTools, PromptInputSubmit, etc.) requiring 7 levels of nesting to assemble a chat input. Compare to shadcn/ui's typical 2–3 level nesting. This is the ai-elements library, not custom code, so the overhead is inherited rather than self-inflicted. But it does increase the learning curve for AI feature modification.
-
-#### 2. Task form sheet union type pattern
-
-**Severity**: low
-
-`features/tasks/components/task-form-sheet.tsx` (108 lines) splits into `CreateTaskSheet` and `UpdateTaskSheet` using a union type discriminator, but both branches contain nearly identical `useActionState` + `useToastMessage` + `useEffect` logic. Could be a single component with a `mode` prop.
-
-#### 3. Task code auto-generation with 10-attempt retry
-
-**Severity**: low
-
-`features/tasks/server/task-mutations.ts:64-98` — production-correct for race conditions, but adds 35 lines of complexity to the CRUD template that most buyers won't need initially.
-
-#### 4. Organization view type mapping
-
-**Severity**: low
-
-`features/organizations/server/current-organization.ts` transforms betterAuth API responses into app-specific view types with manual mapping functions (`mapOrganizationMember`, `mapCurrentOrganization`). Correct for decoupling, but adds indirection that a buyer must trace through.
-
-#### 5. Three-level action wrapping
-
-**Severity**: low
-
-`validated-organization-owner.action.ts` (54 lines) creates three levels of action wrapping: validated -> authenticated -> organization-owner. Each level is justified, but the stack is 3 deep.
+- **Severity:** Low
+- **Category:** Organization
+- **Evidence:** `app/terminal.tsx` is a marketing demo component showing setup CLI steps. It's a client component used on the landing page but lives at the app root instead of `features/marketing/components/`.
+- **Buyer impact:** Negligible — but a buyer auditing the repo structure will wonder why a marketing component is at the root.
+- **Smallest fix:** Move to `features/marketing/components/terminal.tsx`.
 
 ---
 
-### Risky Patterns
+# Overbuilt or Too Sophisticated Areas
 
-#### 1. Implicit org initialization hidden in post-sign-in
-
-**Severity**: medium
-
-**Evidence**: `features/auth/server/onboarding.ts:ensureUserWorkspace()` creates the user's first organization automatically. This is called from `app/post-sign-in/page.tsx`, not from the sign-up form itself. A buyer who doesn't trace the post-sign-in redirect will not understand when or how organizations are created.
-
-**Buyer impact**: Confusion when customizing the sign-up flow. Could accidentally break org creation by modifying post-sign-in without understanding its implicit responsibility.
-
-**Smallest fix**: Add a clear comment in `post-sign-in/page.tsx` explaining that `ensureUserWorkspace()` creates the first org and must not be removed.
-
-#### 2. PlanId is a hardcoded union type, not derived from config
-
-**Severity**: low
-
-**Evidence**: `shared/config/billing.config.ts:25` — `export type PlanId = "free" | "pro" | "team"`. Adding a fourth plan requires updating both the config array and this type.
-
-**Buyer impact**: Type error if buyer adds a plan to config but forgets the type. Easy to fix once discovered, but could be prevented.
-
-**Smallest fix**: `type PlanId = (typeof billingConfig.plans)[number]["id"]` — derive from config.
-
-#### 3. Conversation JSON full-replace on every message
-
-**Severity**: low
-
-**Evidence**: `features/ai/server/ai-conversations.ts:replaceAiConversation()` serializes the entire message array and overwrites the `messagesJson` column on every chat message. Not append-only.
-
-**Buyer impact**: Works fine for typical conversations (<100 messages). Could become a performance concern for very long conversations. Not a blocker for a starter.
-
-**Smallest fix**: Document the tradeoff. Consider append-only if AI conversations become a power feature.
-
-#### 4. Demo data in AI tools
-
-**Severity**: medium
-
-**Evidence**: `features/assistant/server/demo-inbox.ts` returns 5 hardcoded emails. Invoice tool returns computed data without calling any API.
-
-**Buyer impact**: Looks impressive in demo, but buyer must replace entire tool implementations before shipping. Gap between demo and production is larger than it appears.
-
-**Smallest fix**: Add `// TODO: Replace with real email API integration` comments. Create a `TOOL_INTEGRATION.md` guide.
+| Area | What's over-built | Why it's still acceptable |
+|---|---|---|
+| `validatedOrganizationOwnerAction` HOF | Wraps `validatedAuthenticatedAction` with org role checking. Two-level HOF is sophisticated for this audience. | Only used by 5 actions. Pattern is clear once you see it once. The alternative (duplicating auth+org checks in every action) would be worse. |
+| `task-table-search-params.ts` (115 LOC) | URL <-> search params <-> Zod schema round-tripping for table state. | Enables server-side pagination with type-safe URL params. The complexity is real, not decorative. |
+| `ai-surfaces.ts` | Surface abstraction for a single chat surface. | Only 1 file, 20 LOC. Premature but harmless. |
+| Data table system (7 files, 416 LOC in shared) | Professional-grade accessible table with bulk actions, faceted filters, keyboard navigation. | This is a *selling point*, not bloat. Buyers building data-heavy SaaS need this. |
+| `account/server/get-account-deletion-blocker.ts` | Multi-condition deletion guard checking org ownership, active subscriptions, and billing periods. | Correctly prevents data loss. The complexity is proportionate to the risk. |
 
 ---
 
-### Easiest Wins
+# Strong / Sellable Areas
 
-1. **Add a "How to Add a Feature" guide** — buyers will clone the tasks feature. A 1-page guide showing which files to copy and what to change would dramatically reduce time-to-first-modification.
-2. **Merge org context server files** — consolidate `current-organization.ts` + `current-organization-context.ts`. 30 minutes of work, removes a real source of confusion.
-3. **Add comments on implicit flows** — `ensureUserWorkspace()` in post-sign-in, org auto-creation, and `resumeCheckoutAfterSignIn()` all need 1–2 line comments explaining their purpose.
-4. **Derive PlanId from config** — 1-line type change, prevents a common buyer mistake.
-5. **Include actual screenshots** — replace placeholder images in `screenshots-gallery.tsx` with screenshots of the starter's own pages.
-
----
-
-### Feature Groups: Hardest to Modify
-
-1. **Organizations** — most server files (8), layered patterns (betterAuth plugin + custom wrappers), implicit initialization, multiple context functions. A buyer editing org behavior must understand both betterAuth's organization plugin and the custom server wrappers. Time to understand: ~20 minutes.
-2. **Auth** — multi-step component split (12 components for sign-in + sign-up), betterAuth API surface (buyer must learn betterAuth docs), OAuth config spread across files. Time to understand: ~15 minutes.
-3. **AI/Assistant** — two feature folders to understand, ai-elements component library learning curve, streaming internals require ai-sdk knowledge. Time to understand: ~20 minutes for tactical changes, longer for architectural changes.
-
----
-
-### Feature Groups: Easiest to Modify
-
-1. **Tasks** — clear template, direct mutations, no hidden magic. Time to understand: ~15 minutes.
-2. **Billing** — config-driven, adding plans/capabilities/limits is mechanical. Time to change prices: ~6 minutes. Time to add a plan: ~15 minutes.
-3. **Marketing** — pure presentation components, no server logic, obvious structure. Time to customize: ~10 minutes.
-4. **Account** — focused dialogs, clear action/server split, no cross-feature dependencies. Time to understand: ~10 minutes.
-5. **Admin/Users** — straightforward CRUD, self-contained. Admin panel has impersonation, ban/unban, role management, session revocation. Time to understand: ~10 minutes.
+| Area | Why it's strong |
+|---|---|
+| **Billing system** | Config-driven plans with type-safe capabilities, limits, and Stripe price IDs. `assertCapability()` is a 1-line feature gate. `consumeMonthlyUsage()` is atomic. Webhook handler covers all subscription lifecycle events. Per-seat billing support. This alone saves weeks. |
+| **Plan gating** | `billing.config.ts` -> `plan-guards.ts` -> `usage-service.ts` is a clean, understandable chain. Adding a new gated feature is genuinely 2 lines: add capability to config, call `assertCapability()` in action. |
+| **CRUD reference (tasks)** | Full working example with billing integration, bulk ops, server-side table, and proper validation. Combined with `ADDING_A_FEATURE.md`, this is the starter's best documentation. |
+| **Organization management** | Multi-org with switching, roles, invitations with email, admin management. Real B2B multi-tenancy, not a stub. |
+| **Auth completeness** | BetterAuth with email/password, magic link, Google, GitHub, email verification, password reset, account linking, impersonation, admin roles. Covers every auth flow a SaaS needs. |
+| **`ADDING_A_FEATURE.md`** | 64-line guide with exact copy order, billing integration steps, and org scope rules. This is the kind of documentation that makes a starter worth buying. |
+| **Marketing page components** | 11 components for a complete landing page: header, hero, features, pricing, FAQ, comparison, social proof, footer. A buyer can customize copy and ship a marketing page in an afternoon. |
+| **Thin routes** | Every page file is pure composition. No business logic in routes. This is the most important architectural decision in the repo and it's executed perfectly. |
+| **Email system** | Resend + React Email with templates for auth emails and team invitations. Idempotency keys on sends. Clean separation between client, config, senders, and templates. |
+| **Data table components** | Accessible, keyboard-navigable, with bulk actions, faceted filtering, and server-side pagination. Used by tasks and admin tables. Genuinely reusable. |
 
 ---
 
-### File-Count / Indirection / Navigation Problems
+# Missing or Weak Features
 
-| Feature       | Files | Assessment                                                    |
-| ------------- | ----- | ------------------------------------------------------------- |
-| tasks         | 14    | Proportionate. 8 components for full CRUD with bulk ops.      |
-| billing       | 23    | Proportionate. Stripe integration genuinely requires this.    |
-| organizations | 22    | Slightly high. 8 server files could be 6.                    |
-| auth          | 21    | Slightly high. 12 form components could be 9.                |
-| assistant     | 15    | Proportionate. Chat UI with tools, sidebar, model selection.  |
-| ai            | 10    | Justified if multi-surface is planned. Otherwise mergeable.   |
-| account       | 14    | Clean. Every file earns its place.                            |
-| marketing     | 11    | Clean. All presentation.                                      |
-| users         | 8     | Clean.                                                        |
-| admin         | 5     | Lean.                                                         |
-| dashboard     | 3     | Lean.                                                         |
-| settings      | 2     | Correct. Navigation config only.                              |
-
-**Total**: 148 files across 12 features. No feature is egregiously oversized. The two that need trimming (organizations, auth) need only 2–3 merges each.
+| Feature | Status | Impact on Sellability |
+|---|---|---|
+| **Rich dashboard** | Static stat cards only. No charts, activity feed, or recent items. | High — dashboard is the demo showpiece |
+| **Deployment guide** | Missing entirely | High — buyers want to ship fast, not figure out Vercel config |
+| **i18n** | No support, hardcoded English with some French remnants | Medium — limits market |
+| **Onboarding wizard** | Auto-creates workspace, no guided setup | Medium — first-run experience is bland |
+| **Notifications** | No in-app notification system | Medium — expected at this price point |
+| **File upload / storage** | `storageMb` limit defined but no upload implementation | Low-Medium — limit exists but feature doesn't |
+| **API key management** | `api.access` capability defined but no API key system | Low-Medium — capability gate exists without the feature |
+| **Audit log** | No activity tracking | Low — nice-to-have for B2B |
+| **2FA/MFA** | Not implemented | Low — BetterAuth may support it; just not configured |
+| **E2E tests** | No Playwright or Cypress tests | Low — server tests exist |
 
 ---
 
-### Naming Problems
+# Highest ROI Fixes
 
-No significant naming problems found. The naming convention is consistent and predictable:
+### 1. Enrich the dashboard page
 
-- `.action.ts` suffix for server actions
-- `.schema.ts` for Zod schemas
-- `.types.ts` for type definitions
-- Kebab-case file names match their exports
-- Feature directory names match business domains
+- **What:** Add a "Recent tasks" list, a simple usage-over-time chart (recharts is already installed), and a getting-started checklist for new users.
+- **Why:** The dashboard is the first thing a buyer sees. Static cards don't demonstrate the starter's capabilities. A richer dashboard immediately increases perceived value and makes demo screenshots more compelling.
+- **Expected impact:** Significant increase in perceived value and sellability. Moves the dashboard from "placeholder" to "impressive."
+- **Size:** Medium (100-200 LOC addition)
 
-**One minor issue**: `features/billing/plans/index.ts` is a re-export barrel file (26 lines). It re-exports from `shared/config/billing.config.ts` and `subscription-status.ts`. This means imports like `from "@/features/billing/plans"` resolve differently than expected — they pull from `shared/config/billing.config.ts`, not from the plans directory. Mildly confusing.
+### 2. Add deployment documentation
 
----
+- **What:** Create `docs/DEPLOYMENT.md` covering Vercel deployment with env var mapping, Stripe webhook URL setup, database provisioning (Neon/Supabase), and a production checklist.
+- **Why:** The gap between "pnpm dev works" and "live on the internet" is where most starter buyers get stuck. Bridging it is the highest-leverage doc improvement.
+- **Expected impact:** Removes the #1 friction point after purchase. Directly improves launch readiness score.
+- **Size:** Small (1-2 hours of writing)
 
-### Candidate Merges or Simplifications
+### 3. Merge assistant micro-components
 
-| Current                                                                             | Proposed                                          | Rationale                                                |
-| ----------------------------------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------- |
-| `organizations/server/current-organization.ts` + `current-organization-context.ts`  | Single `current-organization.ts`                  | Overlapping responsibilities                             |
-| `organizations/server/ensure-active-organization.ts`                                | Inline into `organization-membership.ts`          | 39 lines, single caller                                 |
-| `auth/components/sign-in/sign-in-form.tsx` + `sign-in-password-step.tsx`            | Single `sign-in-form.tsx`                         | Reduces file-hopping for sign-in customization           |
-| `auth/components/sign-up/sign-up-form.tsx` + `sign-up-password-step.tsx`            | Single `sign-up-form.tsx`                         | Same rationale                                           |
-| `tasks/components/task-form-sheet.tsx` (CreateTaskSheet + UpdateTaskSheet)           | Single component with mode prop                   | Eliminate duplicated useActionState logic                 |
-| `features/ai/` + `features/assistant/`                                              | Single `features/assistant/` with subdirs          | Only one surface exists; remove premature abstraction    |
-| `billing/plans/index.ts`                                                            | Remove barrel, import directly                    | Eliminates indirection for 3 re-exports                  |
-| `features/ai/server/model-selection-error.ts`                                       | Merge into `resolve-model-selection.ts`           | 9-line file, single usage                                |
-| `features/ai/ai-surfaces.ts`                                                       | Add comment or merge into assistant               | 6-line file with one constant                            |
+- **What:** Consolidate `assistant-message-list.tsx`, `assistant-empty-state.tsx`, `assistant-error-state.tsx` into `assistant-chat.tsx`. Merge `assistant-conversation-actions-menu.tsx` into `assistant-sidebar-nav.tsx`.
+- **Why:** Reduces the assistant feature from 9 component files to 5. Makes the chat flow traceable in one file. Reduces navigation tax for the most complex UI feature.
+- **Expected impact:** Moderate improvement in time-to-understand for the AI feature. Signals to buyers that the codebase values directness over appearance.
+- **Size:** Small (30 minutes of mechanical merging)
 
----
+### 4. Add error/loading boundaries to settings and admin
 
-## Top 10 Problems in the Repo
+- **What:** Copy `dashboard/error.tsx` and `loading.tsx` to `settings/` and `admin/`.
+- **Why:** Inconsistent error handling looks unpolished. A buyer testing the app and encountering an error in settings will see an ugly default page.
+- **Expected impact:** Small but polishes the UX. Takes 5 minutes. Pure upside.
+- **Size:** Small (5 minutes)
 
-### 1. No "How to Add a Feature" Documentation
+### 5. Document the AI/Assistant split
 
-**Severity**: critical
-**Category**: buyer experience
-
-**Evidence**: No GUIDE.md, no README in features/, no template directory. The tasks feature is the implicit template but this is never stated.
-
-**Buyer impact**: First 30–60 minutes after purchase are spent reverse-engineering the pattern instead of building.
-
-**Smallest fix**: Add `features/ADDING_A_FEATURE.md` — 1 page showing which files to create, which to copy from tasks, and the 5-step pattern (schema, mutation, action, component, route).
+- **What:** Add a short note in `features/assistant/` explaining: "AI infrastructure (conversations, org settings, model registry) -> `features/ai/`. Chat UI and tools -> here."
+- **Why:** Prevents the most common "where does this live?" confusion for the most complex feature pair.
+- **Expected impact:** Small improvement in time-to-understand. Prevents buyer frustration.
+- **Size:** Small (5 minutes)
 
 ---
 
-### 2. Organization Context Layering Creates Confusion
+# File-Level Simplification Targets
 
-**Severity**: high
-**Category**: feature architecture
-
-**Evidence**: `getCurrentOrganization()`, `getCurrentOrganizationContext()`, `getActiveOrganizationMembership()`, `ensureActiveOrganization()` — four functions to get "what org am I in?"
-
-**Buyer impact**: "Which one do I call?" is a real question a buyer will face in the first week.
-
-**Smallest fix**: Consolidate to two functions: `getCurrentOrganization()` (data) and `requireOrganizationMembership()` (guard). Merge context into organization, merge ensure into membership.
-
----
-
-### 3. Implicit Organization Creation in Post-Sign-In
-
-**Severity**: high
-**Category**: hidden behavior
-
-**Evidence**: `app/post-sign-in/page.tsx` calls `ensureUserWorkspace()` which auto-creates the user's first organization. Not documented, not obvious.
-
-**Buyer impact**: Buyer modifies post-sign-in flow, breaks org creation, spends hours debugging "why does my new user have no organization?"
-
-**Smallest fix**: Add a clear comment block in post-sign-in explaining each step and why it's critical.
+| Action | Path(s) | Rationale |
+|---|---|---|
+| **Merge into parent** | `features/assistant/components/assistant-message-list.tsx` -> `assistant-chat.tsx` | 84 LOC, used only by assistant-chat, just maps messages |
+| **Merge into parent** | `features/assistant/components/assistant-empty-state.tsx` -> `assistant-chat.tsx` | 70 LOC, static suggested prompts, single-use |
+| **Merge into parent** | `features/assistant/components/assistant-error-state.tsx` -> `assistant-chat.tsx` | 72 LOC, 3 conditional blocks, single-use |
+| **Merge into parent** | `features/assistant/components/assistant-conversation-actions-menu.tsx` -> `assistant-sidebar-nav.tsx` | 69 LOC dropdown, only used in sidebar |
+| **Merge into schema** | `features/tasks/task-options.ts` -> `task-form.schema.ts` | 71 LOC of icon/label maps, small enough to colocate with schema |
+| **Inline** | `features/users/components/users-table-rows.tsx` -> `admin-users-table.tsx` | Single-use TableBody renderer |
+| **Inline** | `features/users/components/user-row-actions.tsx` -> `admin-users-table.tsx` | Single-use row action menu |
+| **Move** | `app/terminal.tsx` -> `features/marketing/components/terminal.tsx` | Marketing demo component misplaced at app root |
+| **Consider merging** | `features/tasks/components/task-form-sheet.tsx` -> `task-form.tsx` | 80 LOC wrapper that bridges useActionState. Could be inlined. Borderline. |
+| **Extract from** | `features/organizations/components/admin-organizations-table.tsx` | 15 KB god component. Extract detail sheet into own file. |
 
 ---
 
-### 4. Auth Form Components Over-Split
-
-**Severity**: medium
-**Category**: navigation tax
-
-**Evidence**: 12 components for sign-in + sign-up. Sign-in alone needs 4–5 files to trace.
-
-**Buyer impact**: Customizing auth pages takes 3x longer than necessary.
-
-**Smallest fix**: Merge form + password-step for each auth flow. Target: 8 components instead of 12.
-
----
-
-### 5. PlanId Not Derived from Config
-
-**Severity**: medium
-**Category**: buyer footgun
-
-**Evidence**: `type PlanId = "free" | "pro" | "team"` is manually maintained alongside `billingConfig.plans`.
-
-**Buyer impact**: Buyer adds a plan to config, forgets to update type, gets confusing TypeScript errors.
-
-**Smallest fix**: `type PlanId = (typeof billingConfig.plans)[number]["id"]` — one line.
-
----
-
-### 6. Demo Data in AI Tools (Not Production-Ready)
-
-**Severity**: medium
-**Category**: feature credibility
-
-**Evidence**: `features/assistant/server/demo-inbox.ts` returns 5 hardcoded emails. Invoice tool returns computed data without calling any API.
-
-**Buyer impact**: Looks impressive in demo, but buyer must replace entire tool implementations before shipping. Gap between demo and production is larger than it appears.
-
-**Smallest fix**: Add `// TODO: Replace with real email API integration` comments. Create a `TOOL_INTEGRATION.md` guide.
-
----
-
-### 7. Missing Screenshots in Marketing Landing Page
-
-**Severity**: medium
-**Category**: launch readiness
-
-**Evidence**: `features/marketing/components/screenshots-gallery.tsx` references 7 placeholder images.
-
-**Buyer impact**: Buyer must take and process screenshots before the landing page is presentable. Not a code issue, but delays launch.
-
-**Smallest fix**: Include actual screenshots of the starter's own pages as defaults.
-
----
-
-### 8. Admin Organizations Page Possibly Incomplete
-
-**Severity**: medium
-**Category**: feature gap
-
-**Evidence**: `features/admin/config/admin-navigation.ts` includes an "Organizations" link. `features/organizations/components/admin-organizations-table.tsx` exists (425 lines). But the admin org management flow may be incomplete or the page may not be fully wired up.
-
-**Buyer impact**: Admin panel feels unfinished if key pages are stubs.
-
-**Smallest fix**: Verify the admin organizations page renders properly and has basic CRUD.
-
----
-
-### 9. No Test Coverage Guidance for Buyers
-
-**Severity**: low-medium
-**Category**: buyer experience
-
-**Evidence**: 13 test files exist covering billing, tasks, AI, organizations (~1,500 LOC). But there's no guidance on how to add tests for new features.
-
-**Buyer impact**: Tests exist but the test pattern isn't documented. Buyer may skip testing or write inconsistent tests.
-
-**Smallest fix**: Add a test template alongside the "how to add a feature" guide.
-
----
-
-### 10. Billing Plans Barrel File Creates Import Confusion
-
-**Severity**: low
-**Category**: code navigation
-
-**Evidence**: `features/billing/plans/index.ts` re-exports from `shared/config/billing.config.ts`. Imports like `from "@/features/billing/plans"` actually resolve to shared/config.
-
-**Buyer impact**: "Where is getPlan defined?" leads to a goose chase through re-exports.
-
-**Smallest fix**: Remove the barrel file. Import directly from `@/shared/config/billing.config` and `@/features/billing/plans/subscription-status`.
-
----
-
-## Overbuilt or Too Sophisticated Areas
-
-1. **ai-elements PromptInput family** (12 exports, 7-level nesting) — inherited from library, not custom code, but still raises the learning curve for chat UI modification.
-2. **ai/assistant two-folder split** — justified architecture for multi-surface AI, but only one surface exists. Premature for a starter.
-3. **Task code auto-generation with 10-attempt retry** (`task-mutations.ts:64-98`) — production-correct for race conditions, but adds 35 lines of complexity to the CRUD template that most buyers won't need initially.
-4. **Organization view type mapping** (`current-organization.ts`) — transforms betterAuth API responses into app-specific view types with manual mapping functions. Correct for decoupling, but adds indirection that a buyer must trace through.
-5. **Validated organization owner action** (`validated-organization-owner.action.ts`, 54 lines) — three levels of action wrapping (validated -> authenticated -> organization-owner). Each level is justified, but the stack is 3 deep.
-
----
-
-## Strong / Sellable Areas
-
-1. **Billing config + plan gating** — the `assertCapability()` / `consumeMonthlyUsage()` pattern is the strongest feature. Config-driven, type-safe, and genuinely production-ready. This alone justifies the purchase for many buyers.
-2. **Tasks as a CRUD template** — demonstrates billing integration, multi-tenancy, bulk operations, data tables with filtering/sorting/pagination. The right level of complexity for a real feature.
-3. **Dashboard page** — real content showing plan status, usage meters, quick actions, and conditional rendering based on plan capabilities. Not a placeholder.
-4. **Marketing landing page** — 11 well-crafted components with honest copy, code proof sections, comparison tables, FAQ. Production-quality for a starter product page.
-5. **Admin panel with user management** — impersonation, ban/unban, role management, session revocation. Real admin functionality, not a stub.
-6. **Stripe webhook handling** — single entry point, clean event routing, robust subscription sync with upsert. Handles edge cases (missing customer, incomplete data).
-7. **AI assistant with tool-calling** — streaming chat, three demonstrated tools, billing-integrated, org-scoped conversations. Differentiating feature.
-8. **Account management** — delete-account with blocker checks (sole owner of active subscription), OAuth linking/unlinking, password management. Production-thoughtful.
-9. **Type-safe form action pattern** — `validatedAuthenticatedAction` + Zod + `FormActionState` is a clean, reusable server action pattern that buyers learn once.
-10. **Test suite** — 13 test files covering billing guards, usage service, webhooks, task creation, org membership, AI conversations. Not comprehensive, but covers the critical paths.
-
----
-
-## Missing or Weak Features
-
-1. **No "how to add a feature" guide** — the single most impactful missing piece for buyer onboarding.
-2. **No email templates visible** — `react-email` is configured but email templates aren't prominently showcased. Buyers need to see what transactional emails look like.
-3. **No activity/audit log** — no record of who changed what. Common SaaS requirement.
-4. **No API key management** — `api.access` capability exists but no API key UI or management.
-5. **No file upload / storage** — `storageMb` limit is defined but no upload infrastructure exists.
-6. **No onboarding flow** — after first sign-up, user lands on dashboard. No welcome wizard, no setup steps.
-7. **No notification system** — no in-app notifications, no notification preferences.
-8. **No search across entities** — command menu exists but entity search implementation isn't visible.
-9. **No environment variable documentation** — Stripe price IDs, OAuth secrets, and AI API keys all need clear setup docs beyond `.env.example`.
-10. **No dark mode screenshots** — theme support exists but marketing doesn't showcase it.
-
----
-
-## Highest ROI Fixes
-
-### 1. Add "How to Add a Feature" Documentation
-
-**What to change**: Create `features/ADDING_A_FEATURE.md` with a step-by-step guide: copy tasks, rename, modify schema, update billing config, add route.
-
-**Why it matters**: Reduces time-to-first-modification from 60 minutes to 15 minutes. The single most impactful change for buyer satisfaction.
-
-**Expected impact**: High. Turns "I need to figure this out" into "I follow the guide."
-
-**Size**: Small (1–2 hours).
-
-### 2. Consolidate Organization Context Functions
-
-**What to change**: Merge `current-organization.ts` + `current-organization-context.ts` into one. Merge `ensure-active-organization.ts` into `organization-membership.ts`.
-
-**Why it matters**: Removes the "which function do I call?" confusion. Reduces org server files from 8 to 6.
-
-**Expected impact**: Medium-high. Directly reduces cognitive overhead for the most-touched shared infrastructure.
-
-**Size**: Small-medium (2–3 hours).
-
-### 3. Derive PlanId Type from Config
-
-**What to change**: Replace `type PlanId = "free" | "pro" | "team"` with derived type from `billingConfig.plans`.
-
-**Why it matters**: Prevents the most common buyer mistake when adding plans. Small change, big safety improvement.
-
-**Expected impact**: Medium. Prevents a guaranteed footgun.
-
-**Size**: Small (30 minutes).
-
-### 4. Merge Auth Form Step Components
-
-**What to change**: Combine `sign-in-form.tsx` + `sign-in-password-step.tsx` into one file. Same for sign-up. Keep shared components (AuthEmailStep, OAuthButtons) separate.
-
-**Why it matters**: Reduces sign-in from 5 files to 3. Buyers customize auth pages early — this is high-traffic code.
-
-**Expected impact**: Medium. Reduces file-hopping for the most commonly customized feature.
-
-**Size**: Medium (3–4 hours).
-
-### 5. Add Comments on Implicit Flows
-
-**What to change**: Document `ensureUserWorkspace()` in post-sign-in, `resumeCheckoutAfterSignIn()`, org auto-creation, and the `ai-surfaces` concept with clear comments.
-
-**Why it matters**: Hidden behavior creates debugging nightmares. 10 minutes of comments saves buyers hours.
-
-**Expected impact**: Medium. Prevents the top 3 "why isn't this working" buyer moments.
-
-**Size**: Small (1 hour).
-
----
-
-## File-Level Simplification Targets
-
-| Target                                                          | Action                                  | Rationale                                              |
-| --------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------ |
-| `features/organizations/server/current-organization-context.ts` | Merge into `current-organization.ts`    | Overlapping concerns                                   |
-| `features/organizations/server/ensure-active-organization.ts`   | Merge into `organization-membership.ts` | 39 lines, closely related                              |
-| `features/auth/components/sign-in/sign-in-password-step.tsx`    | Merge into `sign-in-form.tsx`           | Reduce file-hopping for auth customization             |
-| `features/auth/components/sign-up/sign-up-password-step.tsx`    | Merge into `sign-up-form.tsx`           | Same rationale                                         |
-| `features/billing/plans/index.ts`                               | Delete (re-export barrel)               | Import directly from source files                      |
-| `features/ai/ai-surfaces.ts`                                    | Add comment or merge into assistant     | 6-line file with one constant                          |
-| `features/ai/server/model-selection-error.ts`                   | Merge into `resolve-model-selection.ts` | 9-line file, single usage                              |
-| `features/tasks/components/task-form-sheet.tsx`                  | Simplify to single component            | CreateTaskSheet/UpdateTaskSheet duplicate logic         |
-| `shared/config/billing.config.ts` line 25                       | Change PlanId to derived type           | Prevent buyer footgun                                  |
-
----
-
-## Final Recommendation
+# Final Recommendation
 
 **Near ready, polish and document.**
 
-The codebase is structurally sound. The feature architecture is genuinely buyer-friendly — feature-first, proportionate complexity, consistent patterns, and real production concerns (billing gating, multi-tenancy, usage limits) handled correctly. The billing system is the best I've seen in a starter at this price point.
+The core architecture is sound. Feature boundaries are correct. Billing is production-grade. The CRUD template with `ADDING_A_FEATURE.md` is genuinely useful. Auth and org management are comprehensive. The codebase is direct and modification-friendly.
 
-What's needed before selling with confidence:
+What's missing is not structural — it's commercial polish:
 
-1. **Documentation** (critical): "How to Add a Feature" guide, env setup guide, and comments on implicit flows. This is the #1 gap.
-2. **Minor consolidation** (high value): Merge org context files, merge auth form steps. 1–2 days of work for meaningful clarity improvement.
-3. **One-line fixes**: Derive PlanId from config. Costs nothing, prevents a guaranteed buyer mistake.
-4. **Marketing polish**: Real screenshots, builder bio section filled in.
+1. **The dashboard needs to impress.** It's the demo screenshot. A flat stats page doesn't sell at $149. Add a chart, a recent-items list, and a getting-started flow.
+2. **Deployment docs are non-negotiable.** A buyer paying $149 expects to go from purchase to production without guessing. One markdown file covering Vercel + Stripe live mode + database provisioning closes this gap.
+3. **Minor file consolidation** (assistant micro-components, task-options, users table chain) would reduce the file count by ~8 files and make the codebase feel more direct without losing any structure.
+4. **Error/loading boundaries** in settings and admin are a 5-minute fix that removes an obvious rough edge.
 
-The architecture does not need restructuring. The features do not need simplification beyond the merges listed above. The patterns are correct and the complexity is earned. Ship it after documentation and the 5 highest-ROI fixes above.
+The repo does not need restructuring. It does not need simplification of its billing, auth, or org systems — those are its strengths. It needs the kind of polish that turns "good" into "impressive" for a buyer evaluating it against competitors. Ship the dashboard improvements and deployment docs, do the file merges, and this is a strong $149 starter.

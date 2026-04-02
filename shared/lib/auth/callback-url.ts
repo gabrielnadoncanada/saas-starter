@@ -1,15 +1,26 @@
-const DEFAULT_CALLBACK_URL = "/post-sign-in";
-const allowedCallbackSet = new Set(["/dashboard", "/post-sign-in"]);
+import { routes } from "@/shared/constants/routes";
+import { stripLocalePrefix } from "@/shared/i18n/href";
+
+const DEFAULT_CALLBACK_URL = routes.auth.postSignIn;
+const allowedCallbackSet = new Set<string>([
+  routes.app.dashboard,
+  routes.auth.postSignIn,
+]);
 const allowedCallbackPrefixes = ["/accept-invitation/"];
 
 export function getCallbackURL(callbackUrl: string | null | undefined): string {
-  if (callbackUrl && allowedCallbackSet.has(callbackUrl)) {
+  if (!callbackUrl) {
+    return DEFAULT_CALLBACK_URL;
+  }
+
+  const { pathname } = stripLocalePrefix(callbackUrl);
+
+  if (allowedCallbackSet.has(pathname)) {
     return callbackUrl;
   }
 
   if (
-    callbackUrl &&
-    allowedCallbackPrefixes.some((prefix) => callbackUrl.startsWith(prefix))
+    allowedCallbackPrefixes.some((prefix) => pathname.startsWith(prefix))
   ) {
     return callbackUrl;
   }

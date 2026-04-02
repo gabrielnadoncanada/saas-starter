@@ -1,6 +1,8 @@
 import {
+  Bell,
   Building2,
   CreditCard,
+  KeyRound,
   Palette,
   ShieldCheck,
   User,
@@ -53,8 +55,18 @@ export const settingsSidebarData: SidebarData = {
         },
         {
           title: "Security",
-          url: routes.settings.profile,
+          url: routes.settings.security,
           icon: ShieldCheck,
+        },
+        {
+          title: "Notifications",
+          url: routes.settings.notifications,
+          icon: Bell,
+        },
+        {
+          title: "API Keys",
+          url: routes.settings.apiKeys,
+          icon: KeyRound,
         },
       ],
     },

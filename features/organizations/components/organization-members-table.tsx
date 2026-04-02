@@ -2,7 +2,7 @@
 
 import { format, parseISO } from "date-fns";
 import { MoreVertical, UserMinus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -200,3 +200,4 @@ export function OrganizationMembersTable({
     </div>
   );
 }
+

@@ -1,8 +1,8 @@
 "use client";
 
 import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/shared/i18n/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -242,3 +242,5 @@ function InvitationCard({
     </div>
   );
 }
+
+

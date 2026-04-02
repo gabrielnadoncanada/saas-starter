@@ -1,16 +1,15 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { unlinkAuthProviderSchema } from "@/features/account/schemas/account.schema";
 import { unlinkOAuthAccountForUser } from "@/features/account/server/linked-accounts";
 import { routes } from "@/shared/constants/routes";
+import { redirectToLocale } from "@/shared/i18n/href";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
 export const unlinkAuthProviderAction = validatedAuthenticatedAction<
   typeof unlinkAuthProviderSchema,
   {}
->(unlinkAuthProviderSchema, async ({ provider }) => {
+>(unlinkAuthProviderSchema, async ({ provider }, _formData, user) => {
   const result = await unlinkOAuthAccountForUser({ provider });
 
   if (result.status === "blocked") {
@@ -28,7 +27,9 @@ export const unlinkAuthProviderAction = validatedAuthenticatedAction<
     };
   }
 
-  return redirect(
+  return redirectToLocale(
+    user.preferredLocale,
     `${routes.settings.profile}?provider=${provider}&success=unlinked`,
   );
 });
+

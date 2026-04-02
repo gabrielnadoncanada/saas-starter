@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
@@ -55,3 +55,4 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     />
   );
 }
+

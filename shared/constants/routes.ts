@@ -2,6 +2,8 @@ export const routes = {
   marketing: {
     home: "/",
     pricing: "/pricing",
+    privacy: "/privacy",
+    terms: "/terms",
   },
   auth: {
     login: "/sign-in",
@@ -12,6 +14,7 @@ export const routes = {
     resetPassword: "/reset-password",
     verifyEmail: "/verify-email",
     verifyEmailSent: "/verify-email/sent",
+    twoFactor: "/verify-2fa",
   },
   app: {
     dashboard: "/dashboard",
@@ -26,6 +29,9 @@ export const routes = {
   settings: {
     profile: "/settings",
     preferences: "/settings/preferences",
+    security: "/settings/security",
+    notifications: "/settings/notifications",
+    apiKeys: "/settings/api-keys",
     billing: "/settings/billing",
     organization: "/settings/organization",
     members: "/settings/members",

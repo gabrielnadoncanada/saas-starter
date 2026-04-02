@@ -3,10 +3,13 @@
 import type { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+import { recordAuditLog } from "@/features/audit/server/record-audit-log";
 import {
   LimitReachedError,
   UpgradeRequiredError,
 } from "@/features/billing/errors/billing-errors";
+import { createNotification } from "@/features/notifications/server/notification-service";
+import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
 import {
   bulkDeleteTasks,
   bulkUpdateTaskStatus,
@@ -56,9 +59,31 @@ export const createTaskAction = validatedAuthenticatedAction<
   { task?: Task }
 >(
   createTaskSchema,
-  async (data) => {
+  async (data, _, user) => {
     try {
       const task = await createTaskForCurrentOrganization(data);
+      const membership = await requireActiveOrganizationMembership();
+
+      await Promise.all([
+        recordAuditLog({
+          organizationId: membership.organizationId,
+          actorUserId: user.id,
+          event: "task.created",
+          entityType: "task",
+          entityId: String(task.id),
+          summary: `Created task ${task.code}`,
+        }),
+        createNotification({
+          organizationId: membership.organizationId,
+          userId: user.id,
+          type: "task.created",
+          title: "Task created",
+          body: `${task.code} is now in your workspace.`,
+          href: routes.app.tasks,
+          metadata: { taskId: task.id },
+        }),
+      ]);
+
       revalidatePath(routes.app.tasks);
 
       return {
@@ -84,8 +109,19 @@ export const updateTaskAction = validatedAuthenticatedAction<
   {}
 >(
   updateTaskSchema,
-  async (data) => {
+  async (data, _, user) => {
     await updateTask(data);
+    const membership = await requireActiveOrganizationMembership();
+
+    await recordAuditLog({
+      organizationId: membership.organizationId,
+      actorUserId: user.id,
+      event: "task.updated",
+      entityType: "task",
+      entityId: String(data.taskId),
+      summary: `Updated task ${data.taskId}`,
+    });
+
     revalidatePath(routes.app.tasks);
 
     return { success: "Task updated" };
@@ -97,8 +133,30 @@ export const deleteTaskAction = validatedAuthenticatedAction<
   { taskId?: number }
 >(
   deleteTaskSchema,
-  async ({ taskId }) => {
+  async ({ taskId }, _, user) => {
     await deleteTask(taskId);
+    const membership = await requireActiveOrganizationMembership();
+
+    await Promise.all([
+      recordAuditLog({
+        organizationId: membership.organizationId,
+        actorUserId: user.id,
+        event: "task.deleted",
+        entityType: "task",
+        entityId: String(taskId),
+        summary: `Deleted task ${taskId}`,
+      }),
+      createNotification({
+        organizationId: membership.organizationId,
+        userId: user.id,
+        type: "task.deleted",
+        title: "Task deleted",
+        body: `Task ${taskId} was removed from the workspace.`,
+        href: routes.app.tasks,
+        metadata: { taskId },
+      }),
+    ]);
+
     revalidatePath(routes.app.tasks);
 
     return {
@@ -113,8 +171,19 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
   { refreshKey?: number }
 >(
   updateTaskStatusSchema,
-  async (data) => {
+  async (data, _, user) => {
     await updateTaskStatus(data);
+    const membership = await requireActiveOrganizationMembership();
+
+    await recordAuditLog({
+      organizationId: membership.organizationId,
+      actorUserId: user.id,
+      event: "task.status_updated",
+      entityType: "task",
+      entityId: String(data.taskId),
+      summary: `Moved task ${data.taskId} to ${data.status}`,
+    });
+
     revalidatePath(routes.app.tasks);
 
     return {
@@ -129,8 +198,19 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
   { taskIds?: number[] }
 >(
   bulkDeleteTasksSchema,
-  async ({ taskIds }) => {
+  async ({ taskIds }, _, user) => {
     const deletedCount = await bulkDeleteTasks(taskIds);
+    const membership = await requireActiveOrganizationMembership();
+
+    await recordAuditLog({
+      organizationId: membership.organizationId,
+      actorUserId: user.id,
+      event: "task.bulk_deleted",
+      entityType: "task",
+      summary: `Deleted ${deletedCount} tasks`,
+      metadata: { taskIds },
+    });
+
     revalidatePath(routes.app.tasks);
 
     return {
@@ -145,8 +225,19 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
   { status?: Task["status"]; taskIds?: number[] }
 >(
   bulkUpdateTaskStatusSchema,
-  async (data) => {
+  async (data, _, user) => {
     const updatedCount = await bulkUpdateTaskStatus(data);
+    const membership = await requireActiveOrganizationMembership();
+
+    await recordAuditLog({
+      organizationId: membership.organizationId,
+      actorUserId: user.id,
+      event: "task.bulk_status_updated",
+      entityType: "task",
+      summary: `Updated ${updatedCount} tasks to ${data.status}`,
+      metadata: { taskIds: data.taskIds },
+    });
+
     revalidatePath(routes.app.tasks);
 
     return {

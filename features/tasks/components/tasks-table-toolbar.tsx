@@ -3,7 +3,7 @@
 import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { XIcon } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { useEffect, useState } from "react";
 
 import { taskPriorities, taskStatuses } from "@/features/tasks/task-options";
@@ -110,3 +110,4 @@ export function TasksTableToolbar({
     </div>
   );
 }
+

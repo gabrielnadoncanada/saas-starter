@@ -1,7 +1,7 @@
 "use client";
 
 import type { Task } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect, useRef } from "react";
 
 import {
@@ -70,3 +70,4 @@ export function TaskDeleteDialog({
     </>
   );
 }
+

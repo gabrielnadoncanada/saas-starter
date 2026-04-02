@@ -1,7 +1,7 @@
 "use client";
 
 import { Building2, Check } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -96,3 +96,4 @@ export function OrganizationSwitcher() {
     </DropdownMenuGroup>
   );
 }
+

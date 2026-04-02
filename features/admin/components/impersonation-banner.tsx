@@ -1,7 +1,7 @@
 "use client";
 
 import { Eye, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/shared/components/ui/button";
@@ -37,3 +37,4 @@ export function ImpersonationBanner() {
     </div>
   );
 }
+
