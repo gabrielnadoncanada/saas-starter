@@ -5,8 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-import { AuthEmailSummary } from "@/features/auth/components/shared/auth-email-summary";
-import { signUpWithEmail } from "@/features/auth/data/auth-requests";
+import { signUpWithEmail } from "@/features/auth/client/auth-requests";
 import {
   signUpPasswordDefaultValues,
   signUpPasswordSchema,
@@ -78,7 +77,21 @@ export function SignUpPasswordStep({
 
   return (
     <div className="space-y-3">
-      <AuthEmailSummary email={email} onChange={onChangeEmail} />
+      <div className="flex items-start justify-between gap-3 rounded-lg border px-4 py-3">
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-foreground">Email</p>
+          <p className="text-sm text-muted-foreground">{email}</p>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-auto px-2 py-1 text-sm"
+          onClick={onChangeEmail}
+        >
+          Change
+        </Button>
+      </div>
 
       <form onSubmit={onSubmit} className="space-y-4">
         <Field data-invalid={Boolean(errors.password)}>

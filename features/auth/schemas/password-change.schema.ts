@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { authPasswordSchema } from "@/features/auth/schemas/auth-password.schema";
+import { authPasswordSchema } from "@/features/auth/schemas/auth-forms.schema";
 
 const confirmPasswordSchema = z.string().min(1, "Confirm your new password.");
 const passwordChangeBaseSchema = z.object({

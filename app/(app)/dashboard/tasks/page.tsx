@@ -5,7 +5,7 @@ import { getTasksPage } from "@/features/tasks/server/get-tasks-page";
 import {
   buildTasksTableHref,
   parseTaskTableSearchParams,
-} from "@/features/tasks/task-schemas";
+} from "@/features/tasks/task-table-search-params";
 import { routes } from "@/shared/constants/routes";
 
 type DashboardTasksPageProps = {

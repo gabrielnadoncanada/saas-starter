@@ -6,8 +6,10 @@ import { AiModelSelectionError } from "@/features/ai/server/model-selection-erro
 import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
 import { resolveOrganizationModelSelection } from "@/features/ai/server/resolve-model-selection";
 import { assistantTools } from "@/features/assistant/server/tools";
-import { LimitReachedError } from "@/features/billing/errors/limit-reached";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/errors/billing-errors";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";

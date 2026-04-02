@@ -1,5 +1,7 @@
-import { LimitReachedError } from "../errors/limit-reached";
-import { UpgradeRequiredError } from "../errors/upgrade-required";
+import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "../errors/billing-errors";
 import type { Capability, LimitKey, PlanId } from "../plans";
 import { getPlan } from "../plans";
 

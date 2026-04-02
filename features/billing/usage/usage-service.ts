@@ -1,6 +1,6 @@
 import { db } from "@/shared/lib/db/prisma";
 
-import { LimitReachedError } from "../errors/limit-reached";
+import { LimitReachedError } from "../errors/billing-errors";
 import { getPlanLimit } from "../guards/plan-guards";
 import type { LimitKey, PlanId } from "../plans";
 import { getPlan } from "../plans";

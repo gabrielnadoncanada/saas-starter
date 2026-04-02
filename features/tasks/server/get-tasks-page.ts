@@ -2,8 +2,8 @@ import "server-only";
 
 import { Prisma } from "@prisma/client";
 
-import { getActiveOrganizationId } from "@/features/organizations/server/get-active-organization-id";
-import type { TaskTableSearchParams } from "@/features/tasks/task-schemas";
+import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
+import type { TaskTableSearchParams } from "@/features/tasks/task-table-search-params";
 import { db } from "@/shared/lib/db/prisma";
 
 function getTaskOrderBy(
@@ -23,7 +23,8 @@ function getTaskOrderBy(
 }
 
 export async function getTasksPage(params: TaskTableSearchParams) {
-  const organizationId = await getActiveOrganizationId({ required: true });
+  const membership = await requireActiveOrganizationMembership();
+  const organizationId = membership.organizationId;
 
   const where: Prisma.TaskWhereInput = {
     organizationId,

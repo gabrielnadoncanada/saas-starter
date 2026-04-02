@@ -1,6 +1,8 @@
 import type { AssistantToolFailure } from "@/features/assistant/types";
-import { LimitReachedError } from "@/features/billing/errors/limit-reached";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/errors/billing-errors";
 
 export function toAssistantToolFailure(error: unknown): AssistantToolFailure {
   if (error instanceof UpgradeRequiredError) {

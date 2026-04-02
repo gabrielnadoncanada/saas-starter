@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { TaskDeleteDialog } from "@/features/tasks/components/task-delete-dialog";
 import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
 import { TasksTable } from "@/features/tasks/components/tasks-table";
-import type { TaskTableSearchParams } from "@/features/tasks/task-schemas";
+import type { TaskTableSearchParams } from "@/features/tasks/task-table-search-params";
 import {
   Page,
   PageDescription,

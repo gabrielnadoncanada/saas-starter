@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
+import { TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
 
 export const TASK_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50] as const;
 export const TASK_TABLE_SORT_FIELDS = [
@@ -18,67 +18,6 @@ export const TASK_TABLE_DEFAULTS = {
 } as const;
 
 export type TaskTablePageSize = (typeof TASK_TABLE_PAGE_SIZES)[number];
-export type TaskTableSortField = (typeof TASK_TABLE_SORT_FIELDS)[number];
-
-const taskTitleSchema = z
-  .string()
-  .trim()
-  .min(1, "Title is required")
-  .max(255, "Title must be 255 characters or less");
-
-const taskDescriptionSchema = z.string().trim().max(5000).optional();
-const taskStatusSchema = z.nativeEnum(TaskStatus);
-const taskLabelSchema = z.nativeEnum(TaskLabel);
-const taskPrioritySchema = z.nativeEnum(TaskPriority);
-const taskIdsSchema = z
-  .string()
-  .trim()
-  .min(1, "Select at least one task")
-  .transform((value) =>
-    value
-      .split(",")
-      .map((part) => part.trim())
-      .filter(Boolean),
-  )
-  .pipe(
-    z
-      .array(z.coerce.number().int().positive())
-      .min(1, "Select at least one task"),
-  );
-
-export const createTaskSchema = z.object({
-  title: taskTitleSchema,
-  description: taskDescriptionSchema,
-  label: taskLabelSchema,
-  priority: taskPrioritySchema.default("MEDIUM"),
-});
-
-export const updateTaskSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-  title: taskTitleSchema,
-  description: taskDescriptionSchema,
-  label: taskLabelSchema,
-  priority: taskPrioritySchema,
-  status: taskStatusSchema,
-});
-
-export const deleteTaskSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-});
-
-export const updateTaskStatusSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-  status: taskStatusSchema,
-});
-
-export const bulkDeleteTasksSchema = z.object({
-  taskIds: taskIdsSchema,
-});
-
-export const bulkUpdateTaskStatusSchema = z.object({
-  taskIds: taskIdsSchema,
-  status: taskStatusSchema,
-});
 
 const taskTableSearchParamsSchema = z.object({
   page: z.coerce.number().int().positive().catch(TASK_TABLE_DEFAULTS.page),

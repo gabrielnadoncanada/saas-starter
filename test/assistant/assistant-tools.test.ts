@@ -5,8 +5,10 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { LimitReachedError } from "@/features/billing/errors/limit-reached";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/errors/billing-errors";
 import { hasCapability } from "@/features/billing/guards/plan-guards";
 import { getPlan } from "@/features/billing/plans";
 

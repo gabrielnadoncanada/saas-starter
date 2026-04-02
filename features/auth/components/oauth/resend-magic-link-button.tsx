@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { sendMagicLink } from "@/features/auth/data/auth-requests";
+import { sendMagicLink } from "@/features/auth/client/auth-requests";
 
 type ResendMagicLinkButtonProps = {
   email: string;

@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError } from "@/features/billing/errors/limit-reached";
-import { UpgradeRequiredError } from "@/features/billing/errors/upgrade-required";
+import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/errors/billing-errors";
 import {
   assertCapability,
   assertLimit,

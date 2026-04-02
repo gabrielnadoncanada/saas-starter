@@ -1,28 +1,22 @@
 import "server-only";
 
 import { Prisma, type Task } from "@prisma/client";
-import { z } from "zod";
 
 import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
 import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
-import { getActiveOrganizationId } from "@/features/organizations/server/get-active-organization-id";
 import {
-  bulkDeleteTasksSchema,
-  bulkUpdateTaskStatusSchema,
-  createTaskSchema,
-  deleteTaskSchema,
-  updateTaskSchema,
-  updateTaskStatusSchema,
-} from "@/features/tasks/task-schemas";
+  requireActiveOrganizationMembership,
+} from "@/features/organizations/server/organization-membership";
+import type {
+  BulkDeleteTasksValues,
+  BulkUpdateTaskStatusValues,
+  CreateTaskValues,
+  DeleteTaskValues,
+  UpdateTaskStatusValues,
+  UpdateTaskValues,
+} from "@/features/tasks/task-form.schema";
 import { db } from "@/shared/lib/db/prisma";
-
-type CreateTaskInput = z.infer<typeof createTaskSchema>;
-type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
-type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
-type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;
-type BulkDeleteTasksInput = z.infer<typeof bulkDeleteTasksSchema>;
-type BulkUpdateTaskStatusInput = z.infer<typeof bulkUpdateTaskStatusSchema>;
 
 const MAX_TASK_CODE_ATTEMPTS = 10;
 
@@ -34,7 +28,9 @@ function isUniqueConstraintError(error: unknown) {
 }
 
 async function getOrganizationId() {
-  return getActiveOrganizationId({ required: true });
+  // Every task query must derive org scope from the active membership helper.
+  const membership = await requireActiveOrganizationMembership();
+  return membership.organizationId;
 }
 
 export async function listTasks() {
@@ -47,7 +43,7 @@ export async function listTasks() {
 }
 
 export async function createTaskForCurrentOrganization(
-  input: CreateTaskInput,
+  input: CreateTaskValues,
 ): Promise<Task> {
   const organizationPlan = await getOrganizationPlan();
 
@@ -105,7 +101,7 @@ export async function createTaskForCurrentOrganization(
   });
 }
 
-export async function updateTask(input: UpdateTaskInput) {
+export async function updateTask(input: UpdateTaskValues) {
   const organizationId = await getOrganizationId();
 
   const { count } = await db.task.updateMany({
@@ -127,7 +123,7 @@ export async function updateTask(input: UpdateTaskInput) {
   }
 }
 
-export async function updateTaskStatus(input: UpdateTaskStatusInput) {
+export async function updateTaskStatus(input: UpdateTaskStatusValues) {
   const organizationId = await getOrganizationId();
 
   const { count } = await db.task.updateMany({
@@ -145,7 +141,7 @@ export async function updateTaskStatus(input: UpdateTaskStatusInput) {
   }
 }
 
-export async function deleteTask(taskId: DeleteTaskInput["taskId"]) {
+export async function deleteTask(taskId: DeleteTaskValues["taskId"]) {
   const organizationId = await getOrganizationId();
 
   const { count } = await db.task.deleteMany({
@@ -160,7 +156,7 @@ export async function deleteTask(taskId: DeleteTaskInput["taskId"]) {
   }
 }
 
-export async function bulkUpdateTaskStatus(input: BulkUpdateTaskStatusInput) {
+export async function bulkUpdateTaskStatus(input: BulkUpdateTaskStatusValues) {
   const organizationId = await getOrganizationId();
 
   const { count } = await db.task.updateMany({
@@ -183,7 +179,7 @@ export async function bulkUpdateTaskStatus(input: BulkUpdateTaskStatusInput) {
 }
 
 export async function bulkDeleteTasks(
-  taskIds: BulkDeleteTasksInput["taskIds"],
+  taskIds: BulkDeleteTasksValues["taskIds"],
 ) {
   const organizationId = await getOrganizationId();
 

@@ -11,9 +11,9 @@ import {
 import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import {
-  getRequiredOrganizationMembership,
   OrganizationMembershipError,
-} from "@/features/organizations/server/get-required-organization-membership";
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -44,7 +44,7 @@ export async function checkoutAction(formData: FormData) {
   }
 
   try {
-    await getRequiredOrganizationMembership(user.id, ["owner"]);
+    await requireActiveOrganizationRole(["owner"]);
   } catch (error) {
     if (error instanceof OrganizationMembershipError) {
       redirect(routes.settings.members);

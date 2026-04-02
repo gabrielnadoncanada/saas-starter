@@ -1,19 +1,25 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import {
+  buildCheckEmailHref,
+  sendMagicLink,
+  signInWithOAuth,
+} from "@/features/auth/client/auth-requests";
 import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
 import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
 import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
 import { SignInPasswordStep } from "@/features/auth/components/sign-in/sign-in-password-step";
 import {
-  buildCheckEmailHref,
-  sendMagicLink,
-  signInWithOAuth,
-} from "@/features/auth/data/auth-requests";
-import { useAuthEmailStep } from "@/features/auth/hooks/use-auth-email-step";
+  emailDefaultValues,
+  emailSchema,
+  type EmailValues,
+} from "@/features/auth/schemas/auth-forms.schema";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
@@ -38,22 +44,29 @@ export function SignInForm({
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const [showVerification, setShowVerification] = useState(false);
+  const [showPasswordStep, setShowPasswordStep] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [pendingProvider, setPendingProvider] =
     useState<OAuthProviderId | null>(null);
   const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
   const {
-    emailError,
-    emailField,
-    continueToPasswordStep,
-    returnToEmailStep,
-    showPasswordStep: isPasswordStepVisible,
-    submittedEmail,
-    validateEmail,
-  } = useAuthEmailStep({
-    onEmailChanged: () => setShowVerification(false),
-    onEmailValidated: () => setShowVerification(false),
+    clearErrors,
+    formState: { errors },
+    getValues,
+    register,
+    setValue,
+    trigger,
+  } = useForm<EmailValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: emailDefaultValues,
   });
 
+  const emailField = register("email", {
+    onChange: () => {
+      clearErrors();
+      setShowVerification(false);
+    },
+  });
   const oauthErrorMessage = error
     ? (OAUTH_ERROR_MESSAGES[error] ?? "Unable to sign in. Please try again.")
     : null;
@@ -61,9 +74,35 @@ export function SignInForm({
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });
 
+  async function validateEmail() {
+    if (!(await trigger("email"))) {
+      return null;
+    }
+
+    const email = getValues("email").trim().toLowerCase();
+    setValue("email", email, { shouldDirty: true, shouldValidate: true });
+    clearErrors();
+    setShowVerification(false);
+    return email;
+  }
+
+  async function handleContinue() {
+    const email = await validateEmail();
+
+    if (!email) {
+      return;
+    }
+
+    setSubmittedEmail(email);
+    setShowPasswordStep(true);
+  }
+
   async function handleMagicLink() {
     const email = await validateEmail();
-    if (!email) return;
+
+    if (!email) {
+      return;
+    }
 
     try {
       setIsSendingMagicLink(true);
@@ -89,11 +128,11 @@ export function SignInForm({
 
   return (
     <>
-      {isPasswordStepVisible ? (
+      {showPasswordStep ? (
         <SignInPasswordStep
           email={submittedEmail}
           callbackUrl={nextCallbackUrl}
-          onChangeEmail={returnToEmailStep}
+          onChangeEmail={() => setShowPasswordStep(false)}
           onVerificationChange={setShowVerification}
         />
       ) : (
@@ -102,10 +141,10 @@ export function SignInForm({
           label="Email"
           submitLabel="Sign in"
           emailField={emailField}
-          emailError={emailError}
+          emailError={errors.email?.message}
           onSubmit={(event) => {
             event.preventDefault();
-            void continueToPasswordStep();
+            void handleContinue();
           }}
         />
       )}

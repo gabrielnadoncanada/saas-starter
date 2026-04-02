@@ -1,11 +1,11 @@
 # SaaS Starter
 
-A production-ready Next.js SaaS starter with authentication, Stripe billing, plan gating, team management, and a polished dashboard built for technical founders and small teams who want to ship fast.
+A production-ready Next.js SaaS starter with authentication, Stripe billing, plan gating, organization management, and a polished dashboard built for technical founders and small teams who want to ship fast.
 
 ## Who is this for
 
 - Solo founders launching a SaaS product
-- Small technical teams who don't want to rebuild auth + billing + teams from scratch
+- Small technical teams who don't want to rebuild auth + billing + organizations from scratch
 - Freelancers and agencies starting client projects from a strong base
 
 ## What's included
@@ -13,7 +13,7 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 - **Authentication** - Better Auth with database sessions, email/password, magic link, Google, and GitHub OAuth. Account linking, session management, and soft delete built in.
 - **Stripe billing** - Subscriptions (flat and per-seat), one-time payments, checkout, customer portal, and webhook handling.
 - **Plan gating** - Capability-based feature flags and usage limits (monthly quotas, team member caps). Single source of truth in one config file.
-- **Team management** - Multi-team support with roles (Owner, Admin, Member), invitations, and cookie-based team switching.
+- **Organization management** - Multi-organization support with roles (Owner, Admin, Member), invitations, and active organization switching.
 - **Dashboard shell** - Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
 - **Tasks CRUD example** - Full working feature with TanStack Table (sort, filter, paginate, bulk actions), server actions, Zod validation, and plan-gated creation.
 - **Activity logging** - Audit trail for sign-ins, account changes, team actions, and provider linking.
@@ -76,18 +76,18 @@ Copy `.env.example` and configure:
 
 See the [full environment reference](docs_end_user/02-getting-started/environment-variables.md) for details.
 
-Auth emails and team invitation emails now ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
+Auth emails and organization invitation emails ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
 
 ## How billing works
 
-Plans are defined in a single config file (`features/billing/config/billing.config.ts`). Stripe price IDs from env select the checkout targets. The app manages what each plan gives access to.
+Plans are defined in `shared/config/billing.config.ts`. `features/billing/plans/index.ts` is the public entry point used across the app. Stripe price IDs from env select the checkout targets, and the billing config decides what each plan unlocks.
 
 ```
 Stripe decides which plan is active.
 Your config decides what that plan gives.
 ```
 
-**To add a plan:** Create the prices in Stripe, add their `STRIPE_PRICE_*` env vars, then define capabilities, limits, and pricing behavior in `billing.config.ts`.
+**To add a plan:** Create the prices in Stripe, add their `STRIPE_PRICE_*` env vars, then define capabilities, limits, and pricing behavior in `shared/config/billing.config.ts`.
 
 **To gate a feature:** Call `assertCapability(planId, "your.capability")` in your server action.
 
@@ -103,7 +103,7 @@ features/           -> Product code organized by domain
   auth/             -> Sign-in, sign-up, post-sign-in, OAuth
   billing/          -> Plans, guards, checkout, webhooks, usage tracking
   tasks/            -> CRUD example with plan gating
-  teams/            -> Team management, invitations, roles
+  organizations/    -> Organization management, invitations, roles
   account/          -> Profile, settings, account deletion
 shared/             -> Cross-feature infrastructure
   components/       -> UI components, layout, navigation
@@ -116,10 +116,10 @@ docs_end_user/      -> Setup, customization, and reference guides
 
 ## Why this starter
 
-- **Launch faster** - Auth, billing, teams, and a dashboard shell are already wired together. Start building your product features on day one.
+- **Launch faster** - Auth, billing, organizations, and a dashboard shell are already wired together. Start building your product features on day one.
 - **Understand quickly** - Feature-organized code, thin routes, and short files. No custom frameworks to learn.
 - **Modify safely** - Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
-- **Customize freely** - 31 customization guides cover common changes: rename teams, add auth providers, change plans, rebrand the UI.
+- **Customize freely** - 31 customization guides cover common changes: rename organizations, add auth providers, change plans, rebrand the UI.
 - **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
 
 ## Documentation

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 import {
-  getRequiredOrganizationMembership,
   OrganizationMembershipError,
-} from "@/features/organizations/server/get-required-organization-membership";
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organization-membership";
 import {
   type AuthenticatedUser,
   validatedAuthenticatedAction,
@@ -35,9 +35,7 @@ export function validatedOrganizationOwnerAction<
     schema,
     async (data, formData, user) => {
       try {
-        const membership = await getRequiredOrganizationMembership(user.id, [
-          "owner",
-        ]);
+        const membership = await requireActiveOrganizationRole(["owner"]);
 
         return action(data, formData, {
           organizationId: membership.organizationId,

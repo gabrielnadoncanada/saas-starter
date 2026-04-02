@@ -1,4 +1,4 @@
-import type { LimitKey } from "../plans";
+import type { Capability, LimitKey } from "../plans";
 
 export class LimitReachedError extends Error {
   public readonly limitKey: LimitKey;
@@ -19,6 +19,20 @@ export class LimitReachedError extends Error {
     this.limitKey = limitKey;
     this.limit = limit;
     this.currentUsage = currentUsage;
+    this.currentPlan = currentPlan;
+  }
+}
+
+export class UpgradeRequiredError extends Error {
+  public readonly capability: Capability;
+  public readonly currentPlan: string;
+
+  constructor(capability: Capability, currentPlan: string) {
+    super(
+      `Upgrade required to use "${capability}" (current plan: ${currentPlan})`,
+    );
+    this.name = "UpgradeRequiredError";
+    this.capability = capability;
     this.currentPlan = currentPlan;
   }
 }

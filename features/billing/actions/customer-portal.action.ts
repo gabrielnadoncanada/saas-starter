@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-portal";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import {
-  getRequiredOrganizationMembership,
   OrganizationMembershipError,
-} from "@/features/organizations/server/get-required-organization-membership";
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -16,7 +16,7 @@ export async function customerPortalAction() {
   if (!user) redirect(routes.auth.login);
 
   try {
-    await getRequiredOrganizationMembership(user.id, ["owner"]);
+    await requireActiveOrganizationRole(["owner"]);
   } catch (error) {
     if (error instanceof OrganizationMembershipError) {
       redirect(routes.settings.members);

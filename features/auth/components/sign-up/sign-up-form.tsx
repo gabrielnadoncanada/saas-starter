@@ -1,18 +1,24 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
-import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
-import { SignUpPasswordStep } from "@/features/auth/components/sign-up/sign-up-password-step";
 import {
   buildCheckEmailHref,
   sendMagicLink,
   signInWithOAuth,
-} from "@/features/auth/data/auth-requests";
-import { useAuthEmailStep } from "@/features/auth/hooks/use-auth-email-step";
+} from "@/features/auth/client/auth-requests";
+import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
+import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
+import { SignUpPasswordStep } from "@/features/auth/components/sign-up/sign-up-password-step";
+import {
+  emailDefaultValues,
+  emailSchema,
+  type EmailValues,
+} from "@/features/auth/schemas/auth-forms.schema";
 import { routes } from "@/shared/constants/routes";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
@@ -38,21 +44,30 @@ export function SignUpForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
+  const [showPasswordStep, setShowPasswordStep] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [pendingProvider, setPendingProvider] =
     useState<OAuthProviderId | null>(null);
   const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
   const {
-    continueToPasswordStep,
-    emailError,
-    emailField,
-    returnToEmailStep,
-    setEmailError,
-    showPasswordStep,
-    submittedEmail,
-    validateEmail,
-  } = useAuthEmailStep();
-  const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
+    clearErrors,
+    formState: { errors },
+    getValues,
+    register,
+    setError,
+    setValue,
+    trigger,
+  } = useForm<EmailValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: emailDefaultValues,
+  });
 
+  const emailField = register("email", {
+    onChange: () => {
+      clearErrors();
+    },
+  });
+  const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
   const successHref = buildCallbackURL(
     routes.auth.verifyEmailSent,
     nextCallbackUrl,
@@ -63,9 +78,34 @@ export function SignUpForm({
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });
 
+  async function validateEmail() {
+    if (!(await trigger("email"))) {
+      return null;
+    }
+
+    const email = getValues("email").trim().toLowerCase();
+    setValue("email", email, { shouldDirty: true, shouldValidate: true });
+    clearErrors();
+    return email;
+  }
+
+  async function handleContinue() {
+    const email = await validateEmail();
+
+    if (!email) {
+      return;
+    }
+
+    setSubmittedEmail(email);
+    setShowPasswordStep(true);
+  }
+
   async function handleMagicLink() {
     const email = await validateEmail();
-    if (!email) return;
+
+    if (!email) {
+      return;
+    }
 
     try {
       setIsSendingMagicLink(true);
@@ -89,10 +129,6 @@ export function SignUpForm({
     }
   }
 
-  function handleEmailTaken(message: string) {
-    setEmailError(message);
-  }
-
   return (
     <>
       {showPasswordStep ? (
@@ -100,8 +136,11 @@ export function SignUpForm({
           email={submittedEmail}
           callbackUrl={nextCallbackUrl}
           successHref={successHref}
-          onChangeEmail={returnToEmailStep}
-          onEmailTaken={handleEmailTaken}
+          onChangeEmail={() => setShowPasswordStep(false)}
+          onEmailTaken={(message) => {
+            setShowPasswordStep(false);
+            setError("email", { type: "server", message });
+          }}
         />
       ) : (
         <AuthEmailStep
@@ -109,10 +148,10 @@ export function SignUpForm({
           label="Email"
           submitLabel="Continue"
           emailField={emailField}
-          emailError={emailError}
+          emailError={errors.email?.message}
           onSubmit={(event) => {
             event.preventDefault();
-            void continueToPasswordStep();
+            void handleContinue();
           }}
         />
       )}
