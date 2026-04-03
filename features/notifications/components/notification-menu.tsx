@@ -4,8 +4,6 @@ import { Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
-import { Link } from "@/shared/i18n/navigation";
-import { routes } from "@/shared/constants/routes";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
 
 type NotificationItem = {
   id: string;
@@ -30,9 +30,10 @@ export function NotificationMenu() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isPending, startTransition] = useTransition();
+  const notificationsChangedEvent = "notifications:changed";
 
   async function loadNotifications() {
-    const response = await fetch("/api/notifications", {
+    const response = await fetch("/api/notifications?limit=10", {
       cache: "no-store",
     });
 
@@ -51,24 +52,63 @@ export function NotificationMenu() {
 
   useEffect(() => {
     void loadNotifications();
+
+    function handleNotificationsChanged() {
+      void loadNotifications();
+    }
+
+    window.addEventListener(notificationsChangedEvent, handleNotificationsChanged);
+
+    return () => {
+      window.removeEventListener(
+        notificationsChangedEvent,
+        handleNotificationsChanged,
+      );
+    };
   }, []);
 
   async function markAllAsRead() {
-    await fetch("/api/notifications", {
+    const response = await fetch("/api/notifications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),
     });
+
+    if (!response.ok) {
+      return;
+    }
+
     await loadNotifications();
+    window.dispatchEvent(new Event(notificationsChangedEvent));
   }
 
   async function markOneAsRead(notificationId: string) {
-    await fetch("/api/notifications", {
+    const response = await fetch("/api/notifications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ notificationId }),
     });
+
+    if (!response.ok) {
+      return;
+    }
+
     await loadNotifications();
+    window.dispatchEvent(new Event(notificationsChangedEvent));
+  }
+
+  async function clearAllNotifications() {
+    const response = await fetch("/api/notifications", {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    setNotifications([]);
+    setUnreadCount(0);
+    window.dispatchEvent(new Event(notificationsChangedEvent));
   }
 
   return (
@@ -86,15 +126,26 @@ export function NotificationMenu() {
       <DropdownMenuContent align="end" className="w-96">
         <div className="flex items-center justify-between px-2 py-1.5">
           <DropdownMenuLabel className="p-0">{t("title")}</DropdownMenuLabel>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={isPending || notifications.length === 0}
-            onClick={() => startTransition(() => void markAllAsRead())}
-          >
-            {t("markAllRead")}
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={isPending || unreadCount === 0}
+              onClick={() => startTransition(() => void markAllAsRead())}
+            >
+              {t("markAllRead")}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={isPending || notifications.length === 0}
+              onClick={() => startTransition(() => void clearAllNotifications())}
+            >
+              {t("clearAll")}
+            </Button>
+          </div>
         </div>
         <DropdownMenuSeparator />
         {notifications.length === 0 ? (

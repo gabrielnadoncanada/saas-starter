@@ -8,7 +8,7 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { createTaskForCurrentOrganization } from "@/features/tasks/server/task-mutations";
@@ -25,7 +25,7 @@ type InvoiceDraftInput = {
 };
 
 async function getToolOrganizationPlan() {
-  const organizationPlan = await getOrganizationPlan();
+  const organizationPlan = await getCurrentOrganizationPlan();
 
   if (!organizationPlan) {
     throw new Error("Organization not found");

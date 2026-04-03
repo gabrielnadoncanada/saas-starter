@@ -18,8 +18,8 @@ vi.mock("ai", () => ({
   tool: <T>(definition: T) => definition,
 }));
 
-vi.mock("@/features/billing/guards/get-organization-plan", () => ({
-  getOrganizationPlan: vi.fn(),
+vi.mock("@/features/billing/plans/get-current-organization-plan", () => ({
+  getCurrentOrganizationPlan: vi.fn(),
 }));
 
 vi.mock("@/features/billing/guards/plan-guards", async () => {
@@ -52,8 +52,9 @@ vi.mock("@/features/assistant/server/demo-inbox", () => ({
   },
 }));
 
-const { getOrganizationPlan } =
-  await import("@/features/billing/guards/get-organization-plan");
+const { getCurrentOrganizationPlan } = await import(
+  "@/features/billing/plans/get-current-organization-plan"
+);
 const { consumeMonthlyUsage } =
   await import("@/features/billing/usage/usage-service");
 const { createTaskForCurrentOrganization } =
@@ -80,7 +81,7 @@ const createInvoiceDraftExecute = assistantTools.createInvoiceDraft
 describe("assistant tools", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getOrganizationPlan).mockResolvedValue({
+    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
       planId: "pro",
       organizationId: "12",
       organizationName: "Acme",
@@ -91,7 +92,7 @@ describe("assistant tools", () => {
   });
 
   it("blocks reviewInbox when the plan does not include email.sync", async () => {
-    vi.mocked(getOrganizationPlan).mockResolvedValue({
+    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
       planId: "free",
       organizationId: "12",
       organizationName: "Acme",
@@ -171,7 +172,7 @@ describe("assistant tools", () => {
   });
 
   it("blocks invoice drafts when the plan does not include invoice.create", async () => {
-    vi.mocked(getOrganizationPlan).mockResolvedValue({
+    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
       planId: "free",
       organizationId: "12",
       organizationName: "Acme",

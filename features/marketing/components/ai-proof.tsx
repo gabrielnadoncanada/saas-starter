@@ -43,7 +43,7 @@ export function AiProof() {
                 // Route-level AI gating + provider resolution
               </p>
               <pre className="whitespace-pre leading-relaxed">
-                {`const organizationPlan = await getOrganizationPlan();
+                {`const organizationPlan = await getCurrentOrganizationPlan();
 assertCapability(organizationPlan.planId, "ai.assistant");
 
 const usage = await getMonthlyUsage(

@@ -1,6 +1,5 @@
 import account from "./account.json";
 import admin from "./admin.json";
-import apiKeys from "./api-keys.json";
 import assistant from "./assistant.json";
 import auth from "./auth.json";
 import billing from "./billing.json";
@@ -17,7 +16,6 @@ import tasks from "./tasks.json";
 export const messages = {
   ...account,
   ...admin,
-  ...apiKeys,
   ...assistant,
   ...auth,
   ...billing,

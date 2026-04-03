@@ -3,7 +3,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import { getPlanLimit } from "@/features/billing/guards/plan-guards";
 import { getFileStorage } from "@/shared/lib/storage/storage";
 import { db } from "@/shared/lib/db/prisma";
@@ -60,7 +60,7 @@ export async function saveStoredFile(input: {
   uploadedByUserId: string;
   file: File;
 }) {
-  const organizationPlan = await getOrganizationPlan();
+  const organizationPlan = await getCurrentOrganizationPlan();
 
   if (!organizationPlan || organizationPlan.organizationId !== input.organizationId) {
     throw new Error("Unable to determine organization plan");

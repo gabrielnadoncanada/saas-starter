@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-vi.mock("@/features/billing/guards/get-organization-plan", () => ({
-  getOrganizationPlan: vi.fn(),
+vi.mock("@/features/billing/plans/get-current-organization-plan", () => ({
+  getCurrentOrganizationPlan: vi.fn(),
 }));
 
 vi.mock("@/features/billing/guards/plan-guards", () => ({
@@ -28,8 +28,8 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 const { saveStoredFile, deleteStoredFile, readStoredFileBody } = await import(
   "@/features/files/server/storage-service"
 );
-const { getOrganizationPlan } = await import(
-  "@/features/billing/guards/get-organization-plan"
+const { getCurrentOrganizationPlan } = await import(
+  "@/features/billing/plans/get-current-organization-plan"
 );
 const { getPlanLimit } = await import("@/features/billing/guards/plan-guards");
 const { getFileStorage } = await import("@/shared/lib/storage/storage");
@@ -39,7 +39,7 @@ describe("storage-service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(getOrganizationPlan).mockResolvedValue({
+    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
       organizationId: "org_123",
       planId: "pro",
     } as never);

@@ -36,24 +36,6 @@ model AuditLog {
   @@index([entityType, entityId])
 }
 
-model ApiKey {
-  id             String    @id @default(cuid())
-  organizationId String
-  createdByUserId String
-  name           String    @db.VarChar(100)
-  prefix         String    @unique @db.VarChar(20)
-  hashedKey      String    @unique @db.VarChar(128)
-  capabilities   String[]
-  lastUsedAt     DateTime?
-  revokedAt      DateTime?
-  createdAt      DateTime  @default(now())
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  createdBy    User         @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
-
-  @@index([organizationId, revokedAt, createdAt(sort: Desc)])
-}
-
 model StoredFile {
   id               String    @id @default(cuid())
   organizationId   String

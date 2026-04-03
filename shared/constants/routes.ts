@@ -31,7 +31,6 @@ export const routes = {
     preferences: "/settings/preferences",
     security: "/settings/security",
     notifications: "/settings/notifications",
-    apiKeys: "/settings/api-keys",
     billing: "/settings/billing",
     organization: "/settings/organization",
     members: "/settings/members",

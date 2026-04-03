@@ -93,3 +93,9 @@ export async function markAllNotificationsAsRead(userId: string) {
     },
   });
 }
+
+export async function clearUserNotifications(userId: string) {
+  return db.notification.deleteMany({
+    where: { userId },
+  });
+}

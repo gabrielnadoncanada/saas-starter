@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import {
+  clearUserNotifications,
   getUnreadNotificationCount,
   listUserNotifications,
   markAllNotificationsAsRead,
@@ -8,15 +9,21 @@ import {
 } from "@/features/notifications/server/notification-service";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
-export async function GET() {
+export async function GET(request: Request) {
   const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { searchParams } = new URL(request.url);
+  const limitParam = Number(searchParams.get("limit") ?? "10");
+  const limit = Number.isFinite(limitParam)
+    ? Math.min(Math.max(limitParam, 1), 100)
+    : 10;
+
   const [notifications, unreadCount] = await Promise.all([
-    listUserNotifications(user.id, 10),
+    listUserNotifications(user.id, limit),
     getUnreadNotificationCount(user.id),
   ]);
 
@@ -40,6 +47,18 @@ export async function POST(request: Request) {
   } else {
     await markAllNotificationsAsRead(user.id);
   }
+
+  return NextResponse.json({ success: true });
+}
+
+export async function DELETE() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  await clearUserNotifications(user.id);
 
   return NextResponse.json({ success: true });
 }

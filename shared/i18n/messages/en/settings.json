@@ -105,12 +105,10 @@
     "notifications": {
       "title": "Notifications",
       "description": "Review product activity, security changes, and billing events for your workspace.",
+      "markAllRead": "Mark all read",
+      "clearAll": "Clear all",
       "unreadCount": "{count, plural, one {# unread notification} other {# unread notifications}}.",
       "noNotifications": "No notifications yet."
-    },
-    "apiKeys": {
-      "title": "API Keys",
-      "description": "Create organization-scoped API keys for scripts, CI, and private integrations."
     },
     "preferences": {
       "title": "Preferences",

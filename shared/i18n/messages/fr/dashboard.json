@@ -14,17 +14,15 @@
     "recentTasksTitle": "Taches recentes",
     "recentTasksDescription": "Les dernieres taches dans {organizationName}.",
     "activityTitle": "Flux d'activite",
-    "activityDescription": "Evenements traces par l'audit sur les taches, invitations, cles et la securite.",
+    "activityDescription": "Evenements traces par l'audit sur les taches, invitations et la securite.",
     "viewTasks": "Voir les taches",
     "organizationSettings": "Parametres de l'organisation",
-    "apiKeys": "Cles API ({count})",
     "noTasks": "Aucune tache pour le moment. Creez-en une pour lancer l'espace.",
     "noActivity": "L'activite apparaitra ici a mesure que votre equipe utilise le starter.",
     "someone": "Quelqu'un",
     "checklist": {
       "firstTask": "Creer votre premiere tache",
       "inviteTeam": "Inviter un coequipier",
-      "apiKey": "Creer une cle API",
       "tryAssistant": "Utiliser l'assistant IA"
     },
     "planPriceFree": "Gratuit",

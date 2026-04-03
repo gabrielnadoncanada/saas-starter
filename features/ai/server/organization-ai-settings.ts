@@ -5,7 +5,7 @@ import type { z } from "zod";
 import { organizationAiSettingsSchema } from "@/features/ai/schemas/organization-ai-settings.schema";
 import { AiModelSelectionError } from "@/features/ai/server/resolve-model-selection";
 import type { OrganizationAiSettingsView } from "@/features/ai/types/ai.types";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import { assertCapability } from "@/features/billing/guards/plan-guards";
 import {
   type AiModelId,
@@ -77,7 +77,7 @@ function validateOrganizationAiSettings(input: OrganizationAiSettingsInput) {
 }
 
 export async function assertOrganizationAiAccess() {
-  const organizationPlan = await getOrganizationPlan();
+  const organizationPlan = await getCurrentOrganizationPlan();
 
   if (!organizationPlan) {
     throw new Error("Organization not found");

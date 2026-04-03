@@ -14,9 +14,9 @@ import {
   signInWithOAuth,
   signUpWithEmail,
 } from "@/features/auth/client/auth-requests";
-import { AuthEmailStep } from "@/features/auth/components/shared/auth-email-step";
-import { AuthPasswordStep } from "@/features/auth/components/shared/auth-password-step";
-import { AuthSecondaryActions } from "@/features/auth/components/shared/auth-secondary-actions";
+import { AuthEmailStep } from "@/features/auth/components/auth-email-step";
+import { AuthPasswordStep } from "@/features/auth/components/auth-password-step";
+import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
 import {
   emailDefaultValues,
   emailSchema,
@@ -246,4 +246,3 @@ export function SignUpForm({
     </>
   );
 }
-

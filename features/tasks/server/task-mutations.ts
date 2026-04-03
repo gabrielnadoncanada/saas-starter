@@ -2,7 +2,7 @@ import "server-only";
 
 import { Prisma, type Task } from "@prisma/client";
 
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import { assertCapability } from "@/features/billing/guards/plan-guards";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import {
@@ -106,7 +106,7 @@ export async function listTasks() {
 export async function createTaskForCurrentOrganization(
   input: CreateTaskValues,
 ): Promise<Task> {
-  const organizationPlan = await getOrganizationPlan();
+  const organizationPlan = await getCurrentOrganizationPlan();
 
   if (!organizationPlan) {
     throw new Error("Organization not found");

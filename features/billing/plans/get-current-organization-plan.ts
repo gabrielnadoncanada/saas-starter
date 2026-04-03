@@ -1,9 +1,9 @@
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import type { PlanId, PricingModel } from "@/shared/config/billing.config";
 
-import { resolveOrganizationPlan } from "../plans/resolve-organization-plan";
+import { resolveOrganizationPlan } from "./resolve-organization-plan";
 
-type OrganizationPlanInfo = {
+type CurrentOrganizationPlan = {
   planId: PlanId;
   organizationId: string;
   organizationName: string;
@@ -11,14 +11,12 @@ type OrganizationPlanInfo = {
   pricingModel: PricingModel;
 };
 
-/**
- * Resolves the current organization's plan from its Stripe subscription.
- * Returns null if no organization is found.
- */
-export async function getOrganizationPlan(): Promise<OrganizationPlanInfo | null> {
+export async function getCurrentOrganizationPlan(): Promise<CurrentOrganizationPlan | null> {
   const organization = await getCurrentOrganization();
 
-  if (!organization) return null;
+  if (!organization) {
+    return null;
+  }
 
   return {
     planId: resolveOrganizationPlan(organization),

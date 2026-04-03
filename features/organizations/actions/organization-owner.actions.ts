@@ -6,7 +6,7 @@ import {
   LimitReachedError,
   UpgradeRequiredError,
 } from "@/features/billing/errors/billing-errors";
-import { getOrganizationPlan } from "@/features/billing/guards/get-organization-plan";
+import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import {
   assertCapability,
   assertLimit,
@@ -97,7 +97,7 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
 >(
   inviteOrganizationMemberSchema,
   async ({ email, role }, _, { organizationId, user }) => {
-    const organizationPlan = await getOrganizationPlan();
+    const organizationPlan = await getCurrentOrganizationPlan();
 
     if (!organizationPlan) {
       return { error: "Unable to determine organization plan" };

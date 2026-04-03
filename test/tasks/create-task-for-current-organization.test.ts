@@ -17,8 +17,8 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   },
 }));
 
-vi.mock("@/features/billing/guards/get-organization-plan", () => ({
-  getOrganizationPlan: vi.fn(),
+vi.mock("@/features/billing/plans/get-current-organization-plan", () => ({
+  getCurrentOrganizationPlan: vi.fn(),
 }));
 
 vi.mock("@/features/billing/guards/plan-guards", () => ({
@@ -30,8 +30,9 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
-const { getOrganizationPlan } =
-  await import("@/features/billing/guards/get-organization-plan");
+const { getCurrentOrganizationPlan } = await import(
+  "@/features/billing/plans/get-current-organization-plan"
+);
 const { assertCapability } =
   await import("@/features/billing/guards/plan-guards");
 const { consumeMonthlyUsage } =
@@ -46,7 +47,7 @@ describe("createTaskForCurrentOrganization", () => {
       callback(db),
     );
 
-    vi.mocked(getOrganizationPlan).mockResolvedValue({
+    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
       planId: "pro",
       organizationId: "12",
       organizationName: "Acme",

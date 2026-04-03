@@ -17,7 +17,6 @@ model Organization {
   aiConversations        AiConversation[]
   notifications          Notification[]
   auditLogs              AuditLog[]
-  apiKeys                ApiKey[]
   storedFiles            StoredFile[]
 }
 

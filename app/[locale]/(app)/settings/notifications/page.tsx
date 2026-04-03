@@ -1,4 +1,6 @@
 import { getTranslations } from "next-intl/server";
+
+import { NotificationsCenter } from "@/features/notifications/components/notifications-center";
 import { getUnreadNotificationCount, listUserNotifications } from "@/features/notifications/server/notification-service";
 import {
   Page,
@@ -34,28 +36,15 @@ export default async function NotificationsSettingsPage({
         <PageDescription>{t("description")}</PageDescription>
       </PageHeader>
 
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          {t(unreadCount === 1 ? "unreadCount" : "unreadCount_plural", {
-            count: unreadCount,
-          })}
-        </p>
-
-        {notifications.length === 0 ? (
-          <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-            {t("empty")}
-          </div>
-        ) : (
-          notifications.map((notification) => (
-            <div key={notification.id} className="rounded-lg border p-4">
-              <p className="font-medium">{notification.title}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {notification.body}
-              </p>
-            </div>
-          ))
-        )}
-      </div>
+      <NotificationsCenter
+        initialNotifications={notifications.map((notification) => ({
+          ...notification,
+          href: notification.href ?? null,
+          readAt: notification.readAt?.toISOString() ?? null,
+          createdAt: notification.createdAt.toISOString(),
+        }))}
+        initialUnreadCount={unreadCount}
+      />
     </Page>
   );
 }

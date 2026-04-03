@@ -14,17 +14,15 @@
     "recentTasksTitle": "Recent tasks",
     "recentTasksDescription": "The latest task work happening in {organizationName}.",
     "activityTitle": "Activity feed",
-    "activityDescription": "Audit-backed events across tasks, invitations, keys, and security.",
+    "activityDescription": "Audit-backed events across tasks, invitations, and security.",
     "viewTasks": "View Tasks",
     "organizationSettings": "Organization Settings",
-    "apiKeys": "API Keys ({count})",
     "noTasks": "No tasks yet. Create one to start shaping the workspace.",
     "noActivity": "Activity will appear here as your team uses the starter.",
     "someone": "Someone",
     "checklist": {
       "firstTask": "Create your first task",
       "inviteTeam": "Invite a teammate",
-      "apiKey": "Create an API key",
       "tryAssistant": "Use the AI assistant"
     },
     "planPriceFree": "Free",

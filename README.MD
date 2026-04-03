@@ -57,6 +57,11 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
+Seeded local accounts:
+
+- `demo@starter.local` / `demo123`
+- `admin@admin.com` / `admin123`
+
 ## Environment setup
 
 Copy `.env.example` and configure:
@@ -73,7 +78,7 @@ Copy `.env.example` and configure:
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                 |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                 |
 
-See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for the local setup checklist.
+See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for the local setup checklist and [docs/STRIPE_TEST_MODE_SETUP.md](docs/STRIPE_TEST_MODE_SETUP.md) for the billing flow.
 
 Auth emails and organization invitation emails ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
 
@@ -87,6 +92,8 @@ Your config decides what that plan gives.
 ```
 
 **To add a plan:** Create the prices in Stripe, add their `STRIPE_PRICE_*` env vars, then define capabilities, limits, and pricing behavior in `shared/config/billing.config.ts`.
+
+**To test billing locally:** Follow [docs/STRIPE_TEST_MODE_SETUP.md](docs/STRIPE_TEST_MODE_SETUP.md) and forward Stripe webhooks to `/api/stripe/webhook`.
 
 **To gate a feature:** Call `assertCapability(planId, "your.capability")` in your server action.
 
@@ -110,7 +117,7 @@ shared/             -> Cross-feature infrastructure
   hooks/            -> Reusable React hooks
   constants/        -> Routes, terminology
 prisma/             -> Schema, migrations, seed
-docs_end_user/      -> Setup, customization, and reference guides
+docs/               -> Setup, customization, and reference guides
 ```
 
 ## Why this starter
@@ -126,6 +133,7 @@ docs_end_user/      -> Setup, customization, and reference guides
 Core documentation lives in this repo:
 
 - [Environment setup](docs/ENVIRONMENT_SETUP.md)
+- [Stripe test mode setup](docs/STRIPE_TEST_MODE_SETUP.md)
 - [Adding a feature](features/ADDING_A_FEATURE.md)
 - [Testing a feature](docs/TESTING_A_FEATURE.md)
 - [Assistant tool integration](features/assistant/TOOL_INTEGRATION.md)

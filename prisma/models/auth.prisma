@@ -29,7 +29,6 @@ model User {
   aiConversations        AiConversation[]        @relation("AiConversationToUser")
   notifications          Notification[]
   auditLogs              AuditLog[]              @relation("AuditActor")
-  apiKeysCreated         ApiKey[]
   storedFilesUploaded    StoredFile[]
   twoFactor              TwoFactor?
 }

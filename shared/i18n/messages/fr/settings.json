@@ -105,12 +105,10 @@
     "notifications": {
       "title": "Notifications",
       "description": "Consultez l'activite produit, les changements de securite et les evenements de facturation.",
+      "markAllRead": "Tout marquer comme lu",
+      "clearAll": "Tout effacer",
       "unreadCount": "{count, plural, one {# notification non lue} other {# notifications non lues}}.",
       "noNotifications": "Aucune notification pour le moment."
-    },
-    "apiKeys": {
-      "title": "Cles API",
-      "description": "Creez des cles API organisationnelles pour scripts, CI et integrations privees."
     },
     "preferences": {
       "title": "Preferences",

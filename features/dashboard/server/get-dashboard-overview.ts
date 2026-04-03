@@ -3,9 +3,8 @@ import "server-only";
 import { subDays } from "date-fns";
 import { getTranslations } from "next-intl/server";
 
-import { listOrganizationApiKeys } from "@/features/api-keys/server/api-key-service";
 import { listOrganizationAuditLogs } from "@/features/audit/server/record-audit-log";
-import { hasCapability, checkLimit } from "@/features/billing/guards/plan-guards";
+import { checkLimit, hasCapability } from "@/features/billing/guards/plan-guards";
 import { resolveOrganizationPlan } from "@/features/billing/plans/resolve-organization-plan";
 import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
@@ -47,13 +46,12 @@ export async function getDashboardOverview(locale: string) {
   const taskCount = tasks.length;
   const organizationId = organization?.id ?? null;
 
-  const [tasksUsage, aiUsage, recentActivity, apiKeys, recentTaskHistory] =
+  const [tasksUsage, aiUsage, recentActivity, recentTaskHistory] =
     organizationId
       ? await Promise.all([
           getMonthlyUsage(organizationId, "tasksPerMonth"),
           getMonthlyUsage(organizationId, "aiRequestsPerMonth"),
           listOrganizationAuditLogs(organizationId, 8),
-          listOrganizationApiKeys(organizationId),
           db.task.findMany({
             where: {
               organizationId,
@@ -66,7 +64,7 @@ export async function getDashboardOverview(locale: string) {
             },
           }),
         ])
-      : [0, 0, [], [], []];
+      : [0, 0, [], []];
 
   const taskLimit = checkLimit(planId, "tasksPerMonth", tasksUsage);
   const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
@@ -85,13 +83,6 @@ export async function getDashboardOverview(locale: string) {
       done: memberCount > 1,
       href: routes.settings.members,
       hidden: !hasCapability(planId, "team.invite"),
-    },
-    {
-      id: "create-api-key",
-      title: t("checklist.apiKey"),
-      done: apiKeys.length > 0,
-      href: routes.settings.apiKeys,
-      hidden: !hasCapability(planId, "api.access"),
     },
     {
       id: "try-assistant",
@@ -117,6 +108,5 @@ export async function getDashboardOverview(locale: string) {
     recentTasks: tasks.slice(0, 5),
     usageChart: buildUsageChart(recentTaskHistory, locale),
     checklist,
-    apiKeyCount: apiKeys.length,
   };
 }
