@@ -3,7 +3,6 @@
 import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
-import { useRouter } from "@/shared/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useMemo, useState } from "react";
 
@@ -29,6 +28,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { useRouter } from "@/shared/i18n/navigation";
 
 type TasksBulkActionsProps = {
   table: Table<Task>;
@@ -109,12 +109,13 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
 
           <DropdownMenuContent sideOffset={14}>
             {taskStatuses.map((status) => (
-              <form key={status.value} action={statusAction}>
-                <input type="hidden" name="taskIds" value={taskIds} />
-                <input type="hidden" name="status" value={status.value} />
-                <DropdownMenuItem asChild>
+              <DropdownMenuItem key={status.value} asChild>
+                <form action={statusAction} className="w-full">
+                  <input type="hidden" name="taskIds" value={taskIds} />
+                  <input type="hidden" name="status" value={status.value} />
                   <button
                     type="submit"
+                    className="flex w-full items-center gap-2 text-left"
                     disabled={isStatusPending || isDeletePending}
                   >
                     {status.icon ? (
@@ -122,8 +123,8 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
                     ) : null}
                     {status.label}
                   </button>
-                </DropdownMenuItem>
-              </form>
+                </form>
+              </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
