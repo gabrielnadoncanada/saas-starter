@@ -2,9 +2,11 @@
 
 import { useActionState, useEffect, useState } from "react";
 
-import { deleteAccountAction } from "@/features/account/actions/delete-account.action";
-import { DELETE_CONFIRMATION_WORD } from "@/features/account/schemas/account.schema";
-import type { DeleteAccountActionState } from "@/features/account/types/account.types";
+import { deleteAccountAction } from "@/features/account/actions/delete-account.actions";
+import {
+  DELETE_CONFIRMATION_WORD,
+  type DeleteAccountInput,
+} from "@/features/account/schemas/account.schema";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -20,6 +22,7 @@ import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { getFieldState } from "@/shared/lib/get-field-state";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
 type DeleteAccountDialogProps = {
   children: React.ReactNode;
@@ -28,7 +31,7 @@ type DeleteAccountDialogProps = {
 export function DeleteAccountDialog({ children }: DeleteAccountDialogProps) {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
-    DeleteAccountActionState,
+    FormActionState<DeleteAccountInput>,
     FormData
   >(deleteAccountAction, {});
 

@@ -13,17 +13,17 @@ export function CodeProof() {
             </p>
             <p className="mt-3 text-muted-foreground">
               Gate any feature with a capability check. Enforce any usage quota
-              with a limit check. Two function calls — that's it. Plans are
-              defined in one config file. Stripe decides which plan is active.
-              Your config decides what it gives.
+              with a limit check. Credits, add-ons, and seats resolve into one
+              entitlement object. Stripe decides what is active. Your catalog
+              decides what it gives.
             </p>
             <ul className="mt-6 space-y-3">
               {[
-                "assertCapability() — gate features by plan",
+                "assertCapability() - gate features by entitlements",
                 "assertLimit() — enforce usage quotas",
-                "recordUsage() — track consumption automatically",
-                "Plans config — single source of truth for all plans",
-                "Three billing models — flat, per-seat, one-time",
+                "consumeCredits() - bill AI usage with prepaid balance",
+                "Billing catalog - one source of truth for plans and add-ons",
+                "Five billing models - one-time, subscription, seats, add-ons, credits",
               ].map((item) => (
                 <li
                   key={item}
@@ -43,10 +43,10 @@ export function CodeProof() {
                 // Gate a feature in your server action
               </p>
               <pre className="whitespace-pre leading-relaxed">
-                {`const organizationPlan = await getCurrentOrganizationPlan();
+                {`const entitlements = await getCurrentOrganizationEntitlements();
 
-assertCapability(organizationPlan.planId, "team.invite");
-assertLimit(organizationPlan.planId, "teamMembers", memberCount);
+assertCapability(entitlements, "team.invite");
+assertLimit(entitlements, "teamMembers", memberCount);
 
 // If we get here, the user's plan allows it`}
               </pre>

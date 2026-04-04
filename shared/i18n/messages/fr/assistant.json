@@ -46,7 +46,7 @@
       "notAvailableFeature": "Assistant IA",
       "notAvailableDescription": "L'assistant IA est disponible sur les plans Pro et Team. Mettez a niveau pour debloquer le module de monetisation IA avec actions de taches, consultation de boite de reception et brouillons de factures.",
       "limitExceededFeature": "Assistant IA",
-      "limitExceededDescription": "Vous avez utilise toutes vos {limit} requetes IA ce mois. Mettez a niveau votre plan pour une limite plus elevee, ou attendez le mois prochain."
+      "limitExceededDescription": "Cet espace n'a plus de credits IA. Ajoutez un pack de credits ou passez a un plan avec plus de credits inclus. Solde actuel: {credits}."
     }
   }
 }

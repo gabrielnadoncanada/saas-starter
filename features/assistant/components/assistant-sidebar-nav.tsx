@@ -8,17 +8,15 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
-import { Link } from "@/shared/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import type { AiConversationListItem } from "@/features/ai/types/ai.types";
 import {
   deleteAssistantConversationRequest,
   listAssistantConversationsRequest,
 } from "@/features/assistant/client/conversations";
+import type { AssistantConversationListItem } from "@/features/assistant/types";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -35,6 +33,8 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
+import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { cn } from "@/shared/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -109,9 +109,9 @@ export function AssistantSidebarNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeConversationId = searchParams.get("conversationId");
-  const [conversations, setConversations] = useState<AiConversationListItem[]>(
-    [],
-  );
+  const [conversations, setConversations] = useState<
+    AssistantConversationListItem[]
+  >([]);
   const [deletingConversationId, setDeletingConversationId] = useState<
     string | null
   >(null);

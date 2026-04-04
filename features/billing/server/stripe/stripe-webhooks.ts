@@ -1,12 +1,17 @@
 import type Stripe from "stripe";
 
 import { recordAuditLog } from "@/features/audit/server/record-audit-log";
-import { createNotificationsForUsers } from "@/features/notifications/server/notification-service";
 import {
-  type BillingInterval,
-  findPlanPriceByPriceId,
+  findCatalogRecurringPriceByPriceId,
+  getAddon,
+  getCreditPack,
+  getPlan,
   isPlanId,
-} from "@/shared/config/billing.config";
+} from "@/features/billing/catalog/resolver";
+import { grantCredits } from "@/features/billing/server/credits";
+import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscription-items";
+import { createNotificationsForUsers } from "@/features/notifications/server/notification-service";
+import type { BillingInterval } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
 import {
@@ -34,25 +39,38 @@ function toBillingInterval(
   return interval === "month" || interval === "year" ? interval : null;
 }
 
-function getPrimaryItem(subscription: Stripe.Subscription) {
+function getPrimarySubscriptionItem(subscription: Stripe.Subscription) {
   return subscription.items.data[0] ?? null;
 }
 
 function resolvePlanId(subscription: Stripe.Subscription) {
-  const priceId = getPrimaryItem(subscription)?.price?.id;
-  if (priceId) {
-    const planIdFromPrice = findPlanPriceByPriceId(priceId)?.plan.id ?? null;
-
-    if (planIdFromPrice) {
-      return planIdFromPrice;
-    }
-  }
-
   if (isPlanId(subscription.metadata.planId)) {
     return subscription.metadata.planId;
   }
 
+  for (const item of subscription.items.data) {
+    const catalogItem = findCatalogRecurringPriceByPriceId(item.price.id);
+
+    if (catalogItem?.itemType === "plan" && isPlanId(catalogItem.itemKey)) {
+      return catalogItem.itemKey;
+    }
+  }
+
   return null;
+}
+
+function resolveAddonIds(subscription: Stripe.Subscription) {
+  const addonIds = new Set<string>();
+
+  for (const item of subscription.items.data) {
+    const catalogItem = findCatalogRecurringPriceByPriceId(item.price.id);
+
+    if (catalogItem?.itemType === "addon" && getAddon(catalogItem.itemKey)) {
+      addonIds.add(catalogItem.itemKey);
+    }
+  }
+
+  return [...addonIds];
 }
 
 async function resolveReferenceId(subscription: Stripe.Subscription) {
@@ -67,68 +85,98 @@ async function resolveReferenceId(subscription: Stripe.Subscription) {
   return findOrganizationIdByStripeCustomerId(subscription.customer);
 }
 
-async function syncSubscription(
-  subscription: Stripe.Subscription,
-  eventType: Stripe.Event["type"],
-) {
+async function grantSubscriptionCredits(params: {
+  addonIds: string[];
+  organizationId: string;
+  periodEnd: Date | null;
+  periodStart: Date | null;
+  planId: string;
+  stripeSubscriptionId: string;
+}) {
+  if (!isPlanId(params.planId) || !params.periodStart) {
+    return;
+  }
+
+  const plan = getPlan(params.planId);
+  const includedMonthlyCredits =
+    plan.includedMonthlyCredits +
+    params.addonIds.reduce(
+      (total, addonId) => total + (getAddon(addonId)?.includedMonthlyCredits ?? 0),
+      0,
+    );
+
+  if (includedMonthlyCredits <= 0) {
+    return;
+  }
+
+  await grantCredits({
+    organizationId: params.organizationId,
+    sourceKey: `${params.stripeSubscriptionId}:${params.periodStart.toISOString()}`,
+    sourceType: "subscription_cycle",
+    creditsGranted: includedMonthlyCredits,
+    expiresAt: params.periodEnd,
+    reason: "subscription_cycle_credit_grant",
+    referenceId: params.stripeSubscriptionId,
+    referenceType: "subscription",
+  });
+}
+
+async function syncSubscription(subscription: Stripe.Subscription, eventType: string) {
   const referenceId = await resolveReferenceId(subscription);
   const planId = resolvePlanId(subscription);
   const customerId =
     typeof subscription.customer === "string" ? subscription.customer : null;
 
   if (!referenceId || !planId || !customerId) {
-    console.warn("[billing:subscription.sync.skipped]", {
-      stripeSubscriptionId: subscription.id,
-      hasCustomerId: Boolean(customerId),
-      hasPlanId: Boolean(planId),
-      hasReferenceId: Boolean(referenceId),
-    });
     return;
   }
 
-  await syncOrganizationStripeCustomer({
-    organizationId: referenceId,
-    customerId,
-  });
-
-  const item = getPrimaryItem(subscription);
+  await syncOrganizationStripeCustomer({ organizationId: referenceId, customerId });
+  const primaryItem = getPrimarySubscriptionItem(subscription);
   const existing = await db.subscription.findFirst({
     where: { stripeSubscriptionId: subscription.id },
     select: { id: true },
   });
+  const subscriptionId = existing?.id ?? subscription.id;
   const subscriptionRecord = {
-    plan: planId,
-    referenceId,
-    stripeCustomerId: customerId,
-    stripeSubscriptionId: subscription.id,
-    status: subscription.status,
-    periodStart: toDate(item?.current_period_start),
-    periodEnd: toDate(item?.current_period_end),
-    trialStart: toDate(subscription.trial_start),
-    trialEnd: toDate(subscription.trial_end),
-    cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    billingInterval: toBillingInterval(primaryItem?.price?.recurring?.interval),
     cancelAt: toDate(subscription.cancel_at),
+    cancelAtPeriodEnd: subscription.cancel_at_period_end,
     canceledAt: toDate(subscription.canceled_at),
     endedAt: toDate(subscription.ended_at),
-    seats: item?.quantity ?? null,
-    billingInterval: toBillingInterval(item?.price?.recurring?.interval),
+    periodEnd: toDate(primaryItem?.current_period_end),
+    periodStart: toDate(primaryItem?.current_period_start),
+    plan: planId,
+    referenceId,
+    seats: primaryItem?.quantity ?? null,
+    status: subscription.status,
+    stripeCustomerId: customerId,
     stripeScheduleId:
       typeof subscription.schedule === "string"
         ? subscription.schedule
         : (subscription.schedule?.id ?? null),
+    stripeSubscriptionId: subscription.id,
+    trialEnd: toDate(subscription.trial_end),
+    trialStart: toDate(subscription.trial_start),
   };
 
   await db.subscription.upsert({
-    where: { id: existing?.id ?? subscription.id },
+    where: { id: subscriptionId },
     update: subscriptionRecord,
-    create: {
-      id: existing?.id ?? subscription.id,
-      ...subscriptionRecord,
-    },
+    create: { id: subscriptionId, ...subscriptionRecord },
+  });
+
+  await syncSubscriptionItems(subscriptionId, subscription);
+  await grantSubscriptionCredits({
+    addonIds: resolveAddonIds(subscription),
+    organizationId: referenceId,
+    periodEnd: subscriptionRecord.periodEnd,
+    periodStart: subscriptionRecord.periodStart,
+    planId,
+    stripeSubscriptionId: subscription.id,
   });
 
   const userIds = await getOrganizationNotificationUserIds(referenceId);
-
   await Promise.all([
     recordAuditLog({
       organizationId: referenceId,
@@ -136,11 +184,6 @@ async function syncSubscription(
       entityType: "subscription",
       entityId: subscription.id,
       summary: `Stripe subscription ${subscription.status} on ${planId}`,
-      metadata: {
-        customerId,
-        planId,
-        stripeSubscriptionId: subscription.id,
-      },
     }),
     createNotificationsForUsers(referenceId, userIds, {
       type: `billing.${eventType}`,
@@ -148,13 +191,6 @@ async function syncSubscription(
       body: `Workspace subscription is now ${subscription.status} on ${planId}.`,
     }),
   ]);
-
-  console.info("[billing:subscription.synced]", {
-    stripeSubscriptionId: subscription.id,
-    status: subscription.status,
-    planId,
-    referenceId,
-  });
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -168,75 +204,54 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   await syncOrganizationStripeCustomer({ organizationId, customerId });
-  const userIds = await getOrganizationNotificationUserIds(organizationId);
 
-  await Promise.all([
-    recordAuditLog({
-      organizationId,
-      event: "billing.checkout_completed",
-      entityType: "checkout",
-      entityId: session.id,
-      summary: "Completed a Stripe checkout session",
-      metadata: {
-        customerId,
-        stripeSessionId: session.id,
+  if (session.mode === "payment") {
+    const itemKey = session.metadata?.itemKey ?? null;
+    const checkoutType = session.metadata?.checkoutType;
+
+    await db.purchase.upsert({
+      where: { stripeCheckoutSessionId: session.id },
+      update: { status: "completed" },
+      create: {
+        organizationId,
+        purchaseType: checkoutType === "credit_pack" ? "credit_pack" : "one_time_product",
+        itemKey: itemKey ?? "unknown",
+        stripeCheckoutSessionId: session.id,
+        stripePaymentIntentId:
+          typeof session.payment_intent === "string" ? session.payment_intent : null,
+        stripeCustomerId: customerId,
+        amount: session.amount_total ?? 0,
+        currency: session.currency ?? "usd",
+        status: "completed",
       },
-    }),
-    createNotificationsForUsers(organizationId, userIds, {
-      type: "billing.checkout_completed",
-      title: "Checkout completed",
-      body: "Stripe checkout finished and billing is being synchronized.",
-    }),
-  ]);
+    });
 
-  console.info("[billing:checkout.completed]", {
-    organizationId,
-    customerId,
-    stripeSessionId: session.id,
-  });
+    if (checkoutType === "credit_pack" && itemKey) {
+      const creditPack = getCreditPack(itemKey);
+
+      if (creditPack) {
+        await grantCredits({
+          organizationId,
+          sourceKey: session.id,
+          sourceType: "credit_pack",
+          creditsGranted: creditPack.creditsGranted,
+          reason: "credit_pack_purchase",
+          referenceId: session.id,
+          referenceType: "checkout",
+        });
+      }
+    }
+  }
 }
 
 async function handleCustomerDeleted(customer: Stripe.Customer) {
-  const organizationIds = await db.organization.findMany({
-    where: { stripeCustomerId: customer.id },
-    select: { id: true },
-  });
-  const result = await clearStripeCustomerBillingState(customer.id);
-
-  await Promise.all(
-    organizationIds.map(async ({ id }) => {
-      const userIds = await getOrganizationNotificationUserIds(id);
-
-      await Promise.all([
-        recordAuditLog({
-          organizationId: id,
-          event: "billing.customer_deleted",
-          entityType: "customer",
-          entityId: customer.id,
-          summary: "Stripe customer was deleted",
-        }),
-        createNotificationsForUsers(id, userIds, {
-          type: "billing.customer_deleted",
-          title: "Billing customer removed",
-          body: "Stripe customer data was removed and billing access was cleared.",
-        }),
-      ]);
-    }),
-  );
-
-  console.info("[billing:customer.deleted]", {
-    stripeCustomerId: customer.id,
-    clearedOrganizations: result.clearedOrganizations,
-    deletedSubscriptions: result.deletedSubscriptions,
-  });
+  await clearStripeCustomerBillingState(customer.id);
 }
 
 export async function handleStripeWebhookEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
-      await handleCheckoutCompleted(
-        event.data.object as Stripe.Checkout.Session,
-      );
+      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
       return;
     case "customer.deleted":
       await handleCustomerDeleted(event.data.object as Stripe.Customer);
@@ -245,42 +260,6 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
     case "customer.subscription.updated":
     case "customer.subscription.deleted":
       await syncSubscription(event.data.object as Stripe.Subscription, event.type);
-      return;
-    case "invoice.payment_failed":
-    case "customer.subscription.trial_will_end":
-      if ("customer" in event.data.object) {
-        const customerId =
-          typeof event.data.object.customer === "string"
-            ? event.data.object.customer
-            : null;
-        const organizationId = customerId
-          ? await findOrganizationIdByStripeCustomerId(customerId)
-          : null;
-
-        if (organizationId) {
-          const userIds = await getOrganizationNotificationUserIds(organizationId);
-
-          await Promise.all([
-            recordAuditLog({
-              organizationId,
-              event: `billing.${event.type}`,
-              entityType: "billing_event",
-              entityId: event.id,
-              summary: `Stripe reported ${event.type}`,
-            }),
-            createNotificationsForUsers(organizationId, userIds, {
-              type: `billing.${event.type}`,
-              title: "Billing attention needed",
-              body: `Stripe reported ${event.type.replaceAll(".", " ")}.`,
-            }),
-          ]);
-        }
-      }
-
-      console.info("[billing:stripe.event]", {
-        type: event.type,
-        id: event.id,
-      });
       return;
     default:
       return;

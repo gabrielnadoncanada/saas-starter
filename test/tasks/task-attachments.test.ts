@@ -6,7 +6,7 @@ vi.mock("@/features/organizations/server/organization-membership", () => ({
   requireActiveOrganizationMembership: vi.fn(),
 }));
 
-vi.mock("@/features/files/server/storage-service", () => ({
+vi.mock("@/features/storage/server/storage-service", () => ({
   saveStoredFile: vi.fn(),
   deleteStoredFile: vi.fn(),
 }));
@@ -33,7 +33,7 @@ const { requireActiveOrganizationMembership } = await import(
   "@/features/organizations/server/organization-membership"
 );
 const { saveStoredFile, deleteStoredFile } = await import(
-  "@/features/files/server/storage-service"
+  "@/features/storage/server/storage-service"
 );
 const { db } = await import("@/shared/lib/db/prisma");
 

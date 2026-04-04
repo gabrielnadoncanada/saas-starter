@@ -1,67 +1,72 @@
+import type {
+  Capability,
+  LimitKey,
+  OrganizationEntitlements,
+} from "@/shared/config/billing.config";
+
 import {
   LimitReachedError,
   UpgradeRequiredError,
 } from "../errors/billing-errors";
-import {
-  getPlan,
-  type Capability,
-  type LimitKey,
-  type PlanId,
-} from "@/shared/config/billing.config";
 
-export function hasCapability(planId: PlanId, capability: Capability): boolean {
-  return getPlan(planId).capabilities.includes(capability);
+function getEntitlementLimit(
+  entitlements: OrganizationEntitlements,
+  limitKey: LimitKey,
+) {
+  return entitlements.limits[limitKey];
 }
 
-export function getPlanLimit(planId: PlanId, limitKey: LimitKey): number {
-  return getPlan(planId).limits[limitKey];
+export function hasCapability(
+  entitlements: OrganizationEntitlements,
+  capability: Capability,
+): boolean {
+  return entitlements.capabilities.includes(capability);
 }
 
-/**
- * Throws UpgradeRequiredError if the plan does not include the capability.
- * Use in server actions and API routes.
- */
-export function assertCapability(planId: PlanId, capability: Capability): void {
-  if (!hasCapability(planId, capability)) {
-    throw new UpgradeRequiredError(capability, getPlan(planId).name);
+export function getPlanLimit(
+  entitlements: OrganizationEntitlements,
+  limitKey: LimitKey,
+): number {
+  return getEntitlementLimit(entitlements, limitKey);
+}
+
+export function assertCapability(
+  entitlements: OrganizationEntitlements,
+  capability: Capability,
+): void {
+  if (!hasCapability(entitlements, capability)) {
+    throw new UpgradeRequiredError(capability, entitlements.planName);
   }
 }
 
-/**
- * Throws LimitReachedError if currentUsage >= the plan's limit.
- * Use in server actions and API routes.
- */
 export function assertLimit(
-  planId: PlanId,
+  entitlements: OrganizationEntitlements,
   limitKey: LimitKey,
   currentUsage: number,
 ): void {
-  const limit = getPlanLimit(planId, limitKey);
+  const limit = getPlanLimit(entitlements, limitKey);
 
   if (currentUsage >= limit) {
     throw new LimitReachedError(
       limitKey,
       limit,
       currentUsage,
-      getPlan(planId).name,
+      entitlements.planName,
     );
   }
 }
 
-/**
- * Non-throwing limit check. Returns a status object for UI-friendly usage.
- */
 export function checkLimit(
-  planId: PlanId,
+  entitlements: OrganizationEntitlements,
   limitKey: LimitKey,
   currentUsage: number,
 ) {
-  const limit = getPlanLimit(planId, limitKey);
+  const limit = getPlanLimit(entitlements, limitKey);
 
   return {
     allowed: currentUsage < limit,
-    limit,
     currentUsage,
+    limit,
     remaining: Math.max(0, limit - currentUsage),
   };
 }

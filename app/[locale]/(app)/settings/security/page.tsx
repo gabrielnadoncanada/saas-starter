@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+
 import { TwoFactorSettingsCard } from "@/features/account/components/settings/two-factor-settings-card";
 import {
   Page,

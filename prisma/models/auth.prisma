@@ -22,15 +22,15 @@ model User {
   deletedAt        DateTime?
   phoneNumber      String?      @map("phone_number") @db.VarChar(30)
 
-  accounts               Account[]
-  sessions               Session[]
-  members                Member[]
-  invitationsSent        Invitation[]            @relation("InvitationSender")
-  aiConversations        AiConversation[]        @relation("AiConversationToUser")
-  notifications          Notification[]
-  auditLogs              AuditLog[]              @relation("AuditActor")
-  storedFilesUploaded    StoredFile[]
-  twoFactor              TwoFactor?
+  accounts            Account[]
+  sessions            Session[]
+  members             Member[]
+  invitationsSent     Invitation[]     @relation("InvitationSender")
+  aiConversations     AiConversation[] @relation("AiConversationToUser")
+  notifications       Notification[]
+  auditLogs           AuditLog[]       @relation("AuditActor")
+  storedFilesUploaded StoredFile[]
+  twoFactor           TwoFactor?
 }
 
 model Account {

@@ -5,33 +5,39 @@ process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
 process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
 process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
-const { billingConfig, findPlanPriceByPriceId, getPlan, getPlanPrice } =
-  await import("@/shared/config/billing.config");
+const { billingConfig } = await import("@/shared/config/billing.config");
+const {
+  findCatalogRecurringPriceByPriceId,
+  getPlan,
+  getPlanDisplayPrice,
+} = await import("@/features/billing/catalog/resolver");
 
-describe("billing config prices", () => {
-  it("keeps Stripe prices in the billing config", () => {
-    expect(getPlanPrice("pro", "month")?.priceId).toBe("price_pro_monthly");
-    expect(getPlanPrice("pro", "year")?.priceId).toBe("price_pro_yearly");
-    expect(getPlanPrice("team", "month")?.priceId).toBe("price_team_monthly");
-    expect(getPlanPrice("team", "year")?.priceId).toBe("price_team_yearly");
-    expect(getPlan("free").prices).toEqual({});
-    expect(
-      billingConfig.plans.find((plan) => plan.id === "pro")?.highlighted,
-    ).toBe(true);
-  });
-
-  it("can resolve Stripe price ids back to the billing config", () => {
-    expect(findPlanPriceByPriceId("price_pro_monthly")?.plan.id).toBe("pro");
-    expect(findPlanPriceByPriceId("price_pro_yearly")?.billingInterval).toBe(
-      "year",
-    );
-    expect(findPlanPriceByPriceId("price_team_monthly")?.plan.id).toBe("team");
-    expect(findPlanPriceByPriceId("price_team_yearly")?.billingInterval).toBe(
-      "year",
+describe("billing catalog price mapping", () => {
+  it("keeps Stripe prices in the recurring catalog", () => {
+    expect(getPlanDisplayPrice("pro", "month")?.priceId).toBe("price_pro_monthly");
+    expect(getPlanDisplayPrice("pro", "year")?.priceId).toBe("price_pro_yearly");
+    expect(getPlanDisplayPrice("team", "month")?.priceId).toBe("price_team_monthly");
+    expect(getPlanDisplayPrice("team", "year")?.priceId).toBe("price_team_yearly");
+    expect(getPlan("free").schedules).toEqual({});
+    expect(billingConfig.plans.find((plan) => plan.id === "pro")?.highlighted).toBe(
+      true,
     );
   });
 
-  it("rejects unknown or missing price ids", () => {
-    expect(findPlanPriceByPriceId("price_unknown")).toBeNull();
+  it("resolves Stripe recurring price ids back to catalog entries", () => {
+    expect(findCatalogRecurringPriceByPriceId("price_pro_monthly")).toMatchObject({
+      billingInterval: "month",
+      itemKey: "pro",
+      itemType: "plan",
+    });
+    expect(findCatalogRecurringPriceByPriceId("price_team_yearly")).toMatchObject({
+      billingInterval: "year",
+      itemKey: "team",
+      itemType: "plan",
+    });
+  });
+
+  it("rejects unknown price ids", () => {
+    expect(findCatalogRecurringPriceByPriceId("price_unknown")).toBeNull();
   });
 });

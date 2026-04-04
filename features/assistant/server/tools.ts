@@ -8,8 +8,8 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import { assertCapability } from "@/features/billing/guards/plan-guards";
+import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { createTaskForCurrentOrganization } from "@/features/tasks/server/task-mutations";
 
@@ -24,14 +24,14 @@ type InvoiceDraftInput = {
   dueInDays?: number;
 };
 
-async function getToolOrganizationPlan() {
-  const organizationPlan = await getCurrentOrganizationPlan();
+async function getToolOrganizationEntitlements() {
+  const entitlements = await getCurrentOrganizationEntitlements();
 
-  if (!organizationPlan) {
+  if (!entitlements) {
     throw new Error("Organization not found");
   }
 
-  return organizationPlan;
+  return entitlements;
 }
 
 export const assistantTools = {
@@ -52,16 +52,16 @@ export const assistantTools = {
       limit?: number;
     }): Promise<ReviewInboxToolResult> => {
       try {
-        const organizationPlan = await getToolOrganizationPlan();
-        assertCapability(organizationPlan.planId, "email.sync");
+        const entitlements = await getToolOrganizationEntitlements();
+        assertCapability(entitlements, "email.sync");
         // TODO: Swap the demo inbox for a real provider adapter (Gmail, Outlook,
         // IMAP, etc.) before exposing this workflow outside local demos.
         const messages = await assistantDemoInbox.getRecentMessages(limit ?? 5);
 
         await consumeMonthlyUsage(
-          organizationPlan.organizationId,
+          entitlements.organizationId,
           "emailSyncsPerMonth",
-          organizationPlan.planId,
+          entitlements,
         );
 
         return {
@@ -166,8 +166,8 @@ export const assistantTools = {
       dueInDays,
     }: InvoiceDraftInput): Promise<CreateInvoiceDraftToolResult> => {
       try {
-        const organizationPlan = await getToolOrganizationPlan();
-        assertCapability(organizationPlan.planId, "invoice.create");
+        const entitlements = await getToolOrganizationEntitlements();
+        assertCapability(entitlements, "invoice.create");
 
         // TODO: Persist drafts in a real invoicing backend instead of returning
         // computed demo data directly from the tool call.

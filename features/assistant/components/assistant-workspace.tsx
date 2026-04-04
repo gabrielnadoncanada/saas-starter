@@ -1,16 +1,16 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import type { AiConversation } from "@/features/ai/types/ai.types";
 import { fetchAssistantConversation } from "@/features/assistant/client/conversations";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
+import type { AssistantConversation } from "@/features/assistant/types";
+import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
 
 type AssistantWorkspaceProps = {
-  initialConversation: AiConversation | null;
+  initialConversation: AssistantConversation | null;
   initialConversationId: string | null;
   initialDefaultModelId: AiModelId;
   initialModelOptions: AiModelOption[];
@@ -39,7 +39,7 @@ export function AssistantWorkspace({
   const [chatResetKey, setChatResetKey] = useState(0);
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [selectedConversation, setSelectedConversation] =
-    useState<AiConversation | null>(initialConversation);
+    useState<AssistantConversation | null>(initialConversation);
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(initialConversationId);

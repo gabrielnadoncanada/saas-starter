@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "@/shared/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -26,7 +25,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { useRouter } from "@/shared/i18n/navigation";
 import { authClient } from "@/shared/lib/auth/auth-client";
+
 import { AdminUsersSearch } from "./admin-users-search";
 import { UserDetailSheet } from "./user-detail-sheet";
 import { UsersTableRows } from "./users-table-rows";

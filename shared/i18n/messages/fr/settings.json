@@ -86,7 +86,20 @@
     },
     "billing": {
       "title": "Gerez votre forfait d'equipe",
-      "description": "Choisissez un plan qui repond aux besoins de votre equipe. Vous pouvez passer a un plan superieur ou inferieur a tout moment."
+      "description": "Choisissez un plan qui repond aux besoins de votre equipe. Vous pouvez passer a un plan superieur ou inferieur a tout moment.",
+      "currentPlan": "Plan actuel",
+      "creditsBalance": "Solde de credits",
+      "includedCredits": "Credits mensuels inclus",
+      "creditPacksTitle": "Packs de credits",
+      "creditPacksDescription": "Achetez des recharges ponctuelles quand votre equipe a besoin de plus d'usage IA.",
+      "creditsGranted": "{count} credits",
+      "buyCredits": "Acheter des credits",
+      "oneTimeProductsTitle": "Produits one-time",
+      "oneTimeProductsDescription": "Vendez des upgrades ponctuels d'espace de travail sans basculer l'equipe sur un abonnement.",
+      "buyOneTime": "Acheter maintenant",
+      "creditActivityTitle": "Activite credits",
+      "creditActivityDescription": "Les derniers grants, debits et remboursements de cet espace.",
+      "noCreditActivity": "Aucune activite credit pour le moment."
     },
     "organization": {
       "title": "Parametres de l'organisation",

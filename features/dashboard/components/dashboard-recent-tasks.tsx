@@ -1,8 +1,8 @@
 import type { Task } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
-import { Link } from "@/shared/i18n/navigation";
 import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
 
 export async function DashboardRecentTasks({ tasks }: { tasks: Task[] }) {
   const t = await getTranslations("dashboard");

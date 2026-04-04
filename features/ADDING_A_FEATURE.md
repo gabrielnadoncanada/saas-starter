@@ -43,7 +43,7 @@ For CRUD work with audit trail and in-app notifications, copy the task flow in t
 
 1. `features/tasks/task-form.schema.ts`
 2. `features/tasks/server/task-mutations.ts`
-3. `features/tasks/server/task-server-actions.ts`
+3. `features/tasks/server/task.actions.ts`
 4. `features/tasks/components/task-form.tsx`
 5. `features/tasks/components/tasks-page.tsx`
 6. `app/(app)/dashboard/tasks/page.tsx`

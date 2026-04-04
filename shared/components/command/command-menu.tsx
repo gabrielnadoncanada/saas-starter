@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from "lucide-react";
-import { useRouter } from "@/shared/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import React from "react";
@@ -19,6 +18,7 @@ import {
   CommandSeparator,
 } from "@/shared/components/ui/command";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
+import { useRouter } from "@/shared/i18n/navigation";
 
 export function CommandMenu() {
   const router = useRouter();

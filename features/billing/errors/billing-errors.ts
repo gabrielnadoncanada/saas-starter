@@ -36,3 +36,17 @@ export class UpgradeRequiredError extends Error {
     this.currentPlan = currentPlan;
   }
 }
+
+export class InsufficientCreditsError extends Error {
+  public readonly availableCredits: number;
+  public readonly requiredCredits: number;
+
+  constructor(availableCredits: number, requiredCredits: number) {
+    super(
+      `Insufficient credits: ${availableCredits} available, ${requiredCredits} required.`,
+    );
+    this.name = "InsufficientCreditsError";
+    this.availableCredits = availableCredits;
+    this.requiredCredits = requiredCredits;
+  }
+}

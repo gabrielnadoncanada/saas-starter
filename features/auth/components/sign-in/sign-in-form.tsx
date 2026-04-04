@@ -1,10 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { Link } from "@/shared/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "@/shared/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -15,10 +13,10 @@ import {
   signInWithOAuth,
   signInWithPassword,
 } from "@/features/auth/client/auth-requests";
-import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
 import { AuthEmailStep } from "@/features/auth/components/auth-email-step";
 import { AuthPasswordStep } from "@/features/auth/components/auth-password-step";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
+import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
 import {
   emailDefaultValues,
   emailSchema,
@@ -31,6 +29,8 @@ import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { routes } from "@/shared/constants/routes";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { Link } from "@/shared/i18n/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
 
 type SignInFormProps = {

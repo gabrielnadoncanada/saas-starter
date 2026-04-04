@@ -1,8 +1,10 @@
 import { headers } from "next/headers";
 
 import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
-import type { OrganizationMemberView } from "@/features/organizations/types/membership.types";
-import type { CurrentOrganizationView } from "@/features/organizations/types/organization.types";
+import type {
+  CurrentOrganizationView,
+  OrganizationMemberView,
+} from "@/features/organizations/types";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getAuthSession } from "@/shared/lib/auth/get-session";

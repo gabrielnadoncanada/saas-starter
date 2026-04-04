@@ -1,3 +1,30 @@
+import type { UIMessage } from "ai";
+
+import type { AiModelId } from "@/shared/lib/ai/models";
+
+export const assistantConversationSurface = "assistant";
+
+export type AssistantConversationSurface =
+  typeof assistantConversationSurface;
+
+export type OrganizationAiSettingsView = {
+  organizationId: string;
+  defaultModelId: AiModelId;
+  allowedModelIds: AiModelId[];
+};
+
+export type AssistantConversationListItem = {
+  id: string;
+  surface: AssistantConversationSurface;
+  title: string;
+  preview: string | null;
+  lastMessageAt: string;
+};
+
+export type AssistantConversation = AssistantConversationListItem & {
+  messages: UIMessage[];
+};
+
 export type EmailMessage = {
   id: string;
   from: string;

@@ -4,8 +4,8 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useState } from "react";
 
-import { updateAccountAction } from "@/features/account/actions/update-account.action";
-import type { UpdateAccountActionState } from "@/features/account/types/account.types";
+import { updateAccountAction } from "@/features/account/actions/update-account.actions";
+import type { UpdateAccountInput } from "@/features/account/schemas/account.schema";
 import { PhoneInput } from "@/shared/components/forms/phone-input";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -22,6 +22,7 @@ import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { getFieldState } from "@/shared/lib/get-field-state";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
 type EditProfileDialogProps = {
   name: string;
@@ -38,7 +39,7 @@ export function EditProfileDialog({
   const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
-    UpdateAccountActionState,
+    FormActionState<UpdateAccountInput>,
     FormData
   >(updateAccountAction, {});
 

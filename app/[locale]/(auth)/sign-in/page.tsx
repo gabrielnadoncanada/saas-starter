@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { SignInForm } from "@/features/auth/components/sign-in/sign-in-form";
 import {
   Card,
@@ -8,6 +10,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
 import {
   buildCallbackURL,
   getCallbackURL,
@@ -16,8 +19,6 @@ import {
   getEnabledOAuthProviderIds,
   hasMagicLinkProvider,
 } from "@/shared/lib/auth/oauth-config";
-import { Link } from "@/shared/i18n/navigation";
-import { getTranslations } from "next-intl/server";
 
 type SignInPageProps = {
   searchParams: Promise<{

@@ -1,10 +1,10 @@
-import createMiddleware from "next-intl/middleware";
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
 
+import { routes } from "@/shared/constants/routes";
 import { defaultLocale, isAppLocale } from "@/shared/i18n/locales";
 import { routing } from "@/shared/i18n/routing";
-import { routes } from "@/shared/constants/routes";
 
 const handleI18nRouting = createMiddleware(routing);
 const protectedPrefixes = ["/dashboard", "/settings", "/admin"];

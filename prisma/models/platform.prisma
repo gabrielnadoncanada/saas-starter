@@ -37,17 +37,17 @@ model AuditLog {
 }
 
 model StoredFile {
-  id               String    @id @default(cuid())
+  id               String   @id @default(cuid())
   organizationId   String
   uploadedByUserId String
-  storageKey       String    @unique @db.VarChar(255)
-  fileName         String    @db.VarChar(255)
-  contentType      String    @db.VarChar(120)
+  storageKey       String   @unique @db.VarChar(255)
+  fileName         String   @db.VarChar(255)
+  contentType      String   @db.VarChar(120)
   sizeBytes        Int
-  createdAt        DateTime  @default(now())
+  createdAt        DateTime @default(now())
 
-  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  uploadedBy   User            @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  uploadedBy      User             @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
   taskAttachments TaskAttachment[]
 
   @@index([organizationId, createdAt(sort: Desc)])

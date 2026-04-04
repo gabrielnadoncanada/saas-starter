@@ -27,7 +27,8 @@
     },
     "planPriceFree": "Gratuit",
     "workspaceFallback": "votre espace de travail",
-    "aiRequests": "{count} requetes",
+    "aiCredits": "{count} credits",
+    "creditBalance": "Credits disponibles",
     "openAssistant": "Assistant IA",
     "upgradeAnalyticsFeature": "Analytique organisation",
     "upgradeAnalyticsDescription": "Passez a un plan superieur pour acceder aux analyses avancees de votre organisation."

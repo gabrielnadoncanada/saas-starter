@@ -4,12 +4,11 @@ import { subDays } from "date-fns";
 import { getTranslations } from "next-intl/server";
 
 import { listOrganizationAuditLogs } from "@/features/audit/server/record-audit-log";
+import { getPlan } from "@/features/billing/catalog/resolver";
 import { checkLimit, hasCapability } from "@/features/billing/guards/plan-guards";
-import { resolveOrganizationPlan } from "@/features/billing/plans/resolve-organization-plan";
+import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
-import { listTasks } from "@/features/tasks/server/task-mutations";
-import { getPlan } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -38,19 +37,34 @@ function buildUsageChart(tasks: { createdAt: Date }[], locale: string) {
 
 export async function getDashboardOverview(locale: string) {
   const t = await getTranslations("dashboard");
-  const organization = await getCurrentOrganization();
-  const tasks = await listTasks();
-  const planId = resolveOrganizationPlan(organization);
-  const plan = getPlan(planId);
+  const [organization, entitlements] = await Promise.all([
+    getCurrentOrganization(),
+    getCurrentOrganizationEntitlements(),
+  ]);
+  const plan = getPlan(entitlements?.planId ?? "free");
   const memberCount = organization?.members?.length ?? 0;
-  const taskCount = tasks.length;
   const organizationId = organization?.id ?? null;
 
-  const [tasksUsage, aiUsage, recentActivity, recentTaskHistory] =
+  const [
+    taskCount,
+    recentTasks,
+    tasksUsage,
+    creditBalance,
+    recentActivity,
+    recentTaskHistory,
+  ] =
     organizationId
       ? await Promise.all([
+          db.task.count({
+            where: { organizationId },
+          }),
+          db.task.findMany({
+            where: { organizationId },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+          }),
           getMonthlyUsage(organizationId, "tasksPerMonth"),
-          getMonthlyUsage(organizationId, "aiRequestsPerMonth"),
+          Promise.resolve(entitlements?.creditBalance ?? 0),
           listOrganizationAuditLogs(organizationId, 8),
           db.task.findMany({
             where: {
@@ -64,11 +78,12 @@ export async function getDashboardOverview(locale: string) {
             },
           }),
         ])
-      : [0, 0, [], []];
+      : [0, [], 0, 0, [], []];
 
-  const taskLimit = checkLimit(planId, "tasksPerMonth", tasksUsage);
-  const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
-  const canUseAI = hasCapability(planId, "ai.assistant");
+  const taskLimit = entitlements
+    ? checkLimit(entitlements, "tasksPerMonth", tasksUsage)
+    : { allowed: false, limit: 0, currentUsage: 0, remaining: 0 };
+  const canUseAI = entitlements ? hasCapability(entitlements, "ai.assistant") : false;
 
   const checklist = [
     {
@@ -82,12 +97,12 @@ export async function getDashboardOverview(locale: string) {
       title: t("checklist.inviteTeam"),
       done: memberCount > 1,
       href: routes.settings.members,
-      hidden: !hasCapability(planId, "team.invite"),
+      hidden: !entitlements || !hasCapability(entitlements, "team.invite"),
     },
     {
       id: "try-assistant",
       title: t("checklist.tryAssistant"),
-      done: aiUsage > 0,
+      done: creditBalance > 0,
       href: routes.app.assistant,
       hidden: !canUseAI,
     },
@@ -95,17 +110,17 @@ export async function getDashboardOverview(locale: string) {
 
   return {
     organization,
+    entitlements,
     plan,
-    planId,
+    planId: entitlements?.planId ?? "free",
     memberCount,
     taskCount,
     tasksUsage,
-    aiUsage,
+    creditBalance,
     taskLimit,
-    aiLimit,
     canUseAI,
     recentActivity,
-    recentTasks: tasks.slice(0, 5),
+    recentTasks,
     usageChart: buildUsageChart(recentTaskHistory, locale),
     checklist,
   };

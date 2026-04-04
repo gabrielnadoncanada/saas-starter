@@ -1,14 +1,13 @@
 "use client";
 
-import QRCode from "qrcode";
 import { ShieldCheck } from "lucide-react";
-import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import QRCode from "qrcode";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import { recordTwoFactorAuditAction } from "@/features/account/actions/two-factor-audit.action";
-import { authClient } from "@/shared/lib/auth/auth-client";
+import { recordTwoFactorAuditAction } from "@/features/account/actions/two-factor-audit.actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
@@ -19,6 +18,7 @@ import {
 } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
+import { authClient } from "@/shared/lib/auth/auth-client";
 
 type TwoFactorSettingsCardProps = {
   enabled: boolean;

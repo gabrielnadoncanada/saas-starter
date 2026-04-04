@@ -17,8 +17,8 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   },
 }));
 
-vi.mock("@/features/billing/plans/get-current-organization-plan", () => ({
-  getCurrentOrganizationPlan: vi.fn(),
+vi.mock("@/features/billing/server/organization-entitlements", () => ({
+  getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
 vi.mock("@/features/billing/guards/plan-guards", () => ({
@@ -30,8 +30,8 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
-const { getCurrentOrganizationPlan } = await import(
-  "@/features/billing/plans/get-current-organization-plan"
+const { getCurrentOrganizationEntitlements } = await import(
+  "@/features/billing/server/organization-entitlements"
 );
 const { assertCapability } =
   await import("@/features/billing/guards/plan-guards");
@@ -40,25 +40,36 @@ const { consumeMonthlyUsage } =
 const { createTaskForCurrentOrganization } =
   await import("@/features/tasks/server/task-mutations");
 
+const entitlements = {
+  organizationId: "12",
+  planId: "pro",
+  planName: "Pro",
+  limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000, emailSyncsPerMonth: 50 },
+  capabilities: ["task.create"],
+  activeAddonIds: [],
+  billingInterval: "month",
+  creditBalance: 1000,
+  creditBalancePurchased: 0,
+  creditBalanceSubscription: 1000,
+  includedMonthlyCredits: 1000,
+  oneTimeProductIds: [],
+  pricingModel: "flat",
+  seats: null,
+  stripeCustomerId: null,
+  stripeSubscriptionId: null,
+  subscriptionStatus: "active",
+} as const;
+
 describe("createTaskForCurrentOrganization", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) =>
       callback(db),
     );
-
-    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
-      planId: "pro",
-      organizationId: "12",
-      organizationName: "Acme",
-      subscriptionStatus: "active",
-      pricingModel: "flat",
-    });
+    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(entitlements as never);
     vi.mocked(assertCapability).mockImplementation(() => {});
     vi.mocked(consumeMonthlyUsage).mockResolvedValue(undefined);
-    vi.mocked(db.task.findFirst).mockResolvedValue({
-      code: "TASK-41",
-    } as never);
+    vi.mocked(db.task.findFirst).mockResolvedValue({ code: "TASK-41" } as never);
     vi.mocked(db.task.create).mockResolvedValue({
       code: "TASK-42",
       title: "Ship billing fix",
@@ -86,7 +97,7 @@ describe("createTaskForCurrentOrganization", () => {
 
   it("refuses task creation when the monthly limit is reached", async () => {
     vi.mocked(consumeMonthlyUsage).mockRejectedValue(
-      new LimitReachedError("tasksPerMonth", 10, 10, "Pro"),
+      new LimitReachedError("tasksPerMonth", 1000, 1000, "Pro"),
     );
 
     await expect(
@@ -102,7 +113,7 @@ describe("createTaskForCurrentOrganization", () => {
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
       "12",
       "tasksPerMonth",
-      "pro",
+      entitlements,
       { db },
     );
   });
@@ -115,11 +126,11 @@ describe("createTaskForCurrentOrganization", () => {
       priority: "HIGH",
     });
 
-    expect(assertCapability).toHaveBeenCalledWith("pro", "task.create");
+    expect(assertCapability).toHaveBeenCalledWith(entitlements, "task.create");
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
       "12",
       "tasksPerMonth",
-      "pro",
+      entitlements,
       { db },
     );
     expect(db.task.create).toHaveBeenCalledWith({

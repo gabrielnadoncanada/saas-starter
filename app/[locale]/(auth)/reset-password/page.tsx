@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 import {
   Card,
@@ -8,7 +10,6 @@ import {
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
-import { getTranslations } from "next-intl/server";
 
 type ResetPasswordPageProps = {
   searchParams: Promise<{

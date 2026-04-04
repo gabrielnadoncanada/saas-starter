@@ -1,20 +1,14 @@
 import { getTranslations } from "next-intl/server";
 
-import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
-import { getAiConversation } from "@/features/ai/server/ai-conversations";
+import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
+import { getAssistantConversation } from "@/features/assistant/server/assistant-conversations";
 import {
   getOrganizationAiSettings,
   listAllowedAiModelsForOrganization,
-} from "@/features/ai/server/organization-ai-settings";
-import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
+} from "@/features/assistant/server/organization-ai-settings";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
-import {
-  checkLimit,
-  hasCapability,
-} from "@/features/billing/guards/plan-guards";
-import { resolveOrganizationPlan } from "@/features/billing/plans/resolve-organization-plan";
-import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { hasCapability } from "@/features/billing/guards/plan-guards";
+import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { Page } from "@/shared/components/layout/page-layout";
 
 type AssistantPageProps = {
@@ -27,29 +21,23 @@ export default async function AssistantPage({
   searchParams,
 }: AssistantPageProps) {
   const t = await getTranslations("assistant");
-  const organization = await getCurrentOrganization();
-  const planId = resolveOrganizationPlan(organization);
-  const canUseAssistant = hasCapability(planId, "ai.assistant");
+  const entitlements = await getCurrentOrganizationEntitlements();
+  const canUseAssistant = entitlements
+    ? hasCapability(entitlements, "ai.assistant")
+    : false;
   const { conversationId } = await searchParams;
-
-  const aiUsage = organization
-    ? await getMonthlyUsage(organization.id, "aiRequestsPerMonth")
-    : 0;
-  const aiLimit = checkLimit(planId, "aiRequestsPerMonth", aiUsage);
+  const hasCredits = (entitlements?.creditBalance ?? 0) > 0;
   const initialConversation =
-    canUseAssistant && aiLimit.allowed && conversationId
-      ? await getAiConversation(
-          conversationId,
-          aiConversationSurfaces.assistant,
-        )
+    canUseAssistant && hasCredits && conversationId
+      ? await getAssistantConversation(conversationId)
       : null;
   const aiSettings =
-    organization && canUseAssistant && aiLimit.allowed
-      ? await getOrganizationAiSettings(organization.id)
+    entitlements && canUseAssistant && hasCredits
+      ? await getOrganizationAiSettings(entitlements.organizationId)
       : null;
   const modelOptions =
-    organization && canUseAssistant && aiLimit.allowed
-      ? await listAllowedAiModelsForOrganization(organization.id)
+    entitlements && canUseAssistant && hasCredits
+      ? await listAllowedAiModelsForOrganization(entitlements.organizationId)
       : [];
 
   return (
@@ -59,11 +47,11 @@ export default async function AssistantPage({
           feature={t("upgrade.notAvailableFeature")}
           description={t("upgrade.notAvailableDescription")}
         />
-      ) : !aiLimit.allowed ? (
+      ) : !hasCredits ? (
         <UpgradeCard
           feature={t("upgrade.limitExceededFeature")}
           description={t("upgrade.limitExceededDescription", {
-            limit: aiLimit.limit,
+            credits: entitlements?.creditBalance ?? 0,
           })}
         />
       ) : (

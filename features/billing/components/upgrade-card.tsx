@@ -3,8 +3,6 @@
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/shared/i18n/navigation";
-
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
@@ -14,6 +12,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
 
 type UpgradeCardProps = {
   feature: string;

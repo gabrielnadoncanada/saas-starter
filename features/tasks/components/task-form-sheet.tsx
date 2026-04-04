@@ -1,7 +1,6 @@
 "use client";
 
 import type { Task } from "@prisma/client";
-import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect, useRef } from "react";
 
 import { TaskAttachmentsPanel } from "@/features/tasks/components/task-attachments-panel";
@@ -11,8 +10,9 @@ import {
   type CreateTaskActionState,
   updateTaskAction,
   type UpdateTaskActionState,
-} from "@/features/tasks/server/task-server-actions";
+} from "@/features/tasks/server/task.actions";
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { useRouter } from "@/shared/i18n/navigation";
 
 type CreateTaskFormSheetProps = {
   mode: "create";

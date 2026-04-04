@@ -1,9 +1,9 @@
+import { getPlanDisplayPrice } from "@/features/billing/catalog/resolver";
+import { createOrganizationSubscriptionCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import {
   type BillingInterval,
-  getPlanPrice,
   type PaidPlanId,
 } from "@/shared/config/billing.config";
-import { createOrganizationCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 
@@ -20,7 +20,7 @@ export async function resumeCheckoutAfterSignIn({
   planId,
   reqHeaders,
 }: ResumeCheckoutAfterSignInParams) {
-  if (!getPlanPrice(planId, billingInterval)) {
+  if (!getPlanDisplayPrice(planId, billingInterval)) {
     return null;
   }
 
@@ -41,7 +41,8 @@ export async function resumeCheckoutAfterSignIn({
     return null;
   }
 
-  return createOrganizationCheckoutSession({
+  return createOrganizationSubscriptionCheckoutSession({
+    addonIds: [],
     billingInterval,
     organizationId: organization.id,
     planId,

@@ -7,7 +7,6 @@ import { GlobeIcon, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import type { AiConversation } from "@/features/ai/types/ai.types";
 import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
@@ -15,6 +14,7 @@ import {
 import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
 import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
 import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
+import type { AssistantConversation } from "@/features/assistant/types";
 import {
   Conversation,
   ConversationContent,
@@ -37,8 +37,8 @@ type AssistantChatProps = {
   defaultModelId: AiModelId;
   initialMessages: UIMessage[];
   modelOptions: AiModelOption[];
-  onConversationCreated: (conversation: AiConversation) => void;
-  onConversationUpdated: (conversation: AiConversation) => void;
+  onConversationCreated: (conversation: AssistantConversation) => void;
+  onConversationUpdated: (conversation: AssistantConversation) => void;
   resetKey: number;
 };
 

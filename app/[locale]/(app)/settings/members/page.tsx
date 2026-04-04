@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { InviteOrganizationMemberDialog } from "@/features/organizations/components/invite-organization-member-dialog";
 import { OrganizationInvitationsTable } from "@/features/organizations/components/organization-invitations-table";
 import { OrganizationMembersTable } from "@/features/organizations/components/organization-members-table";
@@ -10,7 +12,6 @@ import {
   PageHeaderActions,
   PageTitle,
 } from "@/shared/components/layout/page-layout";
-import { getTranslations } from "next-intl/server";
 
 export default async function MembersPage() {
   const context = await getCurrentOrganizationContext();

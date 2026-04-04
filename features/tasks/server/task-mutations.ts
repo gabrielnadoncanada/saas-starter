@@ -2,15 +2,12 @@ import "server-only";
 
 import { Prisma, type Task } from "@prisma/client";
 
-import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import { assertCapability } from "@/features/billing/guards/plan-guards";
+import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
 import {
   requireActiveOrganizationMembership,
 } from "@/features/organizations/server/organization-membership";
-import type {
-  PlanId,
-} from "@/shared/config/billing.config";
 import type {
   BulkDeleteTasksValues,
   BulkUpdateTaskStatusValues,
@@ -19,6 +16,7 @@ import type {
   UpdateTaskStatusValues,
   UpdateTaskValues,
 } from "@/features/tasks/task-form.schema";
+import type { OrganizationEntitlements } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
 const MAX_TASK_CODE_ATTEMPTS = 10;
@@ -37,20 +35,20 @@ async function getOrganizationId() {
 }
 
 async function createTaskForOrganization(input: {
+  entitlements: OrganizationEntitlements;
   organizationId: string;
-  planId: PlanId;
   title: string;
   description?: string | null;
   label: CreateTaskValues["label"];
   priority: CreateTaskValues["priority"];
 }) {
-  assertCapability(input.planId, "task.create");
+  assertCapability(input.entitlements, "task.create");
 
   return db.$transaction(async (tx) => {
     await consumeMonthlyUsage(
       input.organizationId,
       "tasksPerMonth",
-      input.planId,
+      input.entitlements,
       { db: tx },
     );
 
@@ -106,15 +104,15 @@ export async function listTasks() {
 export async function createTaskForCurrentOrganization(
   input: CreateTaskValues,
 ): Promise<Task> {
-  const organizationPlan = await getCurrentOrganizationPlan();
+  const entitlements = await getCurrentOrganizationEntitlements();
 
-  if (!organizationPlan) {
+  if (!entitlements) {
     throw new Error("Organization not found");
   }
 
   return createTaskForOrganization({
-    organizationId: organizationPlan.organizationId,
-    planId: organizationPlan.planId,
+    entitlements,
+    organizationId: entitlements.organizationId,
     title: input.title,
     description: input.description ?? null,
     label: input.label,
@@ -124,12 +122,12 @@ export async function createTaskForCurrentOrganization(
 
 export async function createTaskByOrganizationId(
   organizationId: string,
-  planId: PlanId,
+  entitlements: OrganizationEntitlements,
   input: CreateTaskValues,
 ) {
   return createTaskForOrganization({
+    entitlements,
     organizationId,
-    planId,
     title: input.title,
     description: input.description ?? null,
     label: input.label,

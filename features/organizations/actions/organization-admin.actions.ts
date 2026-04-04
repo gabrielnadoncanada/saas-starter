@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { getAdminOrganizationDetail } from "@/features/organizations/server/get-admin-organization-detail";
 import { listAdminOrganizations } from "@/features/organizations/server/list-admin-organizations";
-import type { ListAdminOrganizationsQuery } from "@/features/organizations/types/admin-organizations.types";
+import type { ListAdminOrganizationsQuery } from "@/features/organizations/types";
 import { db } from "@/shared/lib/db/prisma";
 
 export async function listOrganizationsAction(

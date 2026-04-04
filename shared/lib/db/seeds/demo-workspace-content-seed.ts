@@ -1,8 +1,8 @@
 import { subDays } from "date-fns";
 
 import { defaultAiModelId, getAllAiModelIds } from "@/shared/lib/ai/models";
-import { db } from "@/shared/lib/db/prisma";
 import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
+import { db } from "@/shared/lib/db/prisma";
 
 const DEMO_TASKS = [
   {
@@ -67,7 +67,6 @@ async function seedUsageCounters(organizationId: string) {
   const periodStart = getPeriodStart();
   const usageRows = [
     { limitKey: "tasksPerMonth", count: 24 },
-    { limitKey: "aiRequestsPerMonth", count: 12 },
     { limitKey: "emailSyncsPerMonth", count: 6 },
   ] as const;
 
@@ -165,7 +164,7 @@ async function seedSubscription(organizationId: string) {
   const periodEnd = new Date(now);
   periodEnd.setDate(periodEnd.getDate() + 28);
 
-  await db.subscription.upsert({
+  const subscription = await db.subscription.upsert({
     where: { id: "seed-demo-subscription" },
     update: {
       plan: "pro",
@@ -187,6 +186,56 @@ async function seedSubscription(organizationId: string) {
       periodStart: subDays(now, 2),
       periodEnd,
       seats: 2,
+    },
+  });
+
+  await db.subscriptionItem.upsert({
+    where: {
+      subscriptionId_itemType_itemKey_componentKey: {
+        subscriptionId: subscription.id,
+        itemType: "plan",
+        itemKey: "pro",
+        componentKey: "base",
+      },
+    },
+    update: {
+      billingInterval: "month",
+      quantity: 1,
+      status: "active",
+      stripePriceId: "seed-pro-monthly",
+    },
+    create: {
+      subscriptionId: subscription.id,
+      itemType: "plan",
+      itemKey: "pro",
+      componentKey: "base",
+      billingInterval: "month",
+      quantity: 1,
+      status: "active",
+      stripePriceId: "seed-pro-monthly",
+    },
+  });
+
+  await db.creditGrant.upsert({
+    where: {
+      organizationId_sourceType_sourceKey: {
+        organizationId,
+        sourceType: "subscription_cycle",
+        sourceKey: "seed-demo-subscription:cycle",
+      },
+    },
+    update: {
+      creditsGranted: 1000,
+      creditsRemaining: 640,
+      expiresAt: periodEnd,
+    },
+    create: {
+      organizationId,
+      sourceType: "subscription_cycle",
+      sourceKey: "seed-demo-subscription:cycle",
+      creditsGranted: 1000,
+      creditsRemaining: 640,
+      expiresAt: periodEnd,
     },
   });
 }

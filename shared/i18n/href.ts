@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import {
+  type AppLocale,
   defaultLocale,
   isAppLocale,
   locales,
-  type AppLocale,
 } from "@/shared/i18n/locales";
 
 function isAbsoluteHref(href: string) {

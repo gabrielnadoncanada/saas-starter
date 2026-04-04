@@ -1,8 +1,6 @@
 "use client";
 
 import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
-import { Link } from "@/shared/i18n/navigation";
-import { useRouter } from "@/shared/i18n/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +13,8 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
+import { useRouter } from "@/shared/i18n/navigation";
 import { authClient } from "@/shared/lib/auth/auth-client";
 
 type OrganizationInvitationPageProps = {

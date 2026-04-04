@@ -1,7 +1,7 @@
 import { LocalePreferencesCard } from "@/features/account/components/settings/locale-preferences-card";
 import { ThemePreferencesCard } from "@/features/account/components/settings/theme-preferences-card";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { Page } from "@/shared/components/layout/page-layout";
+import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export default async function PreferencesPage() {
   const user = await getCurrentUser();

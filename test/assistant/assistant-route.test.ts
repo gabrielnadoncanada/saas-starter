@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  LimitReachedError,
+  InsufficientCreditsError,
   UpgradeRequiredError,
 } from "@/features/billing/errors/billing-errors";
 
@@ -20,13 +20,25 @@ vi.mock("@/shared/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@/features/ai/server/organization-ai-settings", () => ({
+vi.mock("@/features/assistant/server/organization-ai-settings", () => ({
   assertOrganizationAiAccess: vi.fn(),
 }));
 
-vi.mock("@/features/ai/server/resolve-model-selection", () => ({
-  resolveOrganizationModelSelection: vi.fn(),
-}));
+vi.mock("@/features/assistant/server/assistant-model-selection", () => {
+  class MockAssistantModelSelectionError extends Error {
+    code: string;
+
+    constructor(code: string, message: string) {
+      super(message);
+      this.code = code;
+    }
+  }
+
+  return {
+    AssistantModelSelectionError: MockAssistantModelSelectionError,
+    resolveOrganizationAssistantModelSelection: vi.fn(),
+  };
+});
 
 vi.mock("@/shared/lib/ai/get-model-instance", () => ({
   getAiModelInstance: vi.fn(() => ({
@@ -35,24 +47,24 @@ vi.mock("@/shared/lib/ai/get-model-instance", () => ({
   })),
 }));
 
-vi.mock("@/features/ai/server/ai-conversations", () => ({
-  getAiConversation: vi.fn(),
+vi.mock("@/features/assistant/server/assistant-conversations", () => ({
+  getAssistantConversation: vi.fn(),
 }));
 
-vi.mock("@/features/billing/usage/usage-service", () => ({
-  consumeMonthlyUsage: vi.fn(),
+vi.mock("@/features/billing/server/credits", () => ({
+  reserveCredits: vi.fn(),
+  settleReservedCredits: vi.fn(),
 }));
 
 const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
 const { assertOrganizationAiAccess } =
-  await import("@/features/ai/server/organization-ai-settings");
-const { resolveOrganizationModelSelection } =
-  await import("@/features/ai/server/resolve-model-selection");
-const { getAiConversation } =
-  await import("@/features/ai/server/ai-conversations");
-const { consumeMonthlyUsage } =
-  await import("@/features/billing/usage/usage-service");
+  await import("@/features/assistant/server/organization-ai-settings");
+const { resolveOrganizationAssistantModelSelection } =
+  await import("@/features/assistant/server/assistant-model-selection");
+const { getAssistantConversation } =
+  await import("@/features/assistant/server/assistant-conversations");
+const { reserveCredits } = await import("@/features/billing/server/credits");
 const { POST } = await import("@/app/api/assistant/route");
 
 describe("POST /api/assistant", () => {
@@ -61,13 +73,25 @@ describe("POST /api/assistant", () => {
 
     vi.mocked(getCurrentUser).mockResolvedValue({ id: "1" } as never);
     vi.mocked(assertOrganizationAiAccess).mockResolvedValue({
-      planId: "pro",
       organizationId: "12",
-      organizationName: "Acme",
-      subscriptionStatus: "active",
+      planId: "pro",
+      planName: "Pro",
+      limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000, emailSyncsPerMonth: 50 },
+      capabilities: ["ai.assistant"],
+      activeAddonIds: [],
+      billingInterval: "month",
+      creditBalance: 1000,
+      creditBalancePurchased: 0,
+      creditBalanceSubscription: 1000,
+      includedMonthlyCredits: 1000,
+      oneTimeProductIds: [],
       pricingModel: "flat",
-    });
-    vi.mocked(resolveOrganizationModelSelection).mockResolvedValue({
+      seats: null,
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      subscriptionStatus: "active",
+    } as never);
+    vi.mocked(resolveOrganizationAssistantModelSelection).mockResolvedValue({
       model: {
         id: "gemini-2.5-flash",
         name: "Gemini 2.5 Flash",
@@ -77,8 +101,8 @@ describe("POST /api/assistant", () => {
       defaultModelId: "gemini-2.5-flash",
       allowedModels: [],
     });
-    vi.mocked(getAiConversation).mockResolvedValue(null);
-    vi.mocked(consumeMonthlyUsage).mockResolvedValue(undefined);
+    vi.mocked(getAssistantConversation).mockResolvedValue(null);
+    vi.mocked(reserveCredits).mockResolvedValue(undefined);
   });
 
   it("returns 401 when the user is not authenticated", async () => {
@@ -95,7 +119,7 @@ describe("POST /api/assistant", () => {
     expect(streamText).not.toHaveBeenCalled();
   });
 
-  it("returns 403 when the plan does not include ai.assistant", async () => {
+  it("returns 403 when the workspace does not include ai.assistant", async () => {
     vi.mocked(assertOrganizationAiAccess).mockRejectedValue(
       new UpgradeRequiredError("ai.assistant", "Free"),
     );
@@ -111,19 +135,23 @@ describe("POST /api/assistant", () => {
     expect(streamText).not.toHaveBeenCalled();
   });
 
-  it("returns 429 when the AI quota is exhausted", async () => {
-    vi.mocked(consumeMonthlyUsage).mockRejectedValue(
-      new LimitReachedError("aiRequestsPerMonth", 100, 100, "Pro"),
+  it("returns 402 when the workspace has insufficient credits", async () => {
+    vi.mocked(reserveCredits).mockRejectedValue(
+      new InsufficientCreditsError(0, 25),
     );
 
     const response = await POST(
       new Request("http://localhost/api/assistant", {
         method: "POST",
-        body: JSON.stringify({ messages: [] }),
+        body: JSON.stringify({
+          messages: [
+            { id: "1", role: "user", parts: [{ type: "text", text: "Hello" }] },
+          ],
+        }),
       }),
     );
 
-    expect(response.status).toBe(429);
+    expect(response.status).toBe(402);
     expect(streamText).not.toHaveBeenCalled();
   });
 
@@ -156,7 +184,7 @@ describe("POST /api/assistant", () => {
     expect(streamText).not.toHaveBeenCalled();
   });
 
-  it("consumes AI usage before a successful streamed response", async () => {
+  it("reserves credits before streaming a successful response", async () => {
     const response = await POST(
       new Request("http://localhost/api/assistant", {
         method: "POST",
@@ -170,12 +198,12 @@ describe("POST /api/assistant", () => {
 
     expect(response.status).toBe(200);
     expect(streamText).toHaveBeenCalled();
-    expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      "12",
-      "aiRequestsPerMonth",
-      "pro",
-    );
-    expect(resolveOrganizationModelSelection).toHaveBeenCalledWith(
+    expect(reserveCredits).toHaveBeenCalledWith({
+      organizationId: "12",
+      credits: 25,
+      referenceId: expect.any(String),
+    });
+    expect(resolveOrganizationAssistantModelSelection).toHaveBeenCalledWith(
       "12",
       undefined,
     );

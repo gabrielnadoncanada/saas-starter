@@ -1,25 +1,97 @@
 model Subscription {
-  id                   String    @id
-  plan                 String    @db.VarChar(50)
+  id                   String             @id
+  plan                 String             @db.VarChar(50)
   referenceId          String
   stripeCustomerId     String?
   stripeSubscriptionId String?
-  status               String    @default("incomplete") @db.VarChar(30)
+  status               String             @default("incomplete") @db.VarChar(30)
   periodStart          DateTime?
   periodEnd            DateTime?
   trialStart           DateTime?
   trialEnd             DateTime?
-  cancelAtPeriodEnd    Boolean?  @default(false)
+  cancelAtPeriodEnd    Boolean?           @default(false)
   cancelAt             DateTime?
   canceledAt           DateTime?
   endedAt              DateTime?
   seats                Int?
-  billingInterval      String?   @db.VarChar(20)
+  billingInterval      String?            @db.VarChar(20)
   stripeScheduleId     String?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  items                SubscriptionItem[]
 
   @@index([referenceId])
   @@index([stripeCustomerId])
   @@index([stripeSubscriptionId])
+}
+
+model SubscriptionItem {
+  id                       String       @id @default(cuid())
+  subscriptionId           String
+  itemType                 String       @db.VarChar(20)
+  itemKey                  String       @db.VarChar(100)
+  componentKey             String       @default("default") @db.VarChar(100)
+  stripeSubscriptionItemId String?      @unique
+  stripePriceId            String       @db.VarChar(255)
+  billingInterval          String?      @db.VarChar(20)
+  quantity                 Int?
+  status                   String       @default("active") @db.VarChar(30)
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
+  subscription             Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, itemType, itemKey, componentKey])
+  @@index([subscriptionId])
+  @@index([itemType, itemKey])
+}
+
+model Purchase {
+  id                      String       @id @default(cuid())
+  organizationId          String
+  purchaseType            String       @db.VarChar(30)
+  itemKey                 String       @db.VarChar(100)
+  stripeCheckoutSessionId String?      @unique
+  stripePaymentIntentId   String?      @unique
+  stripeCustomerId        String?
+  amount                  Int
+  currency                String       @default("usd") @db.VarChar(10)
+  status                  String       @db.VarChar(30)
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+  organization            Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, purchaseType, itemKey])
+}
+
+model CreditGrant {
+  id               String              @id @default(cuid())
+  organizationId   String
+  sourceType       String              @db.VarChar(30)
+  sourceKey        String              @db.VarChar(100)
+  creditsGranted   Int
+  creditsRemaining Int
+  expiresAt        DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  organization     Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  ledgerEntries    CreditLedgerEntry[]
+
+  @@unique([organizationId, sourceType, sourceKey])
+  @@index([organizationId, expiresAt])
+}
+
+model CreditLedgerEntry {
+  id             String       @id @default(cuid())
+  organizationId String
+  grantId        String?
+  delta          Int
+  reason         String       @db.VarChar(50)
+  referenceType  String?      @db.VarChar(50)
+  referenceId    String?      @db.VarChar(100)
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  grant          CreditGrant? @relation(fields: [grantId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([referenceType, referenceId])
 }

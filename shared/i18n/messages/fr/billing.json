@@ -20,12 +20,16 @@
     "actions": {
       "noMonthlyPrice": "Aucun prix Stripe mensuel n'est configure pour les forfaits affiches.",
       "ownerOnly": "Reserve au proprietaire",
+      "seatQuantity": "Nombre de sieges",
+      "addonsLegend": "Packs additionnels",
       "manageInStripe": "Gerer l'abonnement dans Stripe",
       "changeInStripe": "Changer ce forfait dans Stripe",
       "stripePortalHelp": "Les changements de forfait ou de frequence se font dans le portail Stripe.",
       "alreadyActive": "Abonnement deja actif",
       "alreadyActiveHelp": "Cet espace a deja un abonnement en cours. Le portail Stripe n'est pas disponible tant que le client Stripe n'est pas synchronise.",
-      "proceedToPayment": "Proceder au paiement"
+      "proceedToPayment": "Proceder au paiement",
+      "updateSubscription": "Mettre a jour l'abonnement",
+      "openPortal": "Ouvrir le portail de facturation"
     },
     "pricingToggle": {
       "mostPopular": "Le plus populaire",

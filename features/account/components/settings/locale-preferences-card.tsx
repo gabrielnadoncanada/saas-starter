@@ -4,8 +4,7 @@ import { Languages } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
-import { updateLocaleAction } from "@/features/account/actions/update-locale.action";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { updateLocaleAction } from "@/features/account/actions/update-locale.actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
@@ -14,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import { useToastMessage } from "@/shared/hooks/useToastMessage";
 
 type LocalePreferencesCardProps = {
   preferredLocale: "en" | "fr";

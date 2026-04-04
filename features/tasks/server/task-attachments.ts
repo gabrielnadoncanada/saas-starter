@@ -2,8 +2,8 @@ import "server-only";
 
 import type { Prisma } from "@prisma/client";
 
-import { saveStoredFile, deleteStoredFile } from "@/features/files/server/storage-service";
 import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
+import { deleteStoredFile, saveStoredFile } from "@/features/storage/server/storage-service";
 import { db } from "@/shared/lib/db/prisma";
 
 const MAX_TASK_ATTACHMENT_BYTES = 10 * 1024 * 1024;

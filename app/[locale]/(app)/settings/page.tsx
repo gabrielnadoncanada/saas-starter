@@ -6,10 +6,6 @@ import { EditPasswordDialog } from "@/features/account/components/settings/edit-
 import { EditProfileDialog } from "@/features/account/components/settings/edit-profile-dialog";
 import { LinkedAccountsCard } from "@/features/account/components/settings/linked-accounts-card";
 import { getLinkedAccountsOverview } from "@/features/account/server/linked-accounts";
-import type {
-  LinkedProviderOverview,
-  SecuritySettingsFeedback,
-} from "@/features/account/types/account.types";
 import {
   Page,
   PageDescription,
@@ -46,6 +42,11 @@ type PageProps = {
     provider?: string;
     error?: string;
   }>;
+};
+
+type SecuritySettingsFeedback = {
+  error?: string;
+  success?: string;
 };
 
 function oauthLinkErrorKey(error: string) {
@@ -98,22 +99,6 @@ export default async function SettingsPage({
           : undefined,
   };
 
-  function mapLinkedProviders(
-    providers: Array<{
-      provider: LinkedProviderOverview["provider"];
-      linkedAt: Date | null;
-      isLinked: boolean;
-      canUnlink: boolean;
-    }>,
-  ): LinkedProviderOverview[] {
-    return providers.map((providerItem) => ({
-      provider: providerItem.provider,
-      linkedAt: providerItem.linkedAt?.toISOString() ?? null,
-      isLinked: providerItem.isLinked,
-      canUnlink: providerItem.canUnlink,
-    }));
-  }
-
   return (
     <Page fixed>
       <PageHeader>
@@ -165,7 +150,7 @@ export default async function SettingsPage({
         </CardHeader>
         <CardContent>
           <LinkedAccountsCard
-            providers={mapLinkedProviders(linkedAccounts.providers)}
+            providers={linkedAccounts.providers}
             feedback={feedback}
           />
         </CardContent>

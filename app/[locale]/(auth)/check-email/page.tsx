@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { ResendMagicLinkButton } from "@/features/auth/components/oauth/resend-magic-link-button";
 import {
   Card,
@@ -7,9 +9,8 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { Link } from "@/shared/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 
 type CheckEmailPageProps = {
   searchParams: Promise<{

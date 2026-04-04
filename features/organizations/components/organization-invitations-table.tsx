@@ -2,7 +2,6 @@
 
 import { format, parseISO } from "date-fns";
 import { Mail, MoreVertical, X } from "lucide-react";
-import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -12,7 +11,7 @@ import {
   resendOrganizationInvitationAction,
   type ResendOrganizationInvitationActionState,
 } from "@/features/organizations/actions/organization-owner.actions";
-import type { OrganizationInvitationView } from "@/features/organizations/types/membership.types";
+import type { OrganizationInvitationView } from "@/features/organizations/types";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -36,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { useRouter } from "@/shared/i18n/navigation";
 
 type OrganizationInvitationsTableProps = {
   canManageInvitations: boolean;

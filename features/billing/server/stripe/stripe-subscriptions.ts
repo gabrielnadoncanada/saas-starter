@@ -1,7 +1,6 @@
+import { getPlan, isPlanId } from "@/features/billing/catalog/resolver";
 import {
   type BillingInterval,
-  getPlan,
-  isPlanId,
   type PricingModel,
 } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";

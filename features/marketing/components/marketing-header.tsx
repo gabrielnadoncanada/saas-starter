@@ -1,17 +1,26 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
-import { Link } from "@/shared/i18n/navigation";
 import { useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
+import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
+
+const marketingSectionHrefs = {
+  compare: "/#compare",
+  faq: "/#faq",
+  features: "/#features",
+  pricing: "/#pricing",
+  screenshots: "/#screenshots",
+} as const;
 
 const navLinks = [
-  { label: "Features", href: "/#features" },
-  { label: "Screenshots", href: "/#screenshots" },
-  { label: "Comparison", href: "/#compare" },
-  { label: "Pricing", href: "/#pricing" },
-  { label: "FAQ", href: "/#faq" },
+  { label: "Features", href: marketingSectionHrefs.features },
+  { label: "Screenshots", href: marketingSectionHrefs.screenshots },
+  { label: "Comparison", href: marketingSectionHrefs.compare },
+  { label: "Pricing", href: marketingSectionHrefs.pricing },
+  { label: "FAQ", href: marketingSectionHrefs.faq },
 ];
 
 export function MarketingHeader() {
@@ -21,7 +30,7 @@ export function MarketingHeader() {
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo / brand */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href={routes.marketing.home} className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-orange-500 text-sm font-bold text-white">
             S
           </div>
@@ -45,12 +54,12 @@ export function MarketingHeader() {
 
         {/* Desktop CTA */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/sign-in">
+          <Link href={routes.auth.login}>
             <Button variant="ghost" size="sm">
               Demo
             </Button>
           </Link>
-          <a href="#pricing">
+          <a href={marketingSectionHrefs.pricing}>
             <Button size="sm" className="rounded-full">
               Get the Starter
             </Button>
@@ -87,12 +96,18 @@ export function MarketingHeader() {
               </a>
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t pt-3">
-              <Link href="/sign-in" onClick={() => setMobileOpen(false)}>
+              <Link
+                href={routes.auth.login}
+                onClick={() => setMobileOpen(false)}
+              >
                 <Button variant="outline" size="sm" className="w-full">
                   Demo
                 </Button>
               </Link>
-              <a href="#pricing" onClick={() => setMobileOpen(false)}>
+              <a
+                href={marketingSectionHrefs.pricing}
+                onClick={() => setMobileOpen(false)}
+              >
                 <Button size="sm" className="w-full rounded-full">
                   Get the Starter
                 </Button>

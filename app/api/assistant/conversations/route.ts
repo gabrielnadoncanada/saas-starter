@@ -1,16 +1,15 @@
 import type { UIMessage } from "ai";
 
-import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
 import {
-  createAiConversation,
-  listAiConversations,
-  resolveAiConversationScope,
-} from "@/features/ai/server/ai-conversations";
-import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
+  createAssistantConversation,
+  listAssistantConversations,
+  resolveAssistantConversationScope,
+} from "@/features/assistant/server/assistant-conversations";
+import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-settings";
 import { UpgradeRequiredError } from "@/features/billing/errors/billing-errors";
 
 function getScopeErrorResponse(
-  scope: Awaited<ReturnType<typeof resolveAiConversationScope>>,
+  scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,
 ) {
   if (scope.kind === "unauthorized") {
     return new Response("Unauthorized", { status: 401 });
@@ -36,7 +35,7 @@ async function assertAssistantAccess() {
 }
 
 export async function GET() {
-  const scope = await resolveAiConversationScope();
+  const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -44,14 +43,12 @@ export async function GET() {
   const planError = await assertAssistantAccess();
   if (planError) return planError;
 
-  const conversations = await listAiConversations(
-    aiConversationSurfaces.assistant,
-  );
+  const conversations = await listAssistantConversations();
   return Response.json(conversations);
 }
 
 export async function POST(req: Request) {
-  const scope = await resolveAiConversationScope();
+  const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -67,10 +64,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const conversation = await createAiConversation(
-    aiConversationSurfaces.assistant,
-    body.messages,
-  );
+  const conversation = await createAssistantConversation(body.messages);
   if (!conversation) {
     return new Response("Unable to create conversation", { status: 500 });
   }

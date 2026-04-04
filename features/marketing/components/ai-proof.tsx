@@ -13,15 +13,15 @@ export function AiProof() {
             </p>
             <p className="mt-3 text-muted-foreground">
               The included assistant demonstrates a billing-aware AI module:
-              access by plan, enforce monthly usage limits, reuse the same
-              guarded task contract, and keep the provider choice explicit. The
-              inbox and invoice flows stay honest scaffolds until you wire real
-              product data behind them.
+              access by plan, reserve credits before each request, reuse the
+              same guarded task contract, and keep the provider choice explicit.
+              The inbox and invoice flows stay honest scaffolds until you wire
+              real product data behind them.
             </p>
             <ul className="mt-6 space-y-3">
               {[
                 "AI assistant - gated to Pro and Team plans",
-                "aiRequestsPerMonth - usage-limited like any other quota",
+                "Included credits + top-ups - prepaid AI monetization",
                 "Task creation - real guarded business action",
                 "Demo inbox scaffold - included for email-to-task patterns",
                 "Invoice draft scaffold - included for structured AI workflows",
@@ -40,25 +40,29 @@ export function AiProof() {
           <div className="mt-10 space-y-4 lg:mt-0">
             <div className="overflow-x-auto rounded-lg bg-gray-900 p-4 text-sm font-mono text-gray-100">
               <p className="mb-1 text-xs text-gray-500">
-                // Route-level AI gating + provider resolution
+                // Route-level AI gating + credit reservation
               </p>
               <pre className="whitespace-pre leading-relaxed">
-                {`const organizationPlan = await getCurrentOrganizationPlan();
-assertCapability(organizationPlan.planId, "ai.assistant");
-
-const usage = await getMonthlyUsage(
-  organizationPlan.organizationId,
-  "aiRequestsPerMonth"
-);
-assertLimit(organizationPlan.planId, "aiRequestsPerMonth", usage);
+                {`const entitlements = await assertOrganizationAiAccess();
+const reservedCredits = getCreditReserve(strategy);
 
 const assistantModel = getAssistantModel();
+await reserveCredits({
+  organizationId: entitlements.organizationId,
+  credits: reservedCredits,
+  referenceId,
+});
 
 const result = streamText({
   model: assistantModel.model,
   tools: assistantTools,
-  onFinish: () =>
-    recordUsage(organizationPlan.organizationId, "aiRequestsPerMonth"),
+  onFinish: ({ usage }) =>
+    settleReservedCredits({
+      organizationId: entitlements.organizationId,
+      reservedCredits,
+      finalCredits: calculateCreditCharge({ strategy, usage }),
+      referenceId,
+    }),
 });`}
               </pre>
             </div>
@@ -68,16 +72,15 @@ const result = streamText({
                 // Tool-level billing stays real too
               </p>
               <pre className="whitespace-pre leading-relaxed">
-                {`assertCapability(organizationPlan.planId, "email.sync");
-
-const usage = await getMonthlyUsage(
-  organizationPlan.organizationId,
-  "emailSyncsPerMonth"
-);
-assertLimit(organizationPlan.planId, "emailSyncsPerMonth", usage);
+                {`const entitlements = await getCurrentOrganizationEntitlements();
+assertCapability(entitlements, "email.sync");
 
 const messages = await emailProvider.getRecentMessages();
-await recordUsage(organizationPlan.organizationId, "emailSyncsPerMonth");`}
+await consumeMonthlyUsage(
+  entitlements.organizationId,
+  "emailSyncsPerMonth",
+  entitlements,
+);`}
               </pre>
             </div>
           </div>

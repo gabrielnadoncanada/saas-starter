@@ -1,9 +1,9 @@
 import { headers } from "next/headers";
 
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
+import { isBillingInterval, isPlanId } from "@/features/billing/catalog/resolver";
 import { resumeCheckoutAfterSignIn } from "@/features/billing/server/resume-checkout-after-sign-in";
 import { routes } from "@/shared/constants/routes";
-import { isBillingInterval, isPlanId } from "@/shared/config/billing.config";
 import { redirectToLocale } from "@/shared/i18n/href";
 import { getCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";

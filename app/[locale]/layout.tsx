@@ -1,6 +1,6 @@
+import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
-import { notFound } from "next/navigation";
 
 import { isAppLocale, locales } from "@/shared/i18n/locales";
 

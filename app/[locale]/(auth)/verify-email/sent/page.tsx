@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import {
   Card,
   CardContent,
@@ -6,9 +8,8 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { Link } from "@/shared/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 
 type VerifyEmailSentPageProps = {
   searchParams: Promise<{

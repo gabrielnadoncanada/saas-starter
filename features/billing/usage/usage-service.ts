@@ -1,9 +1,8 @@
-import { db } from "@/shared/lib/db/prisma";
 import {
-  getPlan,
   type LimitKey,
-  type PlanId,
+  type OrganizationEntitlements,
 } from "@/shared/config/billing.config";
+import { db } from "@/shared/lib/db/prisma";
 
 import { LimitReachedError } from "../errors/billing-errors";
 import { getPlanLimit } from "../guards/plan-guards";
@@ -20,11 +19,11 @@ type UsageDbClient = Pick<typeof db, "usageCounter">;
 export async function consumeMonthlyUsage(
   organizationId: string,
   limitKey: LimitKey,
-  planId: PlanId,
+  entitlements: OrganizationEntitlements,
   deps: { db: UsageDbClient } = { db },
 ) {
   const periodStart = getPeriodStart();
-  const limit = getPlanLimit(planId, limitKey);
+  const limit = getPlanLimit(entitlements, limitKey);
 
   await deps.db.usageCounter.createMany({
     data: {
@@ -58,7 +57,7 @@ export async function consumeMonthlyUsage(
       limitKey,
       limit,
       currentUsage,
-      getPlan(planId).name,
+      entitlements.planName,
     );
   }
 }

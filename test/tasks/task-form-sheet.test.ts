@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import React from "react";
 import { render } from "@testing-library/react";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { refreshMock, useActionStateMock, useToastMessageMock } = vi.hoisted(
@@ -35,7 +35,7 @@ vi.mock("@/features/tasks/components/task-attachments-panel", () => ({
   TaskAttachmentsPanel: () => React.createElement("div", null, "Attachments"),
 }));
 
-vi.mock("@/features/tasks/server/task-server-actions", () => ({
+vi.mock("@/features/tasks/server/task.actions", () => ({
   createTaskAction: vi.fn(),
   updateTaskAction: vi.fn(),
 }));

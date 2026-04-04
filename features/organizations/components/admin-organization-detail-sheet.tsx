@@ -6,7 +6,7 @@ import { Building2, Calendar, Trash2, Users } from "lucide-react";
 import type {
   AdminOrganization,
   OrgSubscription,
-} from "@/features/organizations/types/admin-organizations.types";
+} from "@/features/organizations/types";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import {

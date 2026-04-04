@@ -1,19 +1,26 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
+process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
+process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
+process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
+process.env.STRIPE_PRICE_CREDIT_PACK_2000 = "price_credits_2000";
+
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {
     member: {
       findMany: vi.fn(),
     },
+    purchase: {
+      upsert: vi.fn(),
+    },
     subscription: {
       findFirst: vi.fn(),
       upsert: vi.fn(),
-      deleteMany: vi.fn(),
     },
-    organization: {
+    subscriptionItem: {
+      upsert: vi.fn(),
       updateMany: vi.fn(),
-      findFirst: vi.fn(),
-      findMany: vi.fn(),
     },
   },
 }));
@@ -32,16 +39,17 @@ vi.mock("@/features/notifications/server/notification-service", () => ({
   createNotificationsForUsers: vi.fn(),
 }));
 
+vi.mock("@/features/billing/server/credits", () => ({
+  grantCredits: vi.fn(),
+}));
+
 const { db } = await import("@/shared/lib/db/prisma");
 const {
   clearStripeCustomerBillingState,
   findOrganizationIdByStripeCustomerId,
   syncOrganizationStripeCustomer,
 } = await import("@/features/billing/server/stripe/stripe-customers");
-const { recordAuditLog } = await import("@/features/audit/server/record-audit-log");
-const { createNotificationsForUsers } = await import(
-  "@/features/notifications/server/notification-service"
-);
+const { grantCredits } = await import("@/features/billing/server/credits");
 const { handleStripeWebhookEvent } =
   await import("@/features/billing/server/stripe/stripe-webhooks");
 
@@ -65,6 +73,7 @@ function createSubscriptionEvent(overrides: Record<string, unknown> = {}) {
         items: {
           data: [
             {
+              id: "si_plan",
               quantity: 3,
               current_period_start: 1_710_000_000,
               current_period_end: 1_712_592_000,
@@ -86,50 +95,40 @@ function createSubscriptionEvent(overrides: Record<string, unknown> = {}) {
 describe("handleStripeWebhookEvent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(console, "info").mockImplementation(() => {});
-    vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    vi.mocked(db.subscription.findFirst).mockResolvedValue(null);
-    vi.mocked(db.subscription.upsert).mockResolvedValue({
-      id: "sub_123",
-    } as never);
+    vi.mocked(db.subscription.findFirst).mockResolvedValue(null as never);
+    vi.mocked(db.subscription.upsert).mockResolvedValue({ id: "sub_123" } as never);
+    vi.mocked(db.subscriptionItem.upsert).mockResolvedValue({ id: "item_123" } as never);
+    vi.mocked(db.subscriptionItem.updateMany).mockResolvedValue({ count: 0 } as never);
     vi.mocked(db.member.findMany).mockResolvedValue([{ userId: "user_123" }] as never);
-    vi.mocked(db.organization.updateMany).mockResolvedValue({
-      count: 1,
-    } as never);
-    vi.mocked(db.organization.findMany).mockResolvedValue([{ id: "org_123" }] as never);
-    vi.mocked(findOrganizationIdByStripeCustomerId).mockResolvedValue(
-      "org_123",
-    );
+    vi.mocked(db.purchase.upsert).mockResolvedValue({ id: "purchase_123" } as never);
+    vi.mocked(findOrganizationIdByStripeCustomerId).mockResolvedValue("org_123");
     vi.mocked(syncOrganizationStripeCustomer).mockResolvedValue(undefined);
     vi.mocked(clearStripeCustomerBillingState).mockResolvedValue({
       clearedOrganizations: 1,
       deletedSubscriptions: 1,
     });
-    vi.mocked(recordAuditLog).mockResolvedValue({
-      id: "audit_123",
-      organizationId: "org_123",
-      actorUserId: null,
-      event: "billing.checkout_completed",
-      entityType: "checkout",
-      entityId: "evt_checkout",
-      summary: "Completed a Stripe checkout session",
-      metadataJson: null,
-      createdAt: new Date(),
-    } as never);
-    vi.mocked(createNotificationsForUsers).mockResolvedValue(undefined as never);
+    vi.mocked(grantCredits).mockResolvedValue({ id: "grant_123" } as never);
   });
 
-  it("syncs the Stripe customer when checkout completes", async () => {
+  it("syncs the Stripe customer and records one-time purchases when checkout completes", async () => {
     await handleStripeWebhookEvent({
       id: "evt_checkout",
       type: "checkout.session.completed",
       data: {
         object: {
           id: "cs_123",
+          mode: "payment",
           customer: "cus_123",
-          metadata: { organizationId: "org_123" },
+          amount_total: 2000,
+          currency: "usd",
+          metadata: {
+            checkoutType: "credit_pack",
+            itemKey: "credits_2000",
+            organizationId: "org_123",
+          },
           client_reference_id: null,
+          payment_intent: "pi_123",
         },
       },
     } as never);
@@ -138,15 +137,25 @@ describe("handleStripeWebhookEvent", () => {
       organizationId: "org_123",
       customerId: "cus_123",
     });
-    expect(recordAuditLog).toHaveBeenCalledWith(
+    expect(db.purchase.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          organizationId: "org_123",
+          purchaseType: "credit_pack",
+          itemKey: "credits_2000",
+        }),
+      }),
+    );
+    expect(grantCredits).toHaveBeenCalledWith(
       expect.objectContaining({
         organizationId: "org_123",
-        event: "billing.checkout_completed",
+        sourceType: "credit_pack",
+        sourceKey: "cs_123",
       }),
     );
   });
 
-  it("syncs subscriptions from the Stripe price id mapping", async () => {
+  it("syncs subscriptions from recurring price ids and mirrors subscription items", async () => {
     await handleStripeWebhookEvent(createSubscriptionEvent() as never);
 
     expect(syncOrganizationStripeCustomer).toHaveBeenCalledWith({
@@ -165,11 +174,13 @@ describe("handleStripeWebhookEvent", () => {
         }),
       }),
     );
-    expect(createNotificationsForUsers).toHaveBeenCalledWith(
-      "org_123",
-      ["user_123"],
+    expect(db.subscriptionItem.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: "Billing updated",
+        create: expect.objectContaining({
+          itemKey: "pro",
+          itemType: "plan",
+          quantity: 3,
+        }),
       }),
     );
   });
@@ -182,14 +193,13 @@ describe("handleStripeWebhookEvent", () => {
         items: {
           data: [
             {
+              id: "si_unknown",
               quantity: 8,
               current_period_start: 1_710_000_000,
               current_period_end: 1_712_592_000,
               price: {
                 id: "price_unknown",
-                recurring: {
-                  interval: "year",
-                },
+                recurring: { interval: "year" },
               },
             },
           ],
@@ -226,19 +236,14 @@ describe("handleStripeWebhookEvent", () => {
     expect(clearStripeCustomerBillingState).toHaveBeenCalledWith("cus_123");
   });
 
-  it("keeps informational billing events as safe no-ops", async () => {
+  it("keeps unrelated billing events as safe no-ops", async () => {
     await handleStripeWebhookEvent({
       id: "evt_invoice_failed",
       type: "invoice.payment_failed",
       data: { object: {} },
     } as never);
-    await handleStripeWebhookEvent({
-      id: "evt_trial_end",
-      type: "customer.subscription.trial_will_end",
-      data: { object: {} },
-    } as never);
 
     expect(db.subscription.upsert).not.toHaveBeenCalled();
-    expect(clearStripeCustomerBillingState).not.toHaveBeenCalled();
+    expect(db.purchase.upsert).not.toHaveBeenCalled();
   });
 });

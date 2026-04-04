@@ -5,12 +5,7 @@ import type {
   CreateTaskToolResult,
   ReviewInboxToolResult,
 } from "@/features/assistant/types";
-import {
-  LimitReachedError,
-  UpgradeRequiredError,
-} from "@/features/billing/errors/billing-errors";
-import { hasCapability } from "@/features/billing/guards/plan-guards";
-import { getPlan } from "@/shared/config/billing.config";
+import { LimitReachedError } from "@/features/billing/errors/billing-errors";
 
 vi.mock("server-only", () => ({}));
 
@@ -18,24 +13,9 @@ vi.mock("ai", () => ({
   tool: <T>(definition: T) => definition,
 }));
 
-vi.mock("@/features/billing/plans/get-current-organization-plan", () => ({
-  getCurrentOrganizationPlan: vi.fn(),
+vi.mock("@/features/billing/server/organization-entitlements", () => ({
+  getCurrentOrganizationEntitlements: vi.fn(),
 }));
-
-vi.mock("@/features/billing/guards/plan-guards", async () => {
-  const actual = await vi.importActual<
-    typeof import("@/features/billing/guards/plan-guards")
-  >("@/features/billing/guards/plan-guards");
-
-  return {
-    ...actual,
-    assertCapability: vi.fn((planId, capability) => {
-      if (!hasCapability(planId, capability)) {
-        throw new UpgradeRequiredError(capability, getPlan(planId).name);
-      }
-    }),
-  };
-});
 
 vi.mock("@/features/billing/usage/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
@@ -52,8 +32,8 @@ vi.mock("@/features/assistant/server/demo-inbox", () => ({
   },
 }));
 
-const { getCurrentOrganizationPlan } = await import(
-  "@/features/billing/plans/get-current-organization-plan"
+const { getCurrentOrganizationEntitlements } = await import(
+  "@/features/billing/server/organization-entitlements"
 );
 const { consumeMonthlyUsage } =
   await import("@/features/billing/usage/usage-service");
@@ -72,33 +52,46 @@ const createTaskExecute = assistantTools.createTask.execute as (input: {
   label?: "FEATURE" | "BUG" | "DOCUMENTATION";
   priority?: "LOW" | "MEDIUM" | "HIGH";
 }) => Promise<CreateTaskToolResult>;
-const createInvoiceDraftExecute = assistantTools.createInvoiceDraft
-  .execute as (input: {
+const createInvoiceDraftExecute = assistantTools.createInvoiceDraft.execute as (input: {
   clientName: string;
   items: Array<{ description: string; quantity: number; unitPrice: number }>;
 }) => Promise<CreateInvoiceDraftToolResult>;
 
+function createEntitlements(capabilities: string[]) {
+  return {
+    organizationId: "12",
+    planId: "pro",
+    planName: "Pro",
+    limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000, emailSyncsPerMonth: 50 },
+    capabilities,
+    activeAddonIds: [],
+    billingInterval: "month",
+    creditBalance: 1000,
+    creditBalancePurchased: 0,
+    creditBalanceSubscription: 1000,
+    includedMonthlyCredits: 1000,
+    oneTimeProductIds: [],
+    pricingModel: "flat",
+    seats: null,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    subscriptionStatus: "active",
+  };
+}
+
 describe("assistant tools", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
-      planId: "pro",
-      organizationId: "12",
-      organizationName: "Acme",
-      subscriptionStatus: "active",
-      pricingModel: "flat",
-    });
+    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
+      createEntitlements(["email.sync", "invoice.create", "task.create"]) as never,
+    );
     vi.mocked(consumeMonthlyUsage).mockResolvedValue(undefined);
   });
 
-  it("blocks reviewInbox when the plan does not include email.sync", async () => {
-    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
-      planId: "free",
-      organizationId: "12",
-      organizationName: "Acme",
-      subscriptionStatus: null,
-      pricingModel: "flat",
-    });
+  it("blocks reviewInbox when the workspace lacks email.sync", async () => {
+    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
+      createEntitlements(["task.create"]) as never,
+    );
 
     const result = await reviewInboxExecute({ limit: 3 });
 
@@ -145,7 +138,7 @@ describe("assistant tools", () => {
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
       "12",
       "emailSyncsPerMonth",
-      "pro",
+      expect.objectContaining({ organizationId: "12" }),
     );
   });
 
@@ -171,14 +164,10 @@ describe("assistant tools", () => {
     expect(result.success).toBe(true);
   });
 
-  it("blocks invoice drafts when the plan does not include invoice.create", async () => {
-    vi.mocked(getCurrentOrganizationPlan).mockResolvedValue({
-      planId: "free",
-      organizationId: "12",
-      organizationName: "Acme",
-      subscriptionStatus: null,
-      pricingModel: "flat",
-    });
+  it("blocks invoice drafts when the workspace lacks invoice.create", async () => {
+    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
+      createEntitlements(["email.sync", "task.create"]) as never,
+    );
 
     const result = await createInvoiceDraftExecute({
       clientName: "Acme Corp",

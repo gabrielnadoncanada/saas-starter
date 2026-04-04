@@ -3,10 +3,10 @@
 import { FileText, Mail, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/shared/components/ui/button";
 import {
   ConversationEmptyState,
 } from "@/shared/components/ai-elements/conversation";
+import { Button } from "@/shared/components/ui/button";
 
 type EmptyStateProps = {
   onPromptClick: (text: string) => void;

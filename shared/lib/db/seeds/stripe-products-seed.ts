@@ -1,5 +1,5 @@
-import { stripe } from "@/shared/lib/stripe/client";
 import type { PlanId } from "@/shared/config/billing.config";
+import { stripe } from "@/shared/lib/stripe/client";
 
 type SeedStripePlan = {
   name: string;

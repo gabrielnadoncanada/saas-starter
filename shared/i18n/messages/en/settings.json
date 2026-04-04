@@ -86,7 +86,20 @@
     },
     "billing": {
       "title": "Manage your team plan",
-      "description": "Choose a plan that fits your team's needs. You can upgrade or downgrade at any time."
+      "description": "Choose a plan that fits your team's needs. You can upgrade or downgrade at any time.",
+      "currentPlan": "Current plan",
+      "creditsBalance": "Credit balance",
+      "includedCredits": "Included monthly credits",
+      "creditPacksTitle": "Credit packs",
+      "creditPacksDescription": "Buy one-time top-ups when your team needs more AI usage.",
+      "creditsGranted": "{count} credits",
+      "buyCredits": "Buy credits",
+      "oneTimeProductsTitle": "One-time products",
+      "oneTimeProductsDescription": "Sell one-time workspace upgrades without moving the team to a recurring plan.",
+      "buyOneTime": "Buy now",
+      "creditActivityTitle": "Credit activity",
+      "creditActivityDescription": "Recent grants, charges, and refunds for this workspace.",
+      "noCreditActivity": "No credit activity yet."
     },
     "organization": {
       "title": "Organization Settings",

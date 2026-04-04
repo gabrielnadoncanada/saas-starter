@@ -15,7 +15,7 @@ import { AdminOrganizationsTableContent } from "@/features/organizations/compone
 import type {
   AdminOrganization,
   OrgSubscription,
-} from "@/features/organizations/types/admin-organizations.types";
+} from "@/features/organizations/types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 

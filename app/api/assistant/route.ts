@@ -1,18 +1,28 @@
+import { randomUUID } from "node:crypto";
+
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
 
-import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
-import { getAiConversation } from "@/features/ai/server/ai-conversations";
-import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
+import { getAssistantConversation } from "@/features/assistant/server/assistant-conversations";
 import {
-  AiModelSelectionError,
-  resolveOrganizationModelSelection,
-} from "@/features/ai/server/resolve-model-selection";
+  AssistantModelSelectionError,
+  resolveOrganizationAssistantModelSelection,
+} from "@/features/assistant/server/assistant-model-selection";
+import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-settings";
 import { assistantTools } from "@/features/assistant/server/tools";
 import {
+  InsufficientCreditsError,
   LimitReachedError,
   UpgradeRequiredError,
 } from "@/features/billing/errors/billing-errors";
-import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
+import {
+  calculateCreditCharge,
+  getCreditReserve,
+} from "@/features/billing/server/credit-charge";
+import {
+  reserveCredits,
+  settleReservedCredits,
+} from "@/features/billing/server/credits";
+import { billingConfig } from "@/shared/config/billing.config";
 import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -23,16 +33,11 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // 2. Check plan gating and usage limits
-  let organizationPlan: Awaited<ReturnType<typeof assertOrganizationAiAccess>>;
+  // 2. Check plan gating and minimum credit reserve
+  let entitlements: Awaited<ReturnType<typeof assertOrganizationAiAccess>>;
 
   try {
-    organizationPlan = await assertOrganizationAiAccess();
-    await consumeMonthlyUsage(
-      organizationPlan.organizationId,
-      "aiRequestsPerMonth",
-      organizationPlan.planId,
-    );
+    entitlements = await assertOrganizationAiAccess();
   } catch (error) {
     if (error instanceof UpgradeRequiredError) {
       return Response.json(
@@ -49,6 +54,17 @@ export async function POST(req: Request) {
           currentUsage: error.currentUsage,
         },
         { status: 429 },
+      );
+    }
+    if (error instanceof InsufficientCreditsError) {
+      return Response.json(
+        {
+          error: error.message,
+          code: "INSUFFICIENT_CREDITS",
+          availableCredits: error.availableCredits,
+          requiredCredits: error.requiredCredits,
+        },
+        { status: 402 },
       );
     }
     throw error;
@@ -88,10 +104,7 @@ export async function POST(req: Request) {
   }
 
   if (conversationId) {
-    const conversation = await getAiConversation(
-      conversationId,
-      aiConversationSurfaces.assistant,
-    );
+    const conversation = await getAssistantConversation(conversationId);
     if (!conversation) {
       return new Response("Conversation not found", { status: 404 });
     }
@@ -101,26 +114,26 @@ export async function POST(req: Request) {
   let assistantModel;
 
   try {
-    const selection = await resolveOrganizationModelSelection(
-      organizationPlan.organizationId,
+    const selection = await resolveOrganizationAssistantModelSelection(
+      entitlements.organizationId,
       modelId,
     );
     assistantModel = getAiModelInstance(selection.model.id);
-  } catch (error) {
-    if (error instanceof AiModelSelectionError) {
-      return Response.json(
-        { error: error.message, code: error.code },
-        { status: 400 },
-      );
-    }
 
-    throw error;
-  }
+    const strategy = billingConfig.ai.assistantRequest;
+    const reservedCredits = getCreditReserve(strategy);
+    const creditReferenceId = randomUUID();
 
-  // 4. Stream the AI response with tools
-  const result = streamText({
-    model: assistantModel.model,
-    system: `You are a helpful business assistant integrated into a SaaS application.
+    await reserveCredits({
+      organizationId: entitlements.organizationId,
+      credits: reservedCredits,
+      referenceId: creditReferenceId,
+    });
+
+    // 4. Stream the AI response with tools
+    const result = streamText({
+      model: assistantModel.model,
+      system: `You are a helpful business assistant integrated into a SaaS application.
 You can help users with two main workflows:
 
 1. **Email → Tasks**: Review the user's inbox and suggest or create tasks based on emails that need action.
@@ -133,10 +146,59 @@ Guidelines:
 - When creating tasks, use appropriate priority levels based on urgency cues.
 - Always confirm what you've done after taking an action.
 - Format currency amounts properly (e.g., $1,200.00).`,
-    messages: modelMessages,
-    tools: assistantTools,
-    stopWhen: stepCountIs(5),
-  });
+      messages: modelMessages,
+      tools: assistantTools,
+      stopWhen: stepCountIs(5),
+      onAbort: () => {
+        void settleReservedCredits({
+          organizationId: entitlements.organizationId,
+          reservedCredits,
+          finalCredits: 0,
+          referenceId: creditReferenceId,
+        });
+      },
+      onError: () => {
+        void settleReservedCredits({
+          organizationId: entitlements.organizationId,
+          reservedCredits,
+          finalCredits: 0,
+          referenceId: creditReferenceId,
+        });
+      },
+      onFinish: async ({ usage }) => {
+        await settleReservedCredits({
+          organizationId: entitlements.organizationId,
+          reservedCredits,
+          finalCredits: calculateCreditCharge({
+            strategy,
+            modelId: selection.model.id,
+            usage,
+          }),
+          referenceId: creditReferenceId,
+        });
+      },
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error) {
+    if (error instanceof AssistantModelSelectionError) {
+      return Response.json(
+        { error: error.message, code: error.code },
+        { status: 400 },
+      );
+    }
+    if (error instanceof InsufficientCreditsError) {
+      return Response.json(
+        {
+          error: error.message,
+          code: "INSUFFICIENT_CREDITS",
+          availableCredits: error.availableCredits,
+          requiredCredits: error.requiredCredits,
+        },
+        { status: 402 },
+      );
+    }
+
+    throw error;
+  }
 }

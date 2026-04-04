@@ -1,11 +1,14 @@
 "use client";
 
 import { CircleCheckBigIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useFormStatus } from "react-dom";
 
-import { checkoutAction } from "@/features/billing/actions/checkout.action";
-import { customerPortalAction } from "@/features/billing/actions/customer-portal.action";
+import {
+  startSubscriptionCheckoutAction,
+} from "@/features/billing/actions/checkout.actions";
+import { customerPortalAction } from "@/features/billing/actions/customer-portal.actions";
+import { updateSubscriptionConfigurationAction } from "@/features/billing/actions/subscription-configuration.actions";
 import {
   BillingIntervalSelector,
   type BillingPlanOption,
@@ -14,57 +17,80 @@ import {
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/shared/components/ui/card";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Input } from "@/shared/components/ui/input";
 import {
   Item,
   ItemContent,
   ItemDescription,
   ItemTitle,
 } from "@/shared/components/ui/item";
-import {
-  type BillingInterval,
-  type PlanId,
-} from "@/shared/config/billing.config";
+import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
+
+type BillingAddonOption = {
+  id: string;
+  name: string;
+  description: string;
+  monthly: { unitAmount: number } | null;
+  yearly: { unitAmount: number } | null;
+};
 
 type BillingPlanSelectorProps = {
-  plans: BillingPlanOption[];
+  addons: BillingAddonOption[];
+  canManageBilling: boolean;
+  canManagePortal: boolean;
+  canUpdateSubscription: boolean;
+  currentAddonIds: string[];
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
-  canManageBilling: boolean;
+  currentSeatQuantity: number;
   hasCurrentSubscription: boolean;
-  canManagePortal: boolean;
+  plans: BillingPlanOption[];
 };
 
 function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
   return interval === "year" ? plan.yearly : plan.monthly;
 }
 
+function getAddonPrice(
+  addon: BillingAddonOption,
+  interval: BillingInterval,
+) {
+  return interval === "year" ? addon.yearly : addon.monthly;
+}
+
 export function BillingPlanSelector({
+  addons,
   plans,
+  currentAddonIds,
   currentBillingInterval,
   currentPlanId,
+  currentSeatQuantity,
   canManageBilling,
   hasCurrentSubscription,
   canManagePortal,
+  canUpdateSubscription,
 }: BillingPlanSelectorProps) {
-  const formStatus = useFormStatus();
-  const isPending = formStatus.pending;
+  const t = useTranslations("billing.actions");
   const defaultPlan =
     plans.find((plan) => plan.id === currentPlanId) ?? plans[0] ?? null;
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId | undefined>(
     defaultPlan?.id,
   );
-  const [interval, setInterval] = useState<"month" | "year">(
+  const [interval, setInterval] = useState<BillingInterval>(
     currentBillingInterval ?? "month",
   );
+  const [seatQuantity, setSeatQuantity] = useState(
+    Math.max(1, currentSeatQuantity),
+  );
+  const [selectedAddonIds, setSelectedAddonIds] =
+    useState<string[]>(currentAddonIds);
 
   if (!defaultPlan || !selectedPlanId) {
     return (
       <Card>
         <CardHeader>
-          <CardDescription>
-            Aucun prix Stripe mensuel n&apos;est configure pour les forfaits
-            affiches.
-          </CardDescription>
+          <CardDescription>{t("noMonthlyPrice")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -74,10 +100,19 @@ export function BillingPlanSelector({
     plans.find((plan) => plan.id === selectedPlanId) ?? defaultPlan;
   const selectedPrice = getPlanPrice(selectedPlan, interval);
   const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
-  const isCurrentSelection =
-    hasCurrentSubscription &&
-    selectedPlan.id === currentPlanId &&
-    currentBillingInterval === interval;
+  const visibleAddons = addons.filter((addon) => Boolean(getAddonPrice(addon, interval)));
+  const subscriptionAction =
+    hasCurrentSubscription && canUpdateSubscription
+      ? updateSubscriptionConfigurationAction
+      : startSubscriptionCheckoutAction;
+
+  function toggleAddon(addonId: string) {
+    setSelectedAddonIds((current) =>
+      current.includes(addonId)
+        ? current.filter((id) => id !== addonId)
+        : [...current, addonId],
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -100,8 +135,8 @@ export function BillingPlanSelector({
         <ItemContent>
           <ItemTitle>{selectedPlan.name}</ItemTitle>
           <ItemDescription>{selectedPlan.description}</ItemDescription>
-          <div className="flex w-full flex-wrap gap-2 mt-1">
-            {selectedPlan.features?.map((feature) => (
+          <div className="mt-1 flex w-full flex-wrap gap-2">
+            {selectedPlan.features.map((feature) => (
               <Badge key={feature} variant="outline">
                 <CircleCheckBigIcon className="size-4 text-green-500" />
                 {feature}
@@ -111,43 +146,72 @@ export function BillingPlanSelector({
         </ItemContent>
       </Item>
 
+      {selectedPlan.pricingModel === "per_seat" ? (
+        <label className="block space-y-2">
+          <span className="text-sm font-medium">{t("seatQuantity")}</span>
+          <Input
+            min={1}
+            type="number"
+            value={seatQuantity}
+            onChange={(event) =>
+              setSeatQuantity(Math.max(1, Number(event.target.value) || 1))
+            }
+          />
+        </label>
+      ) : null}
+
+      {visibleAddons.length > 0 ? (
+        <div className="space-y-3">
+          <p className="text-sm font-medium">{t("addonsLegend")}</p>
+          {visibleAddons.map((addon) => (
+            <label key={addon.id} className="flex items-start gap-3 rounded-xl border p-3">
+              <Checkbox
+                checked={selectedAddonIds.includes(addon.id)}
+                onCheckedChange={() => toggleAddon(addon.id)}
+              />
+              <div className="space-y-1">
+                <p className="font-medium">{addon.name}</p>
+                <p className="text-sm text-muted-foreground">{addon.description}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+      ) : null}
+
       {!canManageBilling ? (
         <Button disabled className="h-11 rounded-xl px-5">
-          Reserve au proprietaire
+          {t("ownerOnly")}
         </Button>
-      ) : hasCurrentSubscription && canManagePortal ? (
-        <div className="space-y-2">
-          <form action={customerPortalAction}>
-            <Button type="submit" disabled={!canManagePortal || isPending}>
-              {isCurrentSelection
-                ? "Gerer l'abonnement dans Stripe"
-                : "Changer ce forfait dans Stripe"}
+      ) : (
+        <div className="space-y-3">
+          <form action={subscriptionAction} className="space-y-3">
+            <input type="hidden" name="planId" value={selectedPlan.id} />
+            <input type="hidden" name="billingInterval" value={interval} />
+            <input type="hidden" name="seatQuantity" value={seatQuantity} />
+            {selectedAddonIds.map((addonId) => (
+              <input key={addonId} type="hidden" name="addonIds" value={addonId} />
+            ))}
+            <Button type="submit" disabled={!selectedPrice}>
+              {hasCurrentSubscription && canUpdateSubscription
+                ? t("updateSubscription")
+                : t("proceedToPayment")}
             </Button>
           </form>
-          <p className="text-sm text-muted-foreground">
-            Les changements de forfait ou de frequence se font dans le portail
-            Stripe.
-          </p>
+
+          {canManagePortal ? (
+            <form action={customerPortalAction}>
+              <Button type="submit" variant="outline">
+                {t("openPortal")}
+              </Button>
+            </form>
+          ) : null}
+
+          {hasCurrentSubscription && !canUpdateSubscription ? (
+            <p className="text-sm text-muted-foreground">
+              {t("alreadyActiveHelp")}
+            </p>
+          ) : null}
         </div>
-      ) : hasCurrentSubscription ? (
-        <div className="space-y-2">
-          <Button disabled className="h-11 rounded-xl px-5">
-            Abonnement deja actif
-          </Button>
-          <p className="text-sm text-muted-foreground">
-            Cet espace a deja un abonnement en cours. Le portail Stripe
-            n&apos;est pas disponible tant que le client Stripe n&apos;est pas
-            synchronise.
-          </p>
-        </div>
-      ) : (
-        <form action={checkoutAction}>
-          <input type="hidden" name="planId" value={selectedPlan.id} />
-          <input type="hidden" name="billingInterval" value={interval} />
-          <Button type="submit" disabled={!selectedPrice}>
-            Proceder au paiement
-          </Button>
-        </form>
       )}
     </div>
   );

@@ -1,8 +1,8 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/shared/i18n/navigation";
 
 import { Button } from "@/shared/components/ui/button";
+import { useRouter } from "@/shared/i18n/navigation";
 
 export default function NotFound() {
   const router = useRouter();

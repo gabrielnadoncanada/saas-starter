@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import {
   Card,
   CardContent,
@@ -7,7 +9,6 @@ import {
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
-import { getTranslations } from "next-intl/server";
 
 type VerifyEmailPageProps = {
   searchParams: Promise<{

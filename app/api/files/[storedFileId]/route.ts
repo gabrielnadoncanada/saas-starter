@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
+import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
 import {
   getStoredFileRecord,
   readStoredFileBody,
-} from "@/features/files/server/storage-service";
-import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
+} from "@/features/storage/server/storage-service";
 
 export async function GET(
   _request: Request,

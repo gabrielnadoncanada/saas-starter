@@ -3,10 +3,10 @@
 import { AlertCircle, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
+import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
 
 type AssistantRouteError = {
   code?: string;

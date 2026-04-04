@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import type { OrganizationInvitationView } from "@/features/organizations/types/membership.types";
+import type { OrganizationInvitationView } from "@/features/organizations/types";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
 

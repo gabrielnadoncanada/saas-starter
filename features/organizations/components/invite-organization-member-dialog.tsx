@@ -2,7 +2,6 @@
 
 import { Loader2, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/shared/i18n/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -25,6 +24,7 @@ import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+import { useRouter } from "@/shared/i18n/navigation";
 import { getFieldState } from "@/shared/lib/get-field-state";
 
 type InviteOrganizationMemberDialogProps = {

@@ -1,21 +1,23 @@
 "use server";
+
 import { headers } from "next/headers";
 import { z } from "zod";
+
 import { recordAuditLog } from "@/features/audit/server/record-audit-log";
 import {
   LimitReachedError,
   UpgradeRequiredError,
 } from "@/features/billing/errors/billing-errors";
-import { getCurrentOrganizationPlan } from "@/features/billing/plans/get-current-organization-plan";
 import {
   assertCapability,
   assertLimit,
 } from "@/features/billing/guards/plan-guards";
+import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import {
   createNotification,
   createNotificationsForUsers,
 } from "@/features/notifications/server/notification-service";
-import { validatedOrganizationOwnerAction } from "@/features/organizations/actions/validated-organization-owner.action";
+import { validatedOrganizationOwnerAction } from "@/features/organizations/actions/validated-organization-owner";
 import {
   invitationIdSchema,
   inviteOrganizationMemberSchema,
@@ -28,26 +30,33 @@ import {
   resendOrganizationInvitation,
 } from "@/features/organizations/server/organization-invitations";
 import { auth } from "@/shared/lib/auth/auth-config";
-import type { RefreshableFormState } from "@/features/organizations/types/membership.types";
+import type { FormActionState } from "@/shared/types/form-action-state";
+
+type RefreshableActionState<
+  TValues extends Record<string, unknown> = Record<string, never>,
+> = FormActionState<TValues> & {
+  refreshKey?: number;
+};
+
 type InviteOrganizationMemberValues = z.infer<
   typeof inviteOrganizationMemberSchema
 >;
 export type InviteOrganizationMemberActionState =
-  RefreshableFormState<InviteOrganizationMemberValues>;
+  RefreshableActionState<InviteOrganizationMemberValues>;
 
 type CancelOrganizationInvitationValues = z.infer<typeof invitationIdSchema>;
 export type CancelOrganizationInvitationActionState =
-  RefreshableFormState<CancelOrganizationInvitationValues>;
+  RefreshableActionState<CancelOrganizationInvitationValues>;
 
 type ResendOrganizationInvitationValues = z.infer<typeof invitationIdSchema>;
 export type ResendOrganizationInvitationActionState =
-  RefreshableFormState<ResendOrganizationInvitationValues>;
+  RefreshableActionState<ResendOrganizationInvitationValues>;
 
 type RemoveOrganizationMemberValues = z.infer<
   typeof removeOrganizationMemberSchema
 >;
 export type RemoveOrganizationMemberActionState =
-  RefreshableFormState<RemoveOrganizationMemberValues>;
+  RefreshableActionState<RemoveOrganizationMemberValues>;
 export const renameOrganizationAction = validatedOrganizationOwnerAction<
   typeof renameOrganizationSchema,
   { refreshKey?: number }
@@ -97,14 +106,14 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
 >(
   inviteOrganizationMemberSchema,
   async ({ email, role }, _, { organizationId, user }) => {
-    const organizationPlan = await getCurrentOrganizationPlan();
+    const entitlements = await getCurrentOrganizationEntitlements();
 
-    if (!organizationPlan) {
+    if (!entitlements) {
       return { error: "Unable to determine organization plan" };
     }
 
     try {
-      assertCapability(organizationPlan.planId, "team.invite");
+      assertCapability(entitlements, "team.invite");
 
       const requestHeaders = await headers();
       const [members, invitations] = await Promise.all([
@@ -124,7 +133,7 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
       ).length;
 
       assertLimit(
-        organizationPlan.planId,
+        entitlements,
         "teamMembers",
         memberCount + pendingCount,
       );

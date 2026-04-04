@@ -6,6 +6,13 @@ import {
   type OAuthProviderId,
 } from "@/shared/lib/auth/oauth-config";
 
+export type LinkedProviderOverview = {
+  provider: OAuthProviderId;
+  linkedAt: string | null;
+  isLinked: boolean;
+  canUnlink: boolean;
+};
+
 type UserAccount = Awaited<
   ReturnType<typeof auth.api.listUserAccounts>
 >[number];
@@ -34,7 +41,10 @@ function parseLinkedAccountDate(
 
 export async function getLinkedAccountsOverview(
   oauthProviders: OAuthProviderId[],
-) {
+): Promise<{
+  hasPassword: boolean;
+  providers: LinkedProviderOverview[];
+}> {
   const currentUserAccounts = await listCurrentUserAccounts();
 
   const linkedOAuthProviders = new Map(
@@ -59,7 +69,7 @@ export async function getLinkedAccountsOverview(
 
       return {
         provider,
-        linkedAt,
+        linkedAt: linkedAt?.toISOString() ?? null,
         isLinked,
         canUnlink: isLinked && linkedAccountCount > 1,
       };

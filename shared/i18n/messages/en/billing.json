@@ -20,12 +20,16 @@
     "actions": {
       "noMonthlyPrice": "No monthly Stripe price is configured for the displayed plans.",
       "ownerOnly": "Only the owner can manage billing",
+      "seatQuantity": "Seat quantity",
+      "addonsLegend": "Additional packs",
       "manageInStripe": "Manage subscription in Stripe",
       "changeInStripe": "Change this plan in Stripe",
       "stripePortalHelp": "Plan and frequency changes are handled through the Stripe portal.",
       "alreadyActive": "Subscription already active",
       "alreadyActiveHelp": "This workspace already has an active subscription. The Stripe portal is not available until the Stripe customer is synced.",
-      "proceedToPayment": "Proceed to payment"
+      "proceedToPayment": "Proceed to payment",
+      "updateSubscription": "Update subscription",
+      "openPortal": "Open billing portal"
     },
     "pricingToggle": {
       "mostPopular": "Most Popular",

@@ -3,8 +3,8 @@
 import type { UIMessage } from "ai";
 import { useTranslations } from "next-intl";
 
-import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
 import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
+import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
 import {
   Message,
   MessageContent,

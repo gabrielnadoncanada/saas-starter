@@ -1,4 +1,5 @@
 import { hashPassword } from "better-auth/crypto";
+
 import { db } from "@/shared/lib/db/prisma";
 
 import { seedDemoWorkspaceContent } from "./demo-workspace-content-seed";

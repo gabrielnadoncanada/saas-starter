@@ -3,7 +3,7 @@
 import { Check } from "lucide-react";
 import { useState } from "react";
 
-import { checkoutAction } from "@/features/billing/actions/checkout.action";
+import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import { SubmitPricingButton } from "@/features/billing/components/submit-pricing-button";
 import { Button } from "@/shared/components/ui/button";
 import type {
@@ -101,7 +101,7 @@ function PricingCard({
           </li>
         ))}
       </ul>
-      <form action={checkoutAction}>
+      <form action={startSubscriptionCheckoutAction}>
         <input type="hidden" name="planId" value={plan.planId} />
         <input type="hidden" name="billingInterval" value={interval} />
         <SubmitPricingButton />

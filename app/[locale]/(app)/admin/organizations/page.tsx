@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import { AdminOrganizationsTable } from "@/features/organizations/components/admin-organizations-table";
 import { listAdminOrganizations } from "@/features/organizations/server/list-admin-organizations";
@@ -7,7 +9,6 @@ import {
   PageHeader,
   PageTitle,
 } from "@/shared/components/layout/page-layout";
-import { getTranslations } from "next-intl/server";
 
 const PAGE_SIZE = 25;
 

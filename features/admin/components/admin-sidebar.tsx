@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowLeftIcon } from "lucide-react";
-import { Link } from "@/shared/i18n/navigation";
 
 import { adminSidebarData } from "@/features/admin/config/admin-navigation";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
@@ -12,6 +11,7 @@ import {
   SidebarMenuButton,
 } from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/constants/routes";
+import { Link } from "@/shared/i18n/navigation";
 
 export function AdminSidebar() {
   const groups = adminSidebarData.navGroups;

@@ -1,9 +1,12 @@
 import {
-  type BillingInterval,
+  buildPlanCheckoutLineItems,
+  buildRecurringSelectionItems,
+  getCreditPack,
+  getOneTimeProduct,
   getPlan,
-  getPlanPrice,
-  type PaidPlanId,
-} from "@/shared/config/billing.config";
+} from "@/features/billing/catalog/resolver";
+import { CURRENT_SUBSCRIPTION_STATUSES } from "@/features/billing/plans/subscription-status";
+import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 import { stripe } from "@/shared/lib/stripe/client";
@@ -33,78 +36,112 @@ function getCheckoutSettings() {
   };
 }
 
-export async function createOrganizationCheckoutSession(params: {
-  billingInterval: BillingInterval;
-  organizationId: string;
-  planId: PaidPlanId;
-  seatQuantity: number;
-}) {
-  const plan = getPlan(params.planId);
-  const price = getPlanPrice(params.planId, params.billingInterval);
-
-  if (plan.id === "free" || !price) {
-    throw new Error("Invalid billing selection.");
-  }
-
+async function assertNoActiveSubscription(organizationId: string) {
   const currentSubscription = await db.subscription.findFirst({
     where: {
-      referenceId: params.organizationId,
-      status: {
-        in: [
-          "active",
-          "trialing",
-          "past_due",
-          "incomplete",
-          "unpaid",
-          "paused",
-        ],
-      },
+      referenceId: organizationId,
+      status: { in: [...CURRENT_SUBSCRIPTION_STATUSES] },
     },
     orderBy: { updatedAt: "desc" },
     select: { id: true },
   });
 
   if (currentSubscription) {
-    throw new Error(
-      "Existing subscriptions must be changed from the Stripe billing portal.",
-    );
+    throw new Error("Existing subscriptions must be updated from billing settings.");
+  }
+}
+
+export async function createOrganizationSubscriptionCheckoutSession(params: {
+  addonIds: string[];
+  billingInterval: BillingInterval;
+  organizationId: string;
+  planId: PlanId;
+  seatQuantity: number;
+}) {
+  const plan = getPlan(params.planId);
+  const lineItems = buildPlanCheckoutLineItems(params);
+
+  if (plan.id === "free" || lineItems.length === 0) {
+    throw new Error("Invalid billing selection.");
   }
 
-  const customerId = await ensureOrganizationStripeCustomer(
-    params.organizationId,
-  );
-  const settings = getCheckoutSettings();
-  const quantity =
-    plan.pricingModel === "per_seat" ? Math.max(1, params.seatQuantity) : 1;
+  await assertNoActiveSubscription(params.organizationId);
 
+  const customerId = await ensureOrganizationStripeCustomer(params.organizationId);
+  const settings = getCheckoutSettings();
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
     allow_promotion_codes: true,
-    billing_address_collection: settings.billingAddressRequired
-      ? "required"
-      : undefined,
+    billing_address_collection: settings.billingAddressRequired ? "required" : undefined,
     automatic_tax: settings.automaticTax ? { enabled: true } : undefined,
     tax_id_collection: settings.taxIdCollection ? { enabled: true } : undefined,
-    payment_method_collection: settings.trialWithoutCard
-      ? "if_required"
-      : undefined,
+    payment_method_collection: settings.trialWithoutCard ? "if_required" : undefined,
     client_reference_id: params.organizationId,
-    line_items: [{ price: price.priceId, quantity }],
+    line_items: lineItems,
     success_url: `${process.env.BASE_URL}${routes.settings.billing}?checkout=success`,
     cancel_url: `${process.env.BASE_URL}${routes.marketing.pricing}`,
     metadata: {
-      organizationId: params.organizationId,
+      addonIds: params.addonIds.join(","),
       billingInterval: params.billingInterval,
+      checkoutType: "subscription",
+      organizationId: params.organizationId,
       planId: plan.id,
+      seatQuantity: String(params.seatQuantity),
     },
     subscription_data: {
       metadata: {
-        organizationId: params.organizationId,
+        addonIds: params.addonIds.join(","),
         billingInterval: params.billingInterval,
+        checkoutType: "subscription",
+        organizationId: params.organizationId,
         planId: plan.id,
       },
-      trial_period_days: price.trialDays,
+      trial_period_days:
+        buildRecurringSelectionItems(params).find((item) => item.itemType === "plan")
+          ? plan.schedules[params.billingInterval]?.lineItems[0]?.price.trialDays
+          : undefined,
+    },
+  });
+
+  if (!session.url) {
+    throw new Error("Stripe Checkout did not return a redirect URL.");
+  }
+
+  return session.url;
+}
+
+export async function createOrganizationOneTimeCheckoutSession(params: {
+  itemKey: string;
+  itemType: "credit_pack" | "one_time_product";
+  organizationId: string;
+}) {
+  const item =
+    params.itemType === "credit_pack"
+      ? getCreditPack(params.itemKey)
+      : getOneTimeProduct(params.itemKey);
+
+  if (!item?.price) {
+    throw new Error("Invalid one-time product selection.");
+  }
+
+  const customerId = await ensureOrganizationStripeCustomer(params.organizationId);
+  const settings = getCheckoutSettings();
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer: customerId,
+    allow_promotion_codes: true,
+    billing_address_collection: settings.billingAddressRequired ? "required" : undefined,
+    automatic_tax: settings.automaticTax ? { enabled: true } : undefined,
+    tax_id_collection: settings.taxIdCollection ? { enabled: true } : undefined,
+    client_reference_id: params.organizationId,
+    line_items: [{ price: item.price.priceId, quantity: 1 }],
+    success_url: `${process.env.BASE_URL}${routes.settings.billing}?purchase=success`,
+    cancel_url: `${process.env.BASE_URL}${routes.settings.billing}`,
+    metadata: {
+      checkoutType: params.itemType,
+      itemKey: params.itemKey,
+      organizationId: params.organizationId,
     },
   });
 

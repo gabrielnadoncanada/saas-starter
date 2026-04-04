@@ -4,13 +4,11 @@ import { format, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
-import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.action";
+import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.actions";
 import { linkAuthProvider } from "@/features/account/data/link-auth-provider";
 import type {
-  LinkedAccountsActionState,
   LinkedProviderOverview,
-  SecuritySettingsFeedback,
-} from "@/features/account/types/account.types";
+} from "@/features/account/server/linked-accounts";
 import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -26,10 +24,14 @@ import {
 import { useToastMessage } from "@/shared/hooks/useToastMessage";
 import { getOAuthProviderConfig } from "@/shared/lib/auth/oauth-config";
 import { getFieldState } from "@/shared/lib/get-field-state";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
 type LinkedAccountsCardProps = {
   providers: LinkedProviderOverview[];
-  feedback?: SecuritySettingsFeedback;
+  feedback?: {
+    error?: string;
+    success?: string;
+  };
 };
 
 export function LinkedAccountsCard({
@@ -41,7 +43,7 @@ export function LinkedAccountsCard({
     LinkedProviderOverview["provider"] | null
   >(null);
   const [state, formAction, isPending] = useActionState<
-    LinkedAccountsActionState,
+    FormActionState<{ provider: LinkedProviderOverview["provider"] }>,
     FormData
   >(unlinkAuthProviderAction, {});
   const selectedProvider = state.values?.provider;

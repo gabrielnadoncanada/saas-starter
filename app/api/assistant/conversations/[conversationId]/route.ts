@@ -1,13 +1,12 @@
 import type { UIMessage } from "ai";
 
-import { aiConversationSurfaces } from "@/features/ai/ai-surfaces";
 import {
-  deleteAiConversation,
-  getAiConversation,
-  replaceAiConversation,
-  resolveAiConversationScope,
-} from "@/features/ai/server/ai-conversations";
-import { assertOrganizationAiAccess } from "@/features/ai/server/organization-ai-settings";
+  deleteAssistantConversation,
+  getAssistantConversation,
+  replaceAssistantConversation,
+  resolveAssistantConversationScope,
+} from "@/features/assistant/server/assistant-conversations";
+import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-settings";
 import { UpgradeRequiredError } from "@/features/billing/errors/billing-errors";
 
 type RouteContext = {
@@ -17,7 +16,7 @@ type RouteContext = {
 };
 
 function getScopeErrorResponse(
-  scope: Awaited<ReturnType<typeof resolveAiConversationScope>>,
+  scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,
 ) {
   if (scope.kind === "unauthorized") {
     return new Response("Unauthorized", { status: 401 });
@@ -43,7 +42,7 @@ async function assertAssistantAccess() {
 }
 
 export async function GET(_req: Request, context: RouteContext) {
-  const scope = await resolveAiConversationScope();
+  const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -52,10 +51,7 @@ export async function GET(_req: Request, context: RouteContext) {
   if (planError) return planError;
 
   const { conversationId } = await context.params;
-  const conversation = await getAiConversation(
-    conversationId,
-    aiConversationSurfaces.assistant,
-  );
+  const conversation = await getAssistantConversation(conversationId);
 
   if (!conversation) {
     return new Response("Conversation not found", { status: 404 });
@@ -65,7 +61,7 @@ export async function GET(_req: Request, context: RouteContext) {
 }
 
 export async function PATCH(req: Request, context: RouteContext) {
-  const scope = await resolveAiConversationScope();
+  const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -82,9 +78,8 @@ export async function PATCH(req: Request, context: RouteContext) {
   }
 
   const { conversationId } = await context.params;
-  const conversation = await replaceAiConversation(
+  const conversation = await replaceAssistantConversation(
     conversationId,
-    aiConversationSurfaces.assistant,
     body.messages,
   );
 
@@ -96,7 +91,7 @@ export async function PATCH(req: Request, context: RouteContext) {
 }
 
 export async function DELETE(_req: Request, context: RouteContext) {
-  const scope = await resolveAiConversationScope();
+  const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
     return getScopeErrorResponse(scope);
   }
@@ -105,10 +100,7 @@ export async function DELETE(_req: Request, context: RouteContext) {
   if (planError) return planError;
 
   const { conversationId } = await context.params;
-  const deleted = await deleteAiConversation(
-    conversationId,
-    aiConversationSurfaces.assistant,
-  );
+  const deleted = await deleteAssistantConversation(conversationId);
 
   if (!deleted) {
     return new Response("Conversation not found", { status: 404 });

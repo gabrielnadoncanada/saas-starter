@@ -1,11 +1,11 @@
 "use client";
 
 import { Eye, X } from "lucide-react";
-import { useRouter } from "@/shared/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/shared/components/ui/button";
+import { useRouter } from "@/shared/i18n/navigation";
 import { authClient } from "@/shared/lib/auth/auth-client";
 
 export function ImpersonationBanner() {

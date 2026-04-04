@@ -1,8 +1,8 @@
-import { routes } from "@/shared/constants/routes";
 import type {
   BillingInterval,
   PaidPlanId,
 } from "@/shared/config/billing.config";
+import { routes } from "@/shared/constants/routes";
 import { getCallbackURL } from "@/shared/lib/auth/callback-url";
 
 type PostSignInCallbackParams = {

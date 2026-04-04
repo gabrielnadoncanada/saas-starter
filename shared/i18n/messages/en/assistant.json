@@ -46,7 +46,7 @@
       "notAvailableFeature": "AI Assistant",
       "notAvailableDescription": "The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts.",
       "limitExceededFeature": "AI Assistant",
-      "limitExceededDescription": "You've used all {limit} AI requests this month. Upgrade your plan for a higher limit, or wait until next month."
+      "limitExceededDescription": "This workspace has no AI credits left. Add a credit pack or move to a plan with more included credits. Current balance: {credits}."
     }
   }
 }

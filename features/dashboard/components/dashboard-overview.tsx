@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { getPlanDisplayPrice } from "@/features/billing/catalog/resolver";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
 import { hasCapability } from "@/features/billing/guards/plan-guards";
@@ -50,14 +51,14 @@ export async function DashboardOverview({
   const t = await getTranslations("dashboard");
   const {
     organization,
+    entitlements,
     planId,
     plan,
     memberCount,
     taskCount,
     tasksUsage,
-    aiUsage,
+    creditBalance,
     taskLimit,
-    aiLimit,
     canUseAI,
     recentActivity,
     recentTasks,
@@ -66,14 +67,15 @@ export async function DashboardOverview({
   } = await getDashboardOverview(locale);
 
   const activeInterval =
-    organization?.billingInterval && plan.prices[organization.billingInterval]
+    organization?.billingInterval &&
+    getPlanDisplayPrice(plan.id, organization.billingInterval)
       ? organization.billingInterval
-      : plan.prices.month
+      : getPlanDisplayPrice(plan.id, "month")
         ? "month"
-        : plan.prices.year
+        : getPlanDisplayPrice(plan.id, "year")
           ? "year"
           : null;
-  const activePrice = activeInterval ? plan.prices[activeInterval] : null;
+  const activePrice = activeInterval ? getPlanDisplayPrice(plan.id, activeInterval) : null;
   const priceLabel = activePrice
     ? formatPlanPrice(activePrice.unitAmount, locale)
     : t("planPriceFree");
@@ -139,14 +141,19 @@ export async function DashboardOverview({
               <CardDescription>{t("aiAssistant")}</CardDescription>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Sparkles className="h-5 w-5 text-orange-500" />
-                {t("aiRequests", { count: aiUsage })}
+                {t("aiCredits", { count: creditBalance })}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <UsageMeter
-                label={t("monthlyQuota")}
-                current={aiUsage}
-                limit={aiLimit.limit}
+                label={t("creditBalance")}
+                current={creditBalance}
+                limit={
+                  Math.max(
+                    entitlements?.includedMonthlyCredits ?? 0,
+                    creditBalance,
+                  ) || 1
+                }
               />
             </CardContent>
           </Card>
@@ -199,7 +206,7 @@ export async function DashboardOverview({
         </Card>
       </div>
 
-      {!hasCapability(planId, "team.analytics") ? (
+      {!entitlements || !hasCapability(entitlements, "team.analytics") ? (
         <UpgradeCard
           feature={t("upgradeAnalyticsFeature")}
           description={t("upgradeAnalyticsDescription")}
