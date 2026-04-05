@@ -4,12 +4,55 @@ import {
   type BillingPlan,
   type BillingPlanDefinition,
   type BillingPlanSchedule,
+  type BillingPrice,
+  type BillingRecurringLineItem,
   type OneTimeProductDefinition,
   type OrganizationEntitlements,
   type PlanId,
+  type PricingModel,
 } from "@/shared/config/billing.config";
 
-export { findCatalogRecurringPriceByPriceId } from "@/features/billing/catalog/recurring-catalog";
+export type BillingPlanOption = {
+  id: PlanId;
+  name: string;
+  description: string;
+  features: string[];
+  pricingModel: PricingModel;
+  monthly: BillingPrice | null;
+  yearly: BillingPrice | null;
+};
+
+export type RecurringCatalogPrice = {
+  billingInterval: BillingInterval;
+  componentKey: string;
+  itemKey: string;
+  itemType: "plan";
+  plan?: BillingPlanDefinition;
+  price: BillingPrice;
+};
+
+const recurringPrices = billingConfig.plans.flatMap((plan) =>
+  Object.entries(plan.schedules).flatMap(([billingInterval, schedule]) =>
+    (schedule?.lineItems ?? []).map(
+      (lineItem: BillingRecurringLineItem): RecurringCatalogPrice => ({
+        billingInterval: billingInterval as BillingInterval,
+        componentKey: lineItem.id,
+        itemKey: plan.id,
+        itemType: "plan",
+        plan,
+        price: lineItem.price,
+      }),
+    ),
+  ),
+);
+
+const recurringPricesById = Object.fromEntries(
+  recurringPrices.map((entry) => [entry.price.priceId, entry]),
+) as unknown as Record<string, RecurringCatalogPrice>;
+
+export function findCatalogRecurringPriceByPriceId(priceId: string) {
+  return recurringPricesById[priceId] ?? null;
+}
 
 const plansById = Object.fromEntries(
   billingConfig.plans.map((plan) => [plan.id, plan]),

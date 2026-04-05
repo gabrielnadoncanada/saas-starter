@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { resetPassword } from "@/features/auth/client/auth-requests";
+import { resetPassword } from "@/features/auth/client/auth-api-client";
 import {
   resetPasswordDefaultValues,
   resetPasswordSchema,

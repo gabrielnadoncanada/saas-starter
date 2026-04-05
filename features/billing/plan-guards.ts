@@ -7,7 +7,7 @@ import type {
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "../errors/billing-errors";
+} from "./billing-errors";
 
 function getEntitlementLimit(
   entitlements: OrganizationEntitlements,

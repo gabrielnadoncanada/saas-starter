@@ -2,17 +2,37 @@ import "server-only";
 
 import {
   getDefaultEntitlements,
+  getOneTimeProduct,
   getPlan,
   isPlanId,
-} from "@/features/billing/catalog/resolver";
-import { hasPlanAccess } from "@/features/billing/plans/subscription-status";
-import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
+} from "@/features/billing/catalog";
+import { hasPlanAccess } from "@/features/billing/subscription-status";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import type {
+  LimitKey,
   OrganizationEntitlements,
   PlanId,
 } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
+
+export function applyOneTimePurchaseLimits(
+  limits: Record<LimitKey, number>,
+  purchasedItemKeys: string[],
+): Record<LimitKey, number> {
+  let result = limits;
+
+  for (const itemKey of purchasedItemKeys) {
+    const product = getOneTimeProduct(itemKey);
+    if (!product?.limitEffect) continue;
+
+    result = result === limits ? { ...limits } : result;
+    for (const [key, value] of Object.entries(product.limitEffect)) {
+      result[key as LimitKey] += value;
+    }
+  }
+
+  return result;
+}
 
 async function getLatestSubscription(organizationId: string) {
   return db.subscription.findFirst({

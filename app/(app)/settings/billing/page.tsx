@@ -1,16 +1,8 @@
 import { redirect } from "next/navigation";
 
 import { startOneTimeCheckoutAction } from "@/features/billing/actions/checkout.actions";
-import {
-  getPlanDisplayPrice,
-  getPricingPlans,
-  listOneTimeProducts,
-} from "@/features/billing/catalog/resolver";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
-import type { BillingPlanOption } from "@/features/billing/components/billing-plan-selector-fields";
-import { hasCurrentStripeSubscription } from "@/features/billing/plans/subscription-status";
-import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization";
+import { getBillingPageData } from "@/features/billing/server/get-billing-page-data";
 import { Page } from "@/shared/components/layout/page-layout";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -20,32 +12,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import type { PlanId } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 
 export default async function SettingsBillingPage() {
-  const [context, entitlements] = await Promise.all([
-    getCurrentOrganizationContext(),
-    getCurrentOrganizationEntitlements(),
-  ]);
+  const data = await getBillingPageData();
 
-  if (!context || !entitlements) {
+  if (!data) {
     redirect(routes.auth.login);
   }
 
-  const hasCurrentSubscription = hasCurrentStripeSubscription(
-    entitlements.subscriptionStatus,
-  );
-  const plans: BillingPlanOption[] = getPricingPlans().map((plan) => ({
-    id: plan.id as PlanId,
-    name: plan.name,
-    description: plan.description,
-    features: plan.features,
-    pricingModel: plan.pricingModel,
-    monthly: getPlanDisplayPrice(plan.id, "month"),
-    yearly: getPlanDisplayPrice(plan.id, "year"),
-  }));
-  const oneTimeProducts = listOneTimeProducts();
+  const { context, entitlements, hasSubscription, plans, oneTimeProducts } =
+    data;
 
   return (
     <Page fixed className="ml-0">
@@ -70,7 +47,7 @@ export default async function SettingsBillingPage() {
                 <CardHeader>
                   <CardDescription>Billing</CardDescription>
                   <CardTitle className="text-base font-normal text-muted-foreground">
-                    {hasCurrentSubscription && entitlements.stripeCustomerId
+                    {hasSubscription && entitlements.stripeCustomerId
                       ? "Manage subscription and invoices in the customer portal when available."
                       : "Pick a plan below to enable subscription billing."}
                   </CardTitle>
@@ -79,15 +56,15 @@ export default async function SettingsBillingPage() {
             </div>
 
             <BillingPlanSelector
-              canManageBilling={context.canManageBilling}
+              canManageBilling={context.isOwner}
               canManagePortal={
-                Boolean(context.canManageBilling) &&
-                hasCurrentSubscription &&
+                context.isOwner &&
+                hasSubscription &&
                 Boolean(entitlements.stripeCustomerId)
               }
               canUpdateSubscription={
-                Boolean(context.canManageBilling) &&
-                hasCurrentSubscription &&
+                context.isOwner &&
+                hasSubscription &&
                 Boolean(entitlements.stripeSubscriptionId)
               }
               currentBillingInterval={entitlements.billingInterval}
@@ -95,7 +72,7 @@ export default async function SettingsBillingPage() {
               currentSeatQuantity={
                 entitlements.seats ?? context.organization.members.length
               }
-              hasCurrentSubscription={hasCurrentSubscription}
+              hasCurrentSubscription={hasSubscription}
               plans={plans}
             />
           </CardContent>

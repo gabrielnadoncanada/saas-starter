@@ -11,7 +11,7 @@ import {
   type CancelOrganizationInvitationActionState,
   resendOrganizationInvitationAction,
   type ResendOrganizationInvitationActionState,
-} from "@/features/organizations/actions/organization-owner.actions";
+} from "@/features/organizations/actions/membership.actions";
 import type { OrganizationInvitationView } from "@/features/organizations/types";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";

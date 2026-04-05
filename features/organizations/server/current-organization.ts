@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
+import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscription-snapshot";
 import type {
   CurrentOrganizationView,
   OrganizationMemberView,
@@ -44,10 +44,7 @@ export type CurrentOrganizationContext = {
   >;
   roles: OrgRole[];
   primaryRole: OrgRole;
-  canInviteMembers: boolean;
-  canManageBilling: boolean;
-  canManageMembers: boolean;
-  canTransferOwnership: boolean;
+  isOwner: boolean;
 };
 
 function toIsoString(value?: Date | string | null) {
@@ -93,6 +90,7 @@ function mapCurrentOrganization(
   };
 }
 
+/** Fetch the active organization with members and subscription snapshot. Use in pages/layouts that render org data. */
 export async function getCurrentOrganization(): Promise<CurrentOrganizationView | null> {
   const session = await getAuthSession();
 
@@ -122,6 +120,7 @@ export async function getCurrentOrganization(): Promise<CurrentOrganizationView 
   return mapCurrentOrganization(organization as RawOrganization, subscription);
 }
 
+/** Full page context: organization + current user + roles + isOwner. Use in settings/org pages that need the viewer's membership. */
 export async function getCurrentOrganizationContext(): Promise<CurrentOrganizationContext | null> {
   const [user, organization] = await Promise.all([
     getCurrentUser(),
@@ -150,9 +149,6 @@ export async function getCurrentOrganizationContext(): Promise<CurrentOrganizati
     currentMember,
     roles,
     primaryRole,
-    canInviteMembers: isOwner,
-    canManageBilling: isOwner,
-    canManageMembers: isOwner,
-    canTransferOwnership: isOwner,
+    isOwner,
   };
 }

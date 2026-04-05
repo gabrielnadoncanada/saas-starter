@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import {
   deleteAssistantConversationRequest,
   listAssistantConversationsRequest,
-} from "@/features/assistant/client/conversations";
+} from "@/features/assistant/client/assistant-conversations-api";
 import type { AssistantConversationListItem } from "@/features/assistant/types";
 import { Button } from "@/shared/components/ui/button";
 import {

@@ -13,7 +13,7 @@ import {
   sendMagicLink,
   signInWithOAuth,
   signInWithPassword,
-} from "@/features/auth/client/auth-requests";
+} from "@/features/auth/client/auth-api-client";
 import { AuthEmailStep } from "@/features/auth/components/auth-email-step";
 import { AuthPasswordStep } from "@/features/auth/components/auth-password-step";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";

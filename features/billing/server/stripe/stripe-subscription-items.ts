@@ -3,7 +3,7 @@ import type Stripe from "stripe";
 import {
   buildRecurringSelectionItems,
   findCatalogRecurringPriceByPriceId,
-} from "@/features/billing/catalog/resolver";
+} from "@/features/billing/catalog";
 import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 import { stripe } from "@/shared/lib/stripe/client";

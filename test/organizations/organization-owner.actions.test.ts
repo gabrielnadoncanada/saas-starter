@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError } from "@/features/billing/errors/billing-errors";
+import { LimitReachedError } from "@/features/billing/billing-errors";
 
 const {
   headersMock,
@@ -10,6 +10,7 @@ const {
   inviteOrganizationMemberMock,
   listMembersMock,
   listInvitationsMock,
+  requireActiveOrganizationRoleMock,
 } = vi.hoisted(() => ({
   headersMock: vi.fn(),
   getCurrentOrganizationEntitlementsMock: vi.fn(),
@@ -18,6 +19,7 @@ const {
   inviteOrganizationMemberMock: vi.fn(),
   listMembersMock: vi.fn(),
   listInvitationsMock: vi.fn(),
+  requireActiveOrganizationRoleMock: vi.fn(),
 }));
 
 vi.mock("next/headers", () => ({
@@ -25,22 +27,21 @@ vi.mock("next/headers", () => ({
 }));
 
 vi.mock("@/shared/lib/auth/authenticated-action", () => ({
-  validatedAuthenticatedAction: vi.fn(),
+  validatedAuthenticatedAction: (_schema: unknown, action: unknown) => action,
 }));
 
-vi.mock(
-  "@/features/organizations/actions/validated-organization-owner",
-  () => ({
-    validatedOrganizationOwnerAction: (_schema: unknown, action: unknown) =>
-      action,
-  }),
-);
+vi.mock("@/features/organizations/server/organization-membership", () => ({
+  requireActiveOrganizationRole: requireActiveOrganizationRoleMock,
+  OrganizationMembershipError: class extends Error {
+    name = "OrganizationMembershipError";
+  },
+}));
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: getCurrentOrganizationEntitlementsMock,
 }));
 
-vi.mock("@/features/billing/guards/plan-guards", () => ({
+vi.mock("@/features/billing/plan-guards", () => ({
   assertCapability: assertCapabilityMock,
   assertLimit: assertLimitMock,
 }));
@@ -63,7 +64,7 @@ vi.mock("@/shared/lib/auth/auth-config", () => ({
 }));
 
 const { inviteOrganizationMemberAction } =
-  await import("@/features/organizations/actions/organization-owner.actions");
+  await import("@/features/organizations/actions/membership.actions");
 
 const entitlements = {
   organizationId: "org_1",
@@ -85,6 +86,11 @@ describe("inviteOrganizationMemberAction", () => {
     vi.clearAllMocks();
 
     headersMock.mockResolvedValue(new Headers());
+    requireActiveOrganizationRoleMock.mockResolvedValue({
+      organizationId: "org_1",
+      roles: ["owner"],
+      primaryRole: "owner",
+    });
     getCurrentOrganizationEntitlementsMock.mockResolvedValue(entitlements);
     listMembersMock.mockResolvedValue({
       members: [{ userId: "owner_1" }],
@@ -97,9 +103,10 @@ describe("inviteOrganizationMemberAction", () => {
     const result = await inviteOrganizationMemberAction(
       { email: "new@acme.com", role: "member" },
       new FormData(),
-      { organizationId: "org_1", user: { id: "owner_1" } },
+      { id: "owner_1" },
     );
 
+    expect(requireActiveOrganizationRoleMock).toHaveBeenCalledWith(["owner"]);
     expect(assertCapabilityMock).toHaveBeenCalledWith(
       entitlements,
       "team.invite",
@@ -128,7 +135,7 @@ describe("inviteOrganizationMemberAction", () => {
     const result = await inviteOrganizationMemberAction(
       { email: "new@acme.com", role: "member" },
       new FormData(),
-      { organizationId: "org_1", user: { id: "owner_1" } },
+      { id: "owner_1" },
     );
 
     expect(inviteOrganizationMemberMock).not.toHaveBeenCalled();

@@ -3,8 +3,8 @@ import {
   buildRecurringSelectionItems,
   getOneTimeProduct,
   getPlan,
-} from "@/features/billing/catalog/resolver";
-import { CURRENT_SUBSCRIPTION_STATUSES } from "@/features/billing/plans/subscription-status";
+} from "@/features/billing/catalog";
+import { CURRENT_SUBSCRIPTION_STATUSES } from "@/features/billing/subscription-status";
 import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
@@ -85,8 +85,11 @@ export async function createOrganizationSubscriptionCheckoutSession(params: {
       : undefined,
     client_reference_id: params.organizationId,
     line_items: lineItems,
-    success_url: `${process.env.BASE_URL}${routes.settings.billing}?checkout=success`,
-    cancel_url: `${process.env.BASE_URL}${routes.marketing.pricing}`,
+    success_url: new URL(
+      `${routes.settings.billing}?checkout=success`,
+      process.env.BASE_URL,
+    ).toString(),
+    cancel_url: new URL(routes.marketing.pricing, process.env.BASE_URL).toString(),
     metadata: {
       billingInterval: params.billingInterval,
       checkoutType: "subscription",
@@ -139,8 +142,11 @@ export async function createOrganizationOneTimeCheckoutSession(params: {
     tax_id_collection: settings.taxIdCollection ? { enabled: true } : undefined,
     client_reference_id: params.organizationId,
     line_items: [{ price: item.price.priceId, quantity: 1 }],
-    success_url: `${process.env.BASE_URL}${routes.settings.billing}?purchase=success`,
-    cancel_url: `${process.env.BASE_URL}${routes.settings.billing}`,
+    success_url: new URL(
+      `${routes.settings.billing}?purchase=success`,
+      process.env.BASE_URL,
+    ).toString(),
+    cancel_url: new URL(routes.settings.billing, process.env.BASE_URL).toString(),
     metadata: {
       checkoutType: "one_time_product",
       itemKey: params.itemKey,

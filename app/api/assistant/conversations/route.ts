@@ -6,7 +6,7 @@ import {
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/assistant-conversations";
 import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-access";
-import { UpgradeRequiredError } from "@/features/billing/errors/billing-errors";
+import { UpgradeRequiredError } from "@/features/billing/billing-errors";
 
 function getScopeErrorResponse(
   scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,

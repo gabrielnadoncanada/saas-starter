@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import {
   inviteOrganizationMemberAction,
   type InviteOrganizationMemberActionState,
-} from "@/features/organizations/actions/organization-owner.actions";
+} from "@/features/organizations/actions/membership.actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,

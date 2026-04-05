@@ -2,15 +2,9 @@ import { cookies } from "next/headers";
 
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { requireAdmin } from "@/features/auth/server/require-admin";
-import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
-import { SearchProvider } from "@/shared/components/command/search-provider";
-import { Header } from "@/shared/components/layout/shell/header";
-import { Search } from "@/shared/components/navigation/search";
+import { AppShell } from "@/shared/components/layout/shell/app-shell";
 import { UserProvider } from "@/shared/components/providers/user-provider";
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { toSidebarUser } from "@/shared/lib/auth/get-current-user";
-import { cn } from "@/shared/lib/utils";
 
 export default async function AdminLayout({
   children,
@@ -24,26 +18,9 @@ export default async function AdminLayout({
 
   return (
     <UserProvider user={toSidebarUser(user)}>
-      <SearchProvider>
-        <TooltipProvider>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <SkipToMain />
-            <AdminSidebar />
-            <SidebarInset
-              className={cn(
-                "@container/content",
-                "has-data-[layout=fixed]:h-svh",
-                "peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]",
-              )}
-            >
-              <Header>
-                <Search />
-              </Header>
-              {children}
-            </SidebarInset>
-          </SidebarProvider>
-        </TooltipProvider>
-      </SearchProvider>
+      <AppShell defaultOpen={defaultOpen} sidebar={<AdminSidebar />}>
+        {children}
+      </AppShell>
     </UserProvider>
   );
 }

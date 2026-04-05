@@ -6,10 +6,11 @@ import { useState } from "react";
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import { customerPortalAction } from "@/features/billing/actions/customer-portal.actions";
 import { updateSubscriptionConfigurationAction } from "@/features/billing/actions/subscription-configuration.actions";
+import type { BillingPlanOption } from "@/features/billing/catalog";
 import {
   BillingIntervalSelector,
-  type BillingPlanOption,
   BillingPlanRadioGroup,
+  getPlanPrice,
 } from "@/features/billing/components/billing-plan-selector-fields";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -33,10 +34,6 @@ type BillingPlanSelectorProps = {
   hasCurrentSubscription: boolean;
   plans: BillingPlanOption[];
 };
-
-function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
-  return interval === "year" ? plan.yearly : plan.monthly;
-}
 
 export function BillingPlanSelector({
   plans,
@@ -80,6 +77,22 @@ export function BillingPlanSelector({
     hasCurrentSubscription && canUpdateSubscription
       ? updateSubscriptionConfigurationAction
       : startSubscriptionCheckoutAction;
+
+  function getSubmitLabel() {
+    if (!hasCurrentSubscription || !canUpdateSubscription) {
+      return "Proceed to payment";
+    }
+
+    const currentIndex = plans.findIndex((p) => p.id === currentPlanId);
+    const selectedIndex = plans.findIndex((p) => p.id === selectedPlanId);
+
+    if (currentIndex >= 0 && selectedIndex >= 0) {
+      if (selectedIndex > currentIndex) return "Upgrade";
+      if (selectedIndex < currentIndex) return "Downgrade";
+    }
+
+    return "Update subscription";
+  }
 
   return (
     <div className="space-y-6">
@@ -138,9 +151,7 @@ export function BillingPlanSelector({
             <input type="hidden" name="billingInterval" value={interval} />
             <input type="hidden" name="seatQuantity" value={seatQuantity} />
             <Button type="submit" disabled={!selectedPrice}>
-              {hasCurrentSubscription && canUpdateSubscription
-                ? "Update subscription"
-                : "Proceed to payment"}
+              {getSubmitLabel()}
             </Button>
           </form>
 

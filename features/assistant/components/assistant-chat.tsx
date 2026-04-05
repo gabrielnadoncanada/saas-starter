@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
-} from "@/features/assistant/client/conversations";
+} from "@/features/assistant/client/assistant-conversations-api";
 import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
 import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
 import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";

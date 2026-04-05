@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import {
   removeOrganizationMemberAction,
   type RemoveOrganizationMemberActionState,
-} from "@/features/organizations/actions/organization-owner.actions";
+} from "@/features/organizations/actions/membership.actions";
 import type { OrganizationMemberView } from "@/features/organizations/types";
 import {
   Avatar,

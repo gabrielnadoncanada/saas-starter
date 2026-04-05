@@ -31,7 +31,7 @@ export default async function MembersPage() {
         </PageDescription>
         <PageHeaderActions>
           <InviteOrganizationMemberDialog
-            canInviteMembers={context.canInviteMembers}
+            canInviteMembers={context.isOwner}
           />
         </PageHeaderActions>
       </PageHeader>
@@ -39,7 +39,7 @@ export default async function MembersPage() {
       <div className="space-y-8 overflow-y-auto pb-6">
         <OrganizationMembersTable
           currentUserId={context.user.id}
-          canManageMembers={context.canManageMembers}
+          canManageMembers={context.isOwner}
           members={context.organization.members}
         />
 
@@ -55,7 +55,7 @@ export default async function MembersPage() {
             </p>
           </div>
           <OrganizationInvitationsTable
-            canManageInvitations={context.canInviteMembers}
+            canManageInvitations={context.isOwner}
             invitations={invitations}
           />
         </section>

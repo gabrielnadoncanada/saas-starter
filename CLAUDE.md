@@ -31,11 +31,10 @@ features/         → feature modules, each with actions/, components/, server/,
   billing/        → Stripe billing, plans, usage
   dashboard/      → dashboard widgets
   organizations/  → multi-tenant orgs
-  settings/       → app settings
   tasks/          → task management (CRUD example)
   users/          → user management (admin)
 shared/
-  components/     → shared UI components (ui/, layout/)
+  components/     → shared UI components (ui/, layout/, navigation/)
   config/         → app-wide configuration
   constants/      → shared constants
   hooks/          → shared React hooks
@@ -45,7 +44,6 @@ shared/
 prisma/
   models/         → split schema files (auth, billing, tasks, teams, usage, assistant)
 test/             → test files by feature (assistant, billing, tasks)
-chatbot/          → standalone chatbot UI components
 ```
 
 ## Key Conventions

@@ -1,4 +1,4 @@
-import { getPlan, isPlanId } from "@/features/billing/catalog/resolver";
+import { getPlan, isPlanId } from "@/features/billing/catalog";
 import {
   type BillingInterval,
   type PricingModel,

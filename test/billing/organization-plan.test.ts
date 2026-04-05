@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   hasCurrentStripeSubscription,
   hasPlanAccess,
-} from "@/features/billing/plans/subscription-status";
-import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
+} from "@/features/billing/subscription-status";
+import { applyOneTimePurchaseLimits } from "@/features/billing/server/organization-entitlements";
 
 describe("subscription status gating", () => {
   it("keeps paid access only for active billing states", () => {

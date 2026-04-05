@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/errors/billing-errors";
+} from "@/features/billing/billing-errors";
 
 vi.mock("server-only", () => ({}));
 
@@ -21,11 +21,11 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
-vi.mock("@/features/billing/guards/plan-guards", () => ({
+vi.mock("@/features/billing/plan-guards", () => ({
   assertCapability: vi.fn(),
 }));
 
-vi.mock("@/features/billing/usage/usage-service", () => ({
+vi.mock("@/features/billing/server/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 
@@ -33,9 +33,9 @@ const { db } = await import("@/shared/lib/db/prisma");
 const { getCurrentOrganizationEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { assertCapability } =
-  await import("@/features/billing/guards/plan-guards");
+  await import("@/features/billing/plan-guards");
 const { consumeMonthlyUsage } =
-  await import("@/features/billing/usage/usage-service");
+  await import("@/features/billing/server/usage-service");
 const { createTask } = await import("@/features/tasks/server/task-mutations");
 
 const entitlements = {

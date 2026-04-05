@@ -1,5 +1,6 @@
 "use client";
 
+import type { BillingPlanOption } from "@/features/billing/catalog";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Field,
@@ -17,16 +18,6 @@ import type {
   PlanId,
   PricingModel,
 } from "@/shared/config/billing.config";
-
-export type BillingPlanOption = {
-  id: PlanId;
-  name: string;
-  description: string;
-  features: string[];
-  pricingModel: PricingModel;
-  monthly: BillingPrice | null;
-  yearly: BillingPrice | null;
-};
 
 type BillingIntervalSelectorProps = {
   interval: BillingInterval;
@@ -68,10 +59,11 @@ function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
   return interval === "year" ? "/ yr" : "/ mo";
 }
 
-function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
+export function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
   return interval === "year" ? plan.yearly : plan.monthly;
 }
 
+// Duplicated from catalog.ts — catalog uses "server-only" and cannot be imported in client components
 function isBillingInterval(value: string): value is BillingInterval {
   return value === "month" || value === "year";
 }

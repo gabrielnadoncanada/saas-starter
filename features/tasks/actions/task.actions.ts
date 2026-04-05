@@ -7,7 +7,7 @@ import { z } from "zod";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/errors/billing-errors";
+} from "@/features/billing/billing-errors";
 import {
   bulkDeleteTasks,
   bulkUpdateTaskStatus,

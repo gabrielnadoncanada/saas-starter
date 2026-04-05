@@ -12,7 +12,7 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
-vi.mock("@/features/billing/usage/usage-service", () => ({
+vi.mock("@/features/billing/server/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 

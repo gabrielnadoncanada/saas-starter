@@ -8,31 +8,16 @@ import {
   getPlanDisplayPrice,
   isBillingInterval,
   isPlanId,
-} from "@/features/billing/catalog/resolver";
+} from "@/features/billing/catalog";
+import { requireBillingOwner } from "@/features/billing/require-billing-owner";
 import {
   createOrganizationOneTimeCheckoutSession,
   createOrganizationSubscriptionCheckoutSession,
 } from "@/features/billing/server/stripe/stripe-checkout";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
-import {
-  OrganizationMembershipError,
-  requireActiveOrganizationRole,
-} from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-
-async function requireBillingOwner() {
-  try {
-    await requireActiveOrganizationRole(["owner"]);
-  } catch (error) {
-    if (error instanceof OrganizationMembershipError) {
-      redirect(routes.settings.members);
-    }
-
-    throw error;
-  }
-}
 
 export async function startSubscriptionCheckoutAction(formData: FormData) {
   const user = await getCurrentUser();

@@ -22,7 +22,7 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 }));
 
 const { saveStoredFile, deleteStoredFile, readStoredFileBody } =
-  await import("@/features/storage/storage-service");
+  await import("@/shared/lib/storage/storage-service");
 const { getCurrentOrganizationEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { getFileStorage } = await import("@/shared/lib/storage/storage");

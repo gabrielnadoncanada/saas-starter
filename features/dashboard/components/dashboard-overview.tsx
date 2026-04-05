@@ -7,10 +7,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { getPlanDisplayPrice } from "@/features/billing/catalog/resolver";
+import { getPlanDisplayPrice } from "@/features/billing/catalog";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
-import { hasCapability } from "@/features/billing/guards/plan-guards";
+import { hasCapability } from "@/features/billing/plan-guards";
 import { DashboardOnboardingChecklist } from "@/features/dashboard/components/dashboard-onboarding-checklist";
 import { DashboardRecentTasks } from "@/features/dashboard/components/dashboard-recent-tasks";
 import { DashboardUsageChart } from "@/features/dashboard/components/dashboard-usage-chart";

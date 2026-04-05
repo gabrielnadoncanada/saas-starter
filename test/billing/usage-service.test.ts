@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { getPlan } from "@/features/billing/catalog/resolver";
-import { LimitReachedError } from "@/features/billing/errors/billing-errors";
-import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
+import { getPlan } from "@/features/billing/catalog";
+import { LimitReachedError } from "@/features/billing/billing-errors";
+import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import type { OrganizationEntitlements } from "@/shared/config/billing.config";
 
 vi.mock("@/shared/lib/db/prisma", () => ({

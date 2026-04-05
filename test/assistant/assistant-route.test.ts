@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { UpgradeRequiredError } from "@/features/billing/errors/billing-errors";
+import { UpgradeRequiredError } from "@/features/billing/billing-errors";
 
 vi.mock("server-only", () => ({}));
 

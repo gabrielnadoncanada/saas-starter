@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
-import { renameOrganizationAction } from "@/features/organizations/actions/organization-owner.actions";
+import { renameOrganizationAction } from "@/features/organizations/actions/rename-organization.actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,

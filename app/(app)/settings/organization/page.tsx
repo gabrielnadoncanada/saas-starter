@@ -22,7 +22,7 @@ export default async function SettingsPage() {
         <div className="space-y-6">
           <RenameOrganizationPanel
             currentName={context.organization.name}
-            canManage={context.canManageMembers}
+            canManage={context.isOwner}
           />
         </div>
       ) : null}

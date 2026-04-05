@@ -6,26 +6,64 @@ import { z } from "zod";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/errors/billing-errors";
+} from "@/features/billing/billing-errors";
 import {
   assertCapability,
   assertLimit,
-} from "@/features/billing/guards/plan-guards";
+} from "@/features/billing/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
-import { validatedOrganizationOwnerAction } from "@/features/organizations/actions/validated-organization-owner";
 import {
   invitationIdSchema,
   inviteOrganizationMemberSchema,
   removeOrganizationMemberSchema,
-} from "@/features/organizations/schemas/membership.schema";
-import { renameOrganizationSchema } from "@/features/organizations/schemas/organization.schema";
+} from "@/features/organizations/schemas/organization.schema";
+import {
+  OrganizationMembershipError,
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organization-membership";
 import {
   cancelOrganizationInvitation,
   inviteOrganizationMember,
   resendOrganizationInvitation,
 } from "@/features/organizations/server/organization-invitations";
+import {
+  type AuthenticatedUser,
+  validatedAuthenticatedAction,
+} from "@/shared/lib/auth/authenticated-action";
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
+
+function validatedOrganizationOwnerAction<
+  S extends z.ZodTypeAny,
+  TExtraState extends object = {},
+>(
+  schema: S,
+  action: (
+    data: z.infer<S>,
+    formData: FormData,
+    context: { organizationId: string; user: AuthenticatedUser },
+  ) => Promise<FormActionState<z.infer<S>> & TExtraState>,
+) {
+  type State = FormActionState<z.infer<S>> & TExtraState;
+
+  return validatedAuthenticatedAction<S, TExtraState>(
+    schema,
+    async (data, formData, user) => {
+      try {
+        const membership = await requireActiveOrganizationRole(["owner"]);
+        return action(data, formData, {
+          organizationId: membership.organizationId,
+          user,
+        });
+      } catch (error) {
+        if (error instanceof OrganizationMembershipError) {
+          return { error: error.message } as State;
+        }
+        throw error;
+      }
+    },
+  );
+}
 
 type RefreshableActionState<
   TValues extends Record<string, unknown> = Record<string, never>,
@@ -52,32 +90,6 @@ type RemoveOrganizationMemberValues = z.infer<
 >;
 export type RemoveOrganizationMemberActionState =
   RefreshableActionState<RemoveOrganizationMemberValues>;
-export const renameOrganizationAction = validatedOrganizationOwnerAction<
-  typeof renameOrganizationSchema,
-  { refreshKey?: number }
->(renameOrganizationSchema, async ({ name }, _, { organizationId }) => {
-  try {
-    await auth.api.updateOrganization({
-      headers: await headers(),
-      body: {
-        organizationId,
-        data: { name },
-      },
-    });
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to rename organization",
-    };
-  }
-
-  return {
-    success: "Organization renamed successfully",
-    refreshKey: Date.now(),
-  };
-});
 
 export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
   typeof inviteOrganizationMemberSchema,

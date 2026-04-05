@@ -25,8 +25,7 @@ export class OrganizationMembershipError extends Error {
   }
 }
 
-// Layouts call this when they only need an active organization id.
-// Actions and server queries should use the membership helpers below instead.
+/** Resolve the active organization id (auto-selects the first org if none is set). Use in layouts only. */
 export async function ensureActiveOrganization(): Promise<string | null> {
   const session = await getAuthSession();
 
@@ -84,6 +83,7 @@ export async function getActiveOrganizationMembership(): Promise<ActiveOrganizat
   };
 }
 
+/** Guard for server actions/mutations: throws if the user has no active org membership. */
 export async function requireActiveOrganizationMembership() {
   const membership = await getActiveOrganizationMembership();
 
@@ -96,6 +96,7 @@ export async function requireActiveOrganizationMembership() {
   return membership;
 }
 
+/** Guard for server actions that require specific roles (e.g. owner, admin). */
 export async function requireActiveOrganizationRole(allowedRoles: OrgRole[]) {
   const membership = await requireActiveOrganizationMembership();
 

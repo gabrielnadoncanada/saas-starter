@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { fetchAssistantConversation } from "@/features/assistant/client/conversations";
+import { fetchAssistantConversation } from "@/features/assistant/client/assistant-conversations-api";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
 import type { AssistantConversation } from "@/features/assistant/types";
 import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";

@@ -2,9 +2,9 @@ import "server-only";
 
 import { Prisma, type Task } from "@prisma/client";
 
-import { assertCapability } from "@/features/billing/guards/plan-guards";
+import { assertCapability } from "@/features/billing/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
-import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
+import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
 import type {
   BulkDeleteTasksValues,

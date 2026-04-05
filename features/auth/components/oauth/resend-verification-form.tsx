@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { resendVerificationEmail } from "@/features/auth/client/auth-requests";
+import { resendVerificationEmail } from "@/features/auth/client/auth-api-client";
 import { Button } from "@/shared/components/ui/button";
 
 type ResendVerificationFormProps = {

@@ -1,5 +1,12 @@
 import "server-only";
 
+// HOW TO EDIT YOUR PLANS
+// 1. Create products and prices in your Stripe dashboard.
+// 2. Copy each price ID into the matching STRIPE_PRICE_* variable in .env.
+// 3. Edit the `plans` array below: change names, features, capabilities, and limits.
+// 4. Capabilities control feature access (e.g. "ai.assistant"). Limits control quotas (e.g. tasksPerMonth).
+// 5. One-time products (like storage boosts) go in the `oneTimeProducts` array.
+
 export const capabilities = [
   "task.create",
   "task.export",
@@ -54,6 +61,7 @@ export type OneTimeProductDefinition = {
   description: string;
   features: string[];
   price?: BillingPrice;
+  limitEffect?: Partial<Record<LimitKey, number>>;
 };
 
 export type BillingCatalog = {
@@ -217,6 +225,7 @@ export const billingConfig = {
       description: "Add 10 GB of storage to this workspace.",
       features: ["10 GB extra storage"],
       price: usdPrice(process.env.STRIPE_PRICE_STORAGE_BOOST, 7900),
+      limitEffect: { storageMb: 10_000 },
     },
   ],
 } as const satisfies BillingCatalog;

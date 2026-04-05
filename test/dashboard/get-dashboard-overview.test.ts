@@ -10,18 +10,18 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
-vi.mock("@/features/billing/catalog/resolver", () => ({
+vi.mock("@/features/billing/catalog", () => ({
   getPlan: vi.fn(() => ({
     id: "pro",
     name: "Pro",
   })),
 }));
 
-vi.mock("@/features/billing/usage/usage-service", () => ({
+vi.mock("@/features/billing/server/usage-service", () => ({
   getMonthlyUsage: vi.fn(),
 }));
 
-vi.mock("@/features/billing/guards/plan-guards", () => ({
+vi.mock("@/features/billing/plan-guards", () => ({
   checkLimit: vi.fn(() => ({
     allowed: true,
     limit: 100,
@@ -48,7 +48,7 @@ const { getCurrentOrganization } =
 const { getCurrentOrganizationEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { getMonthlyUsage } =
-  await import("@/features/billing/usage/usage-service");
+  await import("@/features/billing/server/usage-service");
 const { db } = await import("@/shared/lib/db/prisma");
 const { getDashboardOverview } =
   await import("@/features/dashboard/server/get-dashboard-overview");

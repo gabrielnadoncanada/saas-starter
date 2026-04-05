@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { requestPasswordReset } from "@/features/auth/client/auth-requests";
+import { requestPasswordReset } from "@/features/auth/client/auth-api-client";
 import {
   emailDefaultValues,
   emailSchema,
