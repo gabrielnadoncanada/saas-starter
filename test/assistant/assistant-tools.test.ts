@@ -17,10 +17,10 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
 }));
 
 vi.mock("@/features/tasks/server/task-mutations", () => ({
-  createTaskForCurrentOrganization: vi.fn(),
+  createTask: vi.fn(),
 }));
 
-const { createTaskForCurrentOrganization } =
+const { createTask } =
   await import("@/features/tasks/server/task-mutations");
 const { assistantTools } = await import("@/features/assistant/server/tools");
 
@@ -37,7 +37,7 @@ describe("assistant tools", () => {
   });
 
   it("creates tasks through the shared guarded task contract", async () => {
-    vi.mocked(createTaskForCurrentOrganization).mockResolvedValue({
+    vi.mocked(createTask).mockResolvedValue({
       code: "TASK-52",
       title: "Follow up with client",
       status: "TODO",
@@ -49,7 +49,7 @@ describe("assistant tools", () => {
       priority: "HIGH",
     });
 
-    expect(createTaskForCurrentOrganization).toHaveBeenCalledWith({
+    expect(createTask).toHaveBeenCalledWith({
       title: "Follow up with client",
       description: undefined,
       label: "FEATURE",

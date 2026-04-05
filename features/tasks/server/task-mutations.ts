@@ -10,11 +10,9 @@ import type {
   BulkDeleteTasksValues,
   BulkUpdateTaskStatusValues,
   CreateTaskValues,
-  DeleteTaskValues,
-  UpdateTaskStatusValues,
   UpdateTaskValues,
 } from "@/features/tasks/task-form.schema";
-import type { OrganizationEntitlements } from "@/shared/config/billing.config";
+import type { TaskStatus } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 
 const MAX_TASK_CODE_ATTEMPTS = 10;
@@ -27,33 +25,31 @@ function isUniqueConstraintError(error: unknown) {
 }
 
 async function getOrganizationId() {
-  // Every task query must derive org scope from the active membership helper.
   const membership = await requireActiveOrganizationMembership();
   return membership.organizationId;
 }
 
-async function createTaskForOrganization(input: {
-  entitlements: OrganizationEntitlements;
-  organizationId: string;
-  title: string;
-  description?: string | null;
-  label: CreateTaskValues["label"];
-  priority: CreateTaskValues["priority"];
-}) {
-  assertCapability(input.entitlements, "task.create");
+export async function createTask(input: CreateTaskValues): Promise<Task> {
+  const entitlements = await getCurrentOrganizationEntitlements();
+
+  if (!entitlements) {
+    throw new Error("Organization not found");
+  }
+
+  assertCapability(entitlements, "task.create");
 
   return db.$transaction(async (tx) => {
     await consumeMonthlyUsage(
-      input.organizationId,
+      entitlements.organizationId,
       "tasksPerMonth",
-      input.entitlements,
+      entitlements,
       { db: tx },
     );
 
     for (let attempt = 0; attempt < MAX_TASK_CODE_ATTEMPTS; attempt += 1) {
       const latestTask = await tx.task.findFirst({
         where: {
-          organizationId: input.organizationId,
+          organizationId: entitlements.organizationId,
         },
         orderBy: {
           id: "desc",
@@ -70,7 +66,7 @@ async function createTaskForOrganization(input: {
       try {
         return await tx.task.create({
           data: {
-            organizationId: input.organizationId,
+            organizationId: entitlements.organizationId,
             code: nextCode,
             title: input.title,
             description: input.description ?? null,
@@ -99,40 +95,6 @@ export async function listTasks() {
   });
 }
 
-export async function createTaskForCurrentOrganization(
-  input: CreateTaskValues,
-): Promise<Task> {
-  const entitlements = await getCurrentOrganizationEntitlements();
-
-  if (!entitlements) {
-    throw new Error("Organization not found");
-  }
-
-  return createTaskForOrganization({
-    entitlements,
-    organizationId: entitlements.organizationId,
-    title: input.title,
-    description: input.description ?? null,
-    label: input.label,
-    priority: input.priority,
-  });
-}
-
-export async function createTaskByOrganizationId(
-  organizationId: string,
-  entitlements: OrganizationEntitlements,
-  input: CreateTaskValues,
-) {
-  return createTaskForOrganization({
-    entitlements,
-    organizationId,
-    title: input.title,
-    description: input.description ?? null,
-    label: input.label,
-    priority: input.priority,
-  });
-}
-
 export async function updateTask(input: UpdateTaskValues) {
   const organizationId = await getOrganizationId();
 
@@ -155,7 +117,10 @@ export async function updateTask(input: UpdateTaskValues) {
   }
 }
 
-export async function updateTaskStatus(input: UpdateTaskStatusValues) {
+export async function updateTaskStatus(input: {
+  taskId: number;
+  status: TaskStatus;
+}) {
   const organizationId = await getOrganizationId();
 
   const { count } = await db.task.updateMany({
@@ -173,7 +138,7 @@ export async function updateTaskStatus(input: UpdateTaskStatusValues) {
   }
 }
 
-export async function deleteTask(taskId: DeleteTaskValues["taskId"]) {
+export async function deleteTask(taskId: number) {
   const organizationId = await getOrganizationId();
 
   const { count } = await db.task.deleteMany({

@@ -44,15 +44,6 @@ export const updateTaskSchema = z.object({
   status: taskStatusSchema,
 });
 
-export const deleteTaskSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-});
-
-export const updateTaskStatusSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-  status: taskStatusSchema,
-});
-
 export const bulkDeleteTasksSchema = z.object({
   taskIds: taskIdsSchema,
 });
@@ -64,8 +55,6 @@ export const bulkUpdateTaskStatusSchema = z.object({
 
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;
 export type UpdateTaskValues = z.infer<typeof updateTaskSchema>;
-export type DeleteTaskValues = z.infer<typeof deleteTaskSchema>;
-export type UpdateTaskStatusValues = z.infer<typeof updateTaskStatusSchema>;
 export type BulkDeleteTasksValues = z.infer<typeof bulkDeleteTasksSchema>;
 export type BulkUpdateTaskStatusValues = z.infer<
   typeof bulkUpdateTaskStatusSchema

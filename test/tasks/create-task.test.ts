@@ -36,8 +36,7 @@ const { assertCapability } =
   await import("@/features/billing/guards/plan-guards");
 const { consumeMonthlyUsage } =
   await import("@/features/billing/usage/usage-service");
-const { createTaskForCurrentOrganization } =
-  await import("@/features/tasks/server/task-mutations");
+const { createTask } = await import("@/features/tasks/server/task-mutations");
 
 const entitlements = {
   organizationId: "12",
@@ -54,7 +53,7 @@ const entitlements = {
   subscriptionStatus: "active",
 } as const;
 
-describe("createTaskForCurrentOrganization", () => {
+describe("createTask", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) =>
@@ -81,7 +80,7 @@ describe("createTaskForCurrentOrganization", () => {
     });
 
     await expect(
-      createTaskForCurrentOrganization({
+      createTask({
         title: "Ship billing fix",
         description: "Close the billing gap",
         label: "FEATURE",
@@ -99,7 +98,7 @@ describe("createTaskForCurrentOrganization", () => {
     );
 
     await expect(
-      createTaskForCurrentOrganization({
+      createTask({
         title: "Ship billing fix",
         description: "Close the billing gap",
         label: "FEATURE",
@@ -117,7 +116,7 @@ describe("createTaskForCurrentOrganization", () => {
   });
 
   it("creates the task after reserving usage in the transaction", async () => {
-    const task = await createTaskForCurrentOrganization({
+    const task = await createTask({
       title: "Ship billing fix",
       description: "Close the billing gap",
       label: "FEATURE",

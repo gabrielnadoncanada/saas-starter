@@ -2,6 +2,7 @@
 
 import type { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import {
   LimitReachedError,
@@ -10,7 +11,7 @@ import {
 import {
   bulkDeleteTasks,
   bulkUpdateTaskStatus,
-  createTaskForCurrentOrganization,
+  createTask,
   deleteTask,
   updateTask,
   updateTaskStatus,
@@ -22,23 +23,25 @@ import {
   type BulkUpdateTaskStatusValues,
   createTaskSchema,
   type CreateTaskValues,
-  deleteTaskSchema,
-  type DeleteTaskValues,
   updateTaskSchema,
-  updateTaskStatusSchema,
   type UpdateTaskValues,
 } from "@/features/tasks/task-form.schema";
 import { routes } from "@/shared/constants/routes";
+import { TaskStatus } from "@/shared/lib/db/enums";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
+const deleteTaskSchema = z.object({
+  taskId: z.coerce.number().int().positive(),
+});
+
+const updateTaskStatusSchema = z.object({
+  taskId: z.coerce.number().int().positive(),
+  status: z.nativeEnum(TaskStatus),
+});
+
 export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
   task?: Task;
-};
-
-export type UpdateTaskActionState = FormActionState<UpdateTaskValues>;
-export type DeleteTaskActionState = FormActionState<DeleteTaskValues> & {
-  taskId?: number;
 };
 
 export type BulkDeleteTasksActionState =
@@ -61,7 +64,7 @@ export const createTaskAction = validatedAuthenticatedAction<
   createTaskSchema,
   async (data) => {
     try {
-      const task = await createTaskForCurrentOrganization(data);
+      const task = await createTask(data);
 
       revalidatePath(routes.app.tasks);
 
@@ -101,7 +104,7 @@ export const updateTaskAction = validatedAuthenticatedAction<
 
 export const deleteTaskAction = validatedAuthenticatedAction<
   typeof deleteTaskSchema,
-  { taskId?: number }
+  {}
 >(
   deleteTaskSchema,
   async ({ taskId }) => {
@@ -111,7 +114,6 @@ export const deleteTaskAction = validatedAuthenticatedAction<
 
     return {
       success: "Task deleted",
-      taskId,
     };
   },
   taskActionOptions,

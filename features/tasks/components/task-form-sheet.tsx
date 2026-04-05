@@ -9,9 +9,10 @@ import {
   createTaskAction,
   type CreateTaskActionState,
   updateTaskAction,
-  type UpdateTaskActionState,
-} from "@/features/tasks/server/task.actions";
+} from "@/features/tasks/actions/task.actions";
+import type { UpdateTaskValues } from "@/features/tasks/task-form.schema";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
 type CreateTaskFormSheetProps = {
   mode: "create";
@@ -32,13 +33,14 @@ export function TaskFormSheet(props: TaskFormSheetProps) {
   const router = useRouter();
   const { onOpenChange } = props;
   const lastHandledStateRef = useRef<
-    CreateTaskActionState | UpdateTaskActionState | null
+    CreateTaskActionState | FormActionState<UpdateTaskValues> | null
   >(null);
+
   const createState = useActionState<CreateTaskActionState, FormData>(
     createTaskAction,
     {},
   );
-  const updateState = useActionState<UpdateTaskActionState, FormData>(
+  const updateState = useActionState<FormActionState<UpdateTaskValues>, FormData>(
     updateTaskAction,
     {},
   );

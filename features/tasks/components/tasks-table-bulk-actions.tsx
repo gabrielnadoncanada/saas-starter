@@ -11,7 +11,7 @@ import {
   type BulkDeleteTasksActionState,
   bulkUpdateTaskStatusAction,
   type BulkUpdateTaskStatusActionState,
-} from "@/features/tasks/server/task.actions";
+} from "@/features/tasks/actions/task.actions";
 import { taskStatuses } from "@/features/tasks/task-options";
 import { DataTableBulkActions } from "@/shared/components/data-table";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";

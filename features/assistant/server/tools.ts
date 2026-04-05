@@ -4,7 +4,7 @@ import { tool } from "ai";
 import { z } from "zod";
 
 import type { CreateTaskToolResult } from "@/features/assistant/types";
-import { createTaskForCurrentOrganization } from "@/features/tasks/server/task-mutations";
+import { createTask } from "@/features/tasks/server/task-mutations";
 
 import { toAssistantToolFailure } from "./tool-result";
 
@@ -40,7 +40,7 @@ export const assistantTools = {
       label?: "FEATURE" | "BUG" | "DOCUMENTATION";
     }): Promise<CreateTaskToolResult> => {
       try {
-        const task = await createTaskForCurrentOrganization({
+        const task = await createTask({
           title,
           description,
           priority: priority ?? "MEDIUM",

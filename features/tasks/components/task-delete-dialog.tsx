@@ -4,12 +4,12 @@ import type { Task } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
 
-import {
-  deleteTaskAction,
-  type DeleteTaskActionState,
-} from "@/features/tasks/server/task.actions";
+import { deleteTaskAction } from "@/features/tasks/actions/task.actions";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
+import type { FormActionState } from "@/shared/types/form-action-state";
+
+type DeleteTaskFormValues = { taskId: number };
 
 type TaskDeleteDialogProps = {
   task: Task;
@@ -25,7 +25,7 @@ export function TaskDeleteDialog({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState<
-    DeleteTaskActionState,
+    FormActionState<DeleteTaskFormValues>,
     FormData
   >(deleteTaskAction, {});
 
