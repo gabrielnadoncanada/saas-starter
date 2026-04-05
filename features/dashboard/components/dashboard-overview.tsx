@@ -31,6 +31,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
+import { defaultLocale } from "@/shared/i18n/locales";
 import { Link } from "@/shared/i18n/navigation";
 
 function formatPlanPrice(unitAmount: number, locale: string) {
@@ -73,7 +74,7 @@ export async function DashboardOverview() {
     ? getPlanDisplayPrice(plan.id, activeInterval)
     : null;
   const priceLabel = activePrice
-    ? formatPlanPrice(activePrice.unitAmount, locale)
+    ? formatPlanPrice(activePrice.unitAmount, defaultLocale)
     : "Free";
   const organizationNameSuffix = organization?.name
     ? ` ${organization.name}`

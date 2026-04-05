@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -34,8 +33,6 @@ export function RenameOrganizationPanel({
   currentName,
   canManage,
 }: RenameOrganizationPanelProps) {
-  const t = useTranslations("organizations");
-  const tc = useTranslations("common");
   const router = useRouter();
   const [state, action, isPending] = useActionState<ActionState, FormData>(
     renameOrganizationAction,
@@ -91,10 +88,11 @@ export function RenameOrganizationPanel({
       </CardContent>
       {!canManage ? (
         <CardFooter>
-          <p className="text-sm text-muted-foreground">Only organization owners can rename the organization.</p>
+          <p className="text-sm text-muted-foreground">
+            Only organization owners can rename the organization.
+          </p>
         </CardFooter>
       ) : null}
     </Card>
   );
 }
-

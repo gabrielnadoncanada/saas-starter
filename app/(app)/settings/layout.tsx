@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { ensureActiveOrganization } from "@/features/organizations/server/organization-membership";
 import { SettingsSidebar } from "@/features/settings/components/settings-sidebar";
@@ -11,7 +12,6 @@ import { UserProvider } from "@/shared/components/providers/user-provider";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import {
   getCurrentUser,
   toSidebarUser,
@@ -32,7 +32,7 @@ export default async function SettingsLayout({
   ]);
 
   if (!user) {
-    redirectToLocale(null, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
   return (

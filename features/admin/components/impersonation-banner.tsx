@@ -1,7 +1,6 @@
 "use client";
 
 import { Eye, X } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/shared/components/ui/button";
@@ -10,7 +9,6 @@ import { authClient } from "@/shared/lib/auth/auth-client";
 
 export function ImpersonationBanner() {
   const router = useRouter();
-  const t = useTranslations("admin");
 
   async function handleStop() {
     try {

@@ -1,5 +1,3 @@
-import { getTranslations } from "next-intl/server";
-
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import { getAssistantConversation } from "@/features/assistant/server/assistant-conversations";
 import {
@@ -20,7 +18,6 @@ type AssistantPageProps = {
 export default async function AssistantPage({
   searchParams,
 }: AssistantPageProps) {
-  const t = await getTranslations("assistant");
   const entitlements = await getCurrentOrganizationEntitlements();
   const canUseAssistant = entitlements
     ? hasCapability(entitlements, "ai.assistant")
@@ -45,14 +42,14 @@ export default async function AssistantPage({
       {!canUseAssistant ? (
         <UpgradeCard
           feature={"AI Assistant"}
-          description={"The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts."}
+          description={
+            "The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts."
+          }
         />
       ) : !hasCredits ? (
         <UpgradeCard
           feature={"AI Assistant"}
-          description={t("upgrade.limitExceededDescription", {
-            credits: entitlements?.creditBalance ?? 0,
-          })}
+          description={`This workspace has no AI credits left. Add a credit pack or move to a plan with more included credits. Current balance: ${entitlements?.creditBalance ?? 0}.`}
         />
       ) : (
         <AssistantWorkspace

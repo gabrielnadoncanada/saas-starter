@@ -1,9 +1,10 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import { unlinkAuthProviderSchema } from "@/features/account/schemas/account.schema";
 import { unlinkOAuthAccountForUser } from "@/features/account/server/linked-accounts";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
 export const unlinkAuthProviderAction = validatedAuthenticatedAction<
@@ -27,8 +28,7 @@ export const unlinkAuthProviderAction = validatedAuthenticatedAction<
     };
   }
 
-  return redirectToLocale(
-    null,
+  return redirect(
     `${routes.settings.profile}?provider=${provider}&success=unlinked`,
   );
 });

@@ -1,7 +1,8 @@
+import { redirect } from "next/navigation";
+
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { OrganizationInvitationPage } from "@/features/organizations/components/organization-invitation-page";
 import { routes } from "@/shared/constants/routes";
-import { getLocalizedHref, redirectToLocale } from "@/shared/i18n/href";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -18,12 +19,11 @@ export default async function AcceptInvitationPage({
   const user = await getCurrentUser();
 
   if (!user) {
-    redirectToLocale(
-      null,
+    redirect(
       buildCallbackURL(
         routes.auth.login,
         buildPostSignInCallbackURL({
-          callbackUrl: getLocalizedHref(null, `/accept-invitation/${id}`),
+          callbackUrl: `/accept-invitation/${id}`,
         }),
       ),
     );

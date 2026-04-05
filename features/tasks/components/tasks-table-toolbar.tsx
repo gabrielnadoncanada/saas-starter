@@ -3,7 +3,6 @@
 import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { XIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { taskPriorities, taskStatuses } from "@/features/tasks/task-options";
@@ -24,14 +23,9 @@ type TasksTableToolbarProps = {
   table: Table<Task>;
 };
 
-export function TasksTableToolbar({
-  params,
-  table,
-}: TasksTableToolbarProps) {
+export function TasksTableToolbar({ params, table }: TasksTableToolbarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const t = useTranslations("tasks");
-  const tc = useTranslations("common");
   const [searchValue, setSearchValue] = useState(params.q ?? "");
   const isFiltered =
     Boolean(params.q) || table.getState().columnFilters.length > 0;

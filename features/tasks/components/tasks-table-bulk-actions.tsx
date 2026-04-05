@@ -41,7 +41,6 @@ function serializeTaskIds(tasks: Task[]) {
 export function TasksBulkActions({ table }: TasksBulkActionsProps) {
   const router = useRouter();
   const t = useTranslations("tasks");
-  const tc = useTranslations("common");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const selectedTasks = useMemo(
     () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
@@ -62,13 +61,19 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
     skip: Boolean(statusState.fieldErrors),
     trigger: statusState,
   });
-  useToastMessage(statusState.success, { kind: "success", trigger: statusState });
+  useToastMessage(statusState.success, {
+    kind: "success",
+    trigger: statusState,
+  });
   useToastMessage(deleteState.error, {
     kind: "error",
     skip: Boolean(deleteState.fieldErrors),
     trigger: deleteState,
   });
-  useToastMessage(deleteState.success, { kind: "success", trigger: deleteState });
+  useToastMessage(deleteState.success, {
+    kind: "success",
+    trigger: deleteState,
+  });
 
   useEffect(() => {
     if (!statusState.success && !deleteState.success) {
@@ -139,7 +144,11 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
               aria-label={"Delete selected tasks"}
               disabled={isStatusPending || isDeletePending}
             >
-              {isDeletePending ? <Loader2 className="animate-spin" /> : <Trash2 />}
+              {isDeletePending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Trash2 />
+              )}
             </Button>
           </TooltipTrigger>
           <TooltipContent>

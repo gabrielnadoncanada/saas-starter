@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -20,14 +19,13 @@ type UpgradeCardProps = {
 };
 
 export function UpgradeCard({ feature, description }: UpgradeCardProps) {
-  const t = useTranslations("billing");
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Upgrade Required</CardTitle>
         <CardDescription>
-          {description ?? t("upgradeCard.description", { feature })}
+          {description ??
+            `Your current plan does not include ${feature}. Upgrade to unlock this feature.`}
         </CardDescription>
       </CardHeader>
       <CardContent>

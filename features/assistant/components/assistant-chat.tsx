@@ -4,7 +4,6 @@ import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
 import { GlobeIcon, Sparkles } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -51,7 +50,6 @@ export function AssistantChat({
   onConversationUpdated,
   resetKey,
 }: AssistantChatProps) {
-  const t = useTranslations("assistant");
   const [modelId, setModelId] = useState<AiModelId>(defaultModelId);
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const selectedModel =
@@ -74,8 +72,10 @@ export function AssistantChat({
       new DefaultChatTransport({
         api: "/api/assistant",
         prepareSendMessagesRequest: async ({ messages, body }) => {
-          const { conversationId: currentConversationId, modelId: nextModelId } =
-            stateRef.current;
+          const {
+            conversationId: currentConversationId,
+            modelId: nextModelId,
+          } = stateRef.current;
 
           if (currentConversationId) {
             const conversation = await replaceAssistantConversationRequest(
@@ -110,27 +110,34 @@ export function AssistantChat({
         },
       }),
   );
-  const { clearError, error, messages, sendMessage, setMessages, status, stop } =
-    useChat({
-      onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
-        if (
-          isAbort ||
-          isDisconnect ||
-          isError ||
-          !stateRef.current.conversationId
-        ) {
-          return;
-        }
+  const {
+    clearError,
+    error,
+    messages,
+    sendMessage,
+    setMessages,
+    status,
+    stop,
+  } = useChat({
+    onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
+      if (
+        isAbort ||
+        isDisconnect ||
+        isError ||
+        !stateRef.current.conversationId
+      ) {
+        return;
+      }
 
-        void replaceAssistantConversationRequest(
-          stateRef.current.conversationId,
-          nextMessages,
-        ).then((conversation) => {
-          stateRef.current.onConversationUpdated(conversation);
-        });
-      },
-      transport,
-    });
+      void replaceAssistantConversationRequest(
+        stateRef.current.conversationId,
+        nextMessages,
+      ).then((conversation) => {
+        stateRef.current.onConversationUpdated(conversation);
+      });
+    },
+    transport,
+  });
 
   useEffect(() => {
     if (!modelOptions.some((model) => model.id === modelId)) {
@@ -208,7 +215,9 @@ export function AssistantChat({
             <PromptInputBody>
               <PromptInputTextarea
                 disabled={isLoading}
-                placeholder={"Ask me to review the demo inbox, create a task, or draft an invoice..."}
+                placeholder={
+                  "Ask me to review the demo inbox, create a task, or draft an invoice..."
+                }
               />
             </PromptInputBody>
             <PromptInputFooter>

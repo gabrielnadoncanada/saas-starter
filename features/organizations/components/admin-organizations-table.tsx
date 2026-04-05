@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -46,8 +45,6 @@ export function AdminOrganizationsTable({
   initialTotal,
   pageSize,
 }: AdminOrganizationsTableProps) {
-  const t = useTranslations("organizations");
-  const tc = useTranslations("common");
   const [organizations, setOrganizations] = useState(initialOrganizations);
   const [total, setTotal] = useState(initialTotal);
   const [offset, setOffset] = useState(0);
@@ -61,7 +58,9 @@ export function AdminOrganizationsTable({
   const [isPending, startTransition] = useTransition();
 
   function viewerBelongsToOrganization(organization: AdminOrganization) {
-    return organization.members.some((member) => member.userId === currentUserId);
+    return organization.members.some(
+      (member) => member.userId === currentUserId,
+    );
   }
 
   function fetchOrganizations(nextOffset: number, nextSearch = search) {
@@ -102,8 +101,9 @@ export function AdminOrganizationsTable({
   function confirmDelete(organization: AdminOrganization) {
     setConfirmDialog({
       open: true,
-      title: t("table.deleteConfirmTitle", { name: organization.name }),
-      description: "This will permanently delete this organization, all its members, tasks, and data. This cannot be undone.",
+      title: `Delete "${organization.name}"`,
+      description:
+        "This will permanently delete this organization, all its members, tasks, and data. This cannot be undone.",
       action: async () => {
         try {
           await deleteOrganizationAction(organization.id);
@@ -112,7 +112,9 @@ export function AdminOrganizationsTable({
           setDetailOpen(false);
         } catch (error) {
           toast.error(
-            error instanceof Error ? error.message : "Failed to delete organization",
+            error instanceof Error
+              ? error.message
+              : "Failed to delete organization",
           );
         }
       },

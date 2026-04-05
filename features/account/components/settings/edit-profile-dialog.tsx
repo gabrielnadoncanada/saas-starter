@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useState } from "react";
 
 import { updateAccountAction } from "@/features/account/actions/update-account.actions";
@@ -35,8 +34,6 @@ export function EditProfileDialog({
   phoneNumber,
   children,
 }: EditProfileDialogProps) {
-  const t = useTranslations("settings");
-  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
     FormActionState<UpdateAccountInput>,
@@ -73,7 +70,9 @@ export function EditProfileDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>Update your name and phone number.</DialogDescription>
+          <DialogDescription>
+            Update your name and phone number.
+          </DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" action={formAction}>

@@ -1,11 +1,8 @@
 "use client";
 
 import { FileText, Mail, Sparkles } from "lucide-react";
-import { useTranslations } from "next-intl";
 
-import {
-  ConversationEmptyState,
-} from "@/shared/components/ai-elements/conversation";
+import { ConversationEmptyState } from "@/shared/components/ai-elements/conversation";
 import { Button } from "@/shared/components/ui/button";
 
 type EmptyStateProps = {
@@ -13,20 +10,22 @@ type EmptyStateProps = {
 };
 
 export function AssistantChatEmptyState({ onPromptClick }: EmptyStateProps) {
-  const t = useTranslations("assistant");
   const title = "AI-ready billing pattern";
-  const description = "Review the demo inbox, create tasks, or draft invoices from natural language.";
+  const description =
+    "Review the demo inbox, create tasks, or draft invoices from natural language.";
 
   const suggested = [
     {
       icon: Mail,
       label: "Review the demo inbox",
-      prompt: "Review the demo inbox and suggest tasks for today based on emails that need action.",
+      prompt:
+        "Review the demo inbox and suggest tasks for today based on emails that need action.",
     },
     {
       icon: FileText,
       label: "Draft an invoice",
-      prompt: "Draft an invoice for Acme Corp for 10 hours of consulting at $150/hour, due in 30 days.",
+      prompt:
+        "Draft an invoice for Acme Corp for 10 hours of consulting at $150/hour, due in 30 days.",
     },
   ];
 
@@ -42,7 +41,9 @@ export function AssistantChatEmptyState({ onPromptClick }: EmptyStateProps) {
         </div>
         <div className="space-y-1">
           <h3 className="text-lg font-semibold">{title}</h3>
-          <p className="max-w-md text-sm text-muted-foreground">{description}</p>
+          <p className="max-w-md text-sm text-muted-foreground">
+            {description}
+          </p>
         </div>
         <div className="grid w-full max-w-md gap-3">
           {suggested.map((item) => (

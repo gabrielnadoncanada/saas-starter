@@ -1,7 +1,6 @@
 "use client";
 
 import { AlertCircle, RotateCcw } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
@@ -28,7 +27,6 @@ function AssistantChatErrorState({
   error: Error;
   onDismiss: () => void;
 }) {
-  const t = useTranslations("assistant");
   const errorInfo = parseAssistantError(error);
   const isUpgradeError =
     errorInfo.code === "LIMIT_REACHED" || errorInfo.code === "UPGRADE_REQUIRED";

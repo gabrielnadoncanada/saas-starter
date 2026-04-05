@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2, UserPlus } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -34,8 +33,6 @@ type InviteOrganizationMemberDialogProps = {
 export function InviteOrganizationMemberDialog({
   canInviteMembers,
 }: InviteOrganizationMemberDialogProps) {
-  const t = useTranslations("organizations");
-  const tc = useTranslations("common");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
@@ -73,7 +70,9 @@ export function InviteOrganizationMemberDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Invite a member</DialogTitle>
-          <DialogDescription>Send an invitation to join your organization.</DialogDescription>
+          <DialogDescription>
+            Send an invitation to join your organization.
+          </DialogDescription>
         </DialogHeader>
 
         <form action={formAction} className="space-y-4">
@@ -130,4 +129,3 @@ export function InviteOrganizationMemberDialog({
     </Dialog>
   );
 }
-

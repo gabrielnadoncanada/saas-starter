@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { TasksPage } from "@/features/tasks/components/tasks-page";
 import { getTasksPage } from "@/features/tasks/server/get-tasks-page";
 import {
@@ -5,7 +7,6 @@ import {
   parseTaskTableSearchParams,
 } from "@/features/tasks/task-table-search-params";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 
 type DashboardTasksPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -19,8 +20,7 @@ export default async function DashboardTasksPage({
   const tasksPage = await getTasksPage(parsedParams);
 
   if (tasksPage.page !== parsedParams.page) {
-    redirectToLocale(
-      null,
+    redirect(
       buildTasksTableHref(routes.app.tasks, {
         ...parsedParams,
         page: tasksPage.page,

@@ -1,5 +1,4 @@
 import { routes } from "@/shared/constants/routes";
-import { stripLocalePrefix } from "@/shared/i18n/href";
 
 const DEFAULT_CALLBACK_URL = routes.auth.postSignIn;
 const allowedCallbackSet = new Set<string>([
@@ -13,14 +12,12 @@ export function getCallbackURL(callbackUrl: string | null | undefined): string {
     return DEFAULT_CALLBACK_URL;
   }
 
-  const { pathname } = stripLocalePrefix(callbackUrl);
-
-  if (allowedCallbackSet.has(pathname)) {
+  if (allowedCallbackSet.has(callbackUrl)) {
     return callbackUrl;
   }
 
   if (
-    allowedCallbackPrefixes.some((prefix) => pathname.startsWith(prefix))
+    allowedCallbackPrefixes.some((prefix) => callbackUrl.startsWith(prefix))
   ) {
     return callbackUrl;
   }

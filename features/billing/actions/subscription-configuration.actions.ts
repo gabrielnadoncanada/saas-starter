@@ -1,5 +1,7 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import {
   getPlanDisplayPrice,
   isBillingInterval,
@@ -13,13 +15,10 @@ import {
   requireActiveOrganizationRole,
 } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
-import { getRequestLocale } from "@/shared/i18n/server-locale";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function updateSubscriptionConfigurationAction(formData: FormData) {
   const user = await getCurrentUser();
-  const locale = await getRequestLocale();
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
   const rawSeatQuantity = formData.get("seatQuantity");
@@ -34,14 +33,14 @@ export async function updateSubscriptionConfigurationAction(formData: FormData) 
     typeof rawSeatQuantity === "string" ? Number(rawSeatQuantity) : NaN;
 
   if (!user) {
-    redirectToLocale(locale, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
   try {
     await requireActiveOrganizationRole(["owner"]);
   } catch (error) {
     if (error instanceof OrganizationMembershipError) {
-      redirectToLocale(locale, routes.settings.members);
+      redirect(routes.settings.members);
     }
 
     throw error;
@@ -73,5 +72,5 @@ export async function updateSubscriptionConfigurationAction(formData: FormData) 
       : organization.members.length,
   });
 
-  redirectToLocale(locale, routes.settings.billing);
+  redirect(routes.settings.billing);
 }

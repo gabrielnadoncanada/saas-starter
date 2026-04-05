@@ -1,5 +1,7 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import {
   getCreditPack,
@@ -19,17 +21,15 @@ import {
   requireActiveOrganizationRole,
 } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
-import { getRequestLocale } from "@/shared/i18n/server-locale";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
-async function requireBillingOwner(locale: string) {
+async function requireBillingOwner() {
   try {
     await requireActiveOrganizationRole(["owner"]);
   } catch (error) {
     if (error instanceof OrganizationMembershipError) {
-      redirectToLocale(locale, routes.settings.members);
+      redirect(routes.settings.members);
     }
 
     throw error;
@@ -38,7 +38,6 @@ async function requireBillingOwner(locale: string) {
 
 export async function startSubscriptionCheckoutAction(formData: FormData) {
   const user = await getCurrentUser();
-  const locale = await getRequestLocale();
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
   const rawSeatQuantity = formData.get("seatQuantity");
@@ -53,8 +52,7 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
     typeof rawSeatQuantity === "string" ? Number(rawSeatQuantity) : NaN;
 
   if (!user) {
-    redirectToLocale(
-      locale,
+    redirect(
       buildCallbackURL(
         routes.auth.login,
         buildPostSignInCallbackURL({
@@ -69,7 +67,7 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
     );
   }
 
-  await requireBillingOwner(locale);
+  await requireBillingOwner();
 
   const organization = await getCurrentOrganization();
   if (!organization) {
@@ -97,20 +95,19 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
       : organization.members.length,
   });
 
-  redirectToLocale(locale, url);
+  redirect(url);
 }
 
 export async function startOneTimeCheckoutAction(formData: FormData) {
   const user = await getCurrentUser();
-  const locale = await getRequestLocale();
   const itemKey = formData.get("itemKey");
   const itemType = formData.get("itemType");
 
   if (!user) {
-    redirectToLocale(locale, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
-  await requireBillingOwner(locale);
+  await requireBillingOwner();
 
   const organization = await getCurrentOrganization();
   if (!organization) {
@@ -137,7 +134,7 @@ export async function startOneTimeCheckoutAction(formData: FormData) {
     organizationId: organization.id,
   });
 
-  redirectToLocale(locale, url);
+  redirect(url);
 }
 
 export async function buyCreditPackAction(formData: FormData) {

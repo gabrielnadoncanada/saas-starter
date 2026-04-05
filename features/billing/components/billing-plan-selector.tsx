@@ -4,9 +4,7 @@ import { CircleCheckBigIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import {
-  startSubscriptionCheckoutAction,
-} from "@/features/billing/actions/checkout.actions";
+import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import { customerPortalAction } from "@/features/billing/actions/customer-portal.actions";
 import { updateSubscriptionConfigurationAction } from "@/features/billing/actions/subscription-configuration.actions";
 import {
@@ -52,10 +50,7 @@ function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
   return interval === "year" ? plan.yearly : plan.monthly;
 }
 
-function getAddonPrice(
-  addon: BillingAddonOption,
-  interval: BillingInterval,
-) {
+function getAddonPrice(addon: BillingAddonOption, interval: BillingInterval) {
   return interval === "year" ? addon.yearly : addon.monthly;
 }
 
@@ -71,7 +66,6 @@ export function BillingPlanSelector({
   canManagePortal,
   canUpdateSubscription,
 }: BillingPlanSelectorProps) {
-  const t = useTranslations("billing.actions");
   const defaultPlan =
     plans.find((plan) => plan.id === currentPlanId) ?? plans[0] ?? null;
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId | undefined>(
@@ -90,7 +84,9 @@ export function BillingPlanSelector({
     return (
       <Card>
         <CardHeader>
-          <CardDescription>No monthly Stripe price is configured for the displayed plans.</CardDescription>
+          <CardDescription>
+            No monthly Stripe price is configured for the displayed plans.
+          </CardDescription>
         </CardHeader>
       </Card>
     );
@@ -100,7 +96,9 @@ export function BillingPlanSelector({
     plans.find((plan) => plan.id === selectedPlanId) ?? defaultPlan;
   const selectedPrice = getPlanPrice(selectedPlan, interval);
   const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
-  const visibleAddons = addons.filter((addon) => Boolean(getAddonPrice(addon, interval)));
+  const visibleAddons = addons.filter((addon) =>
+    Boolean(getAddonPrice(addon, interval)),
+  );
   const subscriptionAction =
     hasCurrentSubscription && canUpdateSubscription
       ? updateSubscriptionConfigurationAction
@@ -164,14 +162,19 @@ export function BillingPlanSelector({
         <div className="space-y-3">
           <p className="text-sm font-medium">Additional packs</p>
           {visibleAddons.map((addon) => (
-            <label key={addon.id} className="flex items-start gap-3 rounded-xl border p-3">
+            <label
+              key={addon.id}
+              className="flex items-start gap-3 rounded-xl border p-3"
+            >
               <Checkbox
                 checked={selectedAddonIds.includes(addon.id)}
                 onCheckedChange={() => toggleAddon(addon.id)}
               />
               <div className="space-y-1">
                 <p className="font-medium">{addon.name}</p>
-                <p className="text-sm text-muted-foreground">{addon.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {addon.description}
+                </p>
               </div>
             </label>
           ))}
@@ -189,7 +192,12 @@ export function BillingPlanSelector({
             <input type="hidden" name="billingInterval" value={interval} />
             <input type="hidden" name="seatQuantity" value={seatQuantity} />
             {selectedAddonIds.map((addonId) => (
-              <input key={addonId} type="hidden" name="addonIds" value={addonId} />
+              <input
+                key={addonId}
+                type="hidden"
+                name="addonIds"
+                value={addonId}
+              />
             ))}
             <Button type="submit" disabled={!selectedPrice}>
               {hasCurrentSubscription && canUpdateSubscription
@@ -208,7 +216,8 @@ export function BillingPlanSelector({
 
           {hasCurrentSubscription && !canUpdateSubscription ? (
             <p className="text-sm text-muted-foreground">
-              This workspace already has an active subscription. The Stripe portal is not available until the Stripe customer is synced.
+              This workspace already has an active subscription. The Stripe
+              portal is not available until the Stripe customer is synced.
             </p>
           ) : null}
         </div>

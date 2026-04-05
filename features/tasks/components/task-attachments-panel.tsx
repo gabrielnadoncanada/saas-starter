@@ -1,7 +1,6 @@
 "use client";
 
 import { Download, Loader2, Paperclip, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -58,10 +57,7 @@ function formatBytes(sizeBytes: number) {
   return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unitIndex]}`;
 }
 
-export function TaskAttachmentsPanel({
-  taskId,
-}: TaskAttachmentsPanelProps) {
-  const t = useTranslations("taskAttachments");
+export function TaskAttachmentsPanel({ taskId }: TaskAttachmentsPanelProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [attachments, setAttachments] = useState<TaskAttachment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -86,7 +82,9 @@ export function TaskAttachmentsPanel({
 
       setAttachments(result.attachments);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Loading attachments...");
+      toast.error(
+        error instanceof Error ? error.message : "Loading attachments...",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +121,9 @@ export function TaskAttachmentsPanel({
       toast.success("Attachment uploaded.");
       await loadAttachments();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Attachment uploaded.");
+      toast.error(
+        error instanceof Error ? error.message : "Attachment uploaded.",
+      );
     } finally {
       event.target.value = "";
       setIsUploading(false);
@@ -148,7 +148,9 @@ export function TaskAttachmentsPanel({
       toast.success("Attachment removed.");
       await loadAttachments();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Attachment removed.");
+      toast.error(
+        error instanceof Error ? error.message : "Attachment removed.",
+      );
     } finally {
       setDeletingId(null);
     }
@@ -159,7 +161,10 @@ export function TaskAttachmentsPanel({
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <h3 className="font-medium text-sm">Attachments</h3>
-          <p className="text-muted-foreground text-xs">Upload task files up to 10 MB. Storage usage counts against your plan.</p>
+          <p className="text-muted-foreground text-xs">
+            Upload task files up to 10 MB. Storage usage counts against your
+            plan.
+          </p>
         </div>
 
         <div className="flex items-center gap-2">

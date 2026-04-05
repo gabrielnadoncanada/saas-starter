@@ -113,7 +113,6 @@ function BillingPlanCard({
   currentPlanId,
   interval,
 }: BillingPlanCardProps) {
-  const t = useTranslations("billing");
   const price = getPlanPrice(plan, interval);
   const isCurrentSelection =
     plan.id === currentPlanId &&
@@ -158,8 +157,6 @@ export function BillingIntervalSelector({
   annualEnabled,
   onValueChange,
 }: BillingIntervalSelectorProps) {
-  const t = useTranslations("billing");
-
   return (
     <FieldSet className="gap-3">
       <FieldLegend variant="label">Billing frequency</FieldLegend>
@@ -193,9 +190,7 @@ export function BillingIntervalSelector({
             <FieldContent>
               <FieldTitle>Yearly</FieldTitle>
               <FieldDescription>
-                {annualEnabled
-                  ? "Pay annually."
-                  : "No yearly price available."}
+                {annualEnabled ? "Pay annually." : "No yearly price available."}
               </FieldDescription>
             </FieldContent>
           </Field>
@@ -213,8 +208,6 @@ export function BillingPlanRadioGroup({
   selectedPlanId,
   onValueChange,
 }: BillingPlanRadioGroupProps) {
-  const t = useTranslations("billing");
-
   return (
     <FieldSet className="gap-3">
       <FieldLegend variant="label">Choose a plan</FieldLegend>

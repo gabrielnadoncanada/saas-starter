@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
@@ -10,11 +10,11 @@ export async function requireAdmin() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirectToLocale(null, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
   if (!isPlatformAdmin(user.role)) {
-    redirectToLocale(null, routes.app.dashboard);
+    redirect(routes.app.dashboard);
   }
 
   return user;

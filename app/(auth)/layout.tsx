@@ -1,8 +1,8 @@
 import { Command } from "lucide-react";
+import { redirect } from "next/navigation";
 
 import { Separator } from "@/shared/components/ui/separator";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export default async function AuthLayout(props: {
@@ -11,7 +11,7 @@ export default async function AuthLayout(props: {
   const user = await getCurrentUser();
 
   if (user) {
-    redirectToLocale(null, routes.app.dashboard);
+    redirect(routes.app.dashboard);
   }
 
   return (

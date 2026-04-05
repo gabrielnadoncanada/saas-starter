@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import type { SubmitEventHandler } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
@@ -25,8 +24,6 @@ export function AuthEmailStep({
   emailError,
   onSubmit,
 }: AuthEmailStepProps) {
-  const t = useTranslations("auth");
-
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <Field data-invalid={Boolean(emailError)}>

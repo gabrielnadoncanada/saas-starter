@@ -1,7 +1,6 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 import { Input } from "@/shared/components/ui/input";
 
@@ -14,8 +13,6 @@ export function AdminOrganizationsSearch({
   value,
   onChange,
 }: AdminOrganizationsSearchProps) {
-  const t = useTranslations("organizations");
-
   return (
     <div className="relative">
       <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />

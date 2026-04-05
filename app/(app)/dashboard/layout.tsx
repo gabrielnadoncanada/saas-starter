@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { DashboardSidebar } from "@/features/dashboard/components/dashboard-sidebar";
 import { ensureActiveOrganization } from "@/features/organizations/server/organization-membership";
@@ -11,7 +12,6 @@ import { UserProvider } from "@/shared/components/providers/user-provider";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import {
   getCurrentUser,
   toSidebarUser,
@@ -32,7 +32,7 @@ export default async function DashboardLayout({
   ]);
 
   if (!user) {
-    redirectToLocale(null, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
   return (

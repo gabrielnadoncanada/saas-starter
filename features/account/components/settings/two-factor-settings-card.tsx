@@ -2,7 +2,6 @@
 
 import { ShieldCheck } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
 import QRCode from "qrcode";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -27,7 +26,6 @@ type TwoFactorSettingsCardProps = {
 export function TwoFactorSettingsCard({
   enabled: initialEnabled,
 }: TwoFactorSettingsCardProps) {
-  const t = useTranslations("twoFactor");
   const [enabled, setEnabled] = useState(initialEnabled);
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -57,7 +55,9 @@ export function TwoFactorSettingsCard({
 
     setTotpUri(result.data.totpURI);
     setBackupCodes(result.data.backupCodes);
-    toast.success("Scan the QR code, then verify with a code from your authenticator app.");
+    toast.success(
+      "Scan the QR code, then verify with a code from your authenticator app.",
+    );
   }
 
   async function verifySetup() {
@@ -85,7 +85,9 @@ export function TwoFactorSettingsCard({
     });
 
     if (result.error) {
-      toast.error(result.error.message ?? "Unable to disable two-factor authentication.");
+      toast.error(
+        result.error.message ?? "Unable to disable two-factor authentication.",
+      );
       return;
     }
 
@@ -124,7 +126,9 @@ export function TwoFactorSettingsCard({
           <ShieldCheck className="size-4" />
           Two-factor authentication
         </CardTitle>
-        <CardDescription>Protect your account with an authenticator app and backup codes.</CardDescription>
+        <CardDescription>
+          Protect your account with an authenticator app and backup codes.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -186,7 +190,9 @@ export function TwoFactorSettingsCard({
                 type="button"
                 variant="outline"
                 disabled={!password || isPending}
-                onClick={() => startTransition(() => void regenerateBackupCodes())}
+                onClick={() =>
+                  startTransition(() => void regenerateBackupCodes())
+                }
               >
                 Regenerate backup codes
               </Button>

@@ -68,7 +68,6 @@ export function TaskForm({
   task,
 }: TaskFormProps) {
   const t = useTranslations("tasks");
-  const tc = useTranslations("common");
   const titleField = getFieldState(state, "title");
   const descriptionField = getFieldState(state, "description");
   const labelField = getFieldState(state, "label");
@@ -91,9 +90,7 @@ export function TaskForm({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex flex-col">
         <SheetHeader className="text-start">
-          <SheetTitle>
-            {isUpdate ? "Update Task" : "Create Task"}
-          </SheetTitle>
+          <SheetTitle>{isUpdate ? "Update Task" : "Create Task"}</SheetTitle>
           <SheetDescription>
             {isUpdate
               ? t("sheetDescriptionUpdate", { code: task?.code ?? "" })
@@ -122,9 +119,7 @@ export function TaskForm({
             </Field>
 
             <Field data-invalid={descriptionField.invalid}>
-              <FieldLabel htmlFor="task-description">
-                Description
-              </FieldLabel>
+              <FieldLabel htmlFor="task-description">Description</FieldLabel>
               <Textarea
                 id="task-description"
                 name="description"
@@ -157,9 +152,7 @@ export function TaskForm({
             </Field>
 
             <Field data-invalid={priorityField.invalid}>
-              <FieldLabel htmlFor="task-priority">
-                Priority
-              </FieldLabel>
+              <FieldLabel htmlFor="task-priority">Priority</FieldLabel>
               <Select name="priority" defaultValue={priority}>
                 <SelectTrigger
                   id="task-priority"

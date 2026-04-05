@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
 import {
   buyCreditPackAction,
@@ -29,20 +29,21 @@ import {
 import type { PlanId } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 import { defaultLocale } from "@/shared/i18n/locales";
-import { redirectToLocale } from "@/shared/i18n/href";
 
 export default async function SettingsBillingPage() {
   const [context, entitlements] = await Promise.all([
     getCurrentOrganizationContext(),
     getCurrentOrganizationEntitlements(),
   ]);
-  const t = await getTranslations("settings.billing");
 
   if (!context || !entitlements) {
-    redirectToLocale(null, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
-  const creditActivity = await listCreditActivity(entitlements.organizationId, 8);
+  const creditActivity = await listCreditActivity(
+    entitlements.organizationId,
+    8,
+  );
   const hasCurrentSubscription = hasCurrentStripeSubscription(
     entitlements.subscriptionStatus,
   );
@@ -71,7 +72,10 @@ export default async function SettingsBillingPage() {
         <Card>
           <CardHeader>
             <CardTitle>Manage your team plan</CardTitle>
-            <CardDescription>Choose a plan that fits your team's needs. You can upgrade or downgrade at any time.</CardDescription>
+            <CardDescription>
+              Choose a plan that fits your team's needs. You can upgrade or
+              downgrade at any time.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
@@ -111,7 +115,9 @@ export default async function SettingsBillingPage() {
               currentAddonIds={entitlements.activeAddonIds}
               currentBillingInterval={entitlements.billingInterval}
               currentPlanId={entitlements.planId}
-              currentSeatQuantity={entitlements.seats ?? context.organization.members.length}
+              currentSeatQuantity={
+                entitlements.seats ?? context.organization.members.length
+              }
               hasCurrentSubscription={hasCurrentSubscription}
               plans={plans}
             />
@@ -122,18 +128,28 @@ export default async function SettingsBillingPage() {
           <Card>
             <CardHeader>
               <CardTitle>Credit packs</CardTitle>
-              <CardDescription>Buy one-time top-ups when your team needs more AI usage.</CardDescription>
+              <CardDescription>
+                Buy one-time top-ups when your team needs more AI usage.
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               {creditPacks.map((creditPack) => (
-                <form key={creditPack.id} action={buyCreditPackAction} className="rounded-xl border p-4">
+                <form
+                  key={creditPack.id}
+                  action={buyCreditPackAction}
+                  className="rounded-xl border p-4"
+                >
                   <input type="hidden" name="itemKey" value={creditPack.id} />
                   <div className="space-y-3">
                     <div>
                       <p className="font-medium">{creditPack.name}</p>
-                      <p className="text-sm text-muted-foreground">{creditPack.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {creditPack.description}
+                      </p>
                     </div>
-                    <p className="text-sm">{t("creditsGranted", { count: creditPack.creditsGranted })}</p>
+                    <p className="text-sm">
+                      {creditPack.creditsGranted} credits
+                    </p>
                     <Button type="submit">Buy credits</Button>
                   </div>
                 </form>
@@ -146,17 +162,30 @@ export default async function SettingsBillingPage() {
           <Card>
             <CardHeader>
               <CardTitle>One-time products</CardTitle>
-              <CardDescription>Sell one-time workspace upgrades without moving the team to a recurring plan.</CardDescription>
+              <CardDescription>
+                Sell one-time workspace upgrades without moving the team to a
+                recurring plan.
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               {oneTimeProducts.map((product) => (
-                <form key={product.id} action={startOneTimeCheckoutAction} className="rounded-xl border p-4">
+                <form
+                  key={product.id}
+                  action={startOneTimeCheckoutAction}
+                  className="rounded-xl border p-4"
+                >
                   <input type="hidden" name="itemKey" value={product.id} />
-                  <input type="hidden" name="itemType" value="one_time_product" />
+                  <input
+                    type="hidden"
+                    name="itemType"
+                    value="one_time_product"
+                  />
                   <div className="space-y-3">
                     <div>
                       <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">{product.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {product.description}
+                      </p>
                     </div>
                     <Button type="submit">Buy now</Button>
                   </div>
@@ -169,21 +198,32 @@ export default async function SettingsBillingPage() {
         <Card>
           <CardHeader>
             <CardTitle>Credit activity</CardTitle>
-            <CardDescription>Recent grants, charges, and refunds for this workspace.</CardDescription>
+            <CardDescription>
+              Recent grants, charges, and refunds for this workspace.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {creditActivity.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No credit activity yet.</p>
+              <p className="text-sm text-muted-foreground">
+                No credit activity yet.
+              </p>
             ) : (
               creditActivity.map((entry) => (
-                <div key={`${entry.createdAt.toISOString()}-${entry.delta}`} className="flex items-center justify-between rounded-xl border p-3 text-sm">
+                <div
+                  key={`${entry.createdAt.toISOString()}-${entry.delta}`}
+                  className="flex items-center justify-between rounded-xl border p-3 text-sm"
+                >
                   <div>
                     <p className="font-medium">{entry.reason}</p>
                     <p className="text-muted-foreground">
                       {entry.createdAt.toLocaleString(defaultLocale)}
                     </p>
                   </div>
-                  <p className={entry.delta >= 0 ? "text-green-600" : "text-foreground"}>
+                  <p
+                    className={
+                      entry.delta >= 0 ? "text-green-600" : "text-foreground"
+                    }
+                  >
                     {entry.delta >= 0 ? `+${entry.delta}` : entry.delta}
                   </p>
                 </div>

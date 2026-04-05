@@ -1,10 +1,10 @@
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
 import { isBillingInterval, isPlanId } from "@/features/billing/catalog/resolver";
 import { resumeCheckoutAfterSignIn } from "@/features/billing/server/resume-checkout-after-sign-in";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import { getCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -31,7 +31,7 @@ export default async function PostSignInPage({
   ] = await Promise.all([getCurrentUser(), searchParams]);
 
   if (!user) {
-    redirectToLocale(null, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
   const callbackUrl = getCallbackURL(rawCallbackUrl);
@@ -57,16 +57,16 @@ export default async function PostSignInPage({
     });
 
     if (!url) {
-      redirectToLocale(null, routes.app.dashboard);
+      redirect(routes.app.dashboard);
     }
 
-    redirectToLocale(null, url);
+    redirect(url);
   }
 
   if (callbackUrl !== routes.auth.postSignIn) {
-    redirectToLocale(null, callbackUrl);
+    redirect(callbackUrl);
   }
 
-  redirectToLocale(null, routes.app.dashboard);
+  redirect(routes.app.dashboard);
 }
 

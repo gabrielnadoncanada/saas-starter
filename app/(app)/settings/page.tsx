@@ -1,4 +1,5 @@
 import { KeyRound, Link2, Pencil, Trash, UserIcon } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
@@ -27,7 +28,6 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import {
   getEnabledOAuthProviderIds,
@@ -75,7 +75,7 @@ export default async function SettingsPage({
   ]);
 
   if (!user) {
-    redirectToLocale(null, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
   const oauthProviders = getEnabledOAuthProviderIds();

@@ -1,4 +1,4 @@
-
+import { redirect } from "next/navigation";
 
 import { NotificationsCenter } from "@/features/notifications/components/notifications-center";
 import { getUnreadNotificationCount, listUserNotifications } from "@/features/notifications/server/notification-service";
@@ -9,15 +9,13 @@ import {
   PageTitle,
 } from "@/shared/components/layout/page-layout";
 import { routes } from "@/shared/constants/routes";
-import { redirectToLocale } from "@/shared/i18n/href";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export default async function NotificationsSettingsPage() {
   const user = await getCurrentUser();
-  
 
   if (!user) {
-    redirectToLocale(null, routes.auth.login);
+    redirect(routes.auth.login);
   }
 
   const [notifications, unreadCount] = await Promise.all([

@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -43,8 +42,6 @@ export function SignUpForm({
   allowMagicLink = false,
   callbackUrl = "/post-sign-in",
 }: SignUpFormProps) {
-  const t = useTranslations("auth");
-  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");

@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +15,6 @@ export function ResendMagicLinkButton({
   email,
   callbackUrl = "/post-sign-in",
 }: ResendMagicLinkButtonProps) {
-  const t = useTranslations("auth");
   const [isPending, setIsPending] = useState(false);
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
 
