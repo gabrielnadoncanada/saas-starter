@@ -1,7 +1,7 @@
 import "server-only";
 
 import { subDays } from "date-fns";
-import { getTranslations } from "next-intl/server";
+
 
 import { listOrganizationAuditLogs } from "@/features/audit/server/record-audit-log";
 import { getPlan } from "@/features/billing/catalog/resolver";
@@ -12,13 +12,13 @@ import { getCurrentOrganization } from "@/features/organizations/server/current-
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 
-function buildUsageChart(tasks: { createdAt: Date }[], locale: string) {
+function buildUsageChart(tasks: { createdAt: Date }[]) {
   const buckets = Array.from({ length: 7 }, (_, index) => {
     const date = subDays(new Date(), 6 - index);
 
     return {
       dateKey: date.toISOString().slice(0, 10),
-      label: date.toLocaleDateString(locale, { weekday: "short" }),
+      label: date.toLocaleDateString("en-US", { weekday: "short" }),
       tasks: 0,
     };
   });
@@ -35,8 +35,8 @@ function buildUsageChart(tasks: { createdAt: Date }[], locale: string) {
   return buckets.map(({ dateKey: _dateKey, ...item }) => item);
 }
 
-export async function getDashboardOverview(locale: string) {
-  const t = await getTranslations("dashboard");
+export async function getDashboardOverview() {
+  
   const [organization, entitlements] = await Promise.all([
     getCurrentOrganization(),
     getCurrentOrganizationEntitlements(),
@@ -88,20 +88,20 @@ export async function getDashboardOverview(locale: string) {
   const checklist = [
     {
       id: "first-task",
-      title: t("checklist.firstTask"),
+      title: "Create your first task",
       done: taskCount > 0,
       href: routes.app.tasks,
     },
     {
       id: "invite-team",
-      title: t("checklist.inviteTeam"),
+      title: "Invite a teammate",
       done: memberCount > 1,
       href: routes.settings.members,
       hidden: !entitlements || !hasCapability(entitlements, "team.invite"),
     },
     {
       id: "try-assistant",
-      title: t("checklist.tryAssistant"),
+      title: "Use the AI assistant",
       done: creditBalance > 0,
       href: routes.app.assistant,
       hidden: !canUseAI,
@@ -121,7 +121,7 @@ export async function getDashboardOverview(locale: string) {
     canUseAI,
     recentActivity,
     recentTasks,
-    usageChart: buildUsageChart(recentTaskHistory, locale),
+    usageChart: buildUsageChart(recentTaskHistory),
     checklist,
   };
 }

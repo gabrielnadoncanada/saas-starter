@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 import {
@@ -22,14 +22,14 @@ export default async function ResetPasswordPage({
 }: ResetPasswordPageProps) {
   const { token: rawToken } = await searchParams;
   const token = rawToken?.trim();
-  const t = await getTranslations("auth");
+  
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>{t("resetPassword.title")}</CardTitle>
+        <CardTitle>Reset password</CardTitle>
         <CardDescription>
-          {token ? t("resetPassword.description") : t("resetPassword.invalidDescription")}
+          {token ? "Choose a new password for your account." : "This reset link is invalid or incomplete."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -41,7 +41,7 @@ export default async function ResetPasswordPage({
               href={routes.auth.forgotPassword}
               className="underline underline-offset-4"
             >
-              {t("resetPassword.requestNewLink")}
+              Request a new reset link
             </Link>
           </p>
         )}

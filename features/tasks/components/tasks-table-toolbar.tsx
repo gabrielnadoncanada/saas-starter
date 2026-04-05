@@ -66,7 +66,7 @@ export function TasksTableToolbar({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2">
         <Input
-          placeholder={t("searchPlaceholder")}
+          placeholder={"Filter by title or ID..."}
           value={searchValue}
           onChange={(event) => setSearchValue(event.target.value)}
           className="h-8 w-[150px] lg:w-[250px]"
@@ -75,12 +75,12 @@ export function TasksTableToolbar({
         <div className="flex gap-x-2">
           <DataTableFacetedFilter
             column={table.getColumn("status")}
-            title={t("fieldStatus")}
+            title={"Status"}
             options={taskStatuses}
           />
           <DataTableFacetedFilter
             column={table.getColumn("priority")}
-            title={t("fieldPriority")}
+            title={"Priority"}
             options={taskPriorities}
           />
         </div>
@@ -103,7 +103,7 @@ export function TasksTableToolbar({
             }}
             className="h-8 px-2 lg:px-3"
           >
-            {tc("reset")}
+            Reset
             <XIcon className="ms-2 h-4 w-4" />
           </Button>
         ) : null}

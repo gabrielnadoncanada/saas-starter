@@ -86,7 +86,7 @@ export function TaskAttachmentsPanel({
 
       setAttachments(result.attachments);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("loading"));
+      toast.error(error instanceof Error ? error.message : "Loading attachments...");
     } finally {
       setIsLoading(false);
     }
@@ -120,10 +120,10 @@ export function TaskAttachmentsPanel({
         throw new Error(result.error ?? "Unable to upload attachment.");
       }
 
-      toast.success(t("uploaded"));
+      toast.success("Attachment uploaded.");
       await loadAttachments();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("uploaded"));
+      toast.error(error instanceof Error ? error.message : "Attachment uploaded.");
     } finally {
       event.target.value = "";
       setIsUploading(false);
@@ -145,10 +145,10 @@ export function TaskAttachmentsPanel({
         throw new Error(result.error ?? "Unable to remove attachment.");
       }
 
-      toast.success(t("removed"));
+      toast.success("Attachment removed.");
       await loadAttachments();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("removed"));
+      toast.error(error instanceof Error ? error.message : "Attachment removed.");
     } finally {
       setDeletingId(null);
     }
@@ -158,8 +158,8 @@ export function TaskAttachmentsPanel({
     <div className="space-y-3 rounded-lg border p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="font-medium text-sm">{t("title")}</h3>
-          <p className="text-muted-foreground text-xs">{t("description")}</p>
+          <h3 className="font-medium text-sm">Attachments</h3>
+          <p className="text-muted-foreground text-xs">Upload task files up to 10 MB. Storage usage counts against your plan.</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ export function TaskAttachmentsPanel({
             ) : (
               <Paperclip className="mr-2 size-4" />
             )}
-            {t("add")}
+            Add file
           </Button>
         </div>
       </div>
@@ -190,11 +190,11 @@ export function TaskAttachmentsPanel({
       {isLoading ? (
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <Loader2 className="size-4 animate-spin" />
-          {t("loading")}
+          Loading attachments...
         </div>
       ) : attachments.length === 0 ? (
         <div className="rounded-md border border-dashed px-3 py-4 text-muted-foreground text-sm">
-          {t("empty")}
+          No attachments yet.
         </div>
       ) : (
         <div className="space-y-2">
@@ -216,7 +216,7 @@ export function TaskAttachmentsPanel({
                 <Button asChild type="button" variant="ghost" size="icon">
                   <a href={`/api/files/${attachment.storedFile.id}`}>
                     <Download className="size-4" />
-                    <span className="sr-only">{t("download")}</span>
+                    <span className="sr-only">Download attachment</span>
                   </a>
                 </Button>
                 <Button
@@ -231,7 +231,7 @@ export function TaskAttachmentsPanel({
                   ) : (
                     <Trash2 className="size-4" />
                   )}
-                  <span className="sr-only">{t("delete")}</span>
+                  <span className="sr-only">Delete attachment</span>
                 </Button>
               </div>
             </div>

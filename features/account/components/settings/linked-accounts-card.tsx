@@ -121,12 +121,12 @@ export function LinkedAccountsCard({
                         disabled={isUnlinkingProvider}
                       >
                         {isUnlinkingProvider
-                          ? t("linkedAccounts.unlinking")
-                          : t("linkedAccounts.unlink")}
+                          ? "Unlinking..."
+                          : "Unlink"}
                       </Button>
                     </form>
                   ) : (
-                    <Badge>{t("linkedAccounts.required")}</Badge>
+                    <Badge>Required</Badge>
                   )
                 ) : (
                   <Button
@@ -136,8 +136,8 @@ export function LinkedAccountsCard({
                     onClick={() => void handleLinkAccount(provider.provider)}
                   >
                     {isLinkingProvider
-                      ? t("linkedAccounts.redirecting")
-                      : t("linkedAccounts.link")}
+                      ? "Redirecting..."
+                      : "Link"}
                   </Button>
                 )}
               </ItemActions>
@@ -148,7 +148,7 @@ export function LinkedAccountsCard({
 
       <Field data-invalid={providerField.invalid} className="gap-1">
         <FieldLabel className="sr-only" htmlFor="linked-account-provider">
-          {t("linkedAccounts.providerFieldLabel")}
+          Provider
         </FieldLabel>
         <input
           id="linked-account-provider"

@@ -25,7 +25,7 @@ export function UpgradeCard({ feature, description }: UpgradeCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("upgradeCard.title")}</CardTitle>
+        <CardTitle>Upgrade Required</CardTitle>
         <CardDescription>
           {description ?? t("upgradeCard.description", { feature })}
         </CardDescription>
@@ -33,7 +33,7 @@ export function UpgradeCard({ feature, description }: UpgradeCardProps) {
       <CardContent>
         <Link href={routes.marketing.pricing}>
           <Button>
-            {t("upgradeCard.viewPlans")}
+            View Plans
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

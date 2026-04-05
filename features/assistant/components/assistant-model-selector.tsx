@@ -46,9 +46,9 @@ export function AssistantModelSelector({
         </PromptInputButton>
       </ModelSelectorTrigger>
       <ModelSelectorContent>
-        <ModelSelectorInput placeholder={t("modelSelector.searchPlaceholder")} />
+        <ModelSelectorInput placeholder={"Search models..."} />
         <ModelSelectorList>
-          <ModelSelectorEmpty>{t("modelSelector.noModels")}</ModelSelectorEmpty>
+          <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
           {["Google", "Groq"].map((providerLabel) => (
             <ModelSelectorGroup heading={providerLabel} key={providerLabel}>
               {modelOptions

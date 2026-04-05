@@ -91,7 +91,7 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
                   variant="outline"
                   size="icon"
                   className="size-8"
-                  aria-label={t("bulkUpdateStatus")}
+                  aria-label={"Update status"}
                   disabled={isStatusPending || isDeletePending}
                 >
                   {isStatusPending ? (
@@ -103,7 +103,7 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
               </DropdownMenuTrigger>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{t("bulkUpdateStatus")}</p>
+              <p>Update status</p>
             </TooltipContent>
           </Tooltip>
 
@@ -136,14 +136,14 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
               size="icon"
               onClick={() => setIsDeleteOpen(true)}
               className="size-8"
-              aria-label={t("bulkDeleteTooltip")}
+              aria-label={"Delete selected tasks"}
               disabled={isStatusPending || isDeletePending}
             >
               {isDeletePending ? <Loader2 className="animate-spin" /> : <Trash2 />}
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{t("bulkDeleteTooltip")}</p>
+            <p>Delete selected tasks</p>
           </TooltipContent>
         </Tooltip>
       </DataTableBulkActions>
@@ -161,10 +161,10 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
         title={t("bulkDeleteTitle", { count: selectedTasks.length })}
         desc={
           <div className="space-y-3">
-            <p>{t("bulkDeleteMessage")}</p>
+            <p>This action will permanently delete the selected tasks.</p>
           </div>
         }
-        confirmText={tc("delete")}
+        confirmText={"Delete"}
       />
     </>
   );

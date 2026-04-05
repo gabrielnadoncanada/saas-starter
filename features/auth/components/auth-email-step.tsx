@@ -35,7 +35,7 @@ export function AuthEmailStep({
           id={formId}
           type="email"
           autoComplete="email"
-          placeholder={t("emailPlaceholder")}
+          placeholder={"Enter your email address..."}
           aria-invalid={Boolean(emailError)}
           required
           {...emailField}

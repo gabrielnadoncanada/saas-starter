@@ -14,19 +14,19 @@ type EmptyStateProps = {
 
 export function AssistantChatEmptyState({ onPromptClick }: EmptyStateProps) {
   const t = useTranslations("assistant");
-  const title = t("emptyState.title");
-  const description = t("emptyState.description");
+  const title = "AI-ready billing pattern";
+  const description = "Review the demo inbox, create tasks, or draft invoices from natural language.";
 
   const suggested = [
     {
       icon: Mail,
-      label: t("suggestedPrompts.reviewInbox"),
-      prompt: t("suggestedPrompts.reviewInboxPrompt"),
+      label: "Review the demo inbox",
+      prompt: "Review the demo inbox and suggest tasks for today based on emails that need action.",
     },
     {
       icon: FileText,
-      label: t("suggestedPrompts.draftInvoice"),
-      prompt: t("suggestedPrompts.draftInvoicePrompt"),
+      label: "Draft an invoice",
+      prompt: "Draft an invoice for Acme Corp for 10 hours of consulting at $150/hour, due in 30 days.",
     },
   ];
 

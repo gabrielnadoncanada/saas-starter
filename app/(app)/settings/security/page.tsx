@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { TwoFactorSettingsCard } from "@/features/account/components/settings/two-factor-settings-card";
 import {
@@ -13,7 +13,7 @@ import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export default async function SecuritySettingsPage() {
   const user = await getCurrentUser();
-  const t = await getTranslations("settings.security");
+  
 
   if (!user) {
     redirectToLocale(null, routes.auth.login);
@@ -22,8 +22,8 @@ export default async function SecuritySettingsPage() {
   return (
     <Page>
       <PageHeader>
-        <PageTitle>{t("title")}</PageTitle>
-        <PageDescription>{t("description")}</PageDescription>
+        <PageTitle>Security</PageTitle>
+        <PageDescription>Review the security controls that protect your account.</PageDescription>
       </PageHeader>
 
       <TwoFactorSettingsCard enabled={user.twoFactorEnabled} />

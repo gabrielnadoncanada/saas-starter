@@ -28,8 +28,8 @@ export default async function MembersPage() {
   return (
     <Page fixed className="ml-0">
       <PageHeader>
-        <PageTitle>{t("members.title")}</PageTitle>
-        <PageDescription>{t("members.description")}</PageDescription>
+        <PageTitle>Members</PageTitle>
+        <PageDescription>Manage your organization members and invitations.</PageDescription>
         <PageHeaderActions>
           <InviteOrganizationMemberDialog
             canInviteMembers={context.canInviteMembers}
@@ -47,7 +47,7 @@ export default async function MembersPage() {
         <section className="space-y-3">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">
-              {t("members.pendingTitle")}
+              Pending Invitations
             </h2>
             <p className="text-muted-foreground">
               {t("members.pendingCount", { count: invitations.length })}

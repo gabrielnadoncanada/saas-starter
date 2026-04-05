@@ -74,7 +74,7 @@ export function AssistantChatMessageList({
           <MessageContent className="rounded-lg border bg-muted/30 px-4 py-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Spinner />
-              <span>{t("chat.working")}</span>
+              <span>Working...</span>
             </div>
           </MessageContent>
         </Message>

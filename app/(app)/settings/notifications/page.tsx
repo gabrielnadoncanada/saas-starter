@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { NotificationsCenter } from "@/features/notifications/components/notifications-center";
 import { getUnreadNotificationCount, listUserNotifications } from "@/features/notifications/server/notification-service";
@@ -14,7 +14,7 @@ import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export default async function NotificationsSettingsPage() {
   const user = await getCurrentUser();
-  const t = await getTranslations("settings.notifications");
+  
 
   if (!user) {
     redirectToLocale(null, routes.auth.login);
@@ -28,8 +28,8 @@ export default async function NotificationsSettingsPage() {
   return (
     <Page>
       <PageHeader>
-        <PageTitle>{t("title")}</PageTitle>
-        <PageDescription>{t("description")}</PageDescription>
+        <PageTitle>Notifications</PageTitle>
+        <PageDescription>Review product activity, security changes, and billing events for your workspace.</PageDescription>
       </PageHeader>
 
       <NotificationsCenter

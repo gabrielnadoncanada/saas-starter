@@ -107,7 +107,7 @@ export function NotificationsCenter({
             disabled={isPending || unreadCount === 0}
             onClick={() => startTransition(() => void markAllAsRead())}
           >
-            {t("markAllRead")}
+            Mark all read
           </Button>
           <Button
             type="button"
@@ -116,14 +116,14 @@ export function NotificationsCenter({
             disabled={isPending || notifications.length === 0}
             onClick={() => startTransition(() => void clearAllNotifications())}
           >
-            {t("clearAll")}
+            Clear all
           </Button>
         </div>
       </div>
 
       {notifications.length === 0 ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          {t("noNotifications")}
+          No notifications yet.
         </div>
       ) : (
         notifications.map((notification) => (

@@ -72,17 +72,17 @@ export function EditProfileDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("editProfile.title")}</DialogTitle>
-          <DialogDescription>{t("editProfile.description")}</DialogDescription>
+          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>Update your name and phone number.</DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" action={formAction}>
           <Field data-invalid={nameField.invalid}>
-            <FieldLabel htmlFor="name">{t("editProfile.name")}</FieldLabel>
+            <FieldLabel htmlFor="name">Name</FieldLabel>
             <Input
               id="name"
               name="name"
-              placeholder={t("editProfile.namePlaceholder")}
+              placeholder={"Enter your name"}
               defaultValue={currentName}
               aria-invalid={nameField.invalid}
               required
@@ -91,11 +91,11 @@ export function EditProfileDialog({
           </Field>
 
           <Field data-invalid={phoneNumberField.invalid}>
-            <FieldLabel htmlFor="phoneNumber">{t("editProfile.phoneNumber")}</FieldLabel>
+            <FieldLabel htmlFor="phoneNumber">Phone number</FieldLabel>
             <PhoneInput
               id="phoneNumber"
               name="phoneNumber"
-              placeholder={t("editProfile.phonePlaceholder")}
+              placeholder={"Enter your phone number"}
               value={phoneNumberValue}
               onChange={(value) => setPhoneNumberValue(value ?? "")}
               aria-invalid={phoneNumberField.invalid}
@@ -105,16 +105,16 @@ export function EditProfileDialog({
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">{tc("cancel")}</Button>
+              <Button variant="outline">Cancel</Button>
             </DialogClose>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {tc("saving")}
+                  Saving...
                 </>
               ) : (
-                t("editProfile.saveChanges")
+                "Save Changes"
               )}
             </Button>
           </DialogFooter>

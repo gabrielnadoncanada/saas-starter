@@ -125,7 +125,7 @@ export function NotificationMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-96">
         <div className="flex items-center justify-between px-2 py-1.5">
-          <DropdownMenuLabel className="p-0">{t("title")}</DropdownMenuLabel>
+          <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
           <div className="flex items-center gap-1">
             <Button
               type="button"
@@ -134,7 +134,7 @@ export function NotificationMenu() {
               disabled={isPending || unreadCount === 0}
               onClick={() => startTransition(() => void markAllAsRead())}
             >
-              {t("markAllRead")}
+              Mark all read
             </Button>
             <Button
               type="button"
@@ -143,14 +143,14 @@ export function NotificationMenu() {
               disabled={isPending || notifications.length === 0}
               onClick={() => startTransition(() => void clearAllNotifications())}
             >
-              {t("clearAll")}
+              Clear all
             </Button>
           </div>
         </div>
         <DropdownMenuSeparator />
         {notifications.length === 0 ? (
           <div className="px-2 py-6 text-sm text-muted-foreground">
-            {t("empty")}
+            No notifications yet.
           </div>
         ) : (
           notifications.map((notification) => (
@@ -180,7 +180,7 @@ export function NotificationMenu() {
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={routes.settings.notifications}>{t("openCenter")}</Link>
+          <Link href={routes.settings.notifications}>Open notification center</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import { AdminUsersTable } from "@/features/users/components/admin-users-table";
@@ -13,7 +13,7 @@ import {
 const PAGE_SIZE = 25;
 
 export default async function AdminUsersPage() {
-  const t = await getTranslations("admin");
+  
   const currentUser = await requireAdmin();
   const result = await listAdminUsers({
     limit: PAGE_SIZE,
@@ -25,8 +25,8 @@ export default async function AdminUsersPage() {
   return (
     <Page>
       <PageHeader>
-        <PageTitle>{t("usersPage.title")}</PageTitle>
-        <PageDescription>{t("usersPage.description")}</PageDescription>
+        <PageTitle>Users</PageTitle>
+        <PageDescription>Manage platform users, roles, and access.</PageDescription>
       </PageHeader>
 
       <AdminUsersTable

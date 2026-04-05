@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 
 type ActivityItem = {
   id: string;
@@ -15,15 +15,13 @@ export async function DashboardActivityFeed({
 }: {
   activity: ActivityItem[];
 }) {
-  const [locale, t] = await Promise.all([
-    getLocale(),
-    getTranslations("dashboard"),
-  ]);
+  const locale = await getLocale();
+
 
   if (activity.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        {t("noActivity")}
+        Activity will appear here as your team uses the starter.
       </p>
     );
   }
@@ -34,7 +32,7 @@ export async function DashboardActivityFeed({
         <div key={item.id} className="rounded-lg border p-3">
           <p className="text-sm font-medium">{item.summary}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {(item.actor?.name || item.actor?.email || t("someone")) +
+            {(item.actor?.name || item.actor?.email || "Someone") +
               " · " +
               item.createdAt.toLocaleString(locale, {
                 month: "short",

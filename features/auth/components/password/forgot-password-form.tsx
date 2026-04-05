@@ -35,16 +35,16 @@ export function ForgotPasswordForm() {
       await requestPasswordReset(email);
       setSent(true);
       reset(emailDefaultValues);
-      toast.success(t("forgotPasswordPage.successMessage"));
+      toast.success("If an account exists for this email, a reset link has been sent. Check your inbox.");
     } catch {
-      toast.error(t("forgotPasswordPage.errorMessage"));
+      toast.error("Unable to send reset link. Please try again.");
     }
   });
 
   if (sent) {
     return (
       <p className="text-sm text-muted-foreground">
-        {t("forgotPasswordPage.successMessage")}
+        If an account exists for this email, a reset link has been sent. Check your inbox.
       </p>
     );
   }
@@ -52,7 +52,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <Field data-invalid={Boolean(errors.email)}>
-        <FieldLabel htmlFor="forgot-password-email">{t("email")}</FieldLabel>
+        <FieldLabel htmlFor="forgot-password-email">Email</FieldLabel>
         <Input
           id="forgot-password-email"
           type="email"
@@ -67,10 +67,10 @@ export function ForgotPasswordForm() {
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {t("forgotPasswordPage.sendingResetLink")}
+            Sending reset link...
           </>
         ) : (
-          t("forgotPasswordPage.sendResetLink")
+          "Send reset link"
         )}
       </Button>
     </form>

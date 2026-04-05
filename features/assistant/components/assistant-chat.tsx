@@ -178,7 +178,7 @@ export function AssistantChat({
     clearError();
     sendMessage({
       files: message.files,
-      text: text || t("chat.sentWithAttachments"),
+      text: text || "Sent with attachments",
     });
   };
 
@@ -208,18 +208,18 @@ export function AssistantChat({
             <PromptInputBody>
               <PromptInputTextarea
                 disabled={isLoading}
-                placeholder={t("chat.placeholder")}
+                placeholder={"Ask me to review the demo inbox, create a task, or draft an invoice..."}
               />
             </PromptInputBody>
             <PromptInputFooter>
               <PromptInputTools>
                 <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
                   <Sparkles className="h-3.5 w-3.5 text-orange-500" />
-                  {t("chat.billingCopilot")}
+                  Billing copilot
                 </div>
                 <div className="hidden items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground sm:flex">
                   <GlobeIcon className="h-3.5 w-3.5" />
-                  {t("chat.webOff")}
+                  Web off
                 </div>
                 <AssistantModelSelector
                   modelId={modelId}

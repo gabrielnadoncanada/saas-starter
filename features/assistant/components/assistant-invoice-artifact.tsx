@@ -97,7 +97,7 @@ export function AssistantInvoiceArtifact({
                   {item.description}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {item.quantity} ×{" "}
+                  {item.quantity} × 
                   {formatMoney(item.unitPrice, invoice.currency)}
                 </p>
               </div>

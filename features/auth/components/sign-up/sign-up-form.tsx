@@ -89,8 +89,8 @@ export function SignUpForm({
   );
   const oauthErrorMessage = error
     ? error === "OAuthAccountNotLinked"
-      ? t("signup.unableToSignUpProvider")
-      : t("signup.unableToSignUp")
+      ? "Unable to continue with this provider. Try a different sign-up method."
+      : "Unable to continue. Please try again."
     : null;
   const passwordErrors = passwordForm.formState.errors;
   const isSubmitting = passwordForm.formState.isSubmitting;
@@ -131,7 +131,7 @@ export function SignUpForm({
       await sendMagicLink(email, nextCallbackUrl);
       router.push(buildCheckEmailHref(email, nextCallbackUrl));
     } catch {
-      toast.error(t("toast.signUpLinkFailed"));
+      toast.error("Unable to send the sign-up link. Please try again.");
     } finally {
       setIsSendingMagicLink(false);
     }
@@ -142,7 +142,7 @@ export function SignUpForm({
       setPendingProvider(provider);
       await signInWithOAuth(provider, nextCallbackUrl);
     } catch {
-      toast.error(t("signup.unableToSignUp"));
+      toast.error("Unable to continue. Please try again.");
     } finally {
       setPendingProvider(null);
     }
@@ -177,7 +177,7 @@ export function SignUpForm({
       } catch {
         passwordForm.setError("root", {
           type: "server",
-          message: t("signup.unableToCreateAccount"),
+          message: "Unable to create account. Please try again.",
         });
       }
     },
@@ -190,13 +190,13 @@ export function SignUpForm({
           email={submittedEmail}
           errorMessage={passwordErrors.root?.message}
           isSubmitting={isSubmitting}
-          pendingLabel={t("signup.creatingAccount")}
-          submitLabel={t("signUp")}
+          pendingLabel={"Creating account..."}
+          submitLabel={"Create account"}
           onChangeEmail={() => setShowPasswordStep(false)}
           onSubmit={handlePasswordSubmit}
         >
           <Field data-invalid={Boolean(passwordErrors.password)}>
-            <FieldLabel htmlFor="sign-up-password">{t("password")}</FieldLabel>
+            <FieldLabel htmlFor="sign-up-password">Password</FieldLabel>
             <PasswordInput
               id="sign-up-password"
               autoComplete="new-password"
@@ -209,7 +209,7 @@ export function SignUpForm({
 
           <Field data-invalid={Boolean(passwordErrors.confirmPassword)}>
             <FieldLabel htmlFor="sign-up-confirm-password">
-              {t("confirmPassword")}
+              Confirm new password
             </FieldLabel>
             <PasswordInput
               id="sign-up-confirm-password"
@@ -224,8 +224,8 @@ export function SignUpForm({
       ) : (
         <AuthEmailStep
           formId="sign-up-email"
-          label={t("email")}
-          submitLabel={tc("continue")}
+          label={"Email"}
+          submitLabel={"Continue"}
           emailField={emailField}
           emailError={errors.email?.message}
           onSubmit={(event) => {

@@ -15,9 +15,9 @@ export default function SettingsError({
   return (
     <div className="flex min-h-[60svh] items-center justify-center">
       <div className="space-y-3 text-center">
-        <h1 className="font-semibold text-2xl">{t("settings.title")}</h1>
-        <p className="text-muted-foreground text-sm">{t("settings.description")}</p>
-        <Button onClick={() => reset()}>{t("settings.button")}</Button>
+        <h1 className="font-semibold text-2xl">Settings failed to load</h1>
+        <p className="text-muted-foreground text-sm">Try again. If this keeps happening, inspect the latest server logs.</p>
+        <Button onClick={() => reset()}>Retry</Button>
       </div>
     </div>
   );

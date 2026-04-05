@@ -44,12 +44,12 @@ export default async function AssistantPage({
     <Page fixed>
       {!canUseAssistant ? (
         <UpgradeCard
-          feature={t("upgrade.notAvailableFeature")}
-          description={t("upgrade.notAvailableDescription")}
+          feature={"AI Assistant"}
+          description={"The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts."}
         />
       ) : !hasCredits ? (
         <UpgradeCard
-          feature={t("upgrade.limitExceededFeature")}
+          feature={"AI Assistant"}
           description={t("upgrade.limitExceededDescription", {
             credits: entitlements?.creditBalance ?? 0,
           })}

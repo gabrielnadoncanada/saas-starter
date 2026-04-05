@@ -33,9 +33,9 @@ export function LocalePreferencesCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Languages className="size-4" />
-          {t("locale.title")}
+          Language
         </CardTitle>
-        <CardDescription>{t("locale.description")}</CardDescription>
+        <CardDescription>Choose the default language for the app and transactional emails.</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction} className="flex gap-3">
@@ -45,7 +45,7 @@ export function LocalePreferencesCard({
             variant={preferredLocale === "en" ? "default" : "outline"}
             disabled={isPending}
           >
-            {t("locale.english")}
+            English
           </Button>
         </form>
         <form action={formAction} className="mt-3 flex gap-3">
@@ -55,7 +55,7 @@ export function LocalePreferencesCard({
             variant={preferredLocale === "fr" ? "default" : "outline"}
             disabled={isPending}
           >
-            {t("locale.french")}
+            Francais
           </Button>
         </form>
       </CardContent>

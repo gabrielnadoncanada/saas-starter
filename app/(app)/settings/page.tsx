@@ -84,7 +84,7 @@ export default async function SettingsPage({
   const providerLabel =
     provider && isOAuthProviderId(provider)
       ? OAUTH_PROVIDER_LABELS[provider]
-      : t("linkedAccounts.providerFallback");
+      : "Provider";
 
   const feedback: SecuritySettingsFeedback = {
     error: error ? t(oauthLinkErrorKey(error)) : undefined,
@@ -99,17 +99,17 @@ export default async function SettingsPage({
   return (
     <Page fixed>
       <PageHeader>
-        <PageTitle>{t("title")}</PageTitle>
-        <PageDescription>{t("description")}</PageDescription>
+        <PageTitle>Account Settings</PageTitle>
+        <PageDescription>Manage your personal account settings and preferences.</PageDescription>
       </PageHeader>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserIcon className="size-4" />
-            {t("profile.title")}
+            Profile
           </CardTitle>
-          <CardDescription>{t("profile.description")}</CardDescription>
+          <CardDescription>Your personal information and profile details</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
@@ -131,7 +131,7 @@ export default async function SettingsPage({
             >
               <Button variant="outline" size="sm" className="ml-auto">
                 <Pencil className="mr-2 h-3.5 w-3.5" />
-                {t("profile.edit")}
+                Edit Profile
               </Button>
             </EditProfileDialog>
           </div>
@@ -141,9 +141,9 @@ export default async function SettingsPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Link2 className="size-4" />
-            {t("linkedAccounts.title")}
+            Linked Accounts
           </CardTitle>
-          <CardDescription>{t("linkedAccounts.description")}</CardDescription>
+          <CardDescription>Connect your account with external providers for easier sign-in</CardDescription>
         </CardHeader>
         <CardContent>
           <LinkedAccountsCard
@@ -156,14 +156,14 @@ export default async function SettingsPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <KeyRound className="size-4" />
-            {t("passwordSection.title")}
+            Password
           </CardTitle>
-          <CardDescription>{t("passwordSection.description")}</CardDescription>
+          <CardDescription>Change your account password</CardDescription>
           <CardAction>
             <EditPasswordDialog hasPassword={linkedAccounts.hasPassword}>
               <Button variant="outline" size="sm">
                 <KeyRound className="mr-2 h-3.5 w-3.5" />
-                {t("passwordSection.change")}
+                Change Password
               </Button>
             </EditPasswordDialog>
           </CardAction>
@@ -173,14 +173,14 @@ export default async function SettingsPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trash className="size-4" />
-            {t("deleteAccount.title")}
+            Delete Account
           </CardTitle>
-          <CardDescription>{t("deleteAccount.description")}</CardDescription>
+          <CardDescription>Delete your account and all your data</CardDescription>
           <CardAction>
             <DeleteAccountDialog>
               <Button variant="destructive" size="sm">
                 <KeyRound className="mr-2 h-3.5 w-3.5" />
-                {t("deleteAccount.button")}
+                Delete Account
               </Button>
             </DeleteAccountDialog>
           </CardAction>

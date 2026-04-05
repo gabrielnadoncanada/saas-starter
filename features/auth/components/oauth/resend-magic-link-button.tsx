@@ -24,9 +24,9 @@ export function ResendMagicLinkButton({
     try {
       setIsPending(true);
       await sendMagicLink(email, nextCallbackUrl);
-      toast.success(t("checkEmail.resendSuccess"));
+      toast.success("A new sign-in link has been sent.");
     } catch {
-      toast.error(t("checkEmail.resendError"));
+      toast.error("Unable to send a new sign-in link. Please try again.");
     } finally {
       setIsPending(false);
     }
@@ -42,10 +42,10 @@ export function ResendMagicLinkButton({
       {isPending ? (
         <span className="inline-flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {t("checkEmail.sending")}
+          Sending...
         </span>
       ) : (
-        t("checkEmail.resendLink")
+        "Resend a new one"
       )}
     </button>
   );

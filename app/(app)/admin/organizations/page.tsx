@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import { AdminOrganizationsTable } from "@/features/organizations/components/admin-organizations-table";
@@ -13,7 +13,7 @@ import {
 const PAGE_SIZE = 25;
 
 export default async function AdminOrganizationsPage() {
-  const t = await getTranslations("admin");
+  
   const currentUser = await requireAdmin();
   const { organizations, total } = await listAdminOrganizations({
     limit: PAGE_SIZE,
@@ -23,8 +23,8 @@ export default async function AdminOrganizationsPage() {
   return (
     <Page>
       <PageHeader>
-        <PageTitle>{t("organizationsPage.title")}</PageTitle>
-        <PageDescription>{t("organizationsPage.description")}</PageDescription>
+        <PageTitle>Organizations</PageTitle>
+        <PageDescription>View and manage all platform organizations.</PageDescription>
       </PageHeader>
 
       <AdminOrganizationsTable

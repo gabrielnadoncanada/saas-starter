@@ -67,23 +67,23 @@ export function InviteOrganizationMemberDialog({
       <DialogTrigger asChild>
         <Button disabled={!canInviteMembers}>
           <UserPlus className="size-4" />
-          {t("invite.button")}
+          Invite Members
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("invite.title")}</DialogTitle>
-          <DialogDescription>{t("invite.description")}</DialogDescription>
+          <DialogTitle>Invite a member</DialogTitle>
+          <DialogDescription>Send an invitation to join your organization.</DialogDescription>
         </DialogHeader>
 
         <form action={formAction} className="space-y-4">
           <Field data-invalid={emailField.invalid}>
-            <FieldLabel htmlFor="invite-member-email">{t("invite.emailLabel")}</FieldLabel>
+            <FieldLabel htmlFor="invite-member-email">Email</FieldLabel>
             <Input
               id="invite-member-email"
               name="email"
               type="email"
-              placeholder={t("invite.emailPlaceholder")}
+              placeholder={"name@company.com"}
               defaultValue={defaultEmail}
               aria-invalid={emailField.invalid}
               disabled={!canInviteMembers}
@@ -93,7 +93,7 @@ export function InviteOrganizationMemberDialog({
           </Field>
 
           <div className="space-y-3">
-            <Label>{t("invite.roleLabel")}</Label>
+            <Label>Role</Label>
             <RadioGroup
               name="role"
               defaultValue={defaultRole}
@@ -101,27 +101,27 @@ export function InviteOrganizationMemberDialog({
             >
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="member" id="invite-role-member" />
-                <Label htmlFor="invite-role-member">{t("invite.roleMember")}</Label>
+                <Label htmlFor="invite-role-member">Member</Label>
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="admin" id="invite-role-admin" />
-                <Label htmlFor="invite-role-admin">{t("invite.roleAdmin")}</Label>
+                <Label htmlFor="invite-role-admin">Admin</Label>
               </div>
             </RadioGroup>
           </div>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">{tc("cancel")}</Button>
+              <Button variant="outline">Cancel</Button>
             </DialogClose>
             <Button type="submit" disabled={isPending || !canInviteMembers}>
               {isPending ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  {t("invite.sending")}
+                  Sending...
                 </>
               ) : (
-                t("invite.sendInvite")
+                "Send Invite"
               )}
             </Button>
           </DialogFooter>

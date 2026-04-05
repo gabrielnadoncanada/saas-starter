@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { SignUpForm } from "@/features/auth/components/sign-up/sign-up-form";
 import {
@@ -32,20 +32,20 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
-  const t = await getTranslations("auth");
-  const tc = await getTranslations("common");
+  
+  
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">{t("signup.title")}</CardTitle>
+        <CardTitle className="text-lg tracking-tight">Create an account</CardTitle>
         <CardDescription>
-          {t("signup.hasAccount")}{" "}
+          Already have an account? 
           <Link
             href={signInHref}
             className="underline underline-offset-4 hover:text-primary"
           >
-            {t("signup.signinLink")}
+            Sign in
           </Link>
         </CardDescription>
       </CardHeader>
@@ -60,19 +60,19 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
 
       <CardFooter>
         <p className="w-full text-center text-sm text-muted-foreground">
-          {t("signup.termsAgreement")}{" "}
+          By creating an account, you agree to our 
           <Link
             href={routes.marketing.terms}
             className="underline underline-offset-4 hover:text-primary"
           >
-            {t("signup.termsLink")}
-          </Link>{" "}
-          {tc("and")}{" "}
+            Terms of Service
+          </Link> 
+          and 
           <Link
             href={routes.marketing.privacy}
             className="underline underline-offset-4 hover:text-primary"
           >
-            {t("signup.privacyLink")}
+            Privacy Policy
           </Link>
           .
         </p>

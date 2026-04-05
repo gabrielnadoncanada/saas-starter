@@ -90,7 +90,7 @@ export function BillingPlanSelector({
     return (
       <Card>
         <CardHeader>
-          <CardDescription>{t("noMonthlyPrice")}</CardDescription>
+          <CardDescription>No monthly Stripe price is configured for the displayed plans.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -148,7 +148,7 @@ export function BillingPlanSelector({
 
       {selectedPlan.pricingModel === "per_seat" ? (
         <label className="block space-y-2">
-          <span className="text-sm font-medium">{t("seatQuantity")}</span>
+          <span className="text-sm font-medium">Seat quantity</span>
           <Input
             min={1}
             type="number"
@@ -162,7 +162,7 @@ export function BillingPlanSelector({
 
       {visibleAddons.length > 0 ? (
         <div className="space-y-3">
-          <p className="text-sm font-medium">{t("addonsLegend")}</p>
+          <p className="text-sm font-medium">Additional packs</p>
           {visibleAddons.map((addon) => (
             <label key={addon.id} className="flex items-start gap-3 rounded-xl border p-3">
               <Checkbox
@@ -180,7 +180,7 @@ export function BillingPlanSelector({
 
       {!canManageBilling ? (
         <Button disabled className="h-11 rounded-xl px-5">
-          {t("ownerOnly")}
+          Only the owner can manage billing
         </Button>
       ) : (
         <div className="space-y-3">
@@ -193,22 +193,22 @@ export function BillingPlanSelector({
             ))}
             <Button type="submit" disabled={!selectedPrice}>
               {hasCurrentSubscription && canUpdateSubscription
-                ? t("updateSubscription")
-                : t("proceedToPayment")}
+                ? "Update subscription"
+                : "Proceed to payment"}
             </Button>
           </form>
 
           {canManagePortal ? (
             <form action={customerPortalAction}>
               <Button type="submit" variant="outline">
-                {t("openPortal")}
+                Open billing portal
               </Button>
             </form>
           ) : null}
 
           {hasCurrentSubscription && !canUpdateSubscription ? (
             <p className="text-sm text-muted-foreground">
-              {t("alreadyActiveHelp")}
+              This workspace already has an active subscription. The Stripe portal is not available until the Stripe customer is synced.
             </p>
           ) : null}
         </div>

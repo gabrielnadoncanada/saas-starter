@@ -90,7 +90,7 @@ export function AdminUsersTable({
       setTotal(result.total);
       setOffset(nextOffset);
     } catch {
-      toast.error(t("errors.fetchFailed"));
+      toast.error("Failed to fetch users");
     }
   }
 
@@ -117,7 +117,7 @@ export function AdminUsersTable({
 
       setSessions(detail.sessions);
     } catch {
-      toast.error(t("errors.detailFailed"));
+      toast.error("Failed to load user details");
     } finally {
       setIsLoadingUserDetail(false);
     }
@@ -127,18 +127,18 @@ export function AdminUsersTable({
     const { error } = await authClient.admin.impersonateUser({ userId });
 
     if (error) {
-      toast.error(error.message ?? t("errors.impersonateFailed"));
+      toast.error(error.message ?? "Failed to impersonate user");
       return;
     }
 
-    toast.success(t("errors.impersonateSuccess"));
+    toast.success("Now impersonating user");
     router.push("/dashboard");
     router.refresh();
   }
 
   function copyToClipboard(value: string) {
     void navigator.clipboard.writeText(value);
-    toast.success(tc("copiedToClipboard"));
+    toast.success("Copied to clipboard");
   }
 
   function closeUserDetailAndRefresh() {
@@ -148,11 +148,11 @@ export function AdminUsersTable({
 
   function confirmBanUser(userId: string) {
     openConfirmation(
-      t("confirmations.banTitle"),
-      t("confirmations.banMessage"),
+      "Ban user",
+      "This will ban the user and revoke all their sessions. Are you sure?",
       async () => {
         await banUserAction(userId);
-        toast.success(t("confirmations.banSuccess"));
+        toast.success("User banned");
         closeUserDetailAndRefresh();
       },
     );
@@ -160,11 +160,11 @@ export function AdminUsersTable({
 
   function confirmDeleteUser(userId: string) {
     openConfirmation(
-      t("confirmations.deleteTitle"),
-      t("confirmations.deleteMessage"),
+      "Delete user",
+      "This will permanently delete this user and all their data. This cannot be undone.",
       async () => {
         await removeUserAction(userId);
-        toast.success(t("confirmations.deleteSuccess"));
+        toast.success("User deleted");
         closeUserDetailAndRefresh();
       },
     );
@@ -176,7 +176,7 @@ export function AdminUsersTable({
       t("confirmations.roleMessage", { role }),
       async () => {
         await setUserRoleAction(userId, role);
-        toast.success(t("confirmations.roleSuccess"));
+        toast.success("Role updated");
         closeUserDetailAndRefresh();
       },
     );
@@ -184,11 +184,11 @@ export function AdminUsersTable({
 
   function confirmUnbanUser(userId: string) {
     openConfirmation(
-      t("confirmations.unbanTitle"),
-      t("confirmations.unbanMessage"),
+      "Unban user",
+      "This will unban the user and allow them to sign in again.",
       async () => {
         await unbanUserAction(userId);
-        toast.success(t("confirmations.unbanSuccess"));
+        toast.success("User unbanned");
         closeUserDetailAndRefresh();
       },
     );
@@ -196,11 +196,11 @@ export function AdminUsersTable({
 
   function confirmRevokeAllSessions(userId: string) {
     openConfirmation(
-      t("confirmations.revokeTitle"),
-      t("confirmations.revokeMessage"),
+      "Revoke all sessions",
+      "This will sign the user out of all devices.",
       async () => {
         await revokeAllUserSessionsAction(userId);
-        toast.success(t("confirmations.revokeSuccess"));
+        toast.success("All sessions revoked");
         setSessions([]);
       },
     );
@@ -219,10 +219,10 @@ export function AdminUsersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("columnUser")}</TableHead>
-              <TableHead>{t("columnRole")}</TableHead>
-              <TableHead>{t("columnStatus")}</TableHead>
-              <TableHead>{t("columnCreated")}</TableHead>
+              <TableHead>User</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created</TableHead>
               <TableHead className="w-12" />
             </TableRow>
           </TableHeader>
@@ -261,7 +261,7 @@ export function AdminUsersTable({
         sessions={sessions}
       />
       <ConfirmDialog
-        confirmText={tc("dialogConfirm")}
+        confirmText={"Confirm"}
         desc={confirmDialog.description}
         handleConfirm={async () => {
           await confirmDialog.action();

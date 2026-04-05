@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+
 
 export async function generateMetadata({
 }): Promise<Metadata> {
-  const t = await getTranslations("marketing");
+  
 
   return {
-    title: t("terms.title"),
-    description: t("terms.metaDescription"),
+    title: "Terms of Service",
+    description: "Terms and conditions governing your use of our platform.",
   };
 }
 
 export default async function TermsPage({
 }: {} = {}) {
-  const t = await getTranslations("marketing");
+  
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight text-foreground">
-        {t("terms.title")}
+        Terms of Service
       </h1>
       <p className="mt-4 rounded-md border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-700 dark:text-orange-400">
-        {t("terms.placeholderWarning")}
+        This is a placeholder page. Replace this content with your actual Terms of Service before launching.
       </p>
       <div className="mt-8 space-y-4 text-muted-foreground">
-        <p>{t("terms.intro")}</p>
+        <p>These Terms of Service govern your use of our platform. By accessing or using the service, you agree to be bound by these terms.</p>
       </div>
     </main>
   );

@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+
 
 export async function generateMetadata({
 }): Promise<Metadata> {
-  const t = await getTranslations("marketing");
+  
 
   return {
-    title: t("privacy.title"),
-    description: t("privacy.metaDescription"),
+    title: "Privacy Policy",
+    description: "How we collect, use, and protect your personal information.",
   };
 }
 
 export default async function PrivacyPage({
 }: {} = {}) {
-  const t = await getTranslations("marketing");
+  
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight text-foreground">
-        {t("privacy.title")}
+        Privacy Policy
       </h1>
       <p className="mt-4 rounded-md border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-700 dark:text-orange-400">
-        {t("privacy.placeholderWarning")}
+        This is a placeholder page. Replace this content with your actual Privacy Policy before launching.
       </p>
       <div className="mt-8 space-y-4 text-muted-foreground">
-        <p>{t("privacy.intro")}</p>
+        <p>This Privacy Policy describes how we collect, use, and protect your personal information when you use our platform.</p>
       </div>
     </main>
   );

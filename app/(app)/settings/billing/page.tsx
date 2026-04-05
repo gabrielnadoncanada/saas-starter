@@ -70,26 +70,26 @@ export default async function SettingsBillingPage() {
       <div className="max-w-5xl space-y-5">
         <Card>
           <CardHeader>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("description")}</CardDescription>
+            <CardTitle>Manage your team plan</CardTitle>
+            <CardDescription>Choose a plan that fits your team's needs. You can upgrade or downgrade at any time.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
               <Card>
                 <CardHeader>
-                  <CardDescription>{t("currentPlan")}</CardDescription>
+                  <CardDescription>Current plan</CardDescription>
                   <CardTitle>{entitlements.planName}</CardTitle>
                 </CardHeader>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardDescription>{t("creditsBalance")}</CardDescription>
+                  <CardDescription>Credit balance</CardDescription>
                   <CardTitle>{entitlements.creditBalance}</CardTitle>
                 </CardHeader>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardDescription>{t("includedCredits")}</CardDescription>
+                  <CardDescription>Included monthly credits</CardDescription>
                   <CardTitle>{entitlements.includedMonthlyCredits}</CardTitle>
                 </CardHeader>
               </Card>
@@ -121,8 +121,8 @@ export default async function SettingsBillingPage() {
         {creditPacks.length > 0 ? (
           <Card>
             <CardHeader>
-              <CardTitle>{t("creditPacksTitle")}</CardTitle>
-              <CardDescription>{t("creditPacksDescription")}</CardDescription>
+              <CardTitle>Credit packs</CardTitle>
+              <CardDescription>Buy one-time top-ups when your team needs more AI usage.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               {creditPacks.map((creditPack) => (
@@ -134,7 +134,7 @@ export default async function SettingsBillingPage() {
                       <p className="text-sm text-muted-foreground">{creditPack.description}</p>
                     </div>
                     <p className="text-sm">{t("creditsGranted", { count: creditPack.creditsGranted })}</p>
-                    <Button type="submit">{t("buyCredits")}</Button>
+                    <Button type="submit">Buy credits</Button>
                   </div>
                 </form>
               ))}
@@ -145,8 +145,8 @@ export default async function SettingsBillingPage() {
         {oneTimeProducts.length > 0 ? (
           <Card>
             <CardHeader>
-              <CardTitle>{t("oneTimeProductsTitle")}</CardTitle>
-              <CardDescription>{t("oneTimeProductsDescription")}</CardDescription>
+              <CardTitle>One-time products</CardTitle>
+              <CardDescription>Sell one-time workspace upgrades without moving the team to a recurring plan.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               {oneTimeProducts.map((product) => (
@@ -158,7 +158,7 @@ export default async function SettingsBillingPage() {
                       <p className="font-medium">{product.name}</p>
                       <p className="text-sm text-muted-foreground">{product.description}</p>
                     </div>
-                    <Button type="submit">{t("buyOneTime")}</Button>
+                    <Button type="submit">Buy now</Button>
                   </div>
                 </form>
               ))}
@@ -168,12 +168,12 @@ export default async function SettingsBillingPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("creditActivityTitle")}</CardTitle>
-            <CardDescription>{t("creditActivityDescription")}</CardDescription>
+            <CardTitle>Credit activity</CardTitle>
+            <CardDescription>Recent grants, charges, and refunds for this workspace.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {creditActivity.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("noCreditActivity")}</p>
+              <p className="text-sm text-muted-foreground">No credit activity yet.</p>
             ) : (
               creditActivity.map((entry) => (
                 <div key={`${entry.createdAt.toISOString()}-${entry.delta}`} className="flex items-center justify-between rounded-xl border p-3 text-sm">

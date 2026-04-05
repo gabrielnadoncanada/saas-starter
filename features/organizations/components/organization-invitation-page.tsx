@@ -177,7 +177,7 @@ export function OrganizationInvitationPage({
     >
       <div className="rounded-lg border p-4 text-sm">
         <p>
-          <strong>{invitation.inviterEmail}</strong> invited you to join{" "}
+          <strong>{invitation.inviterEmail}</strong> invited you to join 
           <strong>{invitation.organizationName}</strong>.
         </p>
         <p className="mt-2 text-muted-foreground">

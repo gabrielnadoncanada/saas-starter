@@ -82,7 +82,7 @@ export const createTaskAction = validatedAuthenticatedAction<
           organizationId: membership.organizationId,
           userId: user.id,
           type: "task.created",
-          title: t("notification.createdTitle"),
+          title: "Task created",
           body: t("notification.createdBody", { code: task.code }),
           href: routes.app.tasks,
           metadata: { taskId: task.id },
@@ -92,7 +92,7 @@ export const createTaskAction = validatedAuthenticatedAction<
       revalidatePath(routes.app.tasks);
 
       return {
-        success: t("toast.created"),
+        success: "Task created",
         task,
       };
     } catch (error) {
@@ -116,7 +116,7 @@ export const updateTaskAction = validatedAuthenticatedAction<
 >(
   updateTaskSchema,
   async (data, _, user) => {
-    const t = await getTranslations("tasks");
+    
     await updateTask(data);
     const membership = await requireActiveOrganizationMembership();
 
@@ -131,7 +131,7 @@ export const updateTaskAction = validatedAuthenticatedAction<
 
     revalidatePath(routes.app.tasks);
 
-    return { success: t("toast.updated") };
+    return { success: "Task updated" };
   },
   taskActionOptions,
 );
@@ -159,7 +159,7 @@ export const deleteTaskAction = validatedAuthenticatedAction<
         organizationId: membership.organizationId,
         userId: user.id,
         type: "task.deleted",
-        title: t("notification.deletedTitle"),
+        title: "Task deleted",
         body: t("notification.deletedBody", { id: taskId }),
         href: routes.app.tasks,
         metadata: { taskId },
@@ -169,7 +169,7 @@ export const deleteTaskAction = validatedAuthenticatedAction<
     revalidatePath(routes.app.tasks);
 
     return {
-      success: t("toast.deleted"),
+      success: "Task deleted",
       taskId,
     };
   },
@@ -182,7 +182,7 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
 >(
   updateTaskStatusSchema,
   async (data, _, user) => {
-    const t = await getTranslations("tasks");
+    
     await updateTaskStatus(data);
     const membership = await requireActiveOrganizationMembership();
 
@@ -198,7 +198,7 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
     revalidatePath(routes.app.tasks);
 
     return {
-      success: t("toast.updated"),
+      success: "Task updated",
       refreshKey: Date.now(),
     };
   },

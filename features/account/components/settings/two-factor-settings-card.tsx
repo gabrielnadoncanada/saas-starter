@@ -57,7 +57,7 @@ export function TwoFactorSettingsCard({
 
     setTotpUri(result.data.totpURI);
     setBackupCodes(result.data.backupCodes);
-    toast.success(t("scanSuccess"));
+    toast.success("Scan the QR code, then verify with a code from your authenticator app.");
   }
 
   async function verifySetup() {
@@ -76,7 +76,7 @@ export function TwoFactorSettingsCard({
     const payload = new FormData();
     payload.set("event", "enabled");
     await recordTwoFactorAuditAction({}, payload);
-    toast.success(t("enabled"));
+    toast.success("Two-factor authentication enabled.");
   }
 
   async function disableTwoFactor() {
@@ -97,7 +97,7 @@ export function TwoFactorSettingsCard({
     const payload = new FormData();
     payload.set("event", "disabled");
     await recordTwoFactorAuditAction({}, payload);
-    toast.success(t("disabled"));
+    toast.success("Two-factor authentication disabled.");
   }
 
   async function regenerateBackupCodes() {
@@ -114,7 +114,7 @@ export function TwoFactorSettingsCard({
     const payload = new FormData();
     payload.set("event", "backup_codes_regenerated");
     await recordTwoFactorAuditAction({}, payload);
-    toast.success(t("regenerated"));
+    toast.success("Backup codes regenerated.");
   }
 
   return (
@@ -122,13 +122,13 @@ export function TwoFactorSettingsCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ShieldCheck className="size-4" />
-          {t("title")}
+          Two-factor authentication
         </CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
+        <CardDescription>Protect your account with an authenticator app and backup codes.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="two-factor-password">{t("password")}</Label>
+          <Label htmlFor="two-factor-password">Current password</Label>
           <Input
             id="two-factor-password"
             type="password"
@@ -142,7 +142,7 @@ export function TwoFactorSettingsCard({
             disabled={!password || isPending}
             onClick={() => startTransition(() => void startSetup())}
           >
-            {isPending ? t("preparing") : t("setup")}
+            {isPending ? "Preparing..." : "Set up two-factor"}
           </Button>
         ) : null}
 
@@ -158,7 +158,7 @@ export function TwoFactorSettingsCard({
               />
             ) : null}
             <div className="space-y-2">
-              <Label htmlFor="two-factor-code">{t("code")}</Label>
+              <Label htmlFor="two-factor-code">Verification code</Label>
               <Input
                 id="two-factor-code"
                 inputMode="numeric"
@@ -171,7 +171,7 @@ export function TwoFactorSettingsCard({
               disabled={!code || isPending}
               onClick={() => startTransition(() => void verifySetup())}
             >
-              {isPending ? t("verifying") : t("verify")}
+              {isPending ? "Verifying..." : "Verify and enable"}
             </Button>
           </div>
         ) : null}
@@ -179,7 +179,7 @@ export function TwoFactorSettingsCard({
         {enabled ? (
           <div className="space-y-3 rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">
-              {t("active")}
+              Two-factor authentication is active for this account.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button
@@ -188,7 +188,7 @@ export function TwoFactorSettingsCard({
                 disabled={!password || isPending}
                 onClick={() => startTransition(() => void regenerateBackupCodes())}
               >
-                {t("regenerate")}
+                Regenerate backup codes
               </Button>
               <Button
                 type="button"
@@ -196,7 +196,7 @@ export function TwoFactorSettingsCard({
                 disabled={!password || isPending}
                 onClick={() => startTransition(() => void disableTwoFactor())}
               >
-                {t("disable")}
+                Disable two-factor
               </Button>
             </div>
           </div>
@@ -204,7 +204,7 @@ export function TwoFactorSettingsCard({
 
         {backupCodes.length > 0 ? (
           <div className="space-y-2 rounded-lg border p-4">
-            <p className="text-sm font-medium">{t("backupCodes")}</p>
+            <p className="text-sm font-medium">Backup codes</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {backupCodes.map((backupCode) => (
                 <code

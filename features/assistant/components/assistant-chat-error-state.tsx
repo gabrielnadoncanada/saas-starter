@@ -35,10 +35,10 @@ function AssistantChatErrorState({
 
   const title =
     errorInfo.code === "LIMIT_REACHED"
-      ? t("error.limitReached")
+      ? "Monthly limit reached"
       : errorInfo.code === "UPGRADE_REQUIRED"
-        ? t("error.upgradeRequired")
-        : t("error.somethingWentWrong");
+        ? "Upgrade required"
+        : "Something went wrong";
 
   return (
     <Card className="border-destructive/50 bg-destructive/5">
@@ -52,12 +52,12 @@ function AssistantChatErrorState({
         </div>
         {isUpgradeError ? (
           <Button size="sm" variant="outline" asChild>
-            <Link href={routes.marketing.pricing}>{t("error.upgrade")}</Link>
+            <Link href={routes.marketing.pricing}>Upgrade</Link>
           </Button>
         ) : (
           <Button size="sm" variant="outline" onClick={onDismiss}>
             <RotateCcw className="mr-1 h-3 w-3" />
-            {t("error.dismiss")}
+            Dismiss
           </Button>
         )}
       </CardContent>

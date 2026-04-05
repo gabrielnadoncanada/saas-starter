@@ -21,9 +21,9 @@ export function ResendVerificationForm({ email }: ResendVerificationFormProps) {
 
     try {
       await resendVerificationEmail(email);
-      toast.success(t("verifyEmailSent.resendSuccess"));
+      toast.success("A new verification email has been sent.");
     } catch {
-      toast.error(t("verifyEmailSent.resendError"));
+      toast.error("Unable to send verification email. Please try again.");
     } finally {
       setIsPending(false);
     }
@@ -40,10 +40,10 @@ export function ResendVerificationForm({ email }: ResendVerificationFormProps) {
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {t("verifyEmailSent.sendingEmail")}
+          Sending email...
         </>
       ) : (
-        t("verifyEmailSent.resendButton")
+        "Resend verification email"
       )}
     </Button>
   );

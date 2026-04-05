@@ -33,10 +33,6 @@ import {
 import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
 
-type DashboardOverviewProps = {
-  locale: string;
-};
-
 function formatPlanPrice(unitAmount: number, locale: string) {
   return new Intl.NumberFormat(locale, {
     style: "currency",
@@ -45,9 +41,7 @@ function formatPlanPrice(unitAmount: number, locale: string) {
   }).format(unitAmount / 100);
 }
 
-export async function DashboardOverview({
-  locale,
-}: DashboardOverviewProps) {
+export async function DashboardOverview() {
   const t = await getTranslations("dashboard");
   const {
     organization,
@@ -64,7 +58,7 @@ export async function DashboardOverview({
     recentTasks,
     usageChart,
     checklist,
-  } = await getDashboardOverview(locale);
+  } = await getDashboardOverview();
 
   const activeInterval =
     organization?.billingInterval &&
@@ -75,17 +69,21 @@ export async function DashboardOverview({
         : getPlanDisplayPrice(plan.id, "year")
           ? "year"
           : null;
-  const activePrice = activeInterval ? getPlanDisplayPrice(plan.id, activeInterval) : null;
+  const activePrice = activeInterval
+    ? getPlanDisplayPrice(plan.id, activeInterval)
+    : null;
   const priceLabel = activePrice
     ? formatPlanPrice(activePrice.unitAmount, locale)
-    : t("planPriceFree");
-  const organizationNameSuffix = organization?.name ? ` ${organization.name}` : "";
-  const workspaceName = organization?.name ?? t("workspaceFallback");
+    : "Free";
+  const organizationNameSuffix = organization?.name
+    ? ` ${organization.name}`
+    : "";
+  const workspaceName = organization?.name ?? "your workspace";
 
   return (
     <Page>
       <PageHeader>
-        <PageTitle>{t("title")}</PageTitle>
+        <PageTitle>Dashboard</PageTitle>
         <PageDescription>
           {t("description", { organizationName: organizationNameSuffix })}
         </PageDescription>
@@ -101,7 +99,7 @@ export async function DashboardOverview({
                 {planId}
               </span>
             </CardTitle>
-            <CardDescription>{t("currentPlan")}</CardDescription>
+            <CardDescription>Current Plan</CardDescription>
             <div className="font-heading text-2xl font-semibold">
               {priceLabel}
             </div>
@@ -110,7 +108,7 @@ export async function DashboardOverview({
 
         <Card>
           <CardHeader>
-            <CardDescription>{t("tasksThisMonth")}</CardDescription>
+            <CardDescription>Task creations this month</CardDescription>
             <CardTitle className="flex items-center gap-2 text-2xl">
               <CheckCircle2 className="h-5 w-5 text-orange-500" />
               {taskCount}
@@ -118,7 +116,7 @@ export async function DashboardOverview({
           </CardHeader>
           <CardContent>
             <UsageMeter
-              label={t("monthlyQuota")}
+              label={"Monthly quota"}
               current={tasksUsage}
               limit={taskLimit.limit}
             />
@@ -127,7 +125,7 @@ export async function DashboardOverview({
 
         <Card>
           <CardHeader>
-            <CardDescription>{t("members")}</CardDescription>
+            <CardDescription>Organization Members</CardDescription>
             <CardTitle className="flex items-center gap-2 text-2xl">
               <Users className="h-5 w-5 text-orange-500" />
               {memberCount}
@@ -138,7 +136,7 @@ export async function DashboardOverview({
         {canUseAI ? (
           <Card>
             <CardHeader>
-              <CardDescription>{t("aiAssistant")}</CardDescription>
+              <CardDescription>AI Assistant</CardDescription>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Sparkles className="h-5 w-5 text-orange-500" />
                 {t("aiCredits", { count: creditBalance })}
@@ -146,7 +144,7 @@ export async function DashboardOverview({
             </CardHeader>
             <CardContent>
               <UsageMeter
-                label={t("creditBalance")}
+                label={"Available credits"}
                 current={creditBalance}
                 limit={
                   Math.max(
@@ -163,8 +161,10 @@ export async function DashboardOverview({
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <Card>
           <CardHeader>
-            <CardTitle>{t("taskActivityTitle")}</CardTitle>
-            <CardDescription>{t("taskActivityDescription")}</CardDescription>
+            <CardTitle>Task activity this week</CardTitle>
+            <CardDescription>
+              A quick view of how much work is landing in the workspace.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardUsageChart data={usageChart} />
@@ -173,8 +173,11 @@ export async function DashboardOverview({
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("checklistTitle")}</CardTitle>
-            <CardDescription>{t("checklistDescription")}</CardDescription>
+            <CardTitle>Getting started</CardTitle>
+            <CardDescription>
+              Use this checklist to turn the starter into a real workspace
+              quickly.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardOnboardingChecklist items={checklist} />
@@ -185,7 +188,7 @@ export async function DashboardOverview({
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>{t("recentTasksTitle")}</CardTitle>
+            <CardTitle>Recent tasks</CardTitle>
             <CardDescription>
               {t("recentTasksDescription", { organizationName: workspaceName })}
             </CardDescription>
@@ -197,8 +200,10 @@ export async function DashboardOverview({
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("activityTitle")}</CardTitle>
-            <CardDescription>{t("activityDescription")}</CardDescription>
+            <CardTitle>Activity feed</CardTitle>
+            <CardDescription>
+              Audit-backed events across tasks, invitations, and security.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardActivityFeed activity={recentActivity} />
@@ -208,27 +213,29 @@ export async function DashboardOverview({
 
       {!entitlements || !hasCapability(entitlements, "team.analytics") ? (
         <UpgradeCard
-          feature={t("upgradeAnalyticsFeature")}
-          description={t("upgradeAnalyticsDescription")}
+          feature={"Organization Analytics"}
+          description={
+            "Upgrade your plan to access advanced analytics for your organization."
+          }
         />
       ) : null}
 
       <div className="flex flex-wrap gap-4">
         <Link href={routes.app.tasks}>
           <Button variant="outline">
-            {t("viewTasks")}
+            View Tasks
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
         <Link href={routes.app.assistant}>
           <Button variant="outline">
-            {t("openAssistant")}
+            AI Assistant
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
         <Link href={routes.settings.organization}>
           <Button variant="outline">
-            {t("organizationSettings")}
+            Organization Settings
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

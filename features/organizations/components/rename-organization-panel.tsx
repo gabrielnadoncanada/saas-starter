@@ -59,20 +59,20 @@ export function RenameOrganizationPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("rename.title")}</CardTitle>
+        <CardTitle>Organization Name</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={action} className="flex items-end gap-3">
           <div className="flex-1">
             <Label htmlFor="name" className="mb-2">
-              {t("rename.nameLabel")}
+              Name
             </Label>
             <Input
               id="name"
               name="name"
               type="text"
               defaultValue={currentName}
-              placeholder={t("rename.namePlaceholder")}
+              placeholder={"Organization name"}
               required
               disabled={!canManage || isPending}
             />
@@ -81,17 +81,17 @@ export function RenameOrganizationPanel({
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {tc("saving")}
+                Saving...
               </>
             ) : (
-              tc("save")
+              "Save"
             )}
           </Button>
         </form>
       </CardContent>
       {!canManage ? (
         <CardFooter>
-          <p className="text-sm text-muted-foreground">{t("rename.ownerOnly")}</p>
+          <p className="text-sm text-muted-foreground">Only organization owners can rename the organization.</p>
         </CardFooter>
       ) : null}
     </Card>

@@ -77,7 +77,7 @@ export function AdminOrganizationsTable({
         setTotal(result.total);
         setOffset(nextOffset);
       } catch {
-        toast.error(t("table.fetchFailed"));
+        toast.error("Failed to fetch organizations");
       }
     });
   }
@@ -93,7 +93,7 @@ export function AdminOrganizationsTable({
       setSelectedOrganization(detail.organization as AdminOrganization);
       setSubscription(detail.subscription as OrgSubscription);
     } catch {
-      toast.error(t("table.detailFailed"));
+      toast.error("Failed to load organization details");
     } finally {
       setLoadingDetail(false);
     }
@@ -103,16 +103,16 @@ export function AdminOrganizationsTable({
     setConfirmDialog({
       open: true,
       title: t("table.deleteConfirmTitle", { name: organization.name }),
-      description: t("table.deleteConfirmMessage"),
+      description: "This will permanently delete this organization, all its members, tasks, and data. This cannot be undone.",
       action: async () => {
         try {
           await deleteOrganizationAction(organization.id);
-          toast.success(t("table.deleteSuccess"));
+          toast.success("Organization deleted");
           fetchOrganizations(offset);
           setDetailOpen(false);
         } catch (error) {
           toast.error(
-            error instanceof Error ? error.message : t("table.deleteFailed"),
+            error instanceof Error ? error.message : "Failed to delete organization",
           );
         }
       },
@@ -158,7 +158,7 @@ export function AdminOrganizationsTable({
       />
 
       <ConfirmDialog
-        confirmText={tc("dialogConfirm")}
+        confirmText={"Confirm"}
         desc={confirmDialog.description}
         handleConfirm={async () => {
           await confirmDialog.action();

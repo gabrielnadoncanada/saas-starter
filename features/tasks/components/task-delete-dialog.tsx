@@ -63,10 +63,10 @@ export function TaskDeleteDialog({
         desc={
           <div className="space-y-3">
             <p>{t("deleteConfirmMessage", { title: task.title })}</p>
-            <p>{tc("thisActionCannotBeUndone")}</p>
+            <p>This action cannot be undone.</p>
           </div>
         }
-        confirmText={tc("delete")}
+        confirmText={"Delete"}
       />
     </>
   );

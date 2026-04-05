@@ -8,7 +8,7 @@ export function AiProof() {
               AI-ready monetization from day one
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Most AI starters show model calls. This one shows how to{" "}
+              Most AI starters show model calls. This one shows how to 
               <strong>gate, meter, and sell them</strong>.
             </p>
             <p className="mt-3 text-muted-foreground">
@@ -72,7 +72,7 @@ const result = streamText({
                 // Tool-level billing stays real too
               </p>
               <pre className="whitespace-pre leading-relaxed">
-                {`const entitlements = await getCurrentOrganizationEntitlements();
+                const entitlements = await getCurrentOrganizationEntitlements();
 assertCapability(entitlements, "email.sync");
 
 const messages = await emailProvider.getRecentMessages();
@@ -80,7 +80,7 @@ await consumeMonthlyUsage(
   entitlements.organizationId,
   "emailSyncsPerMonth",
   entitlements,
-);`}
+);
               </pre>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { ResendMagicLinkButton } from "@/features/auth/components/oauth/resend-magic-link-button";
 import {
@@ -25,32 +25,32 @@ export default async function CheckEmailPage({
   const { email: rawEmail, callbackUrl } = await searchParams;
   const email = rawEmail?.trim() || null;
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
-  const t = await getTranslations("auth");
+  
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">{t("checkEmail.title")}</CardTitle>
-        <CardDescription>{t("checkEmail.description")}</CardDescription>
+        <CardTitle className="text-lg tracking-tight">Check your email</CardTitle>
+        <CardDescription>We sent a magic sign-in link to your email address.</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3">
-        <p className="text-sm text-muted-foreground">{t("checkEmail.instructions")}</p>
+        <p className="text-sm text-muted-foreground">Open the email and click the link to complete sign-in.</p>
 
         <p className="text-sm text-muted-foreground">
           {email ? (
             <>
-              {t("checkEmail.notReceived")}{" "}
+              Haven't received it? 
               <ResendMagicLinkButton email={email} callbackUrl={callbackUrl} />
             </>
           ) : (
             <>
-              {t("checkEmail.missingEmailQuestion")}{" "}
+              Missing the email address? 
               <Link
                 href={signInHref}
                 className="font-medium underline underline-offset-4 hover:text-primary"
               >
-                {t("checkEmail.goBackToSignIn")}
+                Go back to sign in
               </Link>
             </>
           )}

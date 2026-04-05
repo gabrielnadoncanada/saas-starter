@@ -45,11 +45,11 @@ export function TwoFactorVerificationForm({
     });
 
     if (result.error) {
-      toast.error(result.error.message ?? t("twoFactor.invalidCode"));
+      toast.error(result.error.message ?? "Invalid verification code.");
       return;
     }
 
-    toast.success(t("twoFactor.verificationComplete"));
+    toast.success("Verification complete.");
     await completeSignIn();
   }
 
@@ -60,11 +60,11 @@ export function TwoFactorVerificationForm({
     });
 
     if (result.error) {
-      toast.error(result.error.message ?? t("twoFactor.invalidBackupCode"));
+      toast.error(result.error.message ?? "Invalid backup code.");
       return;
     }
 
-    toast.success(t("twoFactor.verificationComplete"));
+    toast.success("Verification complete.");
     await completeSignIn();
   }
 
@@ -72,18 +72,18 @@ export function TwoFactorVerificationForm({
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>{t("twoFactor.title")}</CardTitle>
-          <CardDescription>{t("twoFactor.description")}</CardDescription>
+          <CardTitle>Use authenticator code</CardTitle>
+          <CardDescription>Enter the 6-digit code from your authenticator app.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="two-factor-sign-in-code">{t("twoFactor.codeLabel")}</Label>
+            <Label htmlFor="two-factor-sign-in-code">Code</Label>
             <Input
               id="two-factor-sign-in-code"
               inputMode="numeric"
               value={code}
               onChange={(event) => setCode(event.target.value)}
-              placeholder={t("twoFactor.codePlaceholder")}
+              placeholder={"123456"}
             />
           </div>
           <label className="flex items-center gap-3 text-sm">
@@ -91,30 +91,30 @@ export function TwoFactorVerificationForm({
               checked={trustDevice}
               onCheckedChange={(checked) => setTrustDevice(Boolean(checked))}
             />
-            {t("twoFactor.trustDevice")}
+            Trust this device for future sign-ins
           </label>
           <Button
             disabled={!code || isPending}
             onClick={() => startTransition(() => void verifyAuthenticatorCode())}
           >
-            {isPending ? t("twoFactor.verifying") : t("twoFactor.verifyCode")}
+            {isPending ? "Verifying..." : "Verify code"}
           </Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("twoFactor.backupTitle")}</CardTitle>
-          <CardDescription>{t("twoFactor.backupDescription")}</CardDescription>
+          <CardTitle>Use backup code</CardTitle>
+          <CardDescription>If you lost access to your authenticator, use one of your backup codes.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="two-factor-backup-code">{t("twoFactor.backupCodeLabel")}</Label>
+            <Label htmlFor="two-factor-backup-code">Backup code</Label>
             <Input
               id="two-factor-backup-code"
               value={backupCode}
               onChange={(event) => setBackupCode(event.target.value)}
-              placeholder={t("twoFactor.backupCodePlaceholder")}
+              placeholder={"XXXX-XXXX"}
             />
           </div>
           <Button
@@ -122,7 +122,7 @@ export function TwoFactorVerificationForm({
             disabled={!backupCode || isPending}
             onClick={() => startTransition(() => void verifyBackupCode())}
           >
-            {isPending ? t("twoFactor.verifying") : t("twoFactor.verifyBackupCode")}
+            {isPending ? "Verifying..." : "Verify backup code"}
           </Button>
         </CardContent>
       </Card>

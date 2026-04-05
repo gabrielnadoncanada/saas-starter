@@ -85,8 +85,8 @@ export function SignInForm({
   });
   const oauthErrorMessage = error
     ? error === "OAuthAccountNotLinked"
-      ? t("signin.unableToSignInProvider")
-      : t("signin.unableToSignIn")
+      ? "Unable to sign in with this provider. Try a different sign-in method."
+      : "Unable to sign in. Please try again."
     : null;
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
 
@@ -127,7 +127,7 @@ export function SignInForm({
       await sendMagicLink(email, nextCallbackUrl);
       router.push(buildCheckEmailHref(email, nextCallbackUrl));
     } catch {
-      toast.error(t("toast.magicLinkFailed"));
+      toast.error("Unable to send the sign-in link. Please try again.");
     } finally {
       setIsSendingMagicLink(false);
     }
@@ -138,7 +138,7 @@ export function SignInForm({
       setPendingProvider(provider);
       await signInWithOAuth(provider, nextCallbackUrl);
     } catch {
-      toast.error(t("toast.oauthSignInFailed"));
+      toast.error("Unable to sign in. Please try again.");
     } finally {
       setPendingProvider(null);
     }
@@ -165,7 +165,7 @@ export function SignInForm({
       } catch {
         passwordForm.setError("root", {
           type: "server",
-          message: t("signin.unableToSignIn"),
+          message: "Unable to sign in. Please try again.",
         });
       }
     },
@@ -178,19 +178,19 @@ export function SignInForm({
           email={submittedEmail}
           errorMessage={passwordForm.formState.errors.root?.message}
           isSubmitting={passwordForm.formState.isSubmitting}
-          pendingLabel={t("signin.signingIn")}
-          submitLabel={t("signIn")}
+          pendingLabel={"Signing in..."}
+          submitLabel={"Sign in"}
           onChangeEmail={() => setShowPasswordStep(false)}
           onSubmit={handlePasswordSubmit}
         >
           <Field data-invalid={Boolean(passwordForm.formState.errors.password)}>
             <div className="flex items-center justify-between gap-3">
-              <FieldLabel htmlFor="sign-in-password">{t("password")}</FieldLabel>
+              <FieldLabel htmlFor="sign-in-password">Password</FieldLabel>
               <Link
                 href={routes.auth.forgotPassword}
                 className="text-sm text-muted-foreground underline underline-offset-4"
               >
-                {t("forgotPassword")}
+                Forgot password?
               </Link>
             </div>
             <PasswordInput
@@ -208,8 +208,8 @@ export function SignInForm({
       ) : (
         <AuthEmailStep
           formId="sign-in-email"
-          label={t("email")}
-          submitLabel={t("signIn")}
+          label={"Email"}
+          submitLabel={"Sign in"}
           emailField={emailField}
           emailError={errors.email?.message}
           onSubmit={(event) => {

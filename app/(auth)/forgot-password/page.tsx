@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import { ForgotPasswordForm } from "@/features/auth/components/password/forgot-password-form";
 import {
@@ -12,27 +12,27 @@ import { routes } from "@/shared/constants/routes";
 import { Link } from "@/shared/i18n/navigation";
 
 export default async function ForgotPasswordPage() {
-  const t = await getTranslations("auth");
+  
 
   return (
     <Card className="gap-4">
       <CardHeader>
         <CardTitle className="text-lg tracking-tight">
-          {t("forgotPasswordPage.title")}
+          Forgot password
         </CardTitle>
-        <CardDescription>{t("forgotPasswordPage.description")}</CardDescription>
+        <CardDescription>Enter your email address and we will send you a reset link.</CardDescription>
       </CardHeader>
 
       <CardContent>
         <div className="space-y-4">
           <ForgotPasswordForm />
           <p className="text-sm text-muted-foreground">
-            {t("forgotPasswordPage.rememberedPrompt")}{" "}
+            Remembered your password? 
             <Link
               href={routes.auth.login}
               className="underline underline-offset-4"
             >
-              {t("forgotPasswordPage.backToSignIn")}
+              Back to sign in
             </Link>
           </p>
         </div>

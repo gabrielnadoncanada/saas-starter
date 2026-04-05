@@ -1,5 +1,5 @@
 import { Building2, ShieldBan, ShieldCheck, Users } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+
 
 import { getAdminOverviewStats } from "@/features/admin/server/get-admin-overview-stats";
 import {
@@ -17,32 +17,32 @@ import {
 } from "@/shared/components/ui/card";
 
 export default async function AdminDashboardPage() {
-  const t = await getTranslations("admin");
+  
   const stats = await getAdminOverviewStats();
 
   const cards = [
     {
-      title: t("totalUsers"),
+      title: "Total Users",
       value: stats.totalUsers,
-      description: t("totalUsersDesc"),
+      description: "Registered users",
       icon: Users,
     },
     {
-      title: t("activeUsers"),
+      title: "Active Users",
       value: stats.activeUsers,
-      description: t("activeUsersDesc"),
+      description: "Non-banned users",
       icon: ShieldCheck,
     },
     {
-      title: t("bannedUsers"),
+      title: "Banned Users",
       value: stats.bannedUsers,
-      description: t("bannedUsersDesc"),
+      description: "Currently banned",
       icon: ShieldBan,
     },
     {
-      title: t("organizations"),
+      title: "Organizations",
       value: stats.totalOrganizations,
-      description: t("organizationsDesc"),
+      description: "Total organizations",
       icon: Building2,
     },
   ];
@@ -50,8 +50,8 @@ export default async function AdminDashboardPage() {
   return (
     <Page>
       <PageHeader>
-        <PageTitle>{t("title")}</PageTitle>
-        <PageDescription>{t("description")}</PageDescription>
+        <PageTitle>Administration</PageTitle>
+        <PageDescription>Platform overview and user management.</PageDescription>
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

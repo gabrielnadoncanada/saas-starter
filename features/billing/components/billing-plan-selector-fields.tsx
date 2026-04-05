@@ -95,7 +95,7 @@ function BillingPlanPrice({
   return (
     <div className="space-y-1 md:text-right">
       <div className="text-xl font-semibold tracking-tight">
-        {price ? formatPrice(price.unitAmount, locale) : t("plan.unavailable")}
+        {price ? formatPrice(price.unitAmount, locale) : "Unavailable"}
       </div>
 
       {price ? (
@@ -135,7 +135,7 @@ function BillingPlanCard({
               <FieldTitle>{plan.name}</FieldTitle>
 
               {isCurrentSelection ? (
-                <Badge variant="secondary">{t("plan.currentSelection")}</Badge>
+                <Badge variant="secondary">Current selection</Badge>
               ) : null}
             </div>
 
@@ -162,7 +162,7 @@ export function BillingIntervalSelector({
 
   return (
     <FieldSet className="gap-3">
-      <FieldLegend variant="label">{t("interval.legend")}</FieldLegend>
+      <FieldLegend variant="label">Billing frequency</FieldLegend>
 
       <RadioGroup
         value={interval}
@@ -177,8 +177,8 @@ export function BillingIntervalSelector({
           <Field orientation="horizontal">
             <RadioGroupItem value="month" id="billing-interval-month" />
             <FieldContent>
-              <FieldTitle>{t("interval.monthly")}</FieldTitle>
-              <FieldDescription>{t("interval.monthlyDesc")}</FieldDescription>
+              <FieldTitle>Monthly</FieldTitle>
+              <FieldDescription>Pay every month.</FieldDescription>
             </FieldContent>
           </Field>
         </FieldLabel>
@@ -191,11 +191,11 @@ export function BillingIntervalSelector({
               disabled={!annualEnabled}
             />
             <FieldContent>
-              <FieldTitle>{t("interval.yearly")}</FieldTitle>
+              <FieldTitle>Yearly</FieldTitle>
               <FieldDescription>
                 {annualEnabled
-                  ? t("interval.yearlyDesc")
-                  : t("interval.noYearlyPrice")}
+                  ? "Pay annually."
+                  : "No yearly price available."}
               </FieldDescription>
             </FieldContent>
           </Field>
@@ -217,7 +217,7 @@ export function BillingPlanRadioGroup({
 
   return (
     <FieldSet className="gap-3">
-      <FieldLegend variant="label">{t("plan.legend")}</FieldLegend>
+      <FieldLegend variant="label">Choose a plan</FieldLegend>
 
       <RadioGroup
         value={selectedPlanId}

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+
 
 import {
   Card,
@@ -20,16 +20,16 @@ export default async function VerifyEmailPage({
   searchParams,
 }: VerifyEmailPageProps) {
   const { error } = await searchParams;
-  const t = await getTranslations("auth");
+  
 
   if (error) {
     return (
       <Card className="gap-4">
         <CardHeader>
           <CardTitle className="text-lg tracking-tight">
-            {t("verifyEmail.failedTitle")}
+            Verification failed
           </CardTitle>
-          <CardDescription>{t("verifyEmail.failedDescription")}</CardDescription>
+          <CardDescription>This verification link is invalid or has expired.</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -37,7 +37,7 @@ export default async function VerifyEmailPage({
             href={routes.auth.signup}
             className="text-sm underline underline-offset-4"
           >
-            {t("verifyEmail.backToSignup")}
+            Back to sign up
           </Link>
         </CardContent>
       </Card>
@@ -48,9 +48,9 @@ export default async function VerifyEmailPage({
     <Card className="gap-4">
       <CardHeader>
         <CardTitle className="text-lg tracking-tight">
-          {t("verifyEmail.successTitle")}
+          Email verified
         </CardTitle>
-        <CardDescription>{t("verifyEmail.successDescription")}</CardDescription>
+        <CardDescription>Your email address is now confirmed. You can sign in.</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -58,7 +58,7 @@ export default async function VerifyEmailPage({
           href={routes.auth.login}
           className="text-sm underline underline-offset-4"
         >
-          {t("verifyEmail.goToSignin")}
+          Go to sign in
         </Link>
       </CardContent>
     </Card>
