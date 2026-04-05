@@ -1,5 +1,6 @@
 "use client";
 
+import { Search } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -7,16 +8,17 @@ import {
   deleteOrganizationAction,
   getOrganizationDetailAction,
   listOrganizationsAction,
-} from "@/features/organizations/actions/organization-admin.actions";
-import { AdminOrganizationDetailSheet } from "@/features/organizations/components/admin-organization-detail-sheet";
-import { AdminOrganizationsSearch } from "@/features/organizations/components/admin-organizations-search";
-import { AdminOrganizationsTableContent } from "@/features/organizations/components/admin-organizations-table-content";
+} from "@/features/admin/actions/admin-organizations.actions";
 import type {
   AdminOrganization,
   OrgSubscription,
-} from "@/features/organizations/types";
+} from "@/features/admin/types/admin-organizations.types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import { Input } from "@/shared/components/ui/input";
+
+import { AdminOrganizationDetailSheet } from "./admin-organization-detail-sheet";
+import { AdminOrganizationsTableContent } from "./admin-organizations-table-content";
 
 type AdminOrganizationsTableProps = {
   currentUserId: string;
@@ -123,13 +125,19 @@ export function AdminOrganizationsTable({
 
   return (
     <>
-      <AdminOrganizationsSearch
-        value={search}
-        onChange={(nextSearch) => {
-          setSearch(nextSearch);
-          fetchOrganizations(0, nextSearch);
-        }}
-      />
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          className="pl-9"
+          placeholder="Search organizations..."
+          value={search}
+          onChange={(event) => {
+            const nextSearch = event.target.value;
+            setSearch(nextSearch);
+            fetchOrganizations(0, nextSearch);
+          }}
+        />
+      </div>
 
       <AdminOrganizationsTableContent
         currentUserId={currentUserId}

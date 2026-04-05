@@ -3,7 +3,7 @@
 import { format } from "date-fns";
 import { Copy } from "lucide-react";
 
-import type { AdminUser } from "@/features/users/types/admin-users.types";
+import type { AdminUser } from "@/features/admin/types/admin-users.types";
 import {
   Avatar,
   AvatarFallback,

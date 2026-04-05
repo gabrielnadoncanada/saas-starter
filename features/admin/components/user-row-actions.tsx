@@ -9,7 +9,7 @@ import {
   UserCheck,
 } from "lucide-react";
 
-import type { AdminUser } from "@/features/users/types/admin-users.types";
+import type { AdminUser } from "@/features/admin/types/admin-users.types";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,

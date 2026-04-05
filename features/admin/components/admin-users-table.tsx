@@ -1,5 +1,6 @@
 "use client";
 
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -12,13 +13,14 @@ import {
   revokeAllUserSessionsAction,
   setUserRoleAction,
   unbanUserAction,
-} from "@/features/users/actions/admin-users.actions";
+} from "@/features/admin/actions/admin-users.actions";
 import type {
   AdminUser,
   UserSession,
-} from "@/features/users/types/admin-users.types";
+} from "@/features/admin/types/admin-users.types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import { Input } from "@/shared/components/ui/input";
 import {
   Table,
   TableHead,
@@ -27,7 +29,6 @@ import {
 } from "@/shared/components/ui/table";
 import { authClient } from "@/shared/lib/auth/auth-client";
 
-import { AdminUsersSearch } from "./admin-users-search";
 import { UserDetailSheet } from "./user-detail-sheet";
 import { UsersTableRows } from "./users-table-rows";
 
@@ -95,7 +96,11 @@ export function AdminUsersTable({
     startTransition(async () => void (await loadUsers(nextOffset, nextSearch)));
   }
 
-  function openConfirmation(title: string, description: string, action: () => Promise<void>) {
+  function openConfirmation(
+    title: string,
+    description: string,
+    action: () => Promise<void>,
+  ) {
     setConfirmDialog({ open: true, title, description, action });
   }
 
@@ -205,13 +210,19 @@ export function AdminUsersTable({
 
   return (
     <>
-      <AdminUsersSearch
-        value={search}
-        onChange={(value) => {
-          setSearch(value);
-          runTableRefresh(0, value);
-        }}
-      />
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          className="pl-9"
+          placeholder="Search users..."
+          value={search}
+          onChange={(event) => {
+            const value = event.target.value;
+            setSearch(value);
+            runTableRefresh(0, value);
+          }}
+        />
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

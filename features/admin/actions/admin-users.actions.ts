@@ -4,10 +4,11 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { requireAdminAction } from "@/features/auth/server/require-admin";
-import { getAdminUserDetail } from "@/features/users/server/get-admin-user-detail";
-import { listAdminUsers } from "@/features/users/server/list-admin-users";
-import type { ListAdminUsersQuery } from "@/features/users/types/admin-users.types";
 import { auth } from "@/shared/lib/auth/auth-config";
+
+import { getAdminUserDetail } from "../server/get-admin-user-detail";
+import { listAdminUsers } from "../server/list-admin-users";
+import type { ListAdminUsersQuery } from "../types/admin-users.types";
 
 function revalidateAdminUsersPage() {
   revalidatePath("/admin");

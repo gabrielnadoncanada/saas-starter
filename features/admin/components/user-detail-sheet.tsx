@@ -15,7 +15,7 @@ import {
 import type {
   AdminUser,
   UserSession,
-} from "@/features/users/types/admin-users.types";
+} from "@/features/admin/types/admin-users.types";
 import {
   Avatar,
   AvatarFallback,

@@ -1,8 +1,6 @@
-
-
+import { AdminOrganizationsTable } from "@/features/admin/components/admin-organizations-table";
+import { listAdminOrganizations } from "@/features/admin/server/list-admin-organizations";
 import { requireAdmin } from "@/features/auth/server/require-admin";
-import { AdminOrganizationsTable } from "@/features/organizations/components/admin-organizations-table";
-import { listAdminOrganizations } from "@/features/organizations/server/list-admin-organizations";
 import {
   Page,
   PageDescription,
@@ -13,7 +11,6 @@ import {
 const PAGE_SIZE = 25;
 
 export default async function AdminOrganizationsPage() {
-  
   const currentUser = await requireAdmin();
   const { organizations, total } = await listAdminOrganizations({
     limit: PAGE_SIZE,

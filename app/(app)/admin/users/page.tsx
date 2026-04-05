@@ -1,8 +1,6 @@
-
-
+import { AdminUsersTable } from "@/features/admin/components/admin-users-table";
+import { listAdminUsers } from "@/features/admin/server/list-admin-users";
 import { requireAdmin } from "@/features/auth/server/require-admin";
-import { AdminUsersTable } from "@/features/users/components/admin-users-table";
-import { listAdminUsers } from "@/features/users/server/list-admin-users";
 import {
   Page,
   PageDescription,
@@ -13,7 +11,6 @@ import {
 const PAGE_SIZE = 25;
 
 export default async function AdminUsersPage() {
-  
   const currentUser = await requireAdmin();
   const result = await listAdminUsers({
     limit: PAGE_SIZE,
