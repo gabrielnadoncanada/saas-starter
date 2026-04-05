@@ -1,9 +1,0 @@
-{
-  "goodbye": {
-    "title": "Delete Account",
-    "description": "Delete your account and all your data",
-    "button": "Delete Account",
-    "confirmDescription": "Type {word} to confirm. This action cannot be undone.",
-    "confirmLabel": "Confirmation"
-  }
-}

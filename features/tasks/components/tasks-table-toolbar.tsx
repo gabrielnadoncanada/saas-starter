@@ -3,6 +3,7 @@
 import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { XIcon } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { taskPriorities, taskStatuses } from "@/features/tasks/task-options";
@@ -16,7 +17,6 @@ import {
 } from "@/shared/components/data-table";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import { usePathname, useRouter } from "@/shared/i18n/navigation";
 
 type TasksTableToolbarProps = {
   params: TaskTableSearchParams;

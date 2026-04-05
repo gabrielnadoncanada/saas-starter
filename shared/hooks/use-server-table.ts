@@ -14,9 +14,8 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import { usePathname, useRouter } from "@/shared/i18n/navigation";
 
 // --- Types ---
 

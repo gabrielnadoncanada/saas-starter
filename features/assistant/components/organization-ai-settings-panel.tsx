@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -24,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import { useRouter } from "@/shared/i18n/navigation";
 import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
 
 type ActionState = {
@@ -55,8 +54,6 @@ export function OrganizationAiSettingsPanel({
   modelOptions,
   settings,
 }: OrganizationAiSettingsPanelProps) {
-  const t = useTranslations("ai");
-  const tc = useTranslations("common");
   const router = useRouter();
   const [state, action, isPending] = useActionState<ActionState, FormData>(
     updateOrganizationAiSettingsAction,
@@ -123,7 +120,7 @@ export function OrganizationAiSettingsPanel({
           <input name="defaultModelId" type="hidden" value={defaultModelId} />
 
           <div className="space-y-3">
-            <Label>{t("settings.allowedModels")}</Label>
+            <Label>Allowed models</Label>
             <div className="space-y-3">
               {modelOptions.map((model) => {
                 const isChecked = allowedModelIds.includes(model.id);
@@ -153,16 +150,14 @@ export function OrganizationAiSettingsPanel({
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="defaultModelId">{t("settings.defaultModel")}</Label>
+            <Label htmlFor="defaultModelId">Default model</Label>
             <Select
               disabled={!canManage || isPending || defaultOptions.length === 0}
               onValueChange={(value) => setDefaultModelId(value as AiModelId)}
               value={defaultModelId}
             >
               <SelectTrigger className="w-full" id="defaultModelId">
-                <SelectValue
-                  placeholder={t("settings.defaultModelPlaceholder")}
-                />
+                <SelectValue placeholder="Select a default model" />
               </SelectTrigger>
               <SelectContent>
                 {defaultOptions.map((model) => (
@@ -173,7 +168,8 @@ export function OrganizationAiSettingsPanel({
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              {t("settings.defaultModelHelp")}
+              This default is used for new assistant conversations in this
+              workspace.
             </p>
           </div>
 
@@ -192,7 +188,7 @@ export function OrganizationAiSettingsPanel({
       {!canManage ? (
         <CardFooter>
           <p className="text-sm text-muted-foreground">
-            {t("settings.ownerOnly")}
+            Only organization owners can change AI model settings.
           </p>
         </CardFooter>
       ) : null}

@@ -9,7 +9,7 @@
 
 # Executive Verdict
 
-This is a **strong and sellable** SaaS starter. The features architecture is genuinely buyer-friendly: feature-first folders, thin app routes, shared schemas between client and server, real billing enforcement (not just Stripe webhooks, but actual capability checks and usage limits wired into mutations), a working AI assistant with tool calls, audit logging, notifications, multi-tenant organizations, and a polished marketing landing page. The structure is proportionate to the problem — there is very little gratuitous abstraction, and the `ADDING_A_FEATURE.md` guide is one of the best buyer-onboarding artifacts I've seen in a starter. At $149 this competes well. There are a handful of friction points that could trip a buyer — hardcoded French strings in the billing UI, an inconsistent separation between `features/ai` and `features/assistant`, and some type-file proliferation — but none of these are dealbreakers.
+This is a **strong and sellable** SaaS starter. The features architecture is genuinely buyer-friendly: feature-first folders, thin app routes, shared schemas between client and server, real billing enforcement (not just Stripe webhooks, but actual capability checks and usage limits wired into mutations), a working AI assistant with tool calls, multi-tenant organizations, and a polished marketing landing page. The structure is proportionate to the problem — there is very little gratuitous abstraction, and the `ADDING_A_FEATURE.md` guide is one of the best buyer-onboarding artifacts I've seen in a starter. At $149 this competes well. There are a handful of friction points that could trip a buyer — hardcoded French strings in the billing UI, an inconsistent separation between `features/ai` and `features/assistant`, and some type-file proliferation — but none of these are dealbreakers.
 
 ---
 
@@ -38,20 +38,18 @@ This is a **strong and sellable** SaaS starter. The features architecture is gen
 
 ### 2. `ADDING_A_FEATURE.md` is an exceptional buyer artifact
 
-This file (`features/ADDING_A_FEATURE.md`) provides a 6-step minimal-CRUD recipe and a full-pattern recipe with audit + notifications. It names exact files to copy, shows the action skeleton, explains billing gating in 4 lines, and gives the route pattern. This is the single best piece of starter documentation I've seen. It directly reduces buyer support burden and regret risk.
+This file (`features/ADDING_A_FEATURE.md`) provides a 6-step minimal-CRUD recipe and a fuller task-based pattern for attachments and bulk behavior. It names exact files to copy, shows the action skeleton, explains billing gating in 4 lines, and gives the route pattern. This is the single best piece of starter documentation I've seen. It directly reduces buyer support burden and regret risk.
 
 ### 3. Proportionate file counts per feature
 
 - `tasks`: 16 files — justified by bulk actions, table with sorting/filtering/pagination, attachments, form sheet, delete dialog. This is the "reference CRUD" and it earns its file count.
 - `billing`: 22 files — justified by Stripe checkout, webhooks, portal, plan resolution, usage metering, guards, errors, pricing UI. Billing is inherently complex; the file split matches real responsibilities.
 - `auth`: 21 files — OAuth, magic link, password, 2FA, sign-in/sign-up, verification, onboarding. Each file does one specific auth flow step.
-- `notifications`: 3 files (service, 2 components). Exactly right for its scope.
-- `audit`: 1 file. Perfect.
 - `settings`: 2 files (sidebar, nav config). Thin shell, logic lives in account/billing/organizations.
 
 ### 4. Server actions use a consistent, learnable pattern
 
-Every mutation action follows the same shape: `validatedAuthenticatedAction(schema, async handler)`. The `validatedOrganizationOwnerAction` composition in organizations is a clean one-level wrapper. There's no handler/use-case/repository ceremony — just schema -> mutation -> audit -> revalidate -> return.
+Every mutation action follows the same shape: `validatedAuthenticatedAction(schema, async handler)`. The `validatedOrganizationOwnerAction` composition in organizations is a clean one-level wrapper. There's no handler/use-case/repository ceremony — just schema -> mutation -> revalidate -> return.
 
 ### 5. Billing gating is wired into real feature code
 
@@ -138,8 +136,6 @@ Already noted above. Delete it.
 ## Feature Groups: Easiest to Modify
 
 - **tasks** — The reference CRUD. Schema -> mutations -> actions -> components -> route. A buyer can copy this folder and have a new feature working in under an hour.
-- **notifications** — 3 files, dead-simple service. Easy to extend.
-- **audit** — 1 file. Call `recordAuditLog()` from anywhere.
 - **dashboard** — 9 files, clear server/components split. Adding a widget = add a component, wire data in `get-dashboard-overview.ts`.
 
 ## Feature Groups: Hardest to Modify
@@ -248,7 +244,7 @@ The one indirection that adds real cost is `ai/` <-> `assistant/` — a buyer tr
 
 - **Severity**: low
 - **Category**: quality assurance
-- **Evidence**: 19 test files covering billing, tasks, auth, assistant, AI, organizations, files. Missing tests for: account deletion, notifications, admin actions, organization invitations.
+- **Evidence**: 19 test files covering billing, tasks, auth, assistant, AI, organizations, files. Missing tests for: account deletion, admin actions, organization invitations.
 - **Buyer impact**: Buyer must write tests for features they modify. Acceptable for a starter, but slightly below expectations at $149.
 - **Smallest fix**: Add 3-4 more test files for the missing critical paths.
 
@@ -282,7 +278,7 @@ The one indirection that adds real cost is `ai/` <-> `assistant/` — a buyer tr
 
 3. **`ADDING_A_FEATURE.md`** — Best onboarding artifact possible. Minimal recipe + full recipe + billing integration + route pattern + test pattern. This alone reduces support burden significantly.
 
-4. **Task feature as a reference CRUD** — Complete with sorting, filtering, pagination, bulk actions, form validation, audit logging, notifications, attachments, and billing gating. A buyer copies this and has a production-ready feature.
+4. **Task feature as a reference CRUD** — Complete with sorting, filtering, pagination, bulk actions, form validation, attachments, and billing gating. A buyer copies this and has a production-ready feature.
 
 5. **AI assistant with tool calls** — Working chat with real tools (create task, review inbox, draft invoice). Demonstrates billing-gated AI with usage limits. This is a strong selling point.
 

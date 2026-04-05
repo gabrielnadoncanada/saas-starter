@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -15,7 +16,6 @@ import {
 } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { useRouter } from "@/shared/i18n/navigation";
 
 type ActionState = {
   error?: string;

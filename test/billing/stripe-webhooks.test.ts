@@ -8,9 +8,6 @@ process.env.STRIPE_PRICE_CREDIT_PACK_2000 = "price_credits_2000";
 
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {
-    member: {
-      findMany: vi.fn(),
-    },
     purchase: {
       upsert: vi.fn(),
     },
@@ -29,14 +26,6 @@ vi.mock("@/features/billing/server/stripe/stripe-customers", () => ({
   clearStripeCustomerBillingState: vi.fn(),
   findOrganizationIdByStripeCustomerId: vi.fn(),
   syncOrganizationStripeCustomer: vi.fn(),
-}));
-
-vi.mock("@/features/audit/server/record-audit-log", () => ({
-  recordAuditLog: vi.fn(),
-}));
-
-vi.mock("@/features/notifications/server/notification-service", () => ({
-  createNotificationsForUsers: vi.fn(),
 }));
 
 vi.mock("@/features/billing/server/credits", () => ({
@@ -100,7 +89,6 @@ describe("handleStripeWebhookEvent", () => {
     vi.mocked(db.subscription.upsert).mockResolvedValue({ id: "sub_123" } as never);
     vi.mocked(db.subscriptionItem.upsert).mockResolvedValue({ id: "item_123" } as never);
     vi.mocked(db.subscriptionItem.updateMany).mockResolvedValue({ count: 0 } as never);
-    vi.mocked(db.member.findMany).mockResolvedValue([{ userId: "user_123" }] as never);
     vi.mocked(db.purchase.upsert).mockResolvedValue({ id: "purchase_123" } as never);
     vi.mocked(findOrganizationIdByStripeCustomerId).mockResolvedValue("org_123");
     vi.mocked(syncOrganizationStripeCustomer).mockResolvedValue(undefined);

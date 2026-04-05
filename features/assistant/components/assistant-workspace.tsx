@@ -1,12 +1,12 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { fetchAssistantConversation } from "@/features/assistant/client/conversations";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
 import type { AssistantConversation } from "@/features/assistant/types";
-import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
 
 type AssistantWorkspaceProps = {

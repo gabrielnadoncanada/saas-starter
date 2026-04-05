@@ -1,4 +1,4 @@
-import { Link } from "@/shared/i18n/navigation";
+import Link from "next/link";
 
 const productLinks = [
   { label: "Features", href: "/#features" },

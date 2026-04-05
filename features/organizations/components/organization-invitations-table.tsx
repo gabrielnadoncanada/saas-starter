@@ -2,6 +2,7 @@
 
 import { format, parseISO } from "date-fns";
 import { Mail, MoreVertical, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -35,7 +36,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { useRouter } from "@/shared/i18n/navigation";
 
 type OrganizationInvitationsTableProps = {
   canManageInvitations: boolean;

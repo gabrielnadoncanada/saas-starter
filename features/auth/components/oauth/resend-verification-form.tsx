@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -13,7 +12,6 @@ type ResendVerificationFormProps = {
 };
 
 export function ResendVerificationForm({ email }: ResendVerificationFormProps) {
-  const t = useTranslations("auth");
   const [isPending, setIsPending] = useState(false);
 
   async function handleResend() {

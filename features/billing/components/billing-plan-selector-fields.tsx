@@ -1,7 +1,5 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
-
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Field,
@@ -52,6 +50,8 @@ type BillingPlanCardProps = {
   interval: BillingInterval;
 };
 
+const PRICE_LOCALE = "en-US";
+
 function formatPrice(unitAmount: number, locale: string) {
   return new Intl.NumberFormat(locale, {
     style: "currency",
@@ -60,16 +60,12 @@ function formatPrice(unitAmount: number, locale: string) {
   }).format(unitAmount / 100);
 }
 
-function getPriceSuffix(
-  interval: BillingInterval,
-  pricingModel: PricingModel,
-  t: (key: string) => string,
-) {
+function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
   if (pricingModel === "per_seat") {
-    return interval === "year" ? t("plan.perSeatYear") : t("plan.perSeatMonth");
+    return interval === "year" ? "per seat / yr" : "per seat / mo";
   }
 
-  return interval === "year" ? t("plan.perYear") : t("plan.perMonth");
+  return interval === "year" ? "/ yr" : "/ mo";
 }
 
 function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
@@ -89,18 +85,15 @@ function BillingPlanPrice({
   interval: BillingInterval;
   pricingModel: PricingModel;
 }) {
-  const locale = useLocale();
-  const t = useTranslations("billing");
-
   return (
     <div className="space-y-1 md:text-right">
       <div className="text-xl font-semibold tracking-tight">
-        {price ? formatPrice(price.unitAmount, locale) : "Unavailable"}
+        {price ? formatPrice(price.unitAmount, PRICE_LOCALE) : "Unavailable"}
       </div>
 
       {price ? (
         <FieldDescription>
-          {getPriceSuffix(interval, pricingModel, t)}
+          {getPriceSuffix(interval, pricingModel)}
         </FieldDescription>
       ) : null}
     </div>

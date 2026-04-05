@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +16,6 @@ import { Checkbox } from "@/shared/components/ui/checkbox";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { routes } from "@/shared/constants/routes";
-import { useRouter } from "@/shared/i18n/navigation";
 import { authClient } from "@/shared/lib/auth/auth-client";
 
 type TwoFactorVerificationFormProps = {
@@ -26,7 +25,6 @@ type TwoFactorVerificationFormProps = {
 export function TwoFactorVerificationForm({
   callbackUrl,
 }: TwoFactorVerificationFormProps) {
-  const t = useTranslations("auth");
   const router = useRouter();
   const [code, setCode] = useState("");
   const [backupCode, setBackupCode] = useState("");

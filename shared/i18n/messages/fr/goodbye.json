@@ -1,9 +1,0 @@
-{
-  "goodbye": {
-    "title": "Supprimer le compte",
-    "description": "Supprimez votre compte et toutes vos donnees",
-    "button": "Supprimer le compte",
-    "confirmDescription": "Tapez {word} pour confirmer. Cette action est irreversible.",
-    "confirmLabel": "Confirmation"
-  }
-}

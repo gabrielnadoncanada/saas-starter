@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { AiProof } from "@/features/marketing/components/ai-proof";
 import { BuilderSection } from "@/features/marketing/components/builder-section";
@@ -11,7 +12,6 @@ import { MarketingFeatureGrid } from "@/features/marketing/components/marketing-
 import { ScreenshotsGallery } from "@/features/marketing/components/screenshots-gallery";
 import { StarterPricing } from "@/features/marketing/components/starter-pricing";
 import { Button } from "@/shared/components/ui/button";
-import { Link } from "@/shared/i18n/navigation";
 
 export const metadata: Metadata = {
   title:

@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -20,7 +21,6 @@ import {
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 
 type ResetPasswordFormProps = {
   token: string;

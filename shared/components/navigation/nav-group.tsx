@@ -1,6 +1,8 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
 
 import {
@@ -34,8 +36,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/shared/components/ui/sidebar";
-import { Link } from "@/shared/i18n/navigation";
-import { usePathname } from "@/shared/i18n/navigation";
 
 export function NavGroup({ title, items }: SidebarNavGroup) {
   const { state, isMobile } = useSidebar();

@@ -3,7 +3,6 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import { recordAuditLog } from "@/features/audit/server/record-audit-log";
 import {
   LimitReachedError,
   UpgradeRequiredError,
@@ -13,10 +12,6 @@ import {
   assertLimit,
 } from "@/features/billing/guards/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
-import {
-  createNotification,
-  createNotificationsForUsers,
-} from "@/features/notifications/server/notification-service";
 import { validatedOrganizationOwnerAction } from "@/features/organizations/actions/validated-organization-owner";
 import {
   invitationIdSchema,
@@ -60,7 +55,7 @@ export type RemoveOrganizationMemberActionState =
 export const renameOrganizationAction = validatedOrganizationOwnerAction<
   typeof renameOrganizationSchema,
   { refreshKey?: number }
->(renameOrganizationSchema, async ({ name }, _, { organizationId, user }) => {
+>(renameOrganizationSchema, async ({ name }, _, { organizationId }) => {
   try {
     await auth.api.updateOrganization({
       headers: await headers(),
@@ -78,22 +73,6 @@ export const renameOrganizationAction = validatedOrganizationOwnerAction<
       };
   }
 
-  await createNotification({
-    organizationId,
-    userId: user.id,
-    type: "organization.renamed",
-    title: "Organization renamed",
-    body: `Workspace name updated to ${name}.`,
-  });
-  await recordAuditLog({
-    organizationId,
-    actorUserId: user.id,
-    event: "organization.renamed",
-    entityType: "organization",
-    entityId: organizationId,
-    summary: `Renamed workspace to ${name}`,
-  });
-
   return {
     success: "Organization renamed successfully",
     refreshKey: Date.now(),
@@ -105,7 +84,7 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
   { refreshKey?: number }
 >(
   inviteOrganizationMemberSchema,
-  async ({ email, role }, _, { organizationId, user }) => {
+  async ({ email, role }, _, { organizationId }) => {
     const entitlements = await getCurrentOrganizationEntitlements();
 
     if (!entitlements) {
@@ -161,31 +140,6 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
       };
     }
 
-    const requestHeaders = await headers();
-    const members = await auth.api.listMembers({
-      query: { organizationId },
-      headers: requestHeaders,
-    });
-
-    await Promise.all([
-      recordAuditLog({
-        organizationId,
-        actorUserId: user.id,
-        event: "organization.invitation_sent",
-        entityType: "invitation",
-        summary: `Invited ${email} as ${role}`,
-      }),
-      createNotificationsForUsers(
-        organizationId,
-        (members?.members ?? []).map((member: { userId: string }) => member.userId),
-        {
-          type: "organization.invitation_sent",
-          title: "New invitation sent",
-          body: `${email} was invited to join the workspace.`,
-        },
-      ),
-    ]);
-
     return { success: "Invitation sent successfully", refreshKey: Date.now() };
   },
 );
@@ -194,7 +148,7 @@ export const cancelOrganizationInvitationAction =
   validatedOrganizationOwnerAction<
     typeof invitationIdSchema,
     { refreshKey?: number }
-  >(invitationIdSchema, async ({ invitationId }, _, { organizationId, user }) => {
+  >(invitationIdSchema, async ({ invitationId }) => {
     try {
       await cancelOrganizationInvitation({ invitationId });
     } catch (error) {
@@ -206,15 +160,6 @@ export const cancelOrganizationInvitationAction =
       };
     }
 
-    await recordAuditLog({
-      organizationId,
-      actorUserId: user.id,
-      event: "organization.invitation_canceled",
-      entityType: "invitation",
-      entityId: invitationId,
-      summary: "Canceled an invitation",
-    });
-
     return {
       success: "Invitation canceled",
       refreshKey: Date.now(),
@@ -225,7 +170,7 @@ export const resendOrganizationInvitationAction =
   validatedOrganizationOwnerAction<
     typeof invitationIdSchema,
     { refreshKey?: number }
-  >(invitationIdSchema, async ({ invitationId }, _, { organizationId, user }) => {
+  >(invitationIdSchema, async ({ invitationId }, _, { organizationId }) => {
     const result = await resendOrganizationInvitation({
       invitationId,
       organizationId,
@@ -235,15 +180,6 @@ export const resendOrganizationInvitationAction =
       return result;
     }
 
-    await recordAuditLog({
-      organizationId,
-      actorUserId: user.id,
-      event: "organization.invitation_resent",
-      entityType: "invitation",
-      entityId: invitationId,
-      summary: "Resent an invitation",
-    });
-
     return { ...result, refreshKey: Date.now() };
   });
 
@@ -252,7 +188,7 @@ export const removeOrganizationMemberAction = validatedOrganizationOwnerAction<
   { refreshKey?: number }
 >(
   removeOrganizationMemberSchema,
-  async ({ memberId }, _, { organizationId, user }) => {
+  async ({ memberId }, _, { organizationId }) => {
     try {
       await auth.api.removeMember({
         headers: await headers(),
@@ -267,15 +203,6 @@ export const removeOrganizationMemberAction = validatedOrganizationOwnerAction<
           error instanceof Error ? error.message : "Failed to remove member",
       };
     }
-
-    await recordAuditLog({
-      organizationId,
-      actorUserId: user.id,
-      event: "organization.member_removed",
-      entityType: "member",
-      entityId: memberId,
-      summary: "Removed a workspace member",
-    });
 
     return {
       success: "Organization member removed successfully",

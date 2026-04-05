@@ -1,6 +1,6 @@
 # Adding a Feature
 
-Use the minimal CRUD flow below as the default path for simple features. Reach for `features/tasks/` only when you also need the heavier production pattern with audit trail, notifications, attachments, bulk actions, and table behavior.
+Use the minimal CRUD flow below as the default path for simple features. Reach for `features/tasks/` only when you also need the heavier production pattern with attachments, bulk actions, and table behavior.
 
 ## Default Build Order
 
@@ -13,7 +13,7 @@ Use the minimal CRUD flow below as the default path for simple features. Reach f
 
 ## Quick Start (Minimal CRUD)
 
-Start here for most new features. This path gives you a working CRUD flow without audit logging or notifications. Add those only when the feature genuinely needs them.
+Start here for most new features. This path gives you a working CRUD flow with no extra cross-cutting side effects.
 
 1. `features/invoices/invoice-form.schema.ts` — Zod schema shared by client and server.
 2. `features/invoices/server/invoice-mutations.ts` — Prisma reads and writes, org-scoped.
@@ -22,7 +22,7 @@ Start here for most new features. This path gives you a working CRUD flow withou
 5. `features/invoices/components/invoices-page.tsx` — Page component.
 6. `app/(app)/dashboard/invoices/page.tsx` — Thin route.
 
-A minimal server action without audit or notifications looks like this:
+A minimal server action looks like this:
 
 ```ts
 export const createInvoiceAction = validatedAuthenticatedAction(
@@ -35,11 +35,11 @@ export const createInvoiceAction = validatedAuthenticatedAction(
 );
 ```
 
-When the feature is ready for production and needs cross-cutting product events, add audit logging and notifications by following the full pattern below.
+When the feature is ready for production and needs richer CRUD behavior, follow the full pattern below.
 
-## Full Pattern (with Audit + Notifications)
+## Full Pattern
 
-For CRUD work with audit trail and in-app notifications, copy the task flow in this order:
+For CRUD work with attachments, bulk actions, and table state, copy the task flow in this order:
 
 1. `features/tasks/task-form.schema.ts`
 2. `features/tasks/server/task-mutations.ts`
@@ -48,7 +48,7 @@ For CRUD work with audit trail and in-app notifications, copy the task flow in t
 5. `features/tasks/components/tasks-page.tsx`
 6. `app/(app)/dashboard/tasks/page.tsx`
 
-The task server actions show the full pattern: mutation, then `recordAuditLog()` and `createNotification()` in parallel. This is the right choice for features where you need an audit trail or want users to see activity in their notification feed.
+The task server actions show the full pattern: mutate, revalidate, and return a simple result shape.
 
 ## Billing and Limits
 

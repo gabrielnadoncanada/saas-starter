@@ -1,5 +1,4 @@
 import {
-  Bell,
   Building2,
   CreditCard,
   Palette,
@@ -56,11 +55,6 @@ export const settingsSidebarData: SidebarData = {
           title: "Security",
           url: routes.settings.security,
           icon: ShieldCheck,
-        },
-        {
-          title: "Notifications",
-          url: routes.settings.notifications,
-          icon: Bell,
         },
       ],
     },

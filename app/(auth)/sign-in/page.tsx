@@ -1,5 +1,7 @@
 
 
+import Link from "next/link";
+
 import { SignInForm } from "@/features/auth/components/sign-in/sign-in-form";
 import {
   Card,
@@ -10,7 +12,6 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 import {
   buildCallbackURL,
   getCallbackURL,

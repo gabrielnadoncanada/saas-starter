@@ -90,75 +90,6 @@ async function seedUsageCounters(organizationId: string) {
   }
 }
 
-async function seedAuditLogs(organizationId: string, actorUserId: string) {
-  await db.auditLog.deleteMany({
-    where: {
-      organizationId,
-      event: { startsWith: "seed.demo." },
-    },
-  });
-
-  await db.auditLog.createMany({
-    data: [
-      {
-        organizationId,
-        actorUserId,
-        event: "seed.demo.task_reviewed",
-        entityType: "task",
-        entityId: "TASK-1",
-        summary: 'Reviewed task "Polish onboarding copy"',
-      },
-      {
-        organizationId,
-        actorUserId,
-        event: "seed.demo.member_joined",
-        entityType: "member",
-        entityId: "teammate@starter.local",
-        summary: "Taylor Demo joined the workspace",
-      },
-      {
-        organizationId,
-        actorUserId,
-        event: "seed.demo.billing_checked",
-        entityType: "billing",
-        entityId: "seed-demo-subscription",
-        summary: "Billing settings were reviewed in test mode",
-      },
-    ],
-  });
-}
-
-async function seedNotifications(organizationId: string, userId: string) {
-  await db.notification.deleteMany({
-    where: {
-      organizationId,
-      userId,
-      type: { startsWith: "seed.demo." },
-    },
-  });
-
-  await db.notification.createMany({
-    data: [
-      {
-        organizationId,
-        userId,
-        type: "seed.demo.onboarding",
-        title: "Demo workspace ready",
-        body: "The seed added tasks, usage, and activity so the dashboard feels populated immediately.",
-        href: "/dashboard",
-      },
-      {
-        organizationId,
-        userId,
-        type: "seed.demo.billing",
-        title: "Stripe test mode note",
-        body: "Use the billing guide in docs/ to wire real Stripe price IDs and webhooks.",
-        href: "/settings/billing",
-      },
-    ],
-  });
-}
-
 async function seedSubscription(organizationId: string) {
   const now = new Date();
   const periodEnd = new Date(now);
@@ -254,14 +185,11 @@ async function seedAiSettings(organizationId: string) {
 
 export async function seedDemoWorkspaceContent(input: {
   organizationId: string;
-  ownerUserId: string;
 }) {
   await Promise.all([
     seedAiSettings(input.organizationId),
     seedSubscription(input.organizationId),
     seedTasks(input.organizationId),
     seedUsageCounters(input.organizationId),
-    seedAuditLogs(input.organizationId, input.ownerUserId),
-    seedNotifications(input.organizationId, input.ownerUserId),
   ]);
 }

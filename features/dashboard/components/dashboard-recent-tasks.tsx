@@ -1,8 +1,7 @@
 import type { Task } from "@prisma/client";
-
+import Link from "next/link";
 
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 
 export async function DashboardRecentTasks({ tasks }: { tasks: Task[] }) {
   

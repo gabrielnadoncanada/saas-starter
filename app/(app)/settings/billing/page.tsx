@@ -28,7 +28,6 @@ import {
 } from "@/shared/components/ui/card";
 import type { PlanId } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
-import { defaultLocale } from "@/shared/i18n/locales";
 
 export default async function SettingsBillingPage() {
   const [context, entitlements] = await Promise.all([
@@ -216,7 +215,7 @@ export default async function SettingsBillingPage() {
                   <div>
                     <p className="font-medium">{entry.reason}</p>
                     <p className="text-muted-foreground">
-                      {entry.createdAt.toLocaleString(defaultLocale)}
+                      {entry.createdAt.toLocaleString("en")}
                     </p>
                   </div>
                   <p

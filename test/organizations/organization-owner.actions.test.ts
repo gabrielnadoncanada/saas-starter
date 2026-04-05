@@ -4,8 +4,6 @@ import { LimitReachedError } from "@/features/billing/errors/billing-errors";
 
 const {
   headersMock,
-  recordAuditLogMock,
-  createNotificationsForUsersMock,
   getCurrentOrganizationEntitlementsMock,
   assertCapabilityMock,
   assertLimitMock,
@@ -14,8 +12,6 @@ const {
   listInvitationsMock,
 } = vi.hoisted(() => ({
   headersMock: vi.fn(),
-  recordAuditLogMock: vi.fn(),
-  createNotificationsForUsersMock: vi.fn(),
   getCurrentOrganizationEntitlementsMock: vi.fn(),
   assertCapabilityMock: vi.fn(),
   assertLimitMock: vi.fn(),
@@ -34,15 +30,6 @@ vi.mock("@/shared/lib/auth/authenticated-action", () => ({
 
 vi.mock("@/features/organizations/actions/validated-organization-owner", () => ({
   validatedOrganizationOwnerAction: (_schema: unknown, action: unknown) => action,
-}));
-
-vi.mock("@/features/audit/server/record-audit-log", () => ({
-  recordAuditLog: recordAuditLogMock,
-}));
-
-vi.mock("@/features/notifications/server/notification-service", () => ({
-  createNotification: vi.fn(),
-  createNotificationsForUsers: createNotificationsForUsersMock,
 }));
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
@@ -101,20 +88,14 @@ describe("inviteOrganizationMemberAction", () => {
 
     headersMock.mockResolvedValue(new Headers());
     getCurrentOrganizationEntitlementsMock.mockResolvedValue(entitlements);
-    listMembersMock
-      .mockResolvedValueOnce({
-        members: [{ userId: "owner_1" }],
-      })
-      .mockResolvedValueOnce({
-        members: [{ userId: "owner_1" }, { userId: "member_2" }],
-      });
+    listMembersMock.mockResolvedValue({
+      members: [{ userId: "owner_1" }],
+    });
     listInvitationsMock.mockResolvedValue([]);
     inviteOrganizationMemberMock.mockResolvedValue(undefined);
-    recordAuditLogMock.mockResolvedValue(undefined);
-    createNotificationsForUsersMock.mockResolvedValue(undefined);
   });
 
-  it("invites a member and records the side effects", async () => {
+  it("invites a member", async () => {
     const result = await inviteOrganizationMemberAction(
       { email: "new@acme.com", role: "member" },
       new FormData(),
@@ -128,14 +109,6 @@ describe("inviteOrganizationMemberAction", () => {
       email: "new@acme.com",
       role: "member",
     });
-    expect(recordAuditLogMock).toHaveBeenCalled();
-    expect(createNotificationsForUsersMock).toHaveBeenCalledWith(
-      "org_1",
-      ["owner_1", "member_2"],
-      expect.objectContaining({
-        type: "organization.invitation_sent",
-      }),
-    );
     expect(result).toEqual({
       success: "Invitation sent successfully",
       refreshKey: expect.any(Number),

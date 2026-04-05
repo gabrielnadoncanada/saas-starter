@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -18,7 +17,6 @@ import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 
 export function ForgotPasswordForm() {
-  const t = useTranslations("auth");
   const [sent, setSent] = useState(false);
   const {
     register,

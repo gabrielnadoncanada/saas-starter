@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronsUpDown, Cog, LogOut, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
@@ -28,7 +29,6 @@ import {
 } from "@/shared/components/ui/sidebar";
 import { accountFlags } from "@/shared/config/account.config";
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 import { authClient } from "@/shared/lib/auth/auth-client";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 

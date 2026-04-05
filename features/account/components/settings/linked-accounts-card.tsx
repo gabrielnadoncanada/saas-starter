@@ -1,14 +1,11 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
-import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 
 import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.actions";
 import { linkAuthProvider } from "@/features/account/data/link-auth-provider";
-import type {
-  LinkedProviderOverview,
-} from "@/features/account/server/linked-accounts";
+import type { LinkedProviderOverview } from "@/features/account/server/linked-accounts";
 import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -21,7 +18,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/shared/components/ui/item";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import { getOAuthProviderConfig } from "@/shared/lib/auth/oauth-config";
 import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
@@ -38,7 +35,6 @@ export function LinkedAccountsCard({
   providers,
   feedback,
 }: LinkedAccountsCardProps) {
-  const t = useTranslations("settings");
   const [linkingProvider, setLinkingProvider] = useState<
     LinkedProviderOverview["provider"] | null
   >(null);
@@ -120,9 +116,7 @@ export function LinkedAccountsCard({
                         variant="outline"
                         disabled={isUnlinkingProvider}
                       >
-                        {isUnlinkingProvider
-                          ? "Unlinking..."
-                          : "Unlink"}
+                        {isUnlinkingProvider ? "Unlinking..." : "Unlink"}
                       </Button>
                     </form>
                   ) : (
@@ -135,9 +129,7 @@ export function LinkedAccountsCard({
                     disabled={isLinkingProvider}
                     onClick={() => void handleLinkAccount(provider.provider)}
                   >
-                    {isLinkingProvider
-                      ? "Redirecting..."
-                      : "Link"}
+                    {isLinkingProvider ? "Redirecting..." : "Link"}
                   </Button>
                 )}
               </ItemActions>

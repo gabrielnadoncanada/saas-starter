@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import React from "react";
 
@@ -18,13 +18,11 @@ import {
   CommandSeparator,
 } from "@/shared/components/ui/command";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
-import { useRouter } from "@/shared/i18n/navigation";
 
 export function CommandMenu() {
   const router = useRouter();
   const { setTheme } = useTheme();
   const { open, setOpen } = useSearch();
-  const t = useTranslations("commandMenu");
 
   const runCommand = React.useCallback(
     (command: () => unknown) => {
@@ -36,10 +34,10 @@ export function CommandMenu() {
 
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder={t("placeholder")} />
+      <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <ScrollArea type="hover" className="h-72 pe-1">
-          <CommandEmpty>{t("noResults")}</CommandEmpty>
+          <CommandEmpty>No results found.</CommandEmpty>
           {dashboardSidebarData.navGroups.map((group: SidebarNavGroup) => (
             <CommandGroup key={group.title} heading={group.title}>
               {group.items.map((navItem, i) => {
@@ -77,17 +75,17 @@ export function CommandMenu() {
             </CommandGroup>
           ))}
           <CommandSeparator />
-          <CommandGroup heading={t("theme")}>
+          <CommandGroup heading="Theme">
             <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
-              <Sun /> <span>{t("light")}</span>
+              <Sun /> <span>Light</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
               <Moon className="scale-90" />
-              <span>{t("dark")}</span>
+              <span>Dark</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
               <Laptop />
-              <span>{t("system")}</span>
+              <span>System</span>
             </CommandItem>
           </CommandGroup>
         </ScrollArea>

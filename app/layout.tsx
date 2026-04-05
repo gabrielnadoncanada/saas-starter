@@ -2,14 +2,11 @@ import "@/shared/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
 import { Suspense } from "react";
 
 import { ImpersonationBannerWrapper } from "@/features/admin/components/impersonation-banner-wrapper";
 import { ThemeProvider } from "@/shared/components/app/theme-provider";
 import { Toaster } from "@/shared/components/ui/sonner";
-import { defaultLocale } from "@/shared/i18n/locales";
 
 export const metadata: Metadata = {
   title: {
@@ -39,29 +36,21 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const messages = await getMessages();
-
   return (
-    <html
-      lang={defaultLocale}
-      suppressHydrationWarning
-      className={inter.variable}
-    >
+    <html lang={"en"} suppressHydrationWarning className={inter.variable}>
       <body>
-        <NextIntlClientProvider messages={messages}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Suspense>
-              <ImpersonationBannerWrapper />
-            </Suspense>
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </NextIntlClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Suspense>
+            <ImpersonationBannerWrapper />
+          </Suspense>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

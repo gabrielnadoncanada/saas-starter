@@ -1,6 +1,5 @@
 import { CheckCircle2, Circle } from "lucide-react";
-
-import { Link } from "@/shared/i18n/navigation";
+import Link from "next/link";
 
 type ChecklistItem = {
   id: string;

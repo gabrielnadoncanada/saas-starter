@@ -6,7 +6,6 @@ import QRCode from "qrcode";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import { recordTwoFactorAuditAction } from "@/features/account/actions/two-factor-audit.actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
@@ -73,9 +72,6 @@ export function TwoFactorSettingsCard({
     setEnabled(true);
     setTotpUri(null);
     setCode("");
-    const payload = new FormData();
-    payload.set("event", "enabled");
-    await recordTwoFactorAuditAction({}, payload);
     toast.success("Two-factor authentication enabled.");
   }
 
@@ -95,10 +91,6 @@ export function TwoFactorSettingsCard({
     setBackupCodes([]);
     setTotpUri(null);
     setCode("");
-
-    const payload = new FormData();
-    payload.set("event", "disabled");
-    await recordTwoFactorAuditAction({}, payload);
     toast.success("Two-factor authentication disabled.");
   }
 
@@ -113,9 +105,6 @@ export function TwoFactorSettingsCard({
     }
 
     setBackupCodes(result.data.backupCodes);
-    const payload = new FormData();
-    payload.set("event", "backup_codes_regenerated");
-    await recordTwoFactorAuditAction({}, payload);
     toast.success("Backup codes regenerated.");
   }
 

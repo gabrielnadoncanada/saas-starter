@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -25,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { useRouter } from "@/shared/i18n/navigation";
 import { authClient } from "@/shared/lib/auth/auth-client";
 
 import { AdminUsersSearch } from "./admin-users-search";
@@ -60,8 +59,6 @@ export function AdminUsersTable({
   pageSize,
 }: AdminUsersTableProps) {
   const router = useRouter();
-  const t = useTranslations("users");
-  const tc = useTranslations("common");
   const [users, setUsers] = useState(initialUsers);
   const [total, setTotal] = useState(initialTotal);
   const [offset, setOffset] = useState(0);
@@ -172,8 +169,8 @@ export function AdminUsersTable({
 
   function confirmSetUserRole(userId: string, role: "user" | "admin") {
     openConfirmation(
-      t("confirmations.roleTitle", { role }),
-      t("confirmations.roleMessage", { role }),
+      `Set role to "${role}"`,
+      `Are you sure you want to change this user's role to "${role}"?`,
       async () => {
         await setUserRoleAction(userId, role);
         toast.success("Role updated");

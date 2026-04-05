@@ -3,7 +3,7 @@
 import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useMemo, useState } from "react";
 
 import {
@@ -27,8 +27,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
-import { useRouter } from "@/shared/i18n/navigation";
+import { useToastMessage } from "@/shared/hooks/use-toast-message";
 
 type TasksBulkActionsProps = {
   table: Table<Task>;
@@ -40,7 +39,6 @@ function serializeTaskIds(tasks: Task[]) {
 
 export function TasksBulkActions({ table }: TasksBulkActionsProps) {
   const router = useRouter();
-  const t = useTranslations("tasks");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const selectedTasks = useMemo(
     () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
@@ -167,7 +165,11 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
         }}
         destructive
         isLoading={isDeletePending}
-        title={t("bulkDeleteTitle", { count: selectedTasks.length })}
+        title={
+          selectedTasks.length === 1
+            ? "Delete 1 task?"
+            : `Delete ${selectedTasks.length} tasks?`
+        }
         desc={
           <div className="space-y-3">
             <p>This action will permanently delete the selected tasks.</p>

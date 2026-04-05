@@ -1,7 +1,6 @@
 "use client";
 
 import { CheckIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 import {
   ModelSelector,
@@ -33,7 +32,6 @@ export function AssistantModelSelector({
   onSelect,
   open,
 }: AssistantModelSelectorProps) {
-  const t = useTranslations("assistant");
   const selectedModel =
     modelOptions.find((model) => model.id === modelId) ?? modelOptions[0];
 

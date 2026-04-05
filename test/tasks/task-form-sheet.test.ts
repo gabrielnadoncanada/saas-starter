@@ -21,7 +21,7 @@ vi.mock("react", async () => {
   };
 });
 
-vi.mock("@/shared/i18n/navigation", () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
     refresh: refreshMock,
   }),
@@ -40,7 +40,7 @@ vi.mock("@/features/tasks/server/task.actions", () => ({
   updateTaskAction: vi.fn(),
 }));
 
-vi.mock("@/shared/hooks/useToastMessage", () => ({
+vi.mock("@/shared/hooks/use-toast-message", () => ({
   useToastMessage: useToastMessageMock,
 }));
 

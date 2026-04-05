@@ -1,10 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { routes } from "@/shared/constants/routes";
-import { useRouter } from "@/shared/i18n/navigation";
 import { authClient } from "@/shared/lib/auth/auth-client";
 
 interface SignOutDialogProps {

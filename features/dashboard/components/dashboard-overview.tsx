@@ -5,13 +5,12 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 import { getPlanDisplayPrice } from "@/features/billing/catalog/resolver";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { UsageMeter } from "@/features/billing/components/usage-meter";
 import { hasCapability } from "@/features/billing/guards/plan-guards";
-import { DashboardActivityFeed } from "@/features/dashboard/components/dashboard-activity-feed";
 import { DashboardOnboardingChecklist } from "@/features/dashboard/components/dashboard-onboarding-checklist";
 import { DashboardRecentTasks } from "@/features/dashboard/components/dashboard-recent-tasks";
 import { DashboardUsageChart } from "@/features/dashboard/components/dashboard-usage-chart";
@@ -31,8 +30,6 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { defaultLocale } from "@/shared/i18n/locales";
-import { Link } from "@/shared/i18n/navigation";
 
 function formatPlanPrice(unitAmount: number, locale: string) {
   return new Intl.NumberFormat(locale, {
@@ -43,7 +40,6 @@ function formatPlanPrice(unitAmount: number, locale: string) {
 }
 
 export async function DashboardOverview() {
-  const t = await getTranslations("dashboard");
   const {
     organization,
     entitlements,
@@ -55,7 +51,6 @@ export async function DashboardOverview() {
     creditBalance,
     taskLimit,
     canUseAI,
-    recentActivity,
     recentTasks,
     usageChart,
     checklist,
@@ -74,7 +69,7 @@ export async function DashboardOverview() {
     ? getPlanDisplayPrice(plan.id, activeInterval)
     : null;
   const priceLabel = activePrice
-    ? formatPlanPrice(activePrice.unitAmount, defaultLocale)
+    ? formatPlanPrice(activePrice.unitAmount, "en")
     : "Free";
   const organizationNameSuffix = organization?.name
     ? ` ${organization.name}`
@@ -86,7 +81,7 @@ export async function DashboardOverview() {
       <PageHeader>
         <PageTitle>Dashboard</PageTitle>
         <PageDescription>
-          {t("description", { organizationName: organizationNameSuffix })}
+          {`Welcome back${organizationNameSuffix}.`}
         </PageDescription>
       </PageHeader>
 
@@ -140,7 +135,7 @@ export async function DashboardOverview() {
               <CardDescription>AI Assistant</CardDescription>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Sparkles className="h-5 w-5 text-orange-500" />
-                {t("aiCredits", { count: creditBalance })}
+                {`${creditBalance} credits`}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -186,28 +181,16 @@ export async function DashboardOverview() {
         </Card>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div>
         <Card>
           <CardHeader>
             <CardTitle>Recent tasks</CardTitle>
             <CardDescription>
-              {t("recentTasksDescription", { organizationName: workspaceName })}
+              {`The latest task work happening in ${workspaceName}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <DashboardRecentTasks tasks={recentTasks} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Activity feed</CardTitle>
-            <CardDescription>
-              Audit-backed events across tasks, invitations, and security.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DashboardActivityFeed activity={recentActivity} />
           </CardContent>
         </Card>
       </div>

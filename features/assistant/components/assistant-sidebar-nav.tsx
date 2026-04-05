@@ -8,7 +8,9 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -33,8 +35,6 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
-import { usePathname, useRouter } from "@/shared/i18n/navigation";
 import { cn } from "@/shared/lib/utils";
 
 // ---------------------------------------------------------------------------

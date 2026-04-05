@@ -1,6 +1,5 @@
 import type Stripe from "stripe";
 
-import { recordAuditLog } from "@/features/audit/server/record-audit-log";
 import {
   findCatalogRecurringPriceByPriceId,
   getAddon,
@@ -10,7 +9,6 @@ import {
 } from "@/features/billing/catalog/resolver";
 import { grantCredits } from "@/features/billing/server/credits";
 import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscription-items";
-import { createNotificationsForUsers } from "@/features/notifications/server/notification-service";
 import type { BillingInterval } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -19,15 +17,6 @@ import {
   findOrganizationIdByStripeCustomerId,
   syncOrganizationStripeCustomer,
 } from "./stripe-customers";
-
-async function getOrganizationNotificationUserIds(organizationId: string) {
-  const members = await db.member.findMany({
-    where: { organizationId },
-    select: { userId: true },
-  });
-
-  return members.map((member) => member.userId);
-}
 
 function toDate(timestamp: number | null | undefined) {
   return timestamp ? new Date(timestamp * 1000) : null;
@@ -175,22 +164,6 @@ async function syncSubscription(subscription: Stripe.Subscription, eventType: st
     planId,
     stripeSubscriptionId: subscription.id,
   });
-
-  const userIds = await getOrganizationNotificationUserIds(referenceId);
-  await Promise.all([
-    recordAuditLog({
-      organizationId: referenceId,
-      event: `billing.${eventType}`,
-      entityType: "subscription",
-      entityId: subscription.id,
-      summary: `Stripe subscription ${subscription.status} on ${planId}`,
-    }),
-    createNotificationsForUsers(referenceId, userIds, {
-      type: `billing.${eventType}`,
-      title: "Billing updated",
-      body: `Workspace subscription is now ${subscription.status} on ${planId}.`,
-    }),
-  ]);
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {

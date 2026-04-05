@@ -131,7 +131,6 @@ export async function seedDemoWorkspace() {
 
   await seedDemoWorkspaceContent({
     organizationId: organization.id,
-    ownerUserId: owner.id,
   });
 
   console.log(`Demo workspace ready: ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);

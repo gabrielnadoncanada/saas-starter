@@ -2,7 +2,6 @@
 
 import type { Task } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 import {
   taskLabels,
@@ -67,7 +66,6 @@ export function TaskForm({
   isPending,
   task,
 }: TaskFormProps) {
-  const t = useTranslations("tasks");
   const titleField = getFieldState(state, "title");
   const descriptionField = getFieldState(state, "description");
   const labelField = getFieldState(state, "label");
@@ -93,7 +91,7 @@ export function TaskForm({
           <SheetTitle>{isUpdate ? "Update Task" : "Create Task"}</SheetTitle>
           <SheetDescription>
             {isUpdate
-              ? t("sheetDescriptionUpdate", { code: task?.code ?? "" })
+              ? `Edit ${task?.code ?? ""} for the current organization.`
               : "Add a task for the current organization."}
           </SheetDescription>
         </SheetHeader>

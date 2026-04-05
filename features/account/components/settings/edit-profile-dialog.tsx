@@ -19,7 +19,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import { useToastMessage } from "@/shared/hooks/useToastMessage";
+import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
 

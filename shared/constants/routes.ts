@@ -30,7 +30,6 @@ export const routes = {
     profile: "/settings",
     preferences: "/settings/preferences",
     security: "/settings/security",
-    notifications: "/settings/notifications",
     billing: "/settings/billing",
     organization: "/settings/organization",
     members: "/settings/members",

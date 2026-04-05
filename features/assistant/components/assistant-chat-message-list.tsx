@@ -1,7 +1,6 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import { useTranslations } from "next-intl";
 
 import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
 import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
@@ -23,8 +22,6 @@ export function AssistantChatMessageList({
   messages: UIMessage[];
   onPromptClick: (text: string) => void;
 }) {
-  const t = useTranslations("assistant");
-
   if (messages.length === 0 && !error) {
     return <AssistantChatEmptyState onPromptClick={onPromptClick} />;
   }

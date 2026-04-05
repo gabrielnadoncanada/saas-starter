@@ -1,5 +1,7 @@
 
 
+import Link from "next/link";
+
 import {
   Card,
   CardContent,
@@ -8,7 +10,6 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 
 type VerifyEmailPageProps = {
   searchParams: Promise<{

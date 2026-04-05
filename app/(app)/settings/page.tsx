@@ -1,6 +1,5 @@
 import { KeyRound, Link2, Pencil, Trash, UserIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 
 import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
 import { EditPasswordDialog } from "@/features/account/components/settings/edit-password-dialog";
@@ -48,30 +47,29 @@ type SecuritySettingsFeedback = {
   success?: string;
 };
 
-function oauthLinkErrorKey(error: string) {
+function oauthLinkErrorMessage(error: string) {
   switch (error) {
     case "account_already_linked_to_different_user":
-      return "oauthErrors.accountAlreadyLinked" as const;
+      return "This provider is already linked to another account.";
     case "email_doesn't_match":
-      return "oauthErrors.emailMismatch" as const;
+      return "Use a provider account with the same email address as this account.";
     case "OAuthAccountNotLinked":
-      return "oauthErrors.notLinked" as const;
+      return "Unable to link this provider. Try a different sign-in method.";
     case "OAuthSignin":
-      return "oauthErrors.signinFailed" as const;
+      return "Unable to start provider linking. Please try again.";
     case "unable_to_link_account":
-      return "oauthErrors.linkFailed" as const;
+      return "Unable to link this provider. Please try again.";
     default:
-      return "oauthErrors.default" as const;
+      return "Unable to link this provider.";
   }
 }
 
 export default async function SettingsPage({
   searchParams,
 }: PageProps) {
-  const [user, { success, provider, error }, t] = await Promise.all([
+  const [user, { success, provider, error }] = await Promise.all([
     getCurrentUser(),
     searchParams,
-    getTranslations("settings"),
   ]);
 
   if (!user) {
@@ -87,12 +85,12 @@ export default async function SettingsPage({
       : "Provider";
 
   const feedback: SecuritySettingsFeedback = {
-    error: error ? t(oauthLinkErrorKey(error)) : undefined,
+    error: error ? oauthLinkErrorMessage(error) : undefined,
     success:
       success === "linked"
-        ? t("oauthSuccess.linked", { provider: providerLabel })
+        ? `${providerLabel} linked successfully.`
         : success === "unlinked"
-          ? t("oauthSuccess.unlinked", { provider: providerLabel })
+          ? `${providerLabel} unlinked successfully.`
           : undefined,
   };
 

@@ -1,5 +1,7 @@
 
 
+import Link from "next/link";
+
 import { ResendMagicLinkButton } from "@/features/auth/components/oauth/resend-magic-link-button";
 import {
   Card,
@@ -9,7 +11,6 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 
 type CheckEmailPageProps = {

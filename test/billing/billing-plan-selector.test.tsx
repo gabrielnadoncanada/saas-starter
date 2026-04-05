@@ -4,26 +4,6 @@ import { render, screen } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
-const translations = {
-  "billing.actions.noMonthlyPrice":
-    "No monthly Stripe price is configured for the displayed plans.",
-  "billing.actions.ownerOnly": "Only the owner can manage billing",
-  "billing.actions.updateSubscription": "Update subscription",
-  "billing.actions.proceedToPayment": "Proceed to payment",
-  "billing.actions.openPortal": "Open billing portal",
-  "billing.actions.alreadyActiveHelp":
-    "This workspace already has an active subscription. The Stripe portal is not available until the Stripe customer is synced.",
-  "billing.actions.seatQuantity": "Seat quantity",
-  "billing.actions.addonsLegend": "Additional packs",
-} as const;
-
-vi.mock("next-intl", () => ({
-  useTranslations:
-    (namespace: string) =>
-    (key: string): string =>
-      translations[`${namespace}.${key}` as keyof typeof translations] ?? key,
-}));
-
 vi.mock("@/features/billing/actions/checkout.actions", () => ({
   startSubscriptionCheckoutAction: vi.fn(),
 }));

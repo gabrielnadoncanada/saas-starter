@@ -1,5 +1,3 @@
-import { getTranslations } from "next-intl/server";
-
 import { InviteOrganizationMemberDialog } from "@/features/organizations/components/invite-organization-member-dialog";
 import { OrganizationInvitationsTable } from "@/features/organizations/components/organization-invitations-table";
 import { OrganizationMembersTable } from "@/features/organizations/components/organization-members-table";
@@ -15,7 +13,6 @@ import {
 
 export default async function MembersPage() {
   const context = await getCurrentOrganizationContext();
-  const t = await getTranslations("settings");
 
   if (!context) {
     return null;
@@ -50,7 +47,9 @@ export default async function MembersPage() {
               Pending Invitations
             </h2>
             <p className="text-muted-foreground">
-              {t("members.pendingCount", { count: invitations.length })}
+              {invitations.length === 1
+                ? "1 invitation pending"
+                : `${invitations.length} invitations pending`}
             </p>
           </div>
           <OrganizationInvitationsTable

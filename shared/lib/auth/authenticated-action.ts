@@ -1,8 +1,16 @@
-import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import type { FormActionState } from "@/shared/types/form-action-state";
+
+const NOT_AUTHENTICATED = "You are not signed in.";
+const FORM_VALIDATION_FAILED = "Please fix the highlighted fields.";
+
+const TASKS_VALIDATION_MESSAGES: Record<string, string> = {
+  "validation.titleRequired": "Title is required",
+  "validation.titleMaxLength": "Title must be 255 characters or less",
+  "validation.selectTaskRequired": "Select at least one task",
+};
 
 export type AuthenticatedUser = NonNullable<
   Awaited<ReturnType<typeof getCurrentUser>>
@@ -33,12 +41,11 @@ export function validatedAuthenticatedAction<
   type State = FormActionState<Values> & TExtraState;
 
   return async (_prevState: State, formData: FormData): Promise<State> => {
-    const tCommon = await getTranslations("common");
     const user = await getCurrentUser();
 
     if (!user) {
       return {
-        error: tCommon("notAuthenticated"),
+        error: NOT_AUTHENTICATED,
       } as State;
     }
 
@@ -53,7 +60,7 @@ export function validatedAuthenticatedAction<
       >;
 
       if (options?.validationNamespace) {
-        const t = await getTranslations(options.validationNamespace);
+        const ns = options.validationNamespace;
 
         for (const [field, issues] of Object.entries(fieldErrors)) {
           if (!issues) {
@@ -65,13 +72,18 @@ export function validatedAuthenticatedAction<
               return msg;
             }
 
-            return t(`validation.${msg}` as never);
+            const key = `validation.${msg}`;
+            if (ns === "tasks") {
+              return TASKS_VALIDATION_MESSAGES[key] ?? msg;
+            }
+
+            return msg;
           });
         }
       }
 
       return {
-        error: tCommon("formValidationFailed"),
+        error: FORM_VALIDATION_FAILED,
         values: rawValues as Partial<Values>,
         fieldErrors: fieldErrors as State["fieldErrors"],
       } as State;

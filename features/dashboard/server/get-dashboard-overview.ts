@@ -2,8 +2,6 @@ import "server-only";
 
 import { subDays } from "date-fns";
 
-
-import { listOrganizationAuditLogs } from "@/features/audit/server/record-audit-log";
 import { getPlan } from "@/features/billing/catalog/resolver";
 import { checkLimit, hasCapability } from "@/features/billing/guards/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
@@ -50,7 +48,6 @@ export async function getDashboardOverview() {
     recentTasks,
     tasksUsage,
     creditBalance,
-    recentActivity,
     recentTaskHistory,
   ] =
     organizationId
@@ -65,7 +62,6 @@ export async function getDashboardOverview() {
           }),
           getMonthlyUsage(organizationId, "tasksPerMonth"),
           Promise.resolve(entitlements?.creditBalance ?? 0),
-          listOrganizationAuditLogs(organizationId, 8),
           db.task.findMany({
             where: {
               organizationId,
@@ -78,7 +74,7 @@ export async function getDashboardOverview() {
             },
           }),
         ])
-      : [0, [], 0, 0, [], []];
+      : [0, [], 0, 0, []];
 
   const taskLimit = entitlements
     ? checkLimit(entitlements, "tasksPerMonth", tasksUsage)
@@ -119,7 +115,6 @@ export async function getDashboardOverview() {
     creditBalance,
     taskLimit,
     canUseAI,
-    recentActivity,
     recentTasks,
     usageChart: buildUsageChart(recentTaskHistory),
     checklist,

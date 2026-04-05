@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -11,7 +12,6 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
-import { Link } from "@/shared/i18n/navigation";
 
 type UpgradeCardProps = {
   feature: string;

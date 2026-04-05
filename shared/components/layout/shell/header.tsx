@@ -1,6 +1,5 @@
 "use client";
 
-import { NotificationMenu } from "@/features/notifications/components/notification-menu";
 import { SidebarTrigger } from "@/shared/components/ui/sidebar";
 
 type HeaderProps = {
@@ -13,7 +12,6 @@ export function Header({ children }: HeaderProps) {
       <div className="relative flex h-full items-center gap-3  py-2 sm:gap-4 ">
         <SidebarTrigger variant="outline" />
         {children}
-        <NotificationMenu />
       </div>
     </header>
   );

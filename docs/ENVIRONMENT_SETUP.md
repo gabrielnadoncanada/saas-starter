@@ -52,7 +52,7 @@ Copy `.env.example` to `.env` and fill in the variables you actually use.
 - `demo@starter.local` / `demo123` for the normal product flow
 - `admin@admin.com` / `admin123` for the admin area
 
-The demo workspace includes recent tasks, notifications, audit activity, AI settings, usage counters, and a local billing snapshot so the dashboard is populated on first login.
+The demo workspace includes recent tasks, AI settings, usage counters, and a local billing snapshot so the dashboard is populated on first login.
 
 ## Stripe Test Mode
 

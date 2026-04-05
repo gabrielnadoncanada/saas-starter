@@ -2,6 +2,7 @@
 
 import { format, parseISO } from "date-fns";
 import { MoreVertical, UserMinus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -31,7 +32,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { useRouter } from "@/shared/i18n/navigation";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 
 type OrganizationMembersTableProps = {

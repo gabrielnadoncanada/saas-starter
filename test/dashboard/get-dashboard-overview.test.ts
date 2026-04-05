@@ -2,10 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-vi.mock("next-intl/server", () => ({
-  getTranslations: vi.fn(async () => (key: string) => key),
-}));
-
 vi.mock("@/features/organizations/server/current-organization", () => ({
   getCurrentOrganization: vi.fn(),
 }));
@@ -30,10 +26,6 @@ vi.mock("@/features/billing/guards/plan-guards", () => ({
   hasCapability: vi.fn(() => true),
 }));
 
-vi.mock("@/features/audit/server/record-audit-log", () => ({
-  listOrganizationAuditLogs: vi.fn(),
-}));
-
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {
     task: {
@@ -51,9 +43,6 @@ const { getCurrentOrganizationEntitlements } = await import(
 );
 const { getMonthlyUsage } = await import(
   "@/features/billing/usage/usage-service"
-);
-const { listOrganizationAuditLogs } = await import(
-  "@/features/audit/server/record-audit-log"
 );
 const { db } = await import("@/shared/lib/db/prisma");
 const { getDashboardOverview } = await import(
@@ -93,7 +82,6 @@ describe("getDashboardOverview", () => {
       .mockResolvedValueOnce([{ id: 1, title: "Recent", createdAt: new Date() }] as never)
       .mockResolvedValueOnce([{ createdAt: new Date() }] as never);
     vi.mocked(getMonthlyUsage).mockResolvedValue(3 as never);
-    vi.mocked(listOrganizationAuditLogs).mockResolvedValue([] as never);
   });
 
   it("uses count plus scoped recent-task queries instead of loading every task", async () => {
