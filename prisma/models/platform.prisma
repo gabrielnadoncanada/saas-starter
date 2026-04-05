@@ -8,24 +8,10 @@ model StoredFile {
   sizeBytes        Int
   createdAt        DateTime @default(now())
 
-  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  uploadedBy      User             @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
-  taskAttachments TaskAttachment[]
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  uploadedBy     User         @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, createdAt(sort: Desc)])
-}
-
-model TaskAttachment {
-  id           String   @id @default(cuid())
-  taskId       Int
-  storedFileId String
-  createdAt    DateTime @default(now())
-
-  task       Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  storedFile StoredFile @relation(fields: [storedFileId], references: [id], onDelete: Cascade)
-
-  @@unique([taskId, storedFileId])
-  @@index([storedFileId])
 }
 
 model TwoFactor {

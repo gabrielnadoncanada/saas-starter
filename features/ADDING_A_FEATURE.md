@@ -1,6 +1,6 @@
 # Adding a Feature
 
-Use the minimal CRUD flow below as the default path for simple features. Reach for `features/tasks/` only when you also need the heavier production pattern with attachments, bulk actions, and table behavior.
+Use the minimal CRUD flow below as the default path for simple features. Reach for `features/tasks/` only when you also need the heavier production pattern with bulk actions, sorting/filtering, and table state.
 
 ## Default Build Order
 
@@ -39,7 +39,7 @@ When the feature is ready for production and needs richer CRUD behavior, follow 
 
 ## Full Pattern
 
-For CRUD work with attachments, bulk actions, and table state, copy the task flow in this order:
+For CRUD work with bulk actions, sorting/filtering, and table state, copy the task flow in this order:
 
 1. `features/tasks/task-form.schema.ts`
 2. `features/tasks/server/task-mutations.ts`

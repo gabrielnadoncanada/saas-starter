@@ -4,7 +4,6 @@ import { format, parseISO } from "date-fns";
 import { useActionState, useState } from "react";
 
 import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.actions";
-import { linkAuthProvider } from "@/features/account/data/link-auth-provider";
 import type { LinkedProviderOverview } from "@/features/account/server/linked-accounts";
 import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
 import { Badge } from "@/shared/components/ui/badge";
@@ -18,10 +17,51 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/shared/components/ui/item";
+import { routes } from "@/shared/constants/routes";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import { getOAuthProviderConfig } from "@/shared/lib/auth/oauth-config";
+import { authClient } from "@/shared/lib/auth/auth-client";
+import {
+  getOAuthProviderConfig,
+  type OAuthProviderId,
+} from "@/shared/lib/auth/oauth-config";
 import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
+
+function buildSettingsUrl(provider: OAuthProviderId, status?: string) {
+  const searchParams = new URLSearchParams({ provider });
+
+  if (status) {
+    searchParams.set("success", status);
+  }
+
+  return `${routes.settings.profile}?${searchParams.toString()}`;
+}
+
+async function linkAuthProvider(provider: OAuthProviderId) {
+  const result = await authClient.$fetch<{
+    redirect: boolean;
+    status: boolean;
+    url: string;
+  }>("/link-social", {
+    method: "POST",
+    body: {
+      provider,
+      callbackURL: buildSettingsUrl(provider, "linked"),
+      errorCallbackURL: buildSettingsUrl(provider),
+      disableRedirect: true,
+    },
+  });
+
+  if (result.error) {
+    throw new Error(result.error.message || "Unable to link this provider.");
+  }
+
+  if (!result.data?.url) {
+    throw new Error("Unable to link this provider.");
+  }
+
+  window.location.assign(result.data.url);
+}
 
 type LinkedAccountsCardProps = {
   providers: LinkedProviderOverview[];

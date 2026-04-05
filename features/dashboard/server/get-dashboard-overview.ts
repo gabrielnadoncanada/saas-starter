@@ -34,7 +34,6 @@ function buildUsageChart(tasks: { createdAt: Date }[]) {
 }
 
 export async function getDashboardOverview() {
-  
   const [organization, entitlements] = await Promise.all([
     getCurrentOrganization(),
     getCurrentOrganizationEntitlements(),
@@ -43,13 +42,7 @@ export async function getDashboardOverview() {
   const memberCount = organization?.members?.length ?? 0;
   const organizationId = organization?.id ?? null;
 
-  const [
-    taskCount,
-    recentTasks,
-    tasksUsage,
-    creditBalance,
-    recentTaskHistory,
-  ] =
+  const [taskCount, recentTasks, tasksUsage, assistantConversationCount, recentTaskHistory] =
     organizationId
       ? await Promise.all([
           db.task.count({
@@ -61,7 +54,9 @@ export async function getDashboardOverview() {
             take: 5,
           }),
           getMonthlyUsage(organizationId, "tasksPerMonth"),
-          Promise.resolve(entitlements?.creditBalance ?? 0),
+          db.aiConversation.count({
+            where: { organizationId },
+          }),
           db.task.findMany({
             where: {
               organizationId,
@@ -98,7 +93,7 @@ export async function getDashboardOverview() {
     {
       id: "try-assistant",
       title: "Use the AI assistant",
-      done: creditBalance > 0,
+      done: assistantConversationCount > 0,
       href: routes.app.assistant,
       hidden: !canUseAI,
     },
@@ -112,7 +107,7 @@ export async function getDashboardOverview() {
     memberCount,
     taskCount,
     tasksUsage,
-    creditBalance,
+    assistantConversationCount,
     taskLimit,
     canUseAI,
     recentTasks,

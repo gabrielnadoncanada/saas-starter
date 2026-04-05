@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  applyEntitlementDeltas,
-  getDefaultEntitlements,
-} from "@/features/billing/catalog/resolver";
+import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
 import {
   hasCurrentStripeSubscription,
   hasPlanAccess,
@@ -26,23 +23,27 @@ describe("subscription status gating", () => {
   });
 });
 
-describe("entitlement deltas", () => {
-  it("merges recurring add-ons and one-time products into the base entitlements", () => {
-    const base = getDefaultEntitlements({
-      organizationId: "org_123",
-      creditBalance: 200,
-      creditBalancePurchased: 100,
-      creditBalanceSubscription: 100,
-    });
+describe("one-time purchase limits", () => {
+  it("adds storage when storage_boost was purchased", () => {
+    const limits = {
+      tasksPerMonth: 10,
+      teamMembers: 1,
+      storageMb: 100,
+    };
 
-    const entitlements = applyEntitlementDeltas(base, {
-      activeAddonIds: ["analytics"],
-      oneTimeProductIds: ["storage_boost"],
-    });
+    const next = applyOneTimePurchaseLimits(limits, ["storage_boost"]);
 
-    expect(entitlements.capabilities).toContain("team.analytics");
-    expect(entitlements.limits.storageMb).toBe(base.limits.storageMb + 10_000);
-    expect(entitlements.activeAddonIds).toEqual(["analytics"]);
-    expect(entitlements.oneTimeProductIds).toEqual(["storage_boost"]);
+    expect(next.storageMb).toBe(100 + 10_000);
+    expect(next.tasksPerMonth).toBe(10);
+  });
+
+  it("leaves limits unchanged when no matching purchase", () => {
+    const limits = {
+      tasksPerMonth: 10,
+      teamMembers: 1,
+      storageMb: 100,
+    };
+
+    expect(applyOneTimePurchaseLimits(limits, [])).toEqual(limits);
   });
 });

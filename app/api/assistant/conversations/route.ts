@@ -5,7 +5,7 @@ import {
   listAssistantConversations,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/assistant-conversations";
-import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-settings";
+import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-access";
 import { UpgradeRequiredError } from "@/features/billing/errors/billing-errors";
 
 function getScopeErrorResponse(

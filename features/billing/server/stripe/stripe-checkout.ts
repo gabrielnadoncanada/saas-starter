@@ -1,7 +1,6 @@
 import {
   buildPlanCheckoutLineItems,
   buildRecurringSelectionItems,
-  getCreditPack,
   getOneTimeProduct,
   getPlan,
 } from "@/features/billing/catalog/resolver";
@@ -52,7 +51,6 @@ async function assertNoActiveSubscription(organizationId: string) {
 }
 
 export async function createOrganizationSubscriptionCheckoutSession(params: {
-  addonIds: string[];
   billingInterval: BillingInterval;
   organizationId: string;
   planId: PlanId;
@@ -82,7 +80,6 @@ export async function createOrganizationSubscriptionCheckoutSession(params: {
     success_url: `${process.env.BASE_URL}${routes.settings.billing}?checkout=success`,
     cancel_url: `${process.env.BASE_URL}${routes.marketing.pricing}`,
     metadata: {
-      addonIds: params.addonIds.join(","),
       billingInterval: params.billingInterval,
       checkoutType: "subscription",
       organizationId: params.organizationId,
@@ -91,14 +88,13 @@ export async function createOrganizationSubscriptionCheckoutSession(params: {
     },
     subscription_data: {
       metadata: {
-        addonIds: params.addonIds.join(","),
         billingInterval: params.billingInterval,
         checkoutType: "subscription",
         organizationId: params.organizationId,
         planId: plan.id,
       },
       trial_period_days:
-        buildRecurringSelectionItems(params).find((item) => item.itemType === "plan")
+        buildRecurringSelectionItems(params)[0]
           ? plan.schedules[params.billingInterval]?.lineItems[0]?.price.trialDays
           : undefined,
     },
@@ -113,13 +109,9 @@ export async function createOrganizationSubscriptionCheckoutSession(params: {
 
 export async function createOrganizationOneTimeCheckoutSession(params: {
   itemKey: string;
-  itemType: "credit_pack" | "one_time_product";
   organizationId: string;
 }) {
-  const item =
-    params.itemType === "credit_pack"
-      ? getCreditPack(params.itemKey)
-      : getOneTimeProduct(params.itemKey);
+  const item = getOneTimeProduct(params.itemKey);
 
   if (!item?.price) {
     throw new Error("Invalid one-time product selection.");
@@ -139,7 +131,7 @@ export async function createOrganizationOneTimeCheckoutSession(params: {
     success_url: `${process.env.BASE_URL}${routes.settings.billing}?purchase=success`,
     cancel_url: `${process.env.BASE_URL}${routes.settings.billing}`,
     metadata: {
-      checkoutType: params.itemType,
+      checkoutType: "one_time_product",
       itemKey: params.itemKey,
       organizationId: params.organizationId,
     },

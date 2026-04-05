@@ -11,7 +11,7 @@ import { stripe } from "@/shared/lib/stripe/client";
 function buildRecurringItemKey(input: {
   componentKey: string;
   itemKey: string;
-  itemType: "addon" | "plan";
+  itemType: "plan";
 }) {
   return `${input.itemType}:${input.itemKey}:${input.componentKey}`;
 }
@@ -69,7 +69,6 @@ export async function syncSubscriptionItems(
 }
 
 export async function updateOrganizationSubscriptionConfiguration(params: {
-  addonIds: string[];
   billingInterval: BillingInterval;
   organizationId: string;
   planId: PlanId;
@@ -141,7 +140,6 @@ export async function updateOrganizationSubscriptionConfiguration(params: {
   return stripe.subscriptions.update(currentSubscription.id, {
     items: stripeItems,
     metadata: {
-      addonIds: params.addonIds.join(","),
       billingInterval: params.billingInterval,
       checkoutType: "subscription",
       organizationId: params.organizationId,

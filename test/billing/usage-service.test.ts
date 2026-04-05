@@ -13,13 +13,8 @@ function createEntitlements(): OrganizationEntitlements {
   const plan = getPlan("pro");
 
   return {
-    activeAddonIds: [],
     billingInterval: "month",
     capabilities: [...plan.capabilities],
-    creditBalance: 1000,
-    creditBalancePurchased: 0,
-    creditBalanceSubscription: 1000,
-    includedMonthlyCredits: plan.includedMonthlyCredits,
     limits: { ...plan.limits },
     oneTimeProductIds: [],
     organizationId: "org_123",

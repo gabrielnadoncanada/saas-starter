@@ -1,13 +1,13 @@
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import { getAssistantConversation } from "@/features/assistant/server/assistant-conversations";
-import {
-  getOrganizationAiSettings,
-  listAllowedAiModelsForOrganization,
-} from "@/features/assistant/server/organization-ai-settings";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { hasCapability } from "@/features/billing/guards/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { Page } from "@/shared/components/layout/page-layout";
+import {
+  defaultAiModelId,
+  getAiModelOptions,
+} from "@/shared/lib/ai/models";
 
 type AssistantPageProps = {
   searchParams: Promise<{
@@ -23,19 +23,12 @@ export default async function AssistantPage({
     ? hasCapability(entitlements, "ai.assistant")
     : false;
   const { conversationId } = await searchParams;
-  const hasCredits = (entitlements?.creditBalance ?? 0) > 0;
   const initialConversation =
-    canUseAssistant && hasCredits && conversationId
+    canUseAssistant && conversationId
       ? await getAssistantConversation(conversationId)
       : null;
-  const aiSettings =
-    entitlements && canUseAssistant && hasCredits
-      ? await getOrganizationAiSettings(entitlements.organizationId)
-      : null;
   const modelOptions =
-    entitlements && canUseAssistant && hasCredits
-      ? await listAllowedAiModelsForOrganization(entitlements.organizationId)
-      : [];
+    entitlements && canUseAssistant ? getAiModelOptions() : [];
 
   return (
     <Page fixed>
@@ -43,19 +36,12 @@ export default async function AssistantPage({
         <UpgradeCard
           feature={"AI Assistant"}
           description={
-            "The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI-ready monetization module with real task actions, demo inbox review, and invoice drafts."
+            "The AI assistant is available on Pro and Team plans. Upgrade to unlock the AI module with real task actions."
           }
-        />
-      ) : !hasCredits ? (
-        <UpgradeCard
-          feature={"AI Assistant"}
-          description={`This workspace has no AI credits left. Add a credit pack or move to a plan with more included credits. Current balance: ${entitlements?.creditBalance ?? 0}.`}
         />
       ) : (
         <AssistantWorkspace
-          initialDefaultModelId={
-            aiSettings?.defaultModelId ?? modelOptions[0].id
-          }
+          initialDefaultModelId={defaultAiModelId}
           initialConversation={initialConversation}
           initialConversationId={initialConversation?.id ?? null}
           initialModelOptions={modelOptions}

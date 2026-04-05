@@ -6,7 +6,6 @@ import {
   getPlanDisplayPrice,
   isBillingInterval,
   isPlanId,
-  listRecurringAddons,
 } from "@/features/billing/catalog/resolver";
 import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscription-items";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
@@ -22,10 +21,6 @@ export async function updateSubscriptionConfigurationAction(formData: FormData) 
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
   const rawSeatQuantity = formData.get("seatQuantity");
-  const addonIds = formData
-    .getAll("addonIds")
-    .filter((value): value is string => typeof value === "string")
-    .filter((addonId) => listRecurringAddons().some((addon) => addon.id === addonId));
   const planId = typeof rawPlanId === "string" ? rawPlanId : null;
   const billingInterval =
     typeof rawBillingInterval === "string" ? rawBillingInterval : null;
@@ -63,7 +58,6 @@ export async function updateSubscriptionConfigurationAction(formData: FormData) 
   }
 
   await updateOrganizationSubscriptionConfiguration({
-    addonIds,
     billingInterval,
     organizationId: organization.id,
     planId,

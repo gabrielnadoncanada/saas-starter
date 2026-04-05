@@ -3,84 +3,15 @@ import "server-only";
 import { tool } from "ai";
 import { z } from "zod";
 
-import type {
-  CreateInvoiceDraftToolResult,
-  CreateTaskToolResult,
-  ReviewInboxToolResult,
-} from "@/features/assistant/types";
-import { assertCapability } from "@/features/billing/guards/plan-guards";
-import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
-import { consumeMonthlyUsage } from "@/features/billing/usage/usage-service";
+import type { CreateTaskToolResult } from "@/features/assistant/types";
 import { createTaskForCurrentOrganization } from "@/features/tasks/server/task-mutations";
 
-import { assistantDemoInbox } from "./demo-inbox";
 import { toAssistantToolFailure } from "./tool-result";
 
-type InvoiceDraftInput = {
-  clientName: string;
-  clientEmail?: string;
-  items: Array<{ description: string; quantity: number; unitPrice: number }>;
-  notes?: string;
-  dueInDays?: number;
-};
-
-async function getToolOrganizationEntitlements() {
-  const entitlements = await getCurrentOrganizationEntitlements();
-
-  if (!entitlements) {
-    throw new Error("Organization not found");
-  }
-
-  return entitlements;
-}
-
 export const assistantTools = {
-  reviewInbox: tool({
-    description:
-      "Fetch recent emails from the user's inbox. Use this when the user asks to review emails, check their inbox, or wants task suggestions based on emails.",
-    inputSchema: z.object({
-      limit: z
-        .number()
-        .min(1)
-        .max(10)
-        .optional()
-        .describe("Number of recent emails to fetch (default 5)"),
-    }),
-    execute: async ({
-      limit,
-    }: {
-      limit?: number;
-    }): Promise<ReviewInboxToolResult> => {
-      try {
-        const entitlements = await getToolOrganizationEntitlements();
-        assertCapability(entitlements, "email.sync");
-        // TODO: Swap the demo inbox for a real provider adapter (Gmail, Outlook,
-        // IMAP, etc.) before exposing this workflow outside local demos.
-        const messages = await assistantDemoInbox.getRecentMessages(limit ?? 5);
-
-        await consumeMonthlyUsage(
-          entitlements.organizationId,
-          "emailSyncsPerMonth",
-          entitlements,
-        );
-
-        return {
-          success: true,
-          result: {
-            provider: assistantDemoInbox.name,
-            messages,
-            count: messages.length,
-          },
-        };
-      } catch (error) {
-        return toAssistantToolFailure(error);
-      }
-    },
-  }),
-
   createTask: tool({
     description:
-      "Create a task in the task management system. Use this when the user asks to create a task, add a to-do, or when suggesting tasks from email review.",
+      "Create a task in the task management system. Use this when the user asks to create a task, add a to-do, or track follow-ups.",
     inputSchema: z.object({
       title: z.string().min(1).max(255).describe("Task title"),
       description: z
@@ -122,76 +53,6 @@ export const assistantTools = {
             taskCode: task.code,
             title: task.title,
             status: task.status,
-          },
-        };
-      } catch (error) {
-        return toAssistantToolFailure(error);
-      }
-    },
-  }),
-
-  createInvoiceDraft: tool({
-    description:
-      "Create an invoice draft from a natural language description. Use this when the user asks to create, draft, or generate an invoice.",
-    inputSchema: z.object({
-      clientName: z.string().describe("Name of the client to invoice"),
-      clientEmail: z
-        .string()
-        .email()
-        .optional()
-        .describe("Client email address"),
-      items: z
-        .array(
-          z.object({
-            description: z.string().describe("Line item description"),
-            quantity: z.number().min(1).describe("Quantity"),
-            unitPrice: z.number().min(0).describe("Price per unit in dollars"),
-          }),
-        )
-        .min(1)
-        .describe("Invoice line items"),
-      notes: z.string().optional().describe("Additional notes for the invoice"),
-      dueInDays: z
-        .number()
-        .min(1)
-        .max(90)
-        .optional()
-        .describe("Payment due in N days (default 30)"),
-    }),
-    execute: async ({
-      clientName,
-      clientEmail,
-      items,
-      notes,
-      dueInDays,
-    }: InvoiceDraftInput): Promise<CreateInvoiceDraftToolResult> => {
-      try {
-        const entitlements = await getToolOrganizationEntitlements();
-        assertCapability(entitlements, "invoice.create");
-
-        // TODO: Persist drafts in a real invoicing backend instead of returning
-        // computed demo data directly from the tool call.
-        const subtotal = items.reduce(
-          (sum, item) => sum + item.quantity * item.unitPrice,
-          0,
-        );
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + (dueInDays ?? 30));
-
-        return {
-          success: true,
-          result: {
-            invoiceNumber: `INV-${Date.now().toString(36).toUpperCase()}`,
-            clientName,
-            clientEmail: clientEmail ?? null,
-            items: items.map((item) => ({
-              ...item,
-              total: item.quantity * item.unitPrice,
-            })),
-            subtotal,
-            dueDate: dueDate.toISOString().split("T")[0],
-            notes: notes ?? null,
-            currency: "USD",
           },
         };
       } catch (error) {

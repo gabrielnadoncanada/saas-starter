@@ -1,13 +1,6 @@
 import type Stripe from "stripe";
 
-import {
-  findCatalogRecurringPriceByPriceId,
-  getAddon,
-  getCreditPack,
-  getPlan,
-  isPlanId,
-} from "@/features/billing/catalog/resolver";
-import { grantCredits } from "@/features/billing/server/credits";
+import { findCatalogRecurringPriceByPriceId, isPlanId } from "@/features/billing/catalog/resolver";
 import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscription-items";
 import type { BillingInterval } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
@@ -48,20 +41,6 @@ function resolvePlanId(subscription: Stripe.Subscription) {
   return null;
 }
 
-function resolveAddonIds(subscription: Stripe.Subscription) {
-  const addonIds = new Set<string>();
-
-  for (const item of subscription.items.data) {
-    const catalogItem = findCatalogRecurringPriceByPriceId(item.price.id);
-
-    if (catalogItem?.itemType === "addon" && getAddon(catalogItem.itemKey)) {
-      addonIds.add(catalogItem.itemKey);
-    }
-  }
-
-  return [...addonIds];
-}
-
 async function resolveReferenceId(subscription: Stripe.Subscription) {
   if (subscription.metadata.organizationId) {
     return subscription.metadata.organizationId;
@@ -74,43 +53,7 @@ async function resolveReferenceId(subscription: Stripe.Subscription) {
   return findOrganizationIdByStripeCustomerId(subscription.customer);
 }
 
-async function grantSubscriptionCredits(params: {
-  addonIds: string[];
-  organizationId: string;
-  periodEnd: Date | null;
-  periodStart: Date | null;
-  planId: string;
-  stripeSubscriptionId: string;
-}) {
-  if (!isPlanId(params.planId) || !params.periodStart) {
-    return;
-  }
-
-  const plan = getPlan(params.planId);
-  const includedMonthlyCredits =
-    plan.includedMonthlyCredits +
-    params.addonIds.reduce(
-      (total, addonId) => total + (getAddon(addonId)?.includedMonthlyCredits ?? 0),
-      0,
-    );
-
-  if (includedMonthlyCredits <= 0) {
-    return;
-  }
-
-  await grantCredits({
-    organizationId: params.organizationId,
-    sourceKey: `${params.stripeSubscriptionId}:${params.periodStart.toISOString()}`,
-    sourceType: "subscription_cycle",
-    creditsGranted: includedMonthlyCredits,
-    expiresAt: params.periodEnd,
-    reason: "subscription_cycle_credit_grant",
-    referenceId: params.stripeSubscriptionId,
-    referenceType: "subscription",
-  });
-}
-
-async function syncSubscription(subscription: Stripe.Subscription, eventType: string) {
+async function syncSubscription(subscription: Stripe.Subscription) {
   const referenceId = await resolveReferenceId(subscription);
   const planId = resolvePlanId(subscription);
   const customerId =
@@ -156,14 +99,6 @@ async function syncSubscription(subscription: Stripe.Subscription, eventType: st
   });
 
   await syncSubscriptionItems(subscriptionId, subscription);
-  await grantSubscriptionCredits({
-    addonIds: resolveAddonIds(subscription),
-    organizationId: referenceId,
-    periodEnd: subscriptionRecord.periodEnd,
-    periodStart: subscriptionRecord.periodStart,
-    planId,
-    stripeSubscriptionId: subscription.id,
-  });
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -180,14 +115,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   if (session.mode === "payment") {
     const itemKey = session.metadata?.itemKey ?? null;
-    const checkoutType = session.metadata?.checkoutType;
 
     await db.purchase.upsert({
       where: { stripeCheckoutSessionId: session.id },
       update: { status: "completed" },
       create: {
         organizationId,
-        purchaseType: checkoutType === "credit_pack" ? "credit_pack" : "one_time_product",
+        purchaseType: "one_time_product",
         itemKey: itemKey ?? "unknown",
         stripeCheckoutSessionId: session.id,
         stripePaymentIntentId:
@@ -198,22 +132,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         status: "completed",
       },
     });
-
-    if (checkoutType === "credit_pack" && itemKey) {
-      const creditPack = getCreditPack(itemKey);
-
-      if (creditPack) {
-        await grantCredits({
-          organizationId,
-          sourceKey: session.id,
-          sourceType: "credit_pack",
-          creditsGranted: creditPack.creditsGranted,
-          reason: "credit_pack_purchase",
-          referenceId: session.id,
-          referenceType: "checkout",
-        });
-      }
-    }
   }
 }
 
@@ -232,7 +150,7 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
     case "customer.subscription.created":
     case "customer.subscription.updated":
     case "customer.subscription.deleted":
-      await syncSubscription(event.data.object as Stripe.Subscription, event.type);
+      await syncSubscription(event.data.object as Stripe.Subscription);
       return;
     default:
       return;

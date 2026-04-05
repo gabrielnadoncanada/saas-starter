@@ -57,7 +57,7 @@ const features = [
     icon: Sparkles,
     title: "AI-ready Assistant",
     description:
-      "Plan-gated assistant with real task actions, a demo inbox scaffold, invoice draft scaffolds, and provider switching. The point is monetization-ready AI, not a black-box agent.",
+      "Plan-gated assistant with real task actions and provider switching. The point is monetization-ready AI, not a black-box agent.",
   },
   {
     icon: ArrowRight,

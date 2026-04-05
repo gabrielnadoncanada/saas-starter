@@ -31,10 +31,6 @@ vi.mock("@/features/tasks/components/task-form", () => ({
   TaskForm: () => React.createElement("div", null, "Task form"),
 }));
 
-vi.mock("@/features/tasks/components/task-attachments-panel", () => ({
-  TaskAttachmentsPanel: () => React.createElement("div", null, "Attachments"),
-}));
-
 vi.mock("@/features/tasks/server/task.actions", () => ({
   createTaskAction: vi.fn(),
   updateTaskAction: vi.fn(),

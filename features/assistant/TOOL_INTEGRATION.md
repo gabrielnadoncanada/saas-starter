@@ -1,28 +1,16 @@
 # Assistant Tool Integration
 
-The assistant ships with two demo-only integrations:
+The assistant ships with `createTask`, which calls the shared org-scoped task mutation.
 
-- `reviewInbox` reads from `features/assistant/server/demo-inbox.ts`
-- `createInvoiceDraft` returns a computed draft without saving to a billing system
+## Extend or replace tools
 
-Use them as shape references, not as production integrations.
+1. Add or change tools in `features/assistant/server/tools.ts`.
+2. Add matching result types in `features/assistant/types.ts` when the success payload is structured.
+3. Render tool output in `features/assistant/components/assistant-tool-result.tsx`.
+4. Keep billing guards and domain calls next to the tool execution path.
 
-## Replace `reviewInbox`
+## Keep this boundary
 
-1. Pick a real inbox source: Gmail API, Microsoft Graph, IMAP, or your own sync service.
-2. Replace `assistantDemoInbox.getRecentMessages()` with a provider-owned function that returns the same `EmailMessage[]` shape.
-3. Keep plan gating and usage tracking in `features/assistant/server/tools.ts`.
-4. Keep failures mapped through `toAssistantToolFailure()` so UI behavior stays consistent.
-
-## Replace `createInvoiceDraft`
-
-1. Decide where invoice drafts live: Stripe invoices, your own Prisma model, or a third-party invoicing API.
-2. Keep the tool input schema as the assistant contract.
-3. Replace the computed response with a real persisted draft id and dates from that system.
-4. Return only the data the chat UI needs to confirm the result.
-
-## Keep This Boundary
-
-- `tools.ts` should stay as the orchestration layer
-- provider-specific API calls should live in their own server files
-- billing guards should stay next to the tool execution path
+- `tools.ts` stays the orchestration layer.
+- Provider-specific or heavy domain logic lives in feature `server/` files.
+- Route handlers stay thin.

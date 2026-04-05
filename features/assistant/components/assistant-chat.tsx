@@ -216,7 +216,7 @@ export function AssistantChat({
               <PromptInputTextarea
                 disabled={isLoading}
                 placeholder={
-                  "Ask me to review the demo inbox, create a task, or draft an invoice..."
+                  "Ask me to create a task or summarize what you need..."
                 }
               />
             </PromptInputBody>

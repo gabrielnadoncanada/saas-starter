@@ -1,6 +1,5 @@
 import { subDays } from "date-fns";
 
-import { defaultAiModelId, getAllAiModelIds } from "@/shared/lib/ai/models";
 import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -65,10 +64,7 @@ async function seedTasks(organizationId: string) {
 
 async function seedUsageCounters(organizationId: string) {
   const periodStart = getPeriodStart();
-  const usageRows = [
-    { limitKey: "tasksPerMonth", count: 24 },
-    { limitKey: "emailSyncsPerMonth", count: 6 },
-  ] as const;
+  const usageRows = [{ limitKey: "tasksPerMonth", count: 24 }] as const;
 
   for (const usage of usageRows) {
     await db.usageCounter.upsert({
@@ -146,48 +142,12 @@ async function seedSubscription(organizationId: string) {
       stripePriceId: "seed-pro-monthly",
     },
   });
-
-  await db.creditGrant.upsert({
-    where: {
-      organizationId_sourceType_sourceKey: {
-        organizationId,
-        sourceType: "subscription_cycle",
-        sourceKey: "seed-demo-subscription:cycle",
-      },
-    },
-    update: {
-      creditsGranted: 1000,
-      creditsRemaining: 640,
-      expiresAt: periodEnd,
-    },
-    create: {
-      organizationId,
-      sourceType: "subscription_cycle",
-      sourceKey: "seed-demo-subscription:cycle",
-      creditsGranted: 1000,
-      creditsRemaining: 640,
-      expiresAt: periodEnd,
-    },
-  });
-}
-
-async function seedAiSettings(organizationId: string) {
-  await db.organizationAiSettings.upsert({
-    where: { organizationId },
-    update: {},
-    create: {
-      organizationId,
-      defaultModelId: defaultAiModelId,
-      allowedModelIds: getAllAiModelIds(),
-    },
-  });
 }
 
 export async function seedDemoWorkspaceContent(input: {
   organizationId: string;
 }) {
   await Promise.all([
-    seedAiSettings(input.organizationId),
     seedSubscription(input.organizationId),
     seedTasks(input.organizationId),
     seedUsageCounters(input.organizationId),

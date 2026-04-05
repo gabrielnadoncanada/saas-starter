@@ -1,11 +1,8 @@
 "use client";
 
-import { AssistantInvoiceArtifact } from "@/features/assistant/components/assistant-invoice-artifact";
 import type {
   AssistantToolFailure,
-  CreateInvoiceDraftToolResult,
   CreateTaskToolResult,
-  ReviewInboxToolResult,
 } from "@/features/assistant/types";
 import { MessageResponse } from "@/shared/components/ai-elements/message";
 import {
@@ -22,9 +19,7 @@ type AssistantToolResultProps = {
 };
 
 const toolTitles: Record<string, string> = {
-  createInvoiceDraft: "Create invoice draft",
   createTask: "Create task",
-  reviewInbox: "Review inbox",
 };
 
 function getToolState(done: boolean, failed: boolean) {
@@ -44,18 +39,6 @@ function isFailureResult(result: unknown): result is AssistantToolFailure {
   );
 }
 
-function formatReviewInbox(result: ReviewInboxToolResult) {
-  if (!result.success) {
-    return null;
-  }
-
-  const emails = result.result.messages
-    .map((email) => `- **${email.subject}** from ${email.from}`)
-    .join("\n");
-
-  return `Found **${result.result.count}** emails from **${result.result.provider}**.\n\n${emails}`;
-}
-
 function formatTask(result: CreateTaskToolResult) {
   if (!result.success) {
     return null;
@@ -69,29 +52,11 @@ function getToolContent(toolName: string, output?: unknown) {
     return { errorText: undefined, response: undefined };
   }
 
-  if (toolName === "reviewInbox") {
-    const result = output as ReviewInboxToolResult;
-    return {
-      errorText: result.success ? undefined : result.error.message,
-      response: formatReviewInbox(result),
-    };
-  }
-
   if (toolName === "createTask") {
     const result = output as CreateTaskToolResult;
     return {
       errorText: result.success ? undefined : result.error.message,
       response: formatTask(result),
-    };
-  }
-
-  if (toolName === "createInvoiceDraft") {
-    const result = output as CreateInvoiceDraftToolResult;
-    return {
-      errorText: result.success ? undefined : result.error.message,
-      response: result.success ? (
-        <AssistantInvoiceArtifact invoice={result.result} />
-      ) : undefined,
     };
   }
 
@@ -115,24 +80,21 @@ export function AssistantToolResult({
     ) : (
       response
     );
-  const isStandaloneInvoiceArtifact =
-    toolName === "createInvoiceDraft" && !errorText && renderedResponse;
 
   return (
     <div className="space-y-3">
-      <Tool className="mb-0" defaultOpen={done && !isStandaloneInvoiceArtifact}>
+      <Tool className="mb-0" defaultOpen={done}>
         <ToolHeader
           state={state}
           title={toolTitles[toolName] ?? toolName}
           type={`tool-${toolName}`}
         />
-        {!isStandaloneInvoiceArtifact && (response || errorText) && (
+        {(response || errorText) && (
           <ToolContent>
             <ToolOutput errorText={errorText} output={renderedResponse} />
           </ToolContent>
         )}
       </Tool>
-      {isStandaloneInvoiceArtifact ? renderedResponse : null}
     </div>
   );
 }

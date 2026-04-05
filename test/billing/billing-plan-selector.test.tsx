@@ -48,11 +48,9 @@ describe("BillingPlanSelector", () => {
   it("shows the translated owner-only label", () => {
     render(
       React.createElement(BillingPlanSelector, {
-        addons: [],
         canManageBilling: false,
         canManagePortal: false,
         canUpdateSubscription: false,
-        currentAddonIds: [],
         currentBillingInterval: "month",
         currentPlanId: "pro",
         currentSeatQuantity: 1,
@@ -71,11 +69,9 @@ describe("BillingPlanSelector", () => {
   it("shows update and portal actions for an active subscription", () => {
     render(
       React.createElement(BillingPlanSelector, {
-        addons: [{ id: "analytics", name: "Analytics", description: "Extra", monthly: { unitAmount: 1500 }, yearly: null }],
         canManageBilling: true,
         canManagePortal: true,
         canUpdateSubscription: true,
-        currentAddonIds: ["analytics"],
         currentBillingInterval: "month",
         currentPlanId: "pro",
         currentSeatQuantity: 1,
@@ -86,17 +82,14 @@ describe("BillingPlanSelector", () => {
 
     expect(screen.getByRole("button", { name: "Update subscription" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Open billing portal" })).toBeTruthy();
-    expect(screen.getByText("Additional packs")).toBeTruthy();
   });
 
   it("shows the already-active help when the subscription cannot be updated yet", () => {
     render(
       React.createElement(BillingPlanSelector, {
-        addons: [],
         canManageBilling: true,
         canManagePortal: false,
         canUpdateSubscription: false,
-        currentAddonIds: [],
         currentBillingInterval: "month",
         currentPlanId: "pro",
         currentSeatQuantity: 1,

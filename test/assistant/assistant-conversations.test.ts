@@ -46,7 +46,7 @@ describe("ai conversations", () => {
   it("creates a scoped assistant conversation with a generated title", async () => {
     vi.mocked(db.aiConversation.create).mockResolvedValue({
       id: "conv_1",
-      title: "Draft an invoice for Acme Corp due next week.",
+      title: "Create a high-priority task to follow up with Acme Corp.",
       messagesJson: [
         {
           id: "m1",
@@ -54,7 +54,7 @@ describe("ai conversations", () => {
           parts: [
             {
               type: "text",
-              text: "Draft an invoice for Acme Corp due next week.",
+              text: "Create a high-priority task to follow up with Acme Corp.",
             },
           ],
         },
@@ -69,7 +69,7 @@ describe("ai conversations", () => {
         parts: [
           {
             type: "text",
-            text: "   Draft   an invoice for Acme Corp due next week.   ",
+            text: "   Create   a high-priority task to follow up with Acme Corp.   ",
           },
         ],
       },
@@ -81,7 +81,7 @@ describe("ai conversations", () => {
           organizationId: "19",
           createdByUserId: "7",
           surface: assistantConversationSurface,
-          title: "Draft an invoice for Acme Corp due next week.",
+          title: "Create a high-priority task to follow up with Acme Corp.",
         }),
       }),
     );
@@ -89,8 +89,8 @@ describe("ai conversations", () => {
       expect.objectContaining({
         id: "conv_1",
         surface: assistantConversationSurface,
-        title: "Draft an invoice for Acme Corp due next week.",
-        preview: "Draft an invoice for Acme Corp due next week.",
+        title: "Create a high-priority task to follow up with Acme Corp.",
+        preview: "Create a high-priority task to follow up with Acme Corp.",
       }),
     );
   });
@@ -99,12 +99,12 @@ describe("ai conversations", () => {
     vi.mocked(db.aiConversation.findMany).mockResolvedValue([
       {
         id: "conv_1",
-        title: "Invoice",
+        title: "Tasks",
         messagesJson: [
           {
             id: "m1",
             role: "assistant",
-            parts: [{ type: "text", text: "Invoice ready for review." }],
+            parts: [{ type: "text", text: "Created task TASK-1 for you." }],
           },
         ],
         lastMessageAt: new Date("2026-03-17T13:00:00.000Z"),
@@ -126,8 +126,8 @@ describe("ai conversations", () => {
       {
         id: "conv_1",
         surface: assistantConversationSurface,
-        title: "Invoice",
-        preview: "Invoice ready for review.",
+        title: "Tasks",
+        preview: "Created task TASK-1 for you.",
         lastMessageAt: "2026-03-17T13:00:00.000Z",
       },
     ]);

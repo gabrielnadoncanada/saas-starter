@@ -15,9 +15,10 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 - **Plan gating** - Capability-based feature flags and usage limits (monthly quotas, team member caps). Single source of truth in one config file.
 - **Organization management** - Multi-organization support with roles (Owner, Admin, Member), invitations, and active organization switching.
 - **Dashboard shell** - Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
+- **AI assistant** - Org-scoped chat with tool calling (e.g. task creation), model selection, and conversations stored in the database.
 - **Tasks CRUD example** - Full working feature with TanStack Table (sort, filter, paginate, bulk actions), server actions, Zod validation, and plan-gated creation.
 - **Email** - Resend integration with React Email templates for auth emails and team invitations.
-- **Starter docs** - Local guides for environment setup, adding a feature, testing, and assistant tool integration.
+- **Starter docs** - Local guides for environment setup, adding a feature, testing, and extending assistant tools.
 
 ## Tech stack
 
@@ -77,8 +78,12 @@ Copy `.env.example` and configure:
 | `EMAIL_FROM`                                | Sender address for transactional emails                 |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                 |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                 |
+| `BETTER_AUTH_API_KEY`                       | Optional API key if you enable Better Auth’s API routes |
+| `NEXT_PUBLIC_ACCOUNT_MODE`                  | `personal-only` \| `organizations-only` \| `hybrid` (defaults to organizations-only) |
+| `ALLOW_EMAIL_ACCOUNT_LINKING`             | Set `true` to link OAuth accounts by verified email     |
+| `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email               |
 
-See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for the local setup checklist and [docs/STRIPE_TEST_MODE_SETUP.md](docs/STRIPE_TEST_MODE_SETUP.md) for the billing flow.
+See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for the full checklist (including Stripe price IDs) and [docs/STRIPE_TEST_MODE_SETUP.md](docs/STRIPE_TEST_MODE_SETUP.md) for the billing flow. The authoritative list is `.env.example`.
 
 Auth emails and organization invitation emails ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
 
@@ -108,6 +113,7 @@ app/                -> Routes and layouts (thin - delegates to features)
 features/           -> Product code organized by domain
   auth/             -> Sign-in, sign-up, post-sign-in, OAuth
   billing/          -> Plans, guards, checkout, webhooks, usage tracking
+  assistant/        -> AI chat, tools, conversations, model selection
   tasks/            -> CRUD example with plan gating
   organizations/    -> Organization management, invitations, roles
   account/          -> Profile, settings, account deletion
@@ -125,7 +131,7 @@ docs/               -> Setup, customization, and reference guides
 - **Launch faster** - Auth, billing, organizations, and a dashboard shell are already wired together. Start building your product features on day one.
 - **Understand quickly** - Feature-organized code, thin routes, and short files. No custom frameworks to learn.
 - **Modify safely** - Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
-- **Customize freely** - The repo now includes focused docs for environment setup, feature creation, testing, and assistant tool replacement.
+- **Customize freely** - The repo includes focused docs for environment setup, feature creation, testing, and extending assistant tools.
 - **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
 
 ## Documentation
@@ -145,6 +151,7 @@ Core documentation lives in this repo:
 | `pnpm dev`        | Start dev server with Turbopack |
 | `pnpm build`      | Production build                |
 | `pnpm test`       | Run tests                       |
+| `pnpm test:watch` | Tests in watch mode             |
 | `pnpm db:migrate` | Run database migrations         |
 | `pnpm db:seed`    | Seed demo data                  |
 | `pnpm db:studio`  | Open Prisma Studio              |

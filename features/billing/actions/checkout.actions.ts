@@ -4,12 +4,10 @@ import { redirect } from "next/navigation";
 
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import {
-  getCreditPack,
   getOneTimeProduct,
   getPlanDisplayPrice,
   isBillingInterval,
   isPlanId,
-  listRecurringAddons,
 } from "@/features/billing/catalog/resolver";
 import {
   createOrganizationOneTimeCheckoutSession,
@@ -41,10 +39,6 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
   const rawSeatQuantity = formData.get("seatQuantity");
-  const addonIds = formData
-    .getAll("addonIds")
-    .filter((value): value is string => typeof value === "string")
-    .filter((addonId) => listRecurringAddons().some((addon) => addon.id === addonId));
   const planId = typeof rawPlanId === "string" ? rawPlanId : null;
   const billingInterval =
     typeof rawBillingInterval === "string" ? rawBillingInterval : null;
@@ -86,7 +80,6 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
   }
 
   const url = await createOrganizationSubscriptionCheckoutSession({
-    addonIds,
     billingInterval,
     organizationId: organization.id,
     planId,
@@ -114,15 +107,11 @@ export async function startOneTimeCheckoutAction(formData: FormData) {
     throw new Error("Organization not found");
   }
 
-  if (
-    typeof itemKey !== "string" ||
-    (itemType !== "one_time_product" && itemType !== "credit_pack")
-  ) {
+  if (typeof itemKey !== "string" || itemType !== "one_time_product") {
     throw new Error("Invalid one-time purchase selection.");
   }
 
-  const item =
-    itemType === "credit_pack" ? getCreditPack(itemKey) : getOneTimeProduct(itemKey);
+  const item = getOneTimeProduct(itemKey);
 
   if (!item?.price) {
     throw new Error("The selected purchase is not configured.");
@@ -130,20 +119,8 @@ export async function startOneTimeCheckoutAction(formData: FormData) {
 
   const url = await createOrganizationOneTimeCheckoutSession({
     itemKey,
-    itemType,
     organizationId: organization.id,
   });
 
   redirect(url);
-}
-
-export async function buyCreditPackAction(formData: FormData) {
-  const creditPackId = formData.get("itemKey");
-
-  if (typeof creditPackId !== "string" || !getCreditPack(creditPackId)) {
-    throw new Error("Invalid credit pack selection.");
-  }
-
-  formData.set("itemType", "credit_pack");
-  return startOneTimeCheckoutAction(formData);
 }

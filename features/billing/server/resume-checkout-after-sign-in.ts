@@ -42,7 +42,6 @@ export async function resumeCheckoutAfterSignIn({
   }
 
   return createOrganizationSubscriptionCheckoutSession({
-    addonIds: [],
     billingInterval,
     organizationId: organization.id,
     planId,

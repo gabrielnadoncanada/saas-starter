@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  InsufficientCreditsError,
-  UpgradeRequiredError,
-} from "@/features/billing/errors/billing-errors";
+import { UpgradeRequiredError } from "@/features/billing/errors/billing-errors";
 
 vi.mock("server-only", () => ({}));
 
@@ -20,17 +17,16 @@ vi.mock("@/shared/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@/features/assistant/server/organization-ai-settings", () => ({
+vi.mock("@/features/assistant/server/organization-ai-access", () => ({
   assertOrganizationAiAccess: vi.fn(),
 }));
 
 vi.mock("@/features/assistant/server/assistant-model-selection", () => {
   class MockAssistantModelSelectionError extends Error {
-    code: string;
+    code = "UNKNOWN_MODEL" as const;
 
-    constructor(code: string, message: string) {
+    constructor(message: string) {
       super(message);
-      this.code = code;
     }
   }
 
@@ -51,20 +47,14 @@ vi.mock("@/features/assistant/server/assistant-conversations", () => ({
   getAssistantConversation: vi.fn(),
 }));
 
-vi.mock("@/features/billing/server/credits", () => ({
-  reserveCredits: vi.fn(),
-  settleReservedCredits: vi.fn(),
-}));
-
 const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
 const { assertOrganizationAiAccess } =
-  await import("@/features/assistant/server/organization-ai-settings");
+  await import("@/features/assistant/server/organization-ai-access");
 const { resolveOrganizationAssistantModelSelection } =
   await import("@/features/assistant/server/assistant-model-selection");
 const { getAssistantConversation } =
   await import("@/features/assistant/server/assistant-conversations");
-const { reserveCredits } = await import("@/features/billing/server/credits");
 const { POST } = await import("@/app/api/assistant/route");
 
 describe("POST /api/assistant", () => {
@@ -76,14 +66,9 @@ describe("POST /api/assistant", () => {
       organizationId: "12",
       planId: "pro",
       planName: "Pro",
-      limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000, emailSyncsPerMonth: 50 },
+      limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000 },
       capabilities: ["ai.assistant"],
-      activeAddonIds: [],
       billingInterval: "month",
-      creditBalance: 1000,
-      creditBalancePurchased: 0,
-      creditBalanceSubscription: 1000,
-      includedMonthlyCredits: 1000,
       oneTimeProductIds: [],
       pricingModel: "flat",
       seats: null,
@@ -102,7 +87,6 @@ describe("POST /api/assistant", () => {
       allowedModels: [],
     });
     vi.mocked(getAssistantConversation).mockResolvedValue(null);
-    vi.mocked(reserveCredits).mockResolvedValue(undefined);
   });
 
   it("returns 401 when the user is not authenticated", async () => {
@@ -135,26 +119,6 @@ describe("POST /api/assistant", () => {
     expect(streamText).not.toHaveBeenCalled();
   });
 
-  it("returns 402 when the workspace has insufficient credits", async () => {
-    vi.mocked(reserveCredits).mockRejectedValue(
-      new InsufficientCreditsError(0, 25),
-    );
-
-    const response = await POST(
-      new Request("http://localhost/api/assistant", {
-        method: "POST",
-        body: JSON.stringify({
-          messages: [
-            { id: "1", role: "user", parts: [{ type: "text", text: "Hello" }] },
-          ],
-        }),
-      }),
-    );
-
-    expect(response.status).toBe(402);
-    expect(streamText).not.toHaveBeenCalled();
-  });
-
   it("returns 400 when messages are missing", async () => {
     const response = await POST(
       new Request("http://localhost/api/assistant", {
@@ -184,7 +148,7 @@ describe("POST /api/assistant", () => {
     expect(streamText).not.toHaveBeenCalled();
   });
 
-  it("reserves credits before streaming a successful response", async () => {
+  it("streams a successful response when access checks pass", async () => {
     const response = await POST(
       new Request("http://localhost/api/assistant", {
         method: "POST",
@@ -198,11 +162,6 @@ describe("POST /api/assistant", () => {
 
     expect(response.status).toBe(200);
     expect(streamText).toHaveBeenCalled();
-    expect(reserveCredits).toHaveBeenCalledWith({
-      organizationId: "12",
-      credits: 25,
-      referenceId: expect.any(String),
-    });
     expect(resolveOrganizationAssistantModelSelection).toHaveBeenCalledWith(
       "12",
       undefined,

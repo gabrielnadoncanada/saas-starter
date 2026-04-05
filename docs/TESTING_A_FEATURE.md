@@ -26,7 +26,7 @@ For a new feature, add:
 
 ```bash
 pnpm test
-pnpm test -- --watch
+pnpm test:watch
 ```
 
 ## What To Avoid

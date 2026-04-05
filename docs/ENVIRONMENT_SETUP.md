@@ -52,11 +52,11 @@ Copy `.env.example` to `.env` and fill in the variables you actually use.
 - `demo@starter.local` / `demo123` for the normal product flow
 - `admin@admin.com` / `admin123` for the admin area
 
-The demo workspace includes recent tasks, AI settings, usage counters, and a local billing snapshot so the dashboard is populated on first login.
+The demo workspace includes recent tasks, assistant conversations, usage counters, and a local billing snapshot so the dashboard is populated on first login.
 
 ## Stripe Test Mode
 
-Use [`docs/STRIPE_TEST_MODE_SETUP.md`](C:/laragon/www/saas-starter/docs/STRIPE_TEST_MODE_SETUP.md) to create test prices, forward Stripe webhooks, and verify checkout locally.
+Use [STRIPE_TEST_MODE_SETUP.md](./STRIPE_TEST_MODE_SETUP.md) to create test prices, forward Stripe webhooks, and verify checkout locally.
 
 If your local database or generated Prisma state drifts, reset it instead of patching around it:
 

@@ -48,7 +48,7 @@ export async function DashboardOverview() {
     memberCount,
     taskCount,
     tasksUsage,
-    creditBalance,
+    assistantConversationCount,
     taskLimit,
     canUseAI,
     recentTasks,
@@ -135,20 +135,15 @@ export async function DashboardOverview() {
               <CardDescription>AI Assistant</CardDescription>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Sparkles className="h-5 w-5 text-orange-500" />
-                {`${creditBalance} credits`}
+                {assistantConversationCount > 0 ? "In use" : "Ready"}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <UsageMeter
-                label={"Available credits"}
-                current={creditBalance}
-                limit={
-                  Math.max(
-                    entitlements?.includedMonthlyCredits ?? 0,
-                    creditBalance,
-                  ) || 1
-                }
-              />
+              <p className="text-sm text-muted-foreground">
+                {assistantConversationCount > 0
+                  ? `${assistantConversationCount} conversation${assistantConversationCount === 1 ? "" : "s"} in this workspace.`
+                  : "Open the assistant to start a conversation."}
+              </p>
             </CardContent>
           </Card>
         ) : null}

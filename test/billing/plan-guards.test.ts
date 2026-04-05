@@ -23,13 +23,8 @@ function createEntitlements(planId: PlanId): OrganizationEntitlements {
   const plan = getPlan(planId);
 
   return {
-    activeAddonIds: [],
     billingInterval: planId === "free" ? null : "month",
     capabilities: [...plan.capabilities],
-    creditBalance: plan.includedMonthlyCredits,
-    creditBalancePurchased: 0,
-    creditBalanceSubscription: plan.includedMonthlyCredits,
-    includedMonthlyCredits: plan.includedMonthlyCredits,
     limits: { ...plan.limits },
     oneTimeProductIds: [],
     organizationId: "org_123",

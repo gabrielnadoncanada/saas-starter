@@ -21,7 +21,9 @@ export default async function AdminOrganizationsPage() {
     <Page>
       <PageHeader>
         <PageTitle>Organizations</PageTitle>
-        <PageDescription>View and manage all platform organizations.</PageDescription>
+        <PageDescription>
+          View and manage all platform organizations.
+        </PageDescription>
       </PageHeader>
 
       <AdminOrganizationsTable

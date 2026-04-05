@@ -14,7 +14,6 @@ import {
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/shared/components/ui/card";
-import { Checkbox } from "@/shared/components/ui/checkbox";
 import { Input } from "@/shared/components/ui/input";
 import {
   Item,
@@ -24,20 +23,10 @@ import {
 } from "@/shared/components/ui/item";
 import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
 
-type BillingAddonOption = {
-  id: string;
-  name: string;
-  description: string;
-  monthly: { unitAmount: number } | null;
-  yearly: { unitAmount: number } | null;
-};
-
 type BillingPlanSelectorProps = {
-  addons: BillingAddonOption[];
   canManageBilling: boolean;
   canManagePortal: boolean;
   canUpdateSubscription: boolean;
-  currentAddonIds: string[];
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   currentSeatQuantity: number;
@@ -49,14 +38,8 @@ function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
   return interval === "year" ? plan.yearly : plan.monthly;
 }
 
-function getAddonPrice(addon: BillingAddonOption, interval: BillingInterval) {
-  return interval === "year" ? addon.yearly : addon.monthly;
-}
-
 export function BillingPlanSelector({
-  addons,
   plans,
-  currentAddonIds,
   currentBillingInterval,
   currentPlanId,
   currentSeatQuantity,
@@ -76,8 +59,6 @@ export function BillingPlanSelector({
   const [seatQuantity, setSeatQuantity] = useState(
     Math.max(1, currentSeatQuantity),
   );
-  const [selectedAddonIds, setSelectedAddonIds] =
-    useState<string[]>(currentAddonIds);
 
   if (!defaultPlan || !selectedPlanId) {
     return (
@@ -95,21 +76,10 @@ export function BillingPlanSelector({
     plans.find((plan) => plan.id === selectedPlanId) ?? defaultPlan;
   const selectedPrice = getPlanPrice(selectedPlan, interval);
   const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
-  const visibleAddons = addons.filter((addon) =>
-    Boolean(getAddonPrice(addon, interval)),
-  );
   const subscriptionAction =
     hasCurrentSubscription && canUpdateSubscription
       ? updateSubscriptionConfigurationAction
       : startSubscriptionCheckoutAction;
-
-  function toggleAddon(addonId: string) {
-    setSelectedAddonIds((current) =>
-      current.includes(addonId)
-        ? current.filter((id) => id !== addonId)
-        : [...current, addonId],
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -157,29 +127,6 @@ export function BillingPlanSelector({
         </label>
       ) : null}
 
-      {visibleAddons.length > 0 ? (
-        <div className="space-y-3">
-          <p className="text-sm font-medium">Additional packs</p>
-          {visibleAddons.map((addon) => (
-            <label
-              key={addon.id}
-              className="flex items-start gap-3 rounded-xl border p-3"
-            >
-              <Checkbox
-                checked={selectedAddonIds.includes(addon.id)}
-                onCheckedChange={() => toggleAddon(addon.id)}
-              />
-              <div className="space-y-1">
-                <p className="font-medium">{addon.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {addon.description}
-                </p>
-              </div>
-            </label>
-          ))}
-        </div>
-      ) : null}
-
       {!canManageBilling ? (
         <Button disabled className="h-11 rounded-xl px-5">
           Only the owner can manage billing
@@ -190,14 +137,6 @@ export function BillingPlanSelector({
             <input type="hidden" name="planId" value={selectedPlan.id} />
             <input type="hidden" name="billingInterval" value={interval} />
             <input type="hidden" name="seatQuantity" value={seatQuantity} />
-            {selectedAddonIds.map((addonId) => (
-              <input
-                key={addonId}
-                type="hidden"
-                name="addonIds"
-                value={addonId}
-              />
-            ))}
             <Button type="submit" disabled={!selectedPrice}>
               {hasCurrentSubscription && canUpdateSubscription
                 ? "Update subscription"

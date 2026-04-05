@@ -32,6 +32,9 @@ vi.mock("@/shared/lib/db/prisma", () => ({
       count: vi.fn(),
       findMany: vi.fn(),
     },
+    aiConversation: {
+      count: vi.fn(),
+    },
   },
 }));
 
@@ -62,14 +65,9 @@ describe("getDashboardOverview", () => {
       organizationId: "org_123",
       planId: "pro",
       planName: "Pro",
-      limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000, emailSyncsPerMonth: 50 },
+      limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000 },
       capabilities: ["ai.assistant", "team.invite"],
-      activeAddonIds: [],
       billingInterval: "month",
-      creditBalance: 640,
-      creditBalancePurchased: 140,
-      creditBalanceSubscription: 500,
-      includedMonthlyCredits: 1000,
       oneTimeProductIds: [],
       pricingModel: "flat",
       seats: null,
@@ -78,6 +76,7 @@ describe("getDashboardOverview", () => {
       subscriptionStatus: "active",
     } as never);
     vi.mocked(db.task.count).mockResolvedValue(42 as never);
+    vi.mocked(db.aiConversation.count).mockResolvedValue(2 as never);
     vi.mocked(db.task.findMany)
       .mockResolvedValueOnce([{ id: 1, title: "Recent", createdAt: new Date() }] as never)
       .mockResolvedValueOnce([{ createdAt: new Date() }] as never);
@@ -85,9 +84,12 @@ describe("getDashboardOverview", () => {
   });
 
   it("uses count plus scoped recent-task queries instead of loading every task", async () => {
-    const overview = await getDashboardOverview("en-US");
+    const overview = await getDashboardOverview();
 
     expect(db.task.count).toHaveBeenCalledWith({
+      where: { organizationId: "org_123" },
+    });
+    expect(db.aiConversation.count).toHaveBeenCalledWith({
       where: { organizationId: "org_123" },
     });
     expect(db.task.findMany).toHaveBeenNthCalledWith(
@@ -109,7 +111,7 @@ describe("getDashboardOverview", () => {
       }),
     );
     expect(overview.taskCount).toBe(42);
-    expect(overview.creditBalance).toBe(640);
+    expect(overview.assistantConversationCount).toBe(2);
     expect(overview.recentTasks).toHaveLength(1);
   });
 });

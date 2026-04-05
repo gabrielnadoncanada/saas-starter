@@ -24,7 +24,7 @@ Copy their IDs into:
 - `STRIPE_PRICE_TEAM_MONTHLY`
 - `STRIPE_PRICE_TEAM_YEARLY`
 
-The app decides what each plan unlocks in [`shared/config/billing.config.ts`](C:/laragon/www/saas-starter/shared/config/billing.config.ts). Stripe only provides the checkout price targets.
+The app decides what each plan unlocks in [`shared/config/billing.config.ts`](../shared/config/billing.config.ts). Stripe only provides the checkout price targets.
 
 ## 3. Forward webhooks locally
 

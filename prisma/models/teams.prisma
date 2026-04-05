@@ -13,11 +13,8 @@ model Organization {
   invitations         Invitation[]
   tasks               Task[]
   usageCounters       UsageCounter[]
-  purchases           Purchase[]
-  creditGrants        CreditGrant[]
-  creditLedgerEntries CreditLedgerEntry[]
-  aiSettings          OrganizationAiSettings?
-  aiConversations     AiConversation[]
+  purchases       Purchase[]
+  aiConversations AiConversation[]
   storedFiles         StoredFile[]
 }
 

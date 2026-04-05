@@ -4,7 +4,6 @@ process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
 process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
 process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
 process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
-process.env.STRIPE_PRICE_CREDIT_PACK_2000 = "price_credits_2000";
 
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {
@@ -28,17 +27,12 @@ vi.mock("@/features/billing/server/stripe/stripe-customers", () => ({
   syncOrganizationStripeCustomer: vi.fn(),
 }));
 
-vi.mock("@/features/billing/server/credits", () => ({
-  grantCredits: vi.fn(),
-}));
-
 const { db } = await import("@/shared/lib/db/prisma");
 const {
   clearStripeCustomerBillingState,
   findOrganizationIdByStripeCustomerId,
   syncOrganizationStripeCustomer,
 } = await import("@/features/billing/server/stripe/stripe-customers");
-const { grantCredits } = await import("@/features/billing/server/credits");
 const { handleStripeWebhookEvent } =
   await import("@/features/billing/server/stripe/stripe-webhooks");
 
@@ -96,7 +90,6 @@ describe("handleStripeWebhookEvent", () => {
       clearedOrganizations: 1,
       deletedSubscriptions: 1,
     });
-    vi.mocked(grantCredits).mockResolvedValue({ id: "grant_123" } as never);
   });
 
   it("syncs the Stripe customer and records one-time purchases when checkout completes", async () => {
@@ -108,11 +101,11 @@ describe("handleStripeWebhookEvent", () => {
           id: "cs_123",
           mode: "payment",
           customer: "cus_123",
-          amount_total: 2000,
+          amount_total: 7900,
           currency: "usd",
           metadata: {
-            checkoutType: "credit_pack",
-            itemKey: "credits_2000",
+            checkoutType: "one_time_product",
+            itemKey: "storage_boost",
             organizationId: "org_123",
           },
           client_reference_id: null,
@@ -129,16 +122,9 @@ describe("handleStripeWebhookEvent", () => {
       expect.objectContaining({
         create: expect.objectContaining({
           organizationId: "org_123",
-          purchaseType: "credit_pack",
-          itemKey: "credits_2000",
+          purchaseType: "one_time_product",
+          itemKey: "storage_boost",
         }),
-      }),
-    );
-    expect(grantCredits).toHaveBeenCalledWith(
-      expect.objectContaining({
-        organizationId: "org_123",
-        sourceType: "credit_pack",
-        sourceKey: "cs_123",
       }),
     );
   });

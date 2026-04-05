@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Mail, Sparkles } from "lucide-react";
+import { BookOpen, ListChecks, Sparkles } from "lucide-react";
 
 import { ConversationEmptyState } from "@/shared/components/ai-elements/conversation";
 import { Button } from "@/shared/components/ui/button";
@@ -11,21 +11,20 @@ type EmptyStateProps = {
 
 export function AssistantChatEmptyState({ onPromptClick }: EmptyStateProps) {
   const title = "AI-ready billing pattern";
-  const description =
-    "Review the demo inbox, create tasks, or draft invoices from natural language.";
+  const description = "Create and organize tasks from natural language.";
 
   const suggested = [
     {
-      icon: Mail,
-      label: "Review the demo inbox",
+      icon: ListChecks,
+      label: "Create a follow-up task",
       prompt:
-        "Review the demo inbox and suggest tasks for today based on emails that need action.",
+        "Create a high-priority task titled Follow up with Acme about the proposal.",
     },
     {
-      icon: FileText,
-      label: "Draft an invoice",
+      icon: BookOpen,
+      label: "Add a documentation task",
       prompt:
-        "Draft an invoice for Acme Corp for 10 hours of consulting at $150/hour, due in 30 days.",
+        "Create a Medium priority documentation task titled Update API reference for the auth endpoints.",
     },
   ];
 

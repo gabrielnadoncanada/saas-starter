@@ -1,11 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type {
-  CreateInvoiceDraftToolResult,
-  CreateTaskToolResult,
-  ReviewInboxToolResult,
-} from "@/features/assistant/types";
-import { LimitReachedError } from "@/features/billing/errors/billing-errors";
+import type { CreateTaskToolResult } from "@/features/assistant/types";
 
 vi.mock("server-only", () => ({}));
 
@@ -25,121 +20,20 @@ vi.mock("@/features/tasks/server/task-mutations", () => ({
   createTaskForCurrentOrganization: vi.fn(),
 }));
 
-vi.mock("@/features/assistant/server/demo-inbox", () => ({
-  assistantDemoInbox: {
-    name: "Demo inbox",
-    getRecentMessages: vi.fn(),
-  },
-}));
-
-const { getCurrentOrganizationEntitlements } = await import(
-  "@/features/billing/server/organization-entitlements"
-);
-const { consumeMonthlyUsage } =
-  await import("@/features/billing/usage/usage-service");
 const { createTaskForCurrentOrganization } =
   await import("@/features/tasks/server/task-mutations");
-const { assistantDemoInbox } =
-  await import("@/features/assistant/server/demo-inbox");
 const { assistantTools } = await import("@/features/assistant/server/tools");
 
-const reviewInboxExecute = assistantTools.reviewInbox.execute as (input: {
-  limit?: number;
-}) => Promise<ReviewInboxToolResult>;
 const createTaskExecute = assistantTools.createTask.execute as (input: {
   title: string;
   description?: string;
   label?: "FEATURE" | "BUG" | "DOCUMENTATION";
   priority?: "LOW" | "MEDIUM" | "HIGH";
 }) => Promise<CreateTaskToolResult>;
-const createInvoiceDraftExecute = assistantTools.createInvoiceDraft.execute as (input: {
-  clientName: string;
-  items: Array<{ description: string; quantity: number; unitPrice: number }>;
-}) => Promise<CreateInvoiceDraftToolResult>;
-
-function createEntitlements(capabilities: string[]) {
-  return {
-    organizationId: "12",
-    planId: "pro",
-    planName: "Pro",
-    limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000, emailSyncsPerMonth: 50 },
-    capabilities,
-    activeAddonIds: [],
-    billingInterval: "month",
-    creditBalance: 1000,
-    creditBalancePurchased: 0,
-    creditBalanceSubscription: 1000,
-    includedMonthlyCredits: 1000,
-    oneTimeProductIds: [],
-    pricingModel: "flat",
-    seats: null,
-    stripeCustomerId: null,
-    stripeSubscriptionId: null,
-    subscriptionStatus: "active",
-  };
-}
 
 describe("assistant tools", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
-      createEntitlements(["email.sync", "invoice.create", "task.create"]) as never,
-    );
-    vi.mocked(consumeMonthlyUsage).mockResolvedValue(undefined);
-  });
-
-  it("blocks reviewInbox when the workspace lacks email.sync", async () => {
-    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
-      createEntitlements(["task.create"]) as never,
-    );
-
-    const result = await reviewInboxExecute({ limit: 3 });
-
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.code).toBe("UPGRADE_REQUIRED");
-    }
-    expect(assistantDemoInbox.getRecentMessages).not.toHaveBeenCalled();
-  });
-
-  it("blocks reviewInbox when the email sync quota is exhausted", async () => {
-    vi.mocked(consumeMonthlyUsage).mockRejectedValue(
-      new LimitReachedError("emailSyncsPerMonth", 50, 50, "Pro"),
-    );
-    vi.mocked(assistantDemoInbox.getRecentMessages).mockResolvedValue([]);
-
-    const result = await reviewInboxExecute({ limit: 3 });
-
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.code).toBe("LIMIT_REACHED");
-    }
-    expect(assistantDemoInbox.getRecentMessages).toHaveBeenCalledWith(3);
-  });
-
-  it("consumes email sync usage before a successful inbox review", async () => {
-    vi.mocked(assistantDemoInbox.getRecentMessages).mockResolvedValue([
-      {
-        id: "msg-1",
-        from: "billing@vendor.com",
-        subject: "Invoice reminder",
-        snippet: "Please review",
-        receivedAt: "2026-03-17T10:00:00.000Z",
-      },
-    ]);
-
-    const result = await reviewInboxExecute({ limit: 1 });
-
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.result.count).toBe(1);
-      expect(result.result.provider).toBe("Demo inbox");
-    }
-    expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      "12",
-      "emailSyncsPerMonth",
-      expect.objectContaining({ organizationId: "12" }),
-    );
   });
 
   it("creates tasks through the shared guarded task contract", async () => {
@@ -162,21 +56,5 @@ describe("assistant tools", () => {
       priority: "HIGH",
     });
     expect(result.success).toBe(true);
-  });
-
-  it("blocks invoice drafts when the workspace lacks invoice.create", async () => {
-    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
-      createEntitlements(["email.sync", "task.create"]) as never,
-    );
-
-    const result = await createInvoiceDraftExecute({
-      clientName: "Acme Corp",
-      items: [{ description: "Consulting", quantity: 2, unitPrice: 150 }],
-    });
-
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.code).toBe("UPGRADE_REQUIRED");
-    }
   });
 });

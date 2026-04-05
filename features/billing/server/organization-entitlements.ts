@@ -1,13 +1,12 @@
 import "server-only";
 
 import {
-  applyEntitlementDeltas,
   getDefaultEntitlements,
   getPlan,
   isPlanId,
 } from "@/features/billing/catalog/resolver";
+import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
 import { hasPlanAccess } from "@/features/billing/plans/subscription-status";
-import { getCreditBalance } from "@/features/billing/server/credits";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import type {
   OrganizationEntitlements,
@@ -22,10 +21,21 @@ async function getLatestSubscription(organizationId: string) {
   });
 }
 
+function withPurchasedOneTimeLimits(
+  entitlements: OrganizationEntitlements,
+  oneTimeProductIds: string[],
+): OrganizationEntitlements {
+  return {
+    ...entitlements,
+    limits: applyOneTimePurchaseLimits(entitlements.limits, oneTimeProductIds),
+    oneTimeProductIds,
+  };
+}
+
 export async function resolveOrganizationEntitlements(
   organizationId: string,
 ): Promise<OrganizationEntitlements> {
-  const [subscription, purchases, creditBalance] = await Promise.all([
+  const [subscription, purchases] = await Promise.all([
     getLatestSubscription(organizationId),
     db.purchase.findMany({
       where: {
@@ -35,21 +45,16 @@ export async function resolveOrganizationEntitlements(
       },
       select: { itemKey: true },
     }),
-    getCreditBalance(organizationId),
   ]);
 
   const base = getDefaultEntitlements({
     organizationId,
-    creditBalance: creditBalance.total,
-    creditBalancePurchased: creditBalance.purchased,
-    creditBalanceSubscription: creditBalance.subscription,
   });
 
+  const oneTimeProductIds = purchases.map((purchase) => purchase.itemKey);
+
   if (!subscription || !hasPlanAccess(subscription.status) || !isPlanId(subscription.plan)) {
-    return applyEntitlementDeltas(base, {
-      activeAddonIds: [],
-      oneTimeProductIds: purchases.map((purchase) => purchase.itemKey),
-    });
+    return withPurchasedOneTimeLimits(base, oneTimeProductIds);
   }
 
   const subscriptionItems = await db.subscriptionItem.findMany({
@@ -65,15 +70,12 @@ export async function resolveOrganizationEntitlements(
   });
 
   const plan = getPlan(subscription.plan);
-  const activeAddonIds = subscriptionItems
-    .filter((item) => item.itemType === "addon")
-    .map((item) => item.itemKey);
   const seats =
     subscription.seats ??
     subscriptionItems.find((item) => item.itemType === "plan")?.quantity ??
     null;
 
-  return applyEntitlementDeltas(
+  return withPurchasedOneTimeLimits(
     {
       ...base,
       billingInterval:
@@ -82,7 +84,6 @@ export async function resolveOrganizationEntitlements(
           ? subscription.billingInterval
           : null,
       capabilities: [...plan.capabilities],
-      includedMonthlyCredits: plan.includedMonthlyCredits,
       limits: { ...plan.limits },
       planId: plan.id as PlanId,
       planName: plan.name,
@@ -92,10 +93,7 @@ export async function resolveOrganizationEntitlements(
       stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
       subscriptionStatus: subscription.status ?? null,
     },
-    {
-      activeAddonIds,
-      oneTimeProductIds: purchases.map((purchase) => purchase.itemKey),
-    },
+    oneTimeProductIds,
   );
 }
 

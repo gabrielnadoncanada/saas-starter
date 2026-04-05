@@ -23,7 +23,7 @@ export function CodeProof() {
                 "assertLimit() — enforce usage quotas",
                 "consumeCredits() - bill AI usage with prepaid balance",
                 "Billing catalog - one source of truth for plans and add-ons",
-                "Five billing models - one-time, subscription, seats, add-ons, credits",
+                "Four billing models - one-time, subscription, seats, add-ons",
               ].map((item) => (
                 <li
                   key={item}

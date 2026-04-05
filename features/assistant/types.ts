@@ -1,17 +1,9 @@
 import type { UIMessage } from "ai";
 
-import type { AiModelId } from "@/shared/lib/ai/models";
-
 export const assistantConversationSurface = "assistant";
 
 export type AssistantConversationSurface =
   typeof assistantConversationSurface;
-
-export type OrganizationAiSettingsView = {
-  organizationId: string;
-  defaultModelId: AiModelId;
-  allowedModelIds: AiModelId[];
-};
 
 export type AssistantConversationListItem = {
   id: string;
@@ -23,14 +15,6 @@ export type AssistantConversationListItem = {
 
 export type AssistantConversation = AssistantConversationListItem & {
   messages: UIMessage[];
-};
-
-export type EmailMessage = {
-  id: string;
-  from: string;
-  subject: string;
-  snippet: string;
-  receivedAt: string;
 };
 
 export type AssistantToolErrorCode =
@@ -46,17 +30,6 @@ export type AssistantToolFailure = {
   };
 };
 
-export type ReviewInboxToolResult =
-  | {
-      success: true;
-      result: {
-        provider: string;
-        messages: EmailMessage[];
-        count: number;
-      };
-    }
-  | AssistantToolFailure;
-
 export type CreateTaskToolResult =
   | {
       success: true;
@@ -64,29 +37,6 @@ export type CreateTaskToolResult =
         taskCode: string;
         title: string;
         status: string;
-      };
-    }
-  | AssistantToolFailure;
-
-export type InvoiceDraftItem = {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-};
-
-export type CreateInvoiceDraftToolResult =
-  | {
-      success: true;
-      result: {
-        invoiceNumber: string;
-        clientName: string;
-        clientEmail: string | null;
-        items: InvoiceDraftItem[];
-        subtotal: number;
-        dueDate: string;
-        notes: string | null;
-        currency: string;
       };
     }
   | AssistantToolFailure;

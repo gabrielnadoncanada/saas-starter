@@ -7,7 +7,7 @@ const faqs = [
   {
     question: "What exactly do I get?",
     answer:
-      "You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions plus demo inbox and invoice draft scaffolds, PostgreSQL + Prisma setup, email templates, and 72 documentation files including 31 step-by-step customization guides.",
+      "You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions, PostgreSQL + Prisma setup, email templates, and 72 documentation files including 31 step-by-step customization guides.",
   },
   {
     question: "What is NOT included?",
