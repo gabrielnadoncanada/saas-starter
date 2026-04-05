@@ -34,26 +34,26 @@ import {
 } from "@/shared/components/ui/sheet";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { getFieldState } from "@/shared/lib/get-field-state";
+import type { FormActionState } from "@/shared/types/form-action-state";
+
+type TaskFormValues = {
+  title: string;
+  description?: string;
+  label: string;
+  priority: string;
+  status?: string;
+  taskId?: number;
+};
 
 type TaskFormProps = {
   mode: "create" | "update";
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  state: {
-    values?: Record<string, string | number | undefined>;
-    fieldErrors?: Record<string, string[] | undefined>;
-  };
+  state: FormActionState<TaskFormValues>;
   formAction: (payload: FormData) => void;
   isPending: boolean;
   task?: Task;
 };
-
-function getFieldValue(
-  stateValue: string | number | undefined,
-  fallbackValue: string,
-) {
-  return stateValue === undefined ? fallbackValue : String(stateValue);
-}
 
 export function TaskForm({
   mode,
@@ -64,23 +64,12 @@ export function TaskForm({
   isPending,
   task,
 }: TaskFormProps) {
-  const titleField = getFieldState(state, "title");
-  const descriptionField = getFieldState(state, "description");
-  const labelField = getFieldState(state, "label");
-  const priorityField = getFieldState(state, "priority");
-  const statusField = getFieldState(state, "status");
   const isUpdate = mode === "update";
-  const title = getFieldValue(state.values?.title, task?.title ?? "");
-  const description = getFieldValue(
-    state.values?.description,
-    task?.description ?? "",
-  );
-  const label = getFieldValue(state.values?.label, task?.label ?? "FEATURE");
-  const priority = getFieldValue(
-    state.values?.priority,
-    task?.priority ?? "MEDIUM",
-  );
-  const status = getFieldValue(state.values?.status, task?.status ?? "TODO");
+  const title = getFieldState(state, "title", task?.title ?? "");
+  const description = getFieldState(state, "description", task?.description ?? "");
+  const label = getFieldState(state, "label", task?.label ?? "FEATURE");
+  const priority = getFieldState(state, "priority", task?.priority ?? "MEDIUM");
+  const status = getFieldState(state, "status", task?.status ?? "TODO");
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -101,38 +90,38 @@ export function TaskForm({
           {task ? <input type="hidden" name="taskId" value={task.id} /> : null}
 
           <FieldGroup className="gap-4">
-            <Field data-invalid={titleField.invalid}>
+            <Field data-invalid={title.invalid}>
               <FieldLabel htmlFor="task-title">Title</FieldLabel>
               <Input
                 id="task-title"
                 name="title"
-                defaultValue={title}
+                defaultValue={title.value}
                 placeholder={"Ship the onboarding polish"}
-                aria-invalid={titleField.invalid}
+                aria-invalid={title.invalid}
                 required
               />
-              <FieldError>{titleField.error}</FieldError>
+              <FieldError>{title.error}</FieldError>
             </Field>
 
-            <Field data-invalid={descriptionField.invalid}>
+            <Field data-invalid={description.invalid}>
               <FieldLabel htmlFor="task-description">Description</FieldLabel>
               <Textarea
                 id="task-description"
                 name="description"
-                defaultValue={description}
+                defaultValue={description.value}
                 placeholder={"Optional context for the task"}
-                aria-invalid={descriptionField.invalid}
+                aria-invalid={description.invalid}
               />
-              <FieldError>{descriptionField.error}</FieldError>
+              <FieldError>{description.error}</FieldError>
             </Field>
 
-            <Field data-invalid={labelField.invalid}>
+            <Field data-invalid={label.invalid}>
               <FieldLabel htmlFor="task-label">Label</FieldLabel>
-              <Select name="label" defaultValue={label}>
+              <Select name="label" defaultValue={label.value}>
                 <SelectTrigger
                   id="task-label"
                   className="w-full"
-                  aria-invalid={labelField.invalid}
+                  aria-invalid={label.invalid}
                 >
                   <SelectValue placeholder={"Select a label"} />
                 </SelectTrigger>
@@ -144,16 +133,16 @@ export function TaskForm({
                   ))}
                 </SelectContent>
               </Select>
-              <FieldError>{labelField.error}</FieldError>
+              <FieldError>{label.error}</FieldError>
             </Field>
 
-            <Field data-invalid={priorityField.invalid}>
+            <Field data-invalid={priority.invalid}>
               <FieldLabel htmlFor="task-priority">Priority</FieldLabel>
-              <Select name="priority" defaultValue={priority}>
+              <Select name="priority" defaultValue={priority.value}>
                 <SelectTrigger
                   id="task-priority"
                   className="w-full"
-                  aria-invalid={priorityField.invalid}
+                  aria-invalid={priority.invalid}
                 >
                   <SelectValue placeholder={"Select a priority"} />
                 </SelectTrigger>
@@ -165,17 +154,17 @@ export function TaskForm({
                   ))}
                 </SelectContent>
               </Select>
-              <FieldError>{priorityField.error}</FieldError>
+              <FieldError>{priority.error}</FieldError>
             </Field>
 
             {isUpdate ? (
-              <Field data-invalid={statusField.invalid}>
+              <Field data-invalid={status.invalid}>
                 <FieldLabel htmlFor="task-status">Status</FieldLabel>
-                <Select name="status" defaultValue={status}>
+                <Select name="status" defaultValue={status.value}>
                   <SelectTrigger
                     id="task-status"
                     className="w-full"
-                    aria-invalid={statusField.invalid}
+                    aria-invalid={status.invalid}
                   >
                     <SelectValue placeholder={"Select a status"} />
                   </SelectTrigger>
@@ -187,7 +176,7 @@ export function TaskForm({
                     ))}
                   </SelectContent>
                 </Select>
-                <FieldError>{statusField.error}</FieldError>
+                <FieldError>{status.error}</FieldError>
               </Field>
             ) : null}
           </FieldGroup>

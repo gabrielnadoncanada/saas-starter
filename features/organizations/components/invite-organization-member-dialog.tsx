@@ -41,8 +41,7 @@ export function InviteOrganizationMemberDialog({
   >(inviteOrganizationMemberAction, {});
 
   const emailField = getFieldState(state, "email");
-  const defaultEmail = state.values?.email ?? "";
-  const defaultRole = state.values?.role ?? "member";
+  const roleField = getFieldState(state, "role", "member");
 
   useEffect(() => {
     if (state.error && !state.fieldErrors) {
@@ -83,7 +82,7 @@ export function InviteOrganizationMemberDialog({
               name="email"
               type="email"
               placeholder={"name@company.com"}
-              defaultValue={defaultEmail}
+              defaultValue={emailField.value}
               aria-invalid={emailField.invalid}
               disabled={!canInviteMembers}
               required
@@ -95,7 +94,7 @@ export function InviteOrganizationMemberDialog({
             <Label>Role</Label>
             <RadioGroup
               name="role"
-              defaultValue={defaultRole}
+              defaultValue={roleField.value}
               disabled={!canInviteMembers}
             >
               <div className="flex items-center gap-2">

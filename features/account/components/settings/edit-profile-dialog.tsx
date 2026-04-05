@@ -40,16 +40,13 @@ export function EditProfileDialog({
     FormData
   >(updateAccountAction, {});
 
-  const currentName = state.values?.name ?? name;
-  const currentPhoneNumber = state.values?.phoneNumber ?? phoneNumber;
-
-  const nameField = getFieldState(state, "name");
-  const phoneNumberField = getFieldState(state, "phoneNumber");
-  const [phoneNumberValue, setPhoneNumberValue] = useState(currentPhoneNumber);
+  const nameField = getFieldState(state, "name", name);
+  const phoneNumberField = getFieldState(state, "phoneNumber", phoneNumber);
+  const [phoneNumberValue, setPhoneNumberValue] = useState(phoneNumberField.value);
 
   useEffect(() => {
-    setPhoneNumberValue(currentPhoneNumber);
-  }, [currentPhoneNumber]);
+    setPhoneNumberValue(phoneNumberField.value);
+  }, [phoneNumberField.value]);
 
   useEffect(() => {
     if (state.success) {
@@ -82,7 +79,7 @@ export function EditProfileDialog({
               id="name"
               name="name"
               placeholder={"Enter your name"}
-              defaultValue={currentName}
+              defaultValue={nameField.value}
               aria-invalid={nameField.invalid}
               required
             />

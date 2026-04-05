@@ -35,7 +35,6 @@ export function DeleteAccountDialog({ children }: DeleteAccountDialogProps) {
     FormData
   >(deleteAccountAction, {});
 
-  const confirmation = state.values?.confirmation ?? "";
   const confirmationField = getFieldState(state, "confirmation");
 
   useEffect(() => {
@@ -71,7 +70,7 @@ export function DeleteAccountDialog({ children }: DeleteAccountDialogProps) {
               name="confirmation"
               placeholder={DELETE_CONFIRMATION_WORD}
               autoComplete="off"
-              defaultValue={confirmation}
+              defaultValue={confirmationField.value}
               aria-invalid={confirmationField.invalid}
             />
             <FieldError>{confirmationField.error}</FieldError>
