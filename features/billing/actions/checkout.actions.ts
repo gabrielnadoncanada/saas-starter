@@ -38,7 +38,7 @@ async function requireBillingOwner(locale: string) {
 
 export async function startSubscriptionCheckoutAction(formData: FormData) {
   const user = await getCurrentUser();
-  const locale = user?.preferredLocale ?? (await getRequestLocale());
+  const locale = await getRequestLocale();
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
   const rawSeatQuantity = formData.get("seatQuantity");
@@ -102,7 +102,7 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
 
 export async function startOneTimeCheckoutAction(formData: FormData) {
   const user = await getCurrentUser();
-  const locale = user?.preferredLocale ?? (await getRequestLocale());
+  const locale = await getRequestLocale();
   const itemKey = formData.get("itemKey");
   const itemType = formData.get("itemType");
 

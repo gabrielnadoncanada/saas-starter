@@ -9,7 +9,6 @@ import { getCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 type PostSignInPageProps = {
-  params: Promise<{ locale: string }>;
   searchParams: Promise<{
     billingInterval?: string;
     redirect?: string;
@@ -19,11 +18,9 @@ type PostSignInPageProps = {
 };
 
 export default async function PostSignInPage({
-  params,
   searchParams,
 }: PostSignInPageProps) {
   const [
-    { locale },
     user,
     {
       redirect: authRedirect,
@@ -31,10 +28,10 @@ export default async function PostSignInPage({
       billingInterval,
       callbackUrl: rawCallbackUrl,
     },
-  ] = await Promise.all([params, getCurrentUser(), searchParams]);
+  ] = await Promise.all([getCurrentUser(), searchParams]);
 
   if (!user) {
-    redirectToLocale(locale, routes.auth.login);
+    redirectToLocale(null, routes.auth.login);
   }
 
   const callbackUrl = getCallbackURL(rawCallbackUrl);
@@ -60,16 +57,16 @@ export default async function PostSignInPage({
     });
 
     if (!url) {
-      redirectToLocale(locale, routes.app.dashboard);
+      redirectToLocale(null, routes.app.dashboard);
     }
 
-    redirectToLocale(locale, url);
+    redirectToLocale(null, url);
   }
 
   if (callbackUrl !== routes.auth.postSignIn) {
-    redirectToLocale(locale, callbackUrl);
+    redirectToLocale(null, callbackUrl);
   }
 
-  redirectToLocale(locale, routes.app.dashboard);
+  redirectToLocale(null, routes.app.dashboard);
 }
 

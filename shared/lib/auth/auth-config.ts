@@ -34,11 +34,6 @@ export const auth = betterAuth({
         required: false,
         returned: true,
       },
-      preferredLocale: {
-        type: "string",
-        required: false,
-        returned: true,
-      },
       twoFactorEnabled: {
         type: "boolean",
         required: false,

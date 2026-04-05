@@ -28,7 +28,7 @@ export const unlinkAuthProviderAction = validatedAuthenticatedAction<
   }
 
   return redirectToLocale(
-    user.preferredLocale,
+    null,
     `${routes.settings.profile}?provider=${provider}&success=unlinked`,
   );
 });

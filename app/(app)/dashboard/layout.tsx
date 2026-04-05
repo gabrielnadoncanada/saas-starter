@@ -20,12 +20,9 @@ import { cn } from "@/shared/lib/utils";
 
 export default async function DashboardLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
 
@@ -35,7 +32,7 @@ export default async function DashboardLayout({
   ]);
 
   if (!user) {
-    redirectToLocale(locale, routes.auth.login);
+    redirectToLocale(null, routes.auth.login);
   }
 
   return (

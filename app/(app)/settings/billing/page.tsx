@@ -28,22 +28,18 @@ import {
 } from "@/shared/components/ui/card";
 import type { PlanId } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
+import { defaultLocale } from "@/shared/i18n/locales";
 import { redirectToLocale } from "@/shared/i18n/href";
 
-export default async function SettingsBillingPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const [{ locale }, context, entitlements] = await Promise.all([
-    params,
+export default async function SettingsBillingPage() {
+  const [context, entitlements] = await Promise.all([
     getCurrentOrganizationContext(),
     getCurrentOrganizationEntitlements(),
   ]);
   const t = await getTranslations("settings.billing");
 
   if (!context || !entitlements) {
-    redirectToLocale(locale, routes.auth.login);
+    redirectToLocale(null, routes.auth.login);
   }
 
   const creditActivity = await listCreditActivity(entitlements.organizationId, 8);
@@ -184,7 +180,7 @@ export default async function SettingsBillingPage({
                   <div>
                     <p className="font-medium">{entry.reason}</p>
                     <p className="text-muted-foreground">
-                      {entry.createdAt.toLocaleString(locale)}
+                      {entry.createdAt.toLocaleString(defaultLocale)}
                     </p>
                   </div>
                   <p className={entry.delta >= 0 ? "text-green-600" : "text-foreground"}>

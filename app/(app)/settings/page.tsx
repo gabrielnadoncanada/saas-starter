@@ -36,7 +36,6 @@ import {
 } from "@/shared/lib/auth/oauth-config";
 
 type PageProps = {
-  params: Promise<{ locale: string }>;
   searchParams: Promise<{
     success?: string;
     provider?: string;
@@ -67,18 +66,16 @@ function oauthLinkErrorKey(error: string) {
 }
 
 export default async function SettingsPage({
-  params,
   searchParams,
 }: PageProps) {
-  const [{ locale }, user, { success, provider, error }, t] = await Promise.all([
-    params,
+  const [user, { success, provider, error }, t] = await Promise.all([
     getCurrentUser(),
     searchParams,
     getTranslations("settings"),
   ]);
 
   if (!user) {
-    redirectToLocale(locale, routes.auth.login);
+    redirectToLocale(null, routes.auth.login);
   }
 
   const oauthProviders = getEnabledOAuthProviderIds();

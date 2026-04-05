@@ -19,7 +19,7 @@ import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function updateSubscriptionConfigurationAction(formData: FormData) {
   const user = await getCurrentUser();
-  const locale = user?.preferredLocale ?? (await getRequestLocale());
+  const locale = await getRequestLocale();
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
   const rawSeatQuantity = formData.get("seatQuantity");

@@ -7,13 +7,11 @@ import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export default async function AuthLayout(props: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await props.params;
   const user = await getCurrentUser();
 
   if (user) {
-    redirectToLocale(locale, routes.app.dashboard);
+    redirectToLocale(null, routes.app.dashboard);
   }
 
   return (

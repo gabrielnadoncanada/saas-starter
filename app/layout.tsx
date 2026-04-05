@@ -2,12 +2,14 @@ import "@/shared/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import { Suspense } from "react";
 
 import { ImpersonationBannerWrapper } from "@/features/admin/components/impersonation-banner-wrapper";
 import { ThemeProvider } from "@/shared/components/app/theme-provider";
 import { Toaster } from "@/shared/components/ui/sonner";
-import { getRequestLocale } from "@/shared/i18n/server-locale";
+import { defaultLocale } from "@/shared/i18n/locales";
 
 export const metadata: Metadata = {
   title: {
@@ -37,23 +39,29 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const locale = await getRequestLocale();
+  const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning className={inter.variable}>
+    <html
+      lang={defaultLocale}
+      suppressHydrationWarning
+      className={inter.variable}
+    >
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Suspense>
-            <ImpersonationBannerWrapper />
-          </Suspense>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Suspense>
+              <ImpersonationBannerWrapper />
+            </Suspense>
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

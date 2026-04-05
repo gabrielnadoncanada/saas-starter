@@ -2,12 +2,8 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "marketing" });
+  const t = await getTranslations("marketing");
 
   return {
     title: t("privacy.title"),
@@ -16,12 +12,8 @@ export async function generateMetadata({
 }
 
 export default async function PrivacyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "marketing" });
+}: {} = {}) {
+  const t = await getTranslations("marketing");
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">

@@ -6,7 +6,6 @@ export type CurrentUser = NonNullable<
   Awaited<ReturnType<typeof getAuthSession>>
 >["user"] & {
   role: string | null;
-  preferredLocale: string;
   twoFactorEnabled: boolean;
 };
 
@@ -15,7 +14,6 @@ export type SidebarUser = {
   email: string;
   image: string | null;
   role: string | null;
-  preferredLocale: string;
 };
 
 export function toSidebarUser(user: CurrentUser): SidebarUser {
@@ -24,7 +22,6 @@ export function toSidebarUser(user: CurrentUser): SidebarUser {
     email: user.email ?? "",
     image: user.image ?? null,
     role: user.role ?? null,
-    preferredLocale: user.preferredLocale ?? "en",
   };
 }
 
@@ -38,7 +35,6 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   return {
     ...session.user,
     role: session.user.role ?? null,
-    preferredLocale: session.user.preferredLocale ?? "en",
     twoFactorEnabled: session.user.twoFactorEnabled ?? false,
   };
 });

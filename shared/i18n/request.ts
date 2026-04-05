@@ -1,14 +1,11 @@
 import { getRequestConfig } from "next-intl/server";
 
-import { defaultLocale, isAppLocale } from "@/shared/i18n/locales";
+import { defaultLocale } from "@/shared/i18n/locales";
 import { getMessagesForLocale } from "@/shared/i18n/messages";
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  const candidate = await requestLocale;
-  const locale = candidate && isAppLocale(candidate) ? candidate : defaultLocale;
-
+export default getRequestConfig(async () => {
   return {
-    locale,
-    messages: getMessagesForLocale(locale),
+    locale: defaultLocale,
+    messages: getMessagesForLocale(defaultLocale),
   };
 });

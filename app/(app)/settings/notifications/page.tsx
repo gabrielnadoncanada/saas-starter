@@ -12,16 +12,12 @@ import { routes } from "@/shared/constants/routes";
 import { redirectToLocale } from "@/shared/i18n/href";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
-export default async function NotificationsSettingsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const [{ locale }, user] = await Promise.all([params, getCurrentUser()]);
+export default async function NotificationsSettingsPage() {
+  const user = await getCurrentUser();
   const t = await getTranslations("settings.notifications");
 
   if (!user) {
-    redirectToLocale(locale, routes.auth.login);
+    redirectToLocale(null, routes.auth.login);
   }
 
   const [notifications, unreadCount] = await Promise.all([

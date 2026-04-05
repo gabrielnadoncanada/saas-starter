@@ -8,23 +8,22 @@ import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 type AcceptInvitationPageProps = {
   params: Promise<{
     id: string;
-    locale: string;
   }>;
 };
 
 export default async function AcceptInvitationPage({
   params,
 }: AcceptInvitationPageProps) {
-  const { id, locale } = await params;
+  const { id } = await params;
   const user = await getCurrentUser();
 
   if (!user) {
     redirectToLocale(
-      locale,
+      null,
       buildCallbackURL(
         routes.auth.login,
         buildPostSignInCallbackURL({
-          callbackUrl: getLocalizedHref(locale, `/accept-invitation/${id}`),
+          callbackUrl: getLocalizedHref(null, `/accept-invitation/${id}`),
         }),
       ),
     );

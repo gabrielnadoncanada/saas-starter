@@ -13,7 +13,7 @@ import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function customerPortalAction() {
   const user = await getCurrentUser();
-  const locale = user?.preferredLocale ?? (await getRequestLocale());
+  const locale = await getRequestLocale();
 
   if (!user) {
     redirectToLocale(locale, routes.auth.login);
