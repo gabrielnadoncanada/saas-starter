@@ -1,14 +1,16 @@
 "use client";
 
-import { Building2, Check } from "lucide-react";
+import { Building2, Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { CreateOrganizationDialog } from "@/features/organizations/components/create-organization-dialog";
 import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -18,6 +20,7 @@ import { authClient } from "@/shared/lib/auth/auth-client";
 export function OrganizationSwitcher() {
   const router = useRouter();
   const [isSwitching, setIsSwitching] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   const { data: organizationsData, isPending: isLoadingOrganizations } =
     authClient.useListOrganizations();
@@ -61,38 +64,52 @@ export function OrganizationSwitcher() {
   }
 
   return (
-    <DropdownMenuGroup>
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>
-          <Building2 className="size-4" />
-          <span>Switch workspace</span>
-        </DropdownMenuSubTrigger>
+    <>
+      <DropdownMenuGroup>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <Building2 className="size-4" />
+            <span>Switch workspace</span>
+          </DropdownMenuSubTrigger>
 
-        <DropdownMenuPortal>
-          <DropdownMenuSubContent>
-            {organizations.map((organization) => (
-              <DropdownMenuItem
-                key={organization.id}
-                onClick={() => {
-                  void switchOrganization(organization.id);
-                }}
-              >
-                <div className="flex size-5 items-center justify-center rounded-sm border">
-                  <span className="text-xs font-semibold">
-                    {organization.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              {organizations.map((organization) => (
+                <DropdownMenuItem
+                  key={organization.id}
+                  onClick={() => {
+                    void switchOrganization(organization.id);
+                  }}
+                >
+                  <div className="flex size-5 items-center justify-center rounded-sm border">
+                    <span className="text-xs font-semibold">
+                      {organization.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
 
-                {organization.name}
+                  {organization.name}
 
-                {organization.id === activeOrganization?.id && (
-                  <Check className="ms-auto size-4" />
-                )}
+                  {organization.id === activeOrganization?.id && (
+                    <Check className="ms-auto size-4" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={() => setShowCreateDialog(true)}>
+                <Plus className="size-4" />
+                Create workspace
               </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuPortal>
-      </DropdownMenuSub>
-    </DropdownMenuGroup>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+      </DropdownMenuGroup>
+
+      <CreateOrganizationDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+      />
+    </>
   );
 }
