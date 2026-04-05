@@ -8,8 +8,7 @@ const { defaultAiModelId } = await import("@/shared/lib/ai/models");
 
 describe("resolveOrganizationAssistantModelSelection", () => {
   it("falls back to the app default model", async () => {
-    const selection =
-      await resolveOrganizationAssistantModelSelection("org_1");
+    const selection = await resolveOrganizationAssistantModelSelection("org_1");
 
     expect(selection.model.id).toBe(defaultAiModelId);
     expect(selection.defaultModelId).toBe(defaultAiModelId);

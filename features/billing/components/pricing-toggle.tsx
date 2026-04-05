@@ -88,7 +88,7 @@ function PricingCard({
           : "\u00A0"}
       </p>
       <p className="mb-6 text-4xl font-medium text-foreground">
-        {formatAmount(schedule.unitAmount)} 
+        {formatAmount(schedule.unitAmount)}
         <span className="text-xl font-normal text-muted-foreground">
           {getIntervalLabel(interval, plan.pricingModel)}
         </span>

@@ -23,7 +23,9 @@ export default async function AdminUsersPage() {
     <Page>
       <PageHeader>
         <PageTitle>Users</PageTitle>
-        <PageDescription>Manage platform users, roles, and access.</PageDescription>
+        <PageDescription>
+          Manage platform users, roles, and access.
+        </PageDescription>
       </PageHeader>
 
       <AdminUsersTable

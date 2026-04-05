@@ -6,12 +6,10 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
-const { getCurrentOrganizationEntitlements } = await import(
-  "@/features/billing/server/organization-entitlements"
-);
-const { assertOrganizationAiAccess } = await import(
-  "@/features/assistant/server/organization-ai-access"
-);
+const { getCurrentOrganizationEntitlements } =
+  await import("@/features/billing/server/organization-entitlements");
+const { assertOrganizationAiAccess } =
+  await import("@/features/assistant/server/organization-ai-access");
 
 describe("assertOrganizationAiAccess", () => {
   beforeEach(() => {

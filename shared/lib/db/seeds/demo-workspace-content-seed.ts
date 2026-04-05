@@ -16,7 +16,8 @@ const DEMO_TASKS = [
   {
     code: "TASK-2",
     title: "Review team invitation flow",
-    description: "Confirm owner-only actions and invitation states stay obvious.",
+    description:
+      "Confirm owner-only actions and invitation states stay obvious.",
     status: TaskStatus.TODO,
     label: TaskLabel.FEATURE,
     priority: TaskPriority.HIGH,
@@ -34,7 +35,8 @@ const DEMO_TASKS = [
   {
     code: "TASK-4",
     title: "Draft billing setup guide",
-    description: "Document Stripe test mode, price IDs, and webhook forwarding.",
+    description:
+      "Document Stripe test mode, price IDs, and webhook forwarding.",
     status: TaskStatus.BACKLOG,
     label: TaskLabel.DOCUMENTATION,
     priority: TaskPriority.LOW,

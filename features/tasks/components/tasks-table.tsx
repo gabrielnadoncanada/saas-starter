@@ -82,9 +82,7 @@ export function TasksTable({
 
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
-          {tasksPage.rowCount === 1
-            ? "1 task"
-            : `${tasksPage.rowCount} tasks`}
+          {tasksPage.rowCount === 1 ? "1 task" : `${tasksPage.rowCount} tasks`}
         </p>
         <DataTablePagination table={table} className="mt-auto w-full px-0" />
       </div>

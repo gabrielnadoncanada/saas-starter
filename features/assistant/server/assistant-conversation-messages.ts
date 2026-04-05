@@ -50,7 +50,9 @@ function getConversationPreview(messages: UIMessage[]) {
   return null;
 }
 
-export function serializeMessages(messages: UIMessage[]): Prisma.InputJsonValue {
+export function serializeMessages(
+  messages: UIMessage[],
+): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(messages));
 }
 

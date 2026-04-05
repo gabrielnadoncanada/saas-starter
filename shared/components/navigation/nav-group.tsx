@@ -229,5 +229,3 @@ function isCollapsibleOpen(pathname: string, item: SidebarNavCollapsible) {
     (subItem) => subItem.url && path.startsWith(subItem.url),
   );
 }
-
-

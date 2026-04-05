@@ -54,7 +54,8 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
             billingInterval && isBillingInterval(billingInterval)
               ? billingInterval
               : null,
-          planId: planId && isPlanId(planId) && planId !== "free" ? planId : null,
+          planId:
+            planId && isPlanId(planId) && planId !== "free" ? planId : null,
           redirect: "checkout",
         }),
       ),

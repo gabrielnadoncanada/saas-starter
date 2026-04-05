@@ -5,9 +5,7 @@ import { Separator } from "@/shared/components/ui/separator";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
-export default async function AuthLayout(props: {
-  children: React.ReactNode;
-}) {
+export default async function AuthLayout(props: { children: React.ReactNode }) {
   const user = await getCurrentUser();
 
   if (user) {
@@ -49,4 +47,3 @@ export default async function AuthLayout(props: {
     </div>
   );
 }
-

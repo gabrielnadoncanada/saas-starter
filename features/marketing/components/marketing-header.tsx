@@ -119,4 +119,3 @@ export function MarketingHeader() {
     </header>
   );
 }
-

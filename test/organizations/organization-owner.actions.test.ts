@@ -28,9 +28,13 @@ vi.mock("@/shared/lib/auth/authenticated-action", () => ({
   validatedAuthenticatedAction: vi.fn(),
 }));
 
-vi.mock("@/features/organizations/actions/validated-organization-owner", () => ({
-  validatedOrganizationOwnerAction: (_schema: unknown, action: unknown) => action,
-}));
+vi.mock(
+  "@/features/organizations/actions/validated-organization-owner",
+  () => ({
+    validatedOrganizationOwnerAction: (_schema: unknown, action: unknown) =>
+      action,
+  }),
+);
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: getCurrentOrganizationEntitlementsMock,
@@ -58,9 +62,8 @@ vi.mock("@/shared/lib/auth/auth-config", () => ({
   },
 }));
 
-const { inviteOrganizationMemberAction } = await import(
-  "@/features/organizations/actions/organization-owner.actions"
-);
+const { inviteOrganizationMemberAction } =
+  await import("@/features/organizations/actions/organization-owner.actions");
 
 const entitlements = {
   organizationId: "org_1",
@@ -97,8 +100,15 @@ describe("inviteOrganizationMemberAction", () => {
       { organizationId: "org_1", user: { id: "owner_1" } },
     );
 
-    expect(assertCapabilityMock).toHaveBeenCalledWith(entitlements, "team.invite");
-    expect(assertLimitMock).toHaveBeenCalledWith(entitlements, "teamMembers", 1);
+    expect(assertCapabilityMock).toHaveBeenCalledWith(
+      entitlements,
+      "team.invite",
+    );
+    expect(assertLimitMock).toHaveBeenCalledWith(
+      entitlements,
+      "teamMembers",
+      1,
+    );
     expect(inviteOrganizationMemberMock).toHaveBeenCalledWith({
       organizationId: "org_1",
       email: "new@acme.com",

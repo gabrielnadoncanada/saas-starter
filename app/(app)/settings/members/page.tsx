@@ -26,7 +26,9 @@ export default async function MembersPage() {
     <Page fixed className="ml-0">
       <PageHeader>
         <PageTitle>Members</PageTitle>
-        <PageDescription>Manage your organization members and invitations.</PageDescription>
+        <PageDescription>
+          Manage your organization members and invitations.
+        </PageDescription>
         <PageHeaderActions>
           <InviteOrganizationMemberDialog
             canInviteMembers={context.canInviteMembers}

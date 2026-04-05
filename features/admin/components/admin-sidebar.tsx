@@ -37,4 +37,3 @@ export function AdminSidebar() {
     </Sidebar>
   );
 }
-

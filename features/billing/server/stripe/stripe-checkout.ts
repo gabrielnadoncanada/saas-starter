@@ -46,7 +46,9 @@ async function assertNoActiveSubscription(organizationId: string) {
   });
 
   if (currentSubscription) {
-    throw new Error("Existing subscriptions must be updated from billing settings.");
+    throw new Error(
+      "Existing subscriptions must be updated from billing settings.",
+    );
   }
 }
 
@@ -65,16 +67,22 @@ export async function createOrganizationSubscriptionCheckoutSession(params: {
 
   await assertNoActiveSubscription(params.organizationId);
 
-  const customerId = await ensureOrganizationStripeCustomer(params.organizationId);
+  const customerId = await ensureOrganizationStripeCustomer(
+    params.organizationId,
+  );
   const settings = getCheckoutSettings();
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
     allow_promotion_codes: true,
-    billing_address_collection: settings.billingAddressRequired ? "required" : undefined,
+    billing_address_collection: settings.billingAddressRequired
+      ? "required"
+      : undefined,
     automatic_tax: settings.automaticTax ? { enabled: true } : undefined,
     tax_id_collection: settings.taxIdCollection ? { enabled: true } : undefined,
-    payment_method_collection: settings.trialWithoutCard ? "if_required" : undefined,
+    payment_method_collection: settings.trialWithoutCard
+      ? "if_required"
+      : undefined,
     client_reference_id: params.organizationId,
     line_items: lineItems,
     success_url: `${process.env.BASE_URL}${routes.settings.billing}?checkout=success`,
@@ -93,10 +101,9 @@ export async function createOrganizationSubscriptionCheckoutSession(params: {
         organizationId: params.organizationId,
         planId: plan.id,
       },
-      trial_period_days:
-        buildRecurringSelectionItems(params)[0]
-          ? plan.schedules[params.billingInterval]?.lineItems[0]?.price.trialDays
-          : undefined,
+      trial_period_days: buildRecurringSelectionItems(params)[0]
+        ? plan.schedules[params.billingInterval]?.lineItems[0]?.price.trialDays
+        : undefined,
     },
   });
 
@@ -117,13 +124,17 @@ export async function createOrganizationOneTimeCheckoutSession(params: {
     throw new Error("Invalid one-time product selection.");
   }
 
-  const customerId = await ensureOrganizationStripeCustomer(params.organizationId);
+  const customerId = await ensureOrganizationStripeCustomer(
+    params.organizationId,
+  );
   const settings = getCheckoutSettings();
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     customer: customerId,
     allow_promotion_codes: true,
-    billing_address_collection: settings.billingAddressRequired ? "required" : undefined,
+    billing_address_collection: settings.billingAddressRequired
+      ? "required"
+      : undefined,
     automatic_tax: settings.automaticTax ? { enabled: true } : undefined,
     tax_id_collection: settings.taxIdCollection ? { enabled: true } : undefined,
     client_reference_id: params.organizationId,

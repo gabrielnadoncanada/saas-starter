@@ -39,7 +39,10 @@ export async function GET(
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to download file" },
+      {
+        error:
+          error instanceof Error ? error.message : "Unable to download file",
+      },
       { status: 400 },
     );
   }

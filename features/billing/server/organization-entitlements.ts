@@ -5,8 +5,8 @@ import {
   getPlan,
   isPlanId,
 } from "@/features/billing/catalog/resolver";
-import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
 import { hasPlanAccess } from "@/features/billing/plans/subscription-status";
+import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import type {
   OrganizationEntitlements,
@@ -53,7 +53,11 @@ export async function resolveOrganizationEntitlements(
 
   const oneTimeProductIds = purchases.map((purchase) => purchase.itemKey);
 
-  if (!subscription || !hasPlanAccess(subscription.status) || !isPlanId(subscription.plan)) {
+  if (
+    !subscription ||
+    !hasPlanAccess(subscription.status) ||
+    !isPlanId(subscription.plan)
+  ) {
     return withPurchasedOneTimeLimits(base, oneTimeProductIds);
   }
 

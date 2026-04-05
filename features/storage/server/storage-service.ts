@@ -10,7 +10,9 @@ import { getFileStorage } from "@/shared/lib/storage/storage";
 
 function buildStorageKey(organizationId: string, fileName: string) {
   const extension = path.extname(fileName).toLowerCase();
-  const baseName = path.basename(fileName, extension).replace(/[^a-z0-9-_]+/gi, "-");
+  const baseName = path
+    .basename(fileName, extension)
+    .replace(/[^a-z0-9-_]+/gi, "-");
 
   return `${organizationId}/${randomUUID()}-${baseName}${extension}`;
 }
@@ -92,7 +94,10 @@ export async function saveStoredFile(input: {
   });
 }
 
-export async function deleteStoredFile(storedFileId: string, organizationId: string) {
+export async function deleteStoredFile(
+  storedFileId: string,
+  organizationId: string,
+) {
   const storedFile = await getStoredFileRecord(storedFileId, organizationId);
 
   if (!storedFile) {

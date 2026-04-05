@@ -25,9 +25,8 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
 const { getCurrentOrganization } =
   await import("@/features/organizations/server/current-organization");
-const { assistantConversationSurface } = await import(
-  "@/features/assistant/types"
-);
+const { assistantConversationSurface } =
+  await import("@/features/assistant/types");
 const {
   createAssistantConversation,
   deleteAssistantConversation,

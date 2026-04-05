@@ -3,7 +3,10 @@ import "server-only";
 import { subDays } from "date-fns";
 
 import { getPlan } from "@/features/billing/catalog/resolver";
-import { checkLimit, hasCapability } from "@/features/billing/guards/plan-guards";
+import {
+  checkLimit,
+  hasCapability,
+} from "@/features/billing/guards/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { getMonthlyUsage } from "@/features/billing/usage/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
@@ -42,39 +45,46 @@ export async function getDashboardOverview() {
   const memberCount = organization?.members?.length ?? 0;
   const organizationId = organization?.id ?? null;
 
-  const [taskCount, recentTasks, tasksUsage, assistantConversationCount, recentTaskHistory] =
-    organizationId
-      ? await Promise.all([
-          db.task.count({
-            where: { organizationId },
-          }),
-          db.task.findMany({
-            where: { organizationId },
-            orderBy: { createdAt: "desc" },
-            take: 5,
-          }),
-          getMonthlyUsage(organizationId, "tasksPerMonth"),
-          db.aiConversation.count({
-            where: { organizationId },
-          }),
-          db.task.findMany({
-            where: {
-              organizationId,
-              createdAt: {
-                gte: subDays(new Date(), 6),
-              },
+  const [
+    taskCount,
+    recentTasks,
+    tasksUsage,
+    assistantConversationCount,
+    recentTaskHistory,
+  ] = organizationId
+    ? await Promise.all([
+        db.task.count({
+          where: { organizationId },
+        }),
+        db.task.findMany({
+          where: { organizationId },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        }),
+        getMonthlyUsage(organizationId, "tasksPerMonth"),
+        db.aiConversation.count({
+          where: { organizationId },
+        }),
+        db.task.findMany({
+          where: {
+            organizationId,
+            createdAt: {
+              gte: subDays(new Date(), 6),
             },
-            select: {
-              createdAt: true,
-            },
-          }),
-        ])
-      : [0, [], 0, 0, []];
+          },
+          select: {
+            createdAt: true,
+          },
+        }),
+      ])
+    : [0, [], 0, 0, []];
 
   const taskLimit = entitlements
     ? checkLimit(entitlements, "tasksPerMonth", tasksUsage)
     : { allowed: false, limit: 0, currentUsage: 0, remaining: 0 };
-  const canUseAI = entitlements ? hasCapability(entitlements, "ai.assistant") : false;
+  const canUseAI = entitlements
+    ? hasCapability(entitlements, "ai.assistant")
+    : false;
 
   const checklist = [
     {

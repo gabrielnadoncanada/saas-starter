@@ -70,7 +70,7 @@ export const renameOrganizationAction = validatedOrganizationOwnerAction<
         error instanceof Error
           ? error.message
           : "Failed to rename organization",
-      };
+    };
   }
 
   return {
@@ -111,11 +111,7 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
         (invitation: { status: string }) => invitation.status === "pending",
       ).length;
 
-      assertLimit(
-        entitlements,
-        "teamMembers",
-        memberCount + pendingCount,
-      );
+      assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
     } catch (error) {
       if (
         error instanceof UpgradeRequiredError ||

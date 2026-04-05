@@ -4,10 +4,7 @@ import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { hasCapability } from "@/features/billing/guards/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { Page } from "@/shared/components/layout/page-layout";
-import {
-  defaultAiModelId,
-  getAiModelOptions,
-} from "@/shared/lib/ai/models";
+import { defaultAiModelId, getAiModelOptions } from "@/shared/lib/ai/models";
 
 type AssistantPageProps = {
   searchParams: Promise<{

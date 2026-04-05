@@ -22,7 +22,12 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
 }));
 
 vi.mock("@/features/billing/guards/plan-guards", () => ({
-  checkLimit: vi.fn(() => ({ allowed: true, limit: 100, remaining: 90, currentUsage: 10 })),
+  checkLimit: vi.fn(() => ({
+    allowed: true,
+    limit: 100,
+    remaining: 90,
+    currentUsage: 10,
+  })),
   hasCapability: vi.fn(() => true),
 }));
 
@@ -38,19 +43,15 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   },
 }));
 
-const { getCurrentOrganization } = await import(
-  "@/features/organizations/server/current-organization"
-);
-const { getCurrentOrganizationEntitlements } = await import(
-  "@/features/billing/server/organization-entitlements"
-);
-const { getMonthlyUsage } = await import(
-  "@/features/billing/usage/usage-service"
-);
+const { getCurrentOrganization } =
+  await import("@/features/organizations/server/current-organization");
+const { getCurrentOrganizationEntitlements } =
+  await import("@/features/billing/server/organization-entitlements");
+const { getMonthlyUsage } =
+  await import("@/features/billing/usage/usage-service");
 const { db } = await import("@/shared/lib/db/prisma");
-const { getDashboardOverview } = await import(
-  "@/features/dashboard/server/get-dashboard-overview"
-);
+const { getDashboardOverview } =
+  await import("@/features/dashboard/server/get-dashboard-overview");
 
 describe("getDashboardOverview", () => {
   beforeEach(() => {
@@ -78,7 +79,9 @@ describe("getDashboardOverview", () => {
     vi.mocked(db.task.count).mockResolvedValue(42 as never);
     vi.mocked(db.aiConversation.count).mockResolvedValue(2 as never);
     vi.mocked(db.task.findMany)
-      .mockResolvedValueOnce([{ id: 1, title: "Recent", createdAt: new Date() }] as never)
+      .mockResolvedValueOnce([
+        { id: 1, title: "Recent", createdAt: new Date() },
+      ] as never)
       .mockResolvedValueOnce([{ createdAt: new Date() }] as never);
     vi.mocked(getMonthlyUsage).mockResolvedValue(3 as never);
   });

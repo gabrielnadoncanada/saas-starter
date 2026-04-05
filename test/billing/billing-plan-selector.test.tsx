@@ -12,9 +12,12 @@ vi.mock("@/features/billing/actions/customer-portal.actions", () => ({
   customerPortalAction: vi.fn(),
 }));
 
-vi.mock("@/features/billing/actions/subscription-configuration.actions", () => ({
-  updateSubscriptionConfigurationAction: vi.fn(),
-}));
+vi.mock(
+  "@/features/billing/actions/subscription-configuration.actions",
+  () => ({
+    updateSubscriptionConfigurationAction: vi.fn(),
+  }),
+);
 
 vi.mock("@/features/billing/components/billing-plan-selector-fields", () => ({
   BillingIntervalSelector: () => React.createElement("div", null, "Interval"),
@@ -80,8 +83,12 @@ describe("BillingPlanSelector", () => {
       }),
     );
 
-    expect(screen.getByRole("button", { name: "Update subscription" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Open billing portal" })).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Update subscription" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Open billing portal" }),
+    ).toBeTruthy();
   });
 
   it("shows the already-active help when the subscription cannot be updated yet", () => {
@@ -98,7 +105,9 @@ describe("BillingPlanSelector", () => {
       }),
     );
 
-    expect(screen.getByRole("button", { name: "Proceed to payment" })).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Proceed to payment" }),
+    ).toBeTruthy();
     expect(
       screen.getByText(
         "This workspace already has an active subscription. The Stripe portal is not available until the Stripe customer is synced.",

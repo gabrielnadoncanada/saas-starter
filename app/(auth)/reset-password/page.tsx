@@ -1,5 +1,3 @@
-
-
 import Link from "next/link";
 
 import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
@@ -23,14 +21,15 @@ export default async function ResetPasswordPage({
 }: ResetPasswordPageProps) {
   const { token: rawToken } = await searchParams;
   const token = rawToken?.trim();
-  
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Reset password</CardTitle>
         <CardDescription>
-          {token ? "Choose a new password for your account." : "This reset link is invalid or incomplete."}
+          {token
+            ? "Choose a new password for your account."
+            : "This reset link is invalid or incomplete."}
         </CardDescription>
       </CardHeader>
       <CardContent>

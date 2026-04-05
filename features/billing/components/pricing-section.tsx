@@ -1,4 +1,7 @@
-import { getPlanDisplayPrice, getPricingPlans } from "@/features/billing/catalog/resolver";
+import {
+  getPlanDisplayPrice,
+  getPricingPlans,
+} from "@/features/billing/catalog/resolver";
 import { PricingToggle } from "@/features/billing/components/pricing-toggle";
 import type { PlanId } from "@/shared/config/billing.config";
 

@@ -1,5 +1,3 @@
-
-
 import Link from "next/link";
 
 import { ResendMagicLinkButton } from "@/features/auth/components/oauth/resend-magic-link-button";
@@ -26,27 +24,32 @@ export default async function CheckEmailPage({
   const { email: rawEmail, callbackUrl } = await searchParams;
   const email = rawEmail?.trim() || null;
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
-  
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">Check your email</CardTitle>
-        <CardDescription>We sent a magic sign-in link to your email address.</CardDescription>
+        <CardTitle className="text-lg tracking-tight">
+          Check your email
+        </CardTitle>
+        <CardDescription>
+          We sent a magic sign-in link to your email address.
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3">
-        <p className="text-sm text-muted-foreground">Open the email and click the link to complete sign-in.</p>
+        <p className="text-sm text-muted-foreground">
+          Open the email and click the link to complete sign-in.
+        </p>
 
         <p className="text-sm text-muted-foreground">
           {email ? (
             <>
-              Haven't received it? 
+              Haven't received it?
               <ResendMagicLinkButton email={email} callbackUrl={callbackUrl} />
             </>
           ) : (
             <>
-              Missing the email address? 
+              Missing the email address?
               <Link
                 href={signInHref}
                 className="font-medium underline underline-offset-4 hover:text-primary"

@@ -64,9 +64,7 @@ function oauthLinkErrorMessage(error: string) {
   }
 }
 
-export default async function SettingsPage({
-  searchParams,
-}: PageProps) {
+export default async function SettingsPage({ searchParams }: PageProps) {
   const [user, { success, provider, error }] = await Promise.all([
     getCurrentUser(),
     searchParams,
@@ -98,7 +96,9 @@ export default async function SettingsPage({
     <Page fixed>
       <PageHeader>
         <PageTitle>Account Settings</PageTitle>
-        <PageDescription>Manage your personal account settings and preferences.</PageDescription>
+        <PageDescription>
+          Manage your personal account settings and preferences.
+        </PageDescription>
       </PageHeader>
 
       <Card>
@@ -107,7 +107,9 @@ export default async function SettingsPage({
             <UserIcon className="size-4" />
             Profile
           </CardTitle>
-          <CardDescription>Your personal information and profile details</CardDescription>
+          <CardDescription>
+            Your personal information and profile details
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
@@ -141,7 +143,9 @@ export default async function SettingsPage({
             <Link2 className="size-4" />
             Linked Accounts
           </CardTitle>
-          <CardDescription>Connect your account with external providers for easier sign-in</CardDescription>
+          <CardDescription>
+            Connect your account with external providers for easier sign-in
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <LinkedAccountsCard
@@ -173,7 +177,9 @@ export default async function SettingsPage({
             <Trash className="size-4" />
             Delete Account
           </CardTitle>
-          <CardDescription>Delete your account and all your data</CardDescription>
+          <CardDescription>
+            Delete your account and all your data
+          </CardDescription>
           <CardAction>
             <DeleteAccountDialog>
               <Button variant="destructive" size="sm">

@@ -95,7 +95,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
       {success ? (
         <p className="text-sm text-emerald-600">
-          {success} 
+          {success}
           <Link
             href={routes.auth.login}
             className="underline underline-offset-4"
@@ -122,4 +122,3 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     </form>
   );
 }
-

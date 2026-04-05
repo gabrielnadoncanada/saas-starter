@@ -80,11 +80,21 @@ describe("handleStripeWebhookEvent", () => {
     vi.clearAllMocks();
 
     vi.mocked(db.subscription.findFirst).mockResolvedValue(null as never);
-    vi.mocked(db.subscription.upsert).mockResolvedValue({ id: "sub_123" } as never);
-    vi.mocked(db.subscriptionItem.upsert).mockResolvedValue({ id: "item_123" } as never);
-    vi.mocked(db.subscriptionItem.updateMany).mockResolvedValue({ count: 0 } as never);
-    vi.mocked(db.purchase.upsert).mockResolvedValue({ id: "purchase_123" } as never);
-    vi.mocked(findOrganizationIdByStripeCustomerId).mockResolvedValue("org_123");
+    vi.mocked(db.subscription.upsert).mockResolvedValue({
+      id: "sub_123",
+    } as never);
+    vi.mocked(db.subscriptionItem.upsert).mockResolvedValue({
+      id: "item_123",
+    } as never);
+    vi.mocked(db.subscriptionItem.updateMany).mockResolvedValue({
+      count: 0,
+    } as never);
+    vi.mocked(db.purchase.upsert).mockResolvedValue({
+      id: "purchase_123",
+    } as never);
+    vi.mocked(findOrganizationIdByStripeCustomerId).mockResolvedValue(
+      "org_123",
+    );
     vi.mocked(syncOrganizationStripeCustomer).mockResolvedValue(undefined);
     vi.mocked(clearStripeCustomerBillingState).mockResolvedValue({
       clearedOrganizations: 1,

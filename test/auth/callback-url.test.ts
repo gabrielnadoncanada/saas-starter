@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { buildCallbackURL, getCallbackURL } from "@/shared/lib/auth/callback-url";
+import {
+  buildCallbackURL,
+  getCallbackURL,
+} from "@/shared/lib/auth/callback-url";
 
 describe("callback-url", () => {
   it("keeps allowed callback urls", () => {

@@ -21,12 +21,10 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   },
 }));
 
-const { saveStoredFile, deleteStoredFile, readStoredFileBody } = await import(
-  "@/features/storage/server/storage-service"
-);
-const { getCurrentOrganizationEntitlements } = await import(
-  "@/features/billing/server/organization-entitlements"
-);
+const { saveStoredFile, deleteStoredFile, readStoredFileBody } =
+  await import("@/features/storage/server/storage-service");
+const { getCurrentOrganizationEntitlements } =
+  await import("@/features/billing/server/organization-entitlements");
 const { getFileStorage } = await import("@/shared/lib/storage/storage");
 const { db } = await import("@/shared/lib/db/prisma");
 
@@ -64,7 +62,9 @@ describe("storage-service", () => {
       id: "file_123",
       storageKey: "org_123/file_123.txt",
     } as never);
-    vi.mocked(db.storedFile.delete).mockResolvedValue({ id: "file_123" } as never);
+    vi.mocked(db.storedFile.delete).mockResolvedValue({
+      id: "file_123",
+    } as never);
   });
 
   it("stores a file when the organization has remaining quota", async () => {

@@ -1,5 +1,3 @@
-
-
 import Link from "next/link";
 
 import {
@@ -21,7 +19,6 @@ export default async function VerifyEmailPage({
   searchParams,
 }: VerifyEmailPageProps) {
   const { error } = await searchParams;
-  
 
   if (error) {
     return (
@@ -30,7 +27,9 @@ export default async function VerifyEmailPage({
           <CardTitle className="text-lg tracking-tight">
             Verification failed
           </CardTitle>
-          <CardDescription>This verification link is invalid or has expired.</CardDescription>
+          <CardDescription>
+            This verification link is invalid or has expired.
+          </CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -48,10 +47,10 @@ export default async function VerifyEmailPage({
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">
-          Email verified
-        </CardTitle>
-        <CardDescription>Your email address is now confirmed. You can sign in.</CardDescription>
+        <CardTitle className="text-lg tracking-tight">Email verified</CardTitle>
+        <CardDescription>
+          Your email address is now confirmed. You can sign in.
+        </CardDescription>
       </CardHeader>
 
       <CardContent>

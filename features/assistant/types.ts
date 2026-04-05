@@ -2,8 +2,7 @@ import type { UIMessage } from "ai";
 
 export const assistantConversationSurface = "assistant";
 
-export type AssistantConversationSurface =
-  typeof assistantConversationSurface;
+export type AssistantConversationSurface = typeof assistantConversationSurface;
 
 export type AssistantConversationListItem = {
   id: string;

@@ -36,4 +36,3 @@ export class UpgradeRequiredError extends Error {
     this.currentPlan = currentPlan;
   }
 }
-

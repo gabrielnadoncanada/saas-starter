@@ -27,8 +27,7 @@ const includedItems = [
   },
   {
     label: "AI-ready module",
-    detail:
-      "Plan-gated assistant, real task actions, provider switching",
+    detail: "Plan-gated assistant, real task actions, provider switching",
   },
   {
     label: "CRUD example",

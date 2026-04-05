@@ -30,9 +30,8 @@ vi.mock("@/features/billing/usage/usage-service", () => ({
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
-const { getCurrentOrganizationEntitlements } = await import(
-  "@/features/billing/server/organization-entitlements"
-);
+const { getCurrentOrganizationEntitlements } =
+  await import("@/features/billing/server/organization-entitlements");
 const { assertCapability } =
   await import("@/features/billing/guards/plan-guards");
 const { consumeMonthlyUsage } =
@@ -61,10 +60,14 @@ describe("createTaskForCurrentOrganization", () => {
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) =>
       callback(db),
     );
-    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(entitlements as never);
+    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
+      entitlements as never,
+    );
     vi.mocked(assertCapability).mockImplementation(() => {});
     vi.mocked(consumeMonthlyUsage).mockResolvedValue(undefined);
-    vi.mocked(db.task.findFirst).mockResolvedValue({ code: "TASK-41" } as never);
+    vi.mocked(db.task.findFirst).mockResolvedValue({
+      code: "TASK-41",
+    } as never);
     vi.mocked(db.task.create).mockResolvedValue({
       code: "TASK-42",
       title: "Ship billing fix",

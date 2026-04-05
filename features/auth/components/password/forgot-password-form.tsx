@@ -33,7 +33,9 @@ export function ForgotPasswordForm() {
       await requestPasswordReset(email);
       setSent(true);
       reset(emailDefaultValues);
-      toast.success("If an account exists for this email, a reset link has been sent. Check your inbox.");
+      toast.success(
+        "If an account exists for this email, a reset link has been sent. Check your inbox.",
+      );
     } catch {
       toast.error("Unable to send reset link. Please try again.");
     }
@@ -42,7 +44,8 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <p className="text-sm text-muted-foreground">
-        If an account exists for this email, a reset link has been sent. Check your inbox.
+        If an account exists for this email, a reset link has been sent. Check
+        your inbox.
       </p>
     );
   }

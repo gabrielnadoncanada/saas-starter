@@ -35,4 +35,3 @@ export async function requireAdminAction(): Promise<string> {
 
   return session.user.id;
 }
-

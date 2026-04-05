@@ -71,7 +71,9 @@ export function TwoFactorVerificationForm({
       <Card>
         <CardHeader>
           <CardTitle>Use authenticator code</CardTitle>
-          <CardDescription>Enter the 6-digit code from your authenticator app.</CardDescription>
+          <CardDescription>
+            Enter the 6-digit code from your authenticator app.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -93,7 +95,9 @@ export function TwoFactorVerificationForm({
           </label>
           <Button
             disabled={!code || isPending}
-            onClick={() => startTransition(() => void verifyAuthenticatorCode())}
+            onClick={() =>
+              startTransition(() => void verifyAuthenticatorCode())
+            }
           >
             {isPending ? "Verifying..." : "Verify code"}
           </Button>
@@ -103,7 +107,10 @@ export function TwoFactorVerificationForm({
       <Card>
         <CardHeader>
           <CardTitle>Use backup code</CardTitle>
-          <CardDescription>If you lost access to your authenticator, use one of your backup codes.</CardDescription>
+          <CardDescription>
+            If you lost access to your authenticator, use one of your backup
+            codes.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">

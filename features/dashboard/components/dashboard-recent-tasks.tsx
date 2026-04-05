@@ -4,8 +4,6 @@ import Link from "next/link";
 import { routes } from "@/shared/constants/routes";
 
 export async function DashboardRecentTasks({ tasks }: { tasks: Task[] }) {
-  
-
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">

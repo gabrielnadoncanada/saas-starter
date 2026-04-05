@@ -117,7 +117,9 @@ export function getTasksColumns({
         return (
           <div className="flex space-x-2">
             {label ? <Badge variant="outline">{label.label}</Badge> : null}
-            <span className="truncate font-medium">{row.getValue("title")}</span>
+            <span className="truncate font-medium">
+              {row.getValue("title")}
+            </span>
           </div>
         );
       },

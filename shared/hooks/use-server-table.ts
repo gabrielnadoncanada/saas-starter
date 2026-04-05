@@ -167,4 +167,3 @@ export function useServerTable<TData, TParams extends BaseTableParams>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 }
-

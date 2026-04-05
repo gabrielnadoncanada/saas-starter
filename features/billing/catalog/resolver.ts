@@ -60,13 +60,18 @@ export function getPlanDisplayPrice(
     return null;
   }
 
-  return getPlanSchedule(getPlan(planId), billingInterval)?.lineItems[0]?.price ?? null;
+  return (
+    getPlanSchedule(getPlan(planId), billingInterval)?.lineItems[0]?.price ??
+    null
+  );
 }
 
 export function getPricingPlans(): BillingPlanDefinition[] {
   return billingConfig.plans.filter((plan) =>
     ["month", "year"].some((interval) =>
-      Boolean(getPlanSchedule(plan, interval as BillingInterval)?.lineItems[0]?.price),
+      Boolean(
+        getPlanSchedule(plan, interval as BillingInterval)?.lineItems[0]?.price,
+      ),
     ),
   ) as BillingPlanDefinition[];
 }

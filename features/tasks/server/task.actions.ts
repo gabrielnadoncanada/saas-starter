@@ -41,15 +41,16 @@ export type DeleteTaskActionState = FormActionState<DeleteTaskValues> & {
   taskId?: number;
 };
 
-export type BulkDeleteTasksActionState = FormActionState<BulkDeleteTasksValues> & {
-  taskIds?: number[];
-};
+export type BulkDeleteTasksActionState =
+  FormActionState<BulkDeleteTasksValues> & {
+    taskIds?: number[];
+  };
 
 export type BulkUpdateTaskStatusActionState =
   FormActionState<BulkUpdateTaskStatusValues> & {
-  status?: Task["status"];
-  taskIds?: number[];
-};
+    status?: Task["status"];
+    taskIds?: number[];
+  };
 
 const taskActionOptions = { validationNamespace: "tasks" } as const;
 
@@ -146,9 +147,7 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
 
     return {
       success:
-        deletedCount === 1
-          ? "1 task deleted"
-          : `${deletedCount} tasks deleted`,
+        deletedCount === 1 ? "1 task deleted" : `${deletedCount} tasks deleted`,
       taskIds,
     };
   },
@@ -167,9 +166,7 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
 
     return {
       success:
-        updatedCount === 1
-          ? "1 task updated"
-          : `${updatedCount} tasks updated`,
+        updatedCount === 1 ? "1 task updated" : `${updatedCount} tasks updated`,
       status: data.status,
       taskIds: data.taskIds,
     };

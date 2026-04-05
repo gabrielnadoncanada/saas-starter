@@ -16,7 +16,6 @@ import {
 } from "@/shared/components/ui/card";
 
 export default async function AdminDashboardPage() {
-  
   const stats = await getAdminOverviewStats();
 
   const cards = [
@@ -50,7 +49,9 @@ export default async function AdminDashboardPage() {
     <Page>
       <PageHeader>
         <PageTitle>Administration</PageTitle>
-        <PageDescription>Platform overview and user management.</PageDescription>
+        <PageDescription>
+          Platform overview and user management.
+        </PageDescription>
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

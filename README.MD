@@ -67,21 +67,21 @@ Seeded local accounts:
 
 Copy `.env.example` and configure:
 
-| Variable                                    | Purpose                                                 |
-| ------------------------------------------- | ------------------------------------------------------- |
-| `POSTGRES_URL`                              | PostgreSQL connection string                            |
-| `AUTH_SECRET`                               | Better Auth secret for signing sessions and auth tokens |
-| `STRIPE_SECRET_KEY`                         | Stripe API key                                          |
-| `STRIPE_WEBHOOK_SECRET`                     | Stripe webhook signature secret                         |
-| `BASE_URL`                                  | Your app URL (`http://localhost:3000` locally)          |
-| `RESEND_API_KEY`                            | Resend email API key (for magic links and auth email)   |
-| `EMAIL_FROM`                                | Sender address for transactional emails                 |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                 |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                 |
-| `BETTER_AUTH_API_KEY`                       | Optional API key if you enable Better Auth’s API routes |
+| Variable                                    | Purpose                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `POSTGRES_URL`                              | PostgreSQL connection string                                                         |
+| `AUTH_SECRET`                               | Better Auth secret for signing sessions and auth tokens                              |
+| `STRIPE_SECRET_KEY`                         | Stripe API key                                                                       |
+| `STRIPE_WEBHOOK_SECRET`                     | Stripe webhook signature secret                                                      |
+| `BASE_URL`                                  | Your app URL (`http://localhost:3000` locally)                                       |
+| `RESEND_API_KEY`                            | Resend email API key (for magic links and auth email)                                |
+| `EMAIL_FROM`                                | Sender address for transactional emails                                              |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                                              |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                                              |
+| `BETTER_AUTH_API_KEY`                       | Optional API key if you enable Better Auth’s API routes                              |
 | `NEXT_PUBLIC_ACCOUNT_MODE`                  | `personal-only` \| `organizations-only` \| `hybrid` (defaults to organizations-only) |
-| `ALLOW_EMAIL_ACCOUNT_LINKING`             | Set `true` to link OAuth accounts by verified email     |
-| `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email               |
+| `ALLOW_EMAIL_ACCOUNT_LINKING`               | Set `true` to link OAuth accounts by verified email                                  |
+| `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email                                            |
 
 See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for the full checklist (including Stripe price IDs) and [docs/STRIPE_TEST_MODE_SETUP.md](docs/STRIPE_TEST_MODE_SETUP.md) for the billing flow. The authoritative list is `.env.example`.
 

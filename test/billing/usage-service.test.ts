@@ -28,7 +28,9 @@ function createEntitlements(): OrganizationEntitlements {
   };
 }
 
-type UsageDbClient = NonNullable<Parameters<typeof consumeMonthlyUsage>[3]>["db"];
+type UsageDbClient = NonNullable<
+  Parameters<typeof consumeMonthlyUsage>[3]
+>["db"];
 
 function createUsageDb(overrides: Record<string, unknown> = {}) {
   return {
@@ -48,7 +50,9 @@ describe("consumeMonthlyUsage", () => {
     });
 
     await expect(
-      consumeMonthlyUsage("org_123", "tasksPerMonth", createEntitlements(), { db }),
+      consumeMonthlyUsage("org_123", "tasksPerMonth", createEntitlements(), {
+        db,
+      }),
     ).resolves.toBeUndefined();
 
     expect(db.usageCounter.createMany).toHaveBeenCalledOnce();
@@ -62,7 +66,9 @@ describe("consumeMonthlyUsage", () => {
     });
 
     await expect(
-      consumeMonthlyUsage("org_123", "tasksPerMonth", createEntitlements(), { db }),
+      consumeMonthlyUsage("org_123", "tasksPerMonth", createEntitlements(), {
+        db,
+      }),
     ).rejects.toBeInstanceOf(LimitReachedError);
   });
 });

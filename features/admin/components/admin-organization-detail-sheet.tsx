@@ -67,7 +67,8 @@ export function AdminOrganizationDetailSheet({
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="size-4 text-muted-foreground" />
-                      Created {format(new Date(organization.createdAt), "MMMM d, yyyy")}
+                      Created{" "}
+                      {format(new Date(organization.createdAt), "MMMM d, yyyy")}
                     </div>
                   </div>
                 </CardContent>

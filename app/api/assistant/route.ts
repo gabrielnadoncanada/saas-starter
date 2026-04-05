@@ -7,7 +7,10 @@ import {
 } from "@/features/assistant/server/assistant-model-selection";
 import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-access";
 import { assistantTools } from "@/features/assistant/server/tools";
-import { LimitReachedError, UpgradeRequiredError } from "@/features/billing/errors/billing-errors";
+import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/errors/billing-errors";
 import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 

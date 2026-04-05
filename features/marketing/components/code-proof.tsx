@@ -44,11 +44,9 @@ export function CodeProof() {
               </p>
               <pre className="whitespace-pre leading-relaxed">
                 const entitlements = await getCurrentOrganizationEntitlements();
-
-assertCapability(entitlements, "team.invite");
-assertLimit(entitlements, "teamMembers", memberCount);
-
-// If we get here, the user's plan allows it
+                assertCapability(entitlements, "team.invite");
+                assertLimit(entitlements, "teamMembers", memberCount); // If we
+                get here, the user's plan allows it
               </pre>
             </div>
 

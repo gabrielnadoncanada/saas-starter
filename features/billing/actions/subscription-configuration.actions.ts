@@ -16,7 +16,9 @@ import {
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
-export async function updateSubscriptionConfigurationAction(formData: FormData) {
+export async function updateSubscriptionConfigurationAction(
+  formData: FormData,
+) {
   const user = await getCurrentUser();
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");

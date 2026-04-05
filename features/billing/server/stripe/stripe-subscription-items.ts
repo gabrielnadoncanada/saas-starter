@@ -81,7 +81,9 @@ export async function updateOrganizationSubscriptionConfiguration(params: {
   });
 
   if (!subscriptionRecord?.stripeSubscriptionId) {
-    throw new Error("No synced Stripe subscription was found for this workspace.");
+    throw new Error(
+      "No synced Stripe subscription was found for this workspace.",
+    );
   }
 
   const currentSubscription = await stripe.subscriptions.retrieve(
@@ -100,14 +102,11 @@ export async function updateOrganizationSubscriptionConfiguration(params: {
       continue;
     }
 
-    existingByKey.set(
-      buildRecurringItemKey(catalogItem),
-      {
-        priceId: item.price.id,
-        quantity: item.quantity ?? 1,
-        stripeItemId: item.id,
-      },
-    );
+    existingByKey.set(buildRecurringItemKey(catalogItem), {
+      priceId: item.price.id,
+      quantity: item.quantity ?? 1,
+      stripeItemId: item.id,
+    });
   }
 
   const desiredItems = buildRecurringSelectionItems(params);

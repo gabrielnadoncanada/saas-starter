@@ -32,4 +32,3 @@ export const unlinkAuthProviderAction = validatedAuthenticatedAction<
     `${routes.settings.profile}?provider=${provider}&success=unlinked`,
   );
 });
-

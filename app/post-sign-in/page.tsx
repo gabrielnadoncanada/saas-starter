@@ -2,7 +2,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
-import { isBillingInterval, isPlanId } from "@/features/billing/catalog/resolver";
+import {
+  isBillingInterval,
+  isPlanId,
+} from "@/features/billing/catalog/resolver";
 import { resumeCheckoutAfterSignIn } from "@/features/billing/server/resume-checkout-after-sign-in";
 import { routes } from "@/shared/constants/routes";
 import { getCallbackURL } from "@/shared/lib/auth/callback-url";
@@ -69,4 +72,3 @@ export default async function PostSignInPage({
 
   redirect(routes.app.dashboard);
 }
-

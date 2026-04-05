@@ -79,7 +79,9 @@ export function AdminOrganizationsTableContent({
                         <Building2 className="size-4 text-muted-foreground" />
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate font-medium">{organization.name}</p>
+                        <p className="truncate font-medium">
+                          {organization.name}
+                        </p>
                         <p className="truncate text-sm text-muted-foreground">
                           {organization.slug}
                         </p>
@@ -99,7 +101,11 @@ export function AdminOrganizationsTableContent({
                     <div onClick={(event) => event.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-8"
+                          >
                             <MoreVertical className="size-4" />
                             <span className="sr-only">Actions</span>
                           </Button>

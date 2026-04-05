@@ -29,7 +29,8 @@ export function AdminOrganizationSubscriptionCard({
 
             {subscription.periodEnd ? (
               <p className="text-sm text-muted-foreground">
-                Renews {format(new Date(subscription.periodEnd), "MMMM d, yyyy")}
+                Renews{" "}
+                {format(new Date(subscription.periodEnd), "MMMM d, yyyy")}
               </p>
             ) : null}
           </div>

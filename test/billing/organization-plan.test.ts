@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
 import {
   hasCurrentStripeSubscription,
   hasPlanAccess,
 } from "@/features/billing/plans/subscription-status";
+import { applyOneTimePurchaseLimits } from "@/features/billing/server/one-time-purchase-limits";
 
 describe("subscription status gating", () => {
   it("keeps paid access only for active billing states", () => {

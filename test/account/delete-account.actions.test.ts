@@ -26,9 +26,8 @@ vi.mock("@/shared/lib/auth/authenticated-action", () => ({
   validatedAuthenticatedAction: (_schema: unknown, action: unknown) => action,
 }));
 
-const { deleteAccountAction } = await import(
-  "@/features/account/actions/delete-account.actions"
-);
+const { deleteAccountAction } =
+  await import("@/features/account/actions/delete-account.actions");
 
 describe("deleteAccountAction", () => {
   beforeEach(() => {
@@ -41,11 +40,10 @@ describe("deleteAccountAction", () => {
       success: "Account deleted successfully.",
     });
 
-    const result = await deleteAccountAction(
-      {},
-      new FormData(),
-      { email: "user@example.com", id: "user_1" },
-    );
+    const result = await deleteAccountAction({}, new FormData(), {
+      email: "user@example.com",
+      id: "user_1",
+    });
 
     expect(deleteAccountMock).toHaveBeenCalledWith({
       userEmail: "user@example.com",
@@ -65,11 +63,10 @@ describe("deleteAccountAction", () => {
       error: "Leave your organization before deleting your account.",
     });
 
-    const result = await deleteAccountAction(
-      {},
-      new FormData(),
-      { email: "user@example.com", id: "user_1" },
-    );
+    const result = await deleteAccountAction({}, new FormData(), {
+      email: "user@example.com",
+      id: "user_1",
+    });
 
     expect(signOutMock).not.toHaveBeenCalled();
     expect(result).toEqual({

@@ -1,6 +1,9 @@
 import type Stripe from "stripe";
 
-import { findCatalogRecurringPriceByPriceId, isPlanId } from "@/features/billing/catalog/resolver";
+import {
+  findCatalogRecurringPriceByPriceId,
+  isPlanId,
+} from "@/features/billing/catalog/resolver";
 import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscription-items";
 import type { BillingInterval } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
@@ -63,7 +66,10 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     return;
   }
 
-  await syncOrganizationStripeCustomer({ organizationId: referenceId, customerId });
+  await syncOrganizationStripeCustomer({
+    organizationId: referenceId,
+    customerId,
+  });
   const primaryItem = getPrimarySubscriptionItem(subscription);
   const existing = await db.subscription.findFirst({
     where: { stripeSubscriptionId: subscription.id },
@@ -125,7 +131,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         itemKey: itemKey ?? "unknown",
         stripeCheckoutSessionId: session.id,
         stripePaymentIntentId:
-          typeof session.payment_intent === "string" ? session.payment_intent : null,
+          typeof session.payment_intent === "string"
+            ? session.payment_intent
+            : null,
         stripeCustomerId: customerId,
         amount: session.amount_total ?? 0,
         currency: session.currency ?? "usd",
@@ -142,7 +150,9 @@ async function handleCustomerDeleted(customer: Stripe.Customer) {
 export async function handleStripeWebhookEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
-      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+      await handleCheckoutCompleted(
+        event.data.object as Stripe.Checkout.Session,
+      );
       return;
     case "customer.deleted":
       await handleCustomerDeleted(event.data.object as Stripe.Customer);

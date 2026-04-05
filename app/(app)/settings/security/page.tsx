@@ -21,7 +21,9 @@ export default async function SecuritySettingsPage() {
     <Page>
       <PageHeader>
         <PageTitle>Security</PageTitle>
-        <PageDescription>Review the security controls that protect your account.</PageDescription>
+        <PageDescription>
+          Review the security controls that protect your account.
+        </PageDescription>
       </PageHeader>
 
       <TwoFactorSettingsCard enabled={user.twoFactorEnabled} />

@@ -1,5 +1,3 @@
-
-
 import Link from "next/link";
 
 import { SignUpForm } from "@/features/auth/components/sign-up/sign-up-form";
@@ -33,15 +31,15 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const oauthProviders = getEnabledOAuthProviderIds();
   const allowMagicLink = hasMagicLinkProvider();
   const signInHref = buildCallbackURL(routes.auth.login, callbackUrl);
-  
-  
 
   return (
     <Card className="gap-4">
       <CardHeader>
-        <CardTitle className="text-lg tracking-tight">Create an account</CardTitle>
+        <CardTitle className="text-lg tracking-tight">
+          Create an account
+        </CardTitle>
         <CardDescription>
-          Already have an account? 
+          Already have an account?
           <Link
             href={signInHref}
             className="underline underline-offset-4 hover:text-primary"
@@ -61,14 +59,14 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
 
       <CardFooter>
         <p className="w-full text-center text-sm text-muted-foreground">
-          By creating an account, you agree to our 
+          By creating an account, you agree to our
           <Link
             href={routes.marketing.terms}
             className="underline underline-offset-4 hover:text-primary"
           >
             Terms of Service
-          </Link> 
-          and 
+          </Link>
+          and
           <Link
             href={routes.marketing.privacy}
             className="underline underline-offset-4 hover:text-primary"

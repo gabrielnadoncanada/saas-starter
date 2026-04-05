@@ -1,9 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import {
-  getPlan,
-  isPlanId,
-} from "@/features/billing/catalog/resolver";
+import { getPlan, isPlanId } from "@/features/billing/catalog/resolver";
 import {
   LimitReachedError,
   UpgradeRequiredError,
@@ -15,7 +12,10 @@ import {
   getPlanLimit,
   hasCapability,
 } from "@/features/billing/guards/plan-guards";
-import type { OrganizationEntitlements, PlanId } from "@/shared/config/billing.config";
+import type {
+  OrganizationEntitlements,
+  PlanId,
+} from "@/shared/config/billing.config";
 
 vi.mock("server-only", () => ({}));
 
@@ -77,8 +77,12 @@ describe("plan catalog", () => {
 describe("plan guards", () => {
   it("checks capabilities from entitlements", () => {
     expect(hasCapability(createEntitlements("free"), "task.create")).toBe(true);
-    expect(hasCapability(createEntitlements("free"), "task.export")).toBe(false);
-    expect(hasCapability(createEntitlements("team"), "team.analytics")).toBe(true);
+    expect(hasCapability(createEntitlements("free"), "task.export")).toBe(
+      false,
+    );
+    expect(hasCapability(createEntitlements("team"), "team.analytics")).toBe(
+      true,
+    );
   });
 
   it("throws UpgradeRequiredError with the plan name", () => {
@@ -98,7 +102,9 @@ describe("plan guards", () => {
   it("returns limits from entitlements", () => {
     expect(getPlanLimit(createEntitlements("free"), "tasksPerMonth")).toBe(10);
     expect(getPlanLimit(createEntitlements("pro"), "tasksPerMonth")).toBe(1000);
-    expect(getPlanLimit(createEntitlements("team"), "tasksPerMonth")).toBe(10000);
+    expect(getPlanLimit(createEntitlements("team"), "tasksPerMonth")).toBe(
+      10000,
+    );
   });
 
   it("reports remaining quota correctly", () => {
@@ -109,12 +115,14 @@ describe("plan guards", () => {
       remaining: 5,
     });
 
-    expect(checkLimit(createEntitlements("free"), "tasksPerMonth", 10)).toEqual({
-      allowed: false,
-      currentUsage: 10,
-      limit: 10,
-      remaining: 0,
-    });
+    expect(checkLimit(createEntitlements("free"), "tasksPerMonth", 10)).toEqual(
+      {
+        allowed: false,
+        currentUsage: 10,
+        limit: 10,
+        remaining: 0,
+      },
+    );
   });
 
   it("throws LimitReachedError with limit details", () => {

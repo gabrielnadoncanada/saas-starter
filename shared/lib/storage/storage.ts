@@ -8,10 +8,10 @@ import s3Driver from "unstorage/drivers/s3";
 function shouldUseS3Storage() {
   return Boolean(
     process.env.STORAGE_S3_ENDPOINT &&
-      process.env.STORAGE_S3_BUCKET &&
-      process.env.STORAGE_S3_ACCESS_KEY_ID &&
-      process.env.STORAGE_S3_SECRET_ACCESS_KEY &&
-      process.env.STORAGE_S3_REGION,
+    process.env.STORAGE_S3_BUCKET &&
+    process.env.STORAGE_S3_ACCESS_KEY_ID &&
+    process.env.STORAGE_S3_SECRET_ACCESS_KEY &&
+    process.env.STORAGE_S3_REGION,
   );
 }
 
