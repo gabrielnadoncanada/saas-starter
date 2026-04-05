@@ -55,8 +55,6 @@ export type BulkUpdateTaskStatusActionState =
     taskIds?: number[];
   };
 
-const taskActionOptions = { validationNamespace: "tasks" } as const;
-
 export const createTaskAction = validatedAuthenticatedAction<
   typeof createTaskSchema,
   { task?: Task }
@@ -84,7 +82,6 @@ export const createTaskAction = validatedAuthenticatedAction<
       throw error;
     }
   },
-  taskActionOptions,
 );
 
 export const updateTaskAction = validatedAuthenticatedAction<
@@ -99,7 +96,6 @@ export const updateTaskAction = validatedAuthenticatedAction<
 
     return { success: "Task updated" };
   },
-  taskActionOptions,
 );
 
 export const deleteTaskAction = validatedAuthenticatedAction<
@@ -116,7 +112,6 @@ export const deleteTaskAction = validatedAuthenticatedAction<
       success: "Task deleted",
     };
   },
-  taskActionOptions,
 );
 
 export const updateTaskStatusAction = validatedAuthenticatedAction<
@@ -134,7 +129,6 @@ export const updateTaskStatusAction = validatedAuthenticatedAction<
       refreshKey: Date.now(),
     };
   },
-  taskActionOptions,
 );
 
 export const bulkDeleteTasksAction = validatedAuthenticatedAction<
@@ -153,7 +147,6 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
       taskIds,
     };
   },
-  taskActionOptions,
 );
 
 export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
@@ -173,5 +166,4 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
       taskIds: data.taskIds,
     };
   },
-  taskActionOptions,
 );

@@ -4,7 +4,7 @@ import { ChevronsUpDown, Cog, LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { SignOutDialog } from "@/features/auth/components/session/sign-out-dialog";
+import { SignOutDialog } from "@/features/auth/components/sign-out-dialog";
 import { OrganizationSwitcher } from "@/features/organizations/components/organization-switcher";
 import { useUser } from "@/shared/components/providers/user-provider";
 import {
