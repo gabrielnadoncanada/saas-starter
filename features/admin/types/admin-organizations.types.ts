@@ -1,27 +1,30 @@
-export type OrgMember = {
-  id: string;
-  role: string;
-  userId: string;
-  createdAt: Date;
-  user: { email: string; name: string | null; image?: string | null };
-};
+import type { Prisma } from "@prisma/client";
 
-export type AdminOrganization = {
-  id: string;
-  name: string;
-  slug: string | null;
-  createdAt: Date;
-  stripeCustomerId: string | null;
-  members: OrgMember[];
-  _count: { members: number };
-};
+/** Shared include for org list + detail so Prisma infers one row type. */
+export const adminOrganizationListInclude = {
+  members: {
+    orderBy: { createdAt: "asc" as const },
+    include: {
+      user: { select: { email: true, name: true, image: true } },
+    },
+  },
+  _count: { select: { members: true } },
+} as const satisfies Prisma.OrganizationInclude;
 
-export type OrgSubscription = {
-  id: string;
-  plan: string;
-  status: string;
-  periodEnd: Date | null;
-} | null;
+export type AdminOrganization = Prisma.OrganizationGetPayload<{
+  include: typeof adminOrganizationListInclude;
+}>;
+
+export type OrgMember = AdminOrganization["members"][number];
+
+export type OrgSubscription = Prisma.SubscriptionGetPayload<{
+  select: {
+    id: true;
+    plan: true;
+    status: true;
+    periodEnd: true;
+  };
+}> | null;
 
 export type ListAdminOrganizationsQuery = {
   limit?: number;

@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+
 import { UserDetailSheet } from "./user-detail-sheet";
 import { UsersTableRows } from "./users-table-rows";
 
@@ -80,7 +81,7 @@ export function AdminUsersTable({
             }
           : {}),
       });
-      setUsers(result.users as AdminUser[]);
+      setUsers(result.users);
       setTotal(result.total);
       setOffset(nextOffset);
     } catch {
@@ -110,7 +111,7 @@ export function AdminUsersTable({
       const detail = await getAdminUserDetailAction(user.id);
 
       if (detail.user) {
-        setSelectedUser(detail.user as AdminUser);
+        setSelectedUser(detail.user);
       }
 
       setSessions(detail.sessions);

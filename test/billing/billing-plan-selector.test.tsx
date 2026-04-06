@@ -33,7 +33,11 @@ const plans = [
     description: "For shipping.",
     features: ["Feature A"],
     pricingModel: "flat" as const,
-    monthly: { unitAmount: 2900 },
+    monthly: {
+      priceId: "price_pro_month",
+      unitAmount: 2900,
+      currency: "usd" as const,
+    },
     yearly: null,
   },
   {
@@ -42,7 +46,11 @@ const plans = [
     description: "For teams.",
     features: ["Seats"],
     pricingModel: "per_seat" as const,
-    monthly: { unitAmount: 4900 },
+    monthly: {
+      priceId: "price_team_month",
+      unitAmount: 4900,
+      currency: "usd" as const,
+    },
     yearly: null,
   },
 ];

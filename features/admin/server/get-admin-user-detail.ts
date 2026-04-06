@@ -1,21 +1,14 @@
 import { headers } from "next/headers";
 
 import { auth } from "@/shared/lib/auth/auth-config";
+import type { ListUserSessionsResult } from "@/shared/lib/auth/better-auth-inferred-types";
 
-import type { UserSession } from "../types/admin-users.types";
-
-function normalizeUserSessions(value: unknown): UserSession[] {
-  if (Array.isArray(value)) {
-    return value as UserSession[];
-  }
-
-  if (
-    value &&
-    typeof value === "object" &&
-    "sessions" in value &&
-    Array.isArray((value as { sessions?: unknown }).sessions)
-  ) {
-    return (value as { sessions: UserSession[] }).sessions;
+function sessionsFromListResult(
+  value: ListUserSessionsResult,
+): ListUserSessionsResult["sessions"] {
+  if (value && typeof value === "object" && "sessions" in value) {
+    const { sessions } = value;
+    return Array.isArray(sessions) ? sessions : [];
   }
 
   return [];
@@ -37,6 +30,6 @@ export async function getAdminUserDetail(userId: string) {
 
   return {
     user,
-    sessions: normalizeUserSessions(sessionsResult),
+    sessions: sessionsFromListResult(sessionsResult),
   };
 }

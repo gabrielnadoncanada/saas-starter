@@ -39,6 +39,23 @@ function isFailureResult(result: unknown): result is AssistantToolFailure {
   );
 }
 
+function isCreateTaskToolResult(result: unknown): result is CreateTaskToolResult {
+  if (typeof result !== "object" || result === null || !("success" in result)) {
+    return false;
+  }
+
+  if ((result as { success: boolean }).success === false) {
+    return isFailureResult(result);
+  }
+
+  const r = result as { success: true; result?: { taskCode?: unknown } };
+  return (
+    typeof r.result === "object" &&
+    r.result !== null &&
+    typeof r.result.taskCode === "string"
+  );
+}
+
 function formatTask(result: CreateTaskToolResult) {
   if (!result.success) {
     return null;
@@ -52,11 +69,10 @@ function getToolContent(toolName: string, output?: unknown) {
     return { errorText: undefined, response: undefined };
   }
 
-  if (toolName === "createTask") {
-    const result = output as CreateTaskToolResult;
+  if (toolName === "createTask" && isCreateTaskToolResult(output)) {
     return {
-      errorText: result.success ? undefined : result.error.message,
-      response: formatTask(result),
+      errorText: output.success ? undefined : output.error.message,
+      response: formatTask(output),
     };
   }
 

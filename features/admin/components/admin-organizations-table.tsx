@@ -74,7 +74,7 @@ export function AdminOrganizationsTable({
           search: nextSearch,
         });
 
-        setOrganizations(result.organizations as AdminOrganization[]);
+        setOrganizations(result.organizations);
         setTotal(result.total);
         setOffset(nextOffset);
       } catch {
@@ -91,8 +91,8 @@ export function AdminOrganizationsTable({
 
     try {
       const detail = await getOrganizationDetailAction(organization.id);
-      setSelectedOrganization(detail.organization as AdminOrganization);
-      setSubscription(detail.subscription as OrgSubscription);
+      setSelectedOrganization(detail.organization);
+      setSubscription(detail.subscription);
     } catch {
       toast.error("Failed to load organization details");
     } finally {

@@ -46,27 +46,27 @@ const recurringPrices = billingConfig.plans.flatMap((plan) =>
   ),
 );
 
-const recurringPricesById = Object.fromEntries(
+const recurringPricesById = new Map<string, RecurringCatalogPrice>(
   recurringPrices.map((entry) => [entry.price.priceId, entry]),
-) as unknown as Record<string, RecurringCatalogPrice>;
+);
 
 export function findCatalogRecurringPriceByPriceId(priceId: string) {
-  return recurringPricesById[priceId] ?? null;
+  return recurringPricesById.get(priceId) ?? null;
 }
 
-const plansById = Object.fromEntries(
+const plansById = new Map<string, BillingPlan>(
   billingConfig.plans.map((plan) => [plan.id, plan]),
-) as unknown as Record<PlanId, BillingPlan>;
+);
 
-const oneTimeProductsById = Object.fromEntries(
+const oneTimeProductsById = new Map<string, OneTimeProductDefinition>(
   billingConfig.oneTimeProducts.map((product) => [product.id, product]),
-) as unknown as Record<string, OneTimeProductDefinition>;
+);
 
-const oneTimePricesById = Object.fromEntries(
+const oneTimePricesById = new Map<string, string>(
   billingConfig.oneTimeProducts.flatMap((product) =>
-    product.price ? [[product.price.priceId, product.id] as const] : [],
+    product.price ? [[product.price.priceId, product.id]] : [],
   ),
-) as unknown as Record<string, string>;
+);
 
 function getPlanSchedule(
   plan: BillingPlan,
@@ -80,15 +80,15 @@ function getPlanSchedule(
 }
 
 export function isPlanId(value: string): value is PlanId {
-  return Object.hasOwn(plansById, value);
+  return plansById.has(value);
 }
 
 export function getPlan(planId: PlanId): BillingPlan {
-  return plansById[planId] ?? plansById.free;
+  return plansById.get(planId) ?? plansById.get("free")!;
 }
 
 export function getOneTimeProduct(productId: string) {
-  return oneTimeProductsById[productId] ?? null;
+  return oneTimeProductsById.get(productId) ?? null;
 }
 
 export function isBillingInterval(value: string): value is BillingInterval {
@@ -126,9 +126,21 @@ export function listOneTimeProducts(): OneTimeProductDefinition[] {
 }
 
 export function findOneTimeProductByPriceId(priceId: string) {
-  const itemKey = oneTimePricesById[priceId];
+  const itemKey = oneTimePricesById.get(priceId);
 
   return itemKey ? getOneTimeProduct(itemKey) : null;
+}
+
+export function toBillingPlanOption(plan: BillingPlanDefinition): BillingPlanOption {
+  return {
+    id: plan.id as PlanId,
+    name: plan.name,
+    description: plan.description,
+    features: plan.features,
+    pricingModel: plan.pricingModel,
+    monthly: getPlanDisplayPrice(plan.id, "month"),
+    yearly: getPlanDisplayPrice(plan.id, "year"),
+  };
 }
 
 export function buildPlanCheckoutLineItems(params: {

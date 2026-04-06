@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 
 import { savePasswordAction } from "@/features/auth/actions/save-password.actions";
-import type { SavePasswordInput } from "@/features/auth/schemas/password-change.schema";
+import type { PasswordFormValues } from "@/features/auth/schemas/password-change.schema";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -33,7 +33,7 @@ export function EditPasswordDialog({
 }: EditPasswordDialogProps) {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
-    FormActionState<SavePasswordInput>,
+    FormActionState<PasswordFormValues>,
     FormData
   >(savePasswordAction, {});
 

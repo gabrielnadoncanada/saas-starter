@@ -2,34 +2,17 @@ import { headers } from "next/headers";
 
 import type { OrganizationInvitationView } from "@/features/organizations/types";
 import { auth } from "@/shared/lib/auth/auth-config";
+import type { OrganizationInvitationRow } from "@/shared/lib/auth/better-auth-inferred-types";
+import { toIsoString } from "@/shared/lib/date/to-iso-string";
 import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
 
-type RawOrganizationInvitation = {
-  id: string;
-  email: string;
-  role?: string | null;
-  status: string;
-  createdAt: Date | string;
-  expiresAt?: Date | string | null;
-};
-
-export type PendingOrganizationInvitation = OrganizationInvitationView;
-
-function toIsoString(value?: Date | string | null) {
-  if (!value) {
-    return null;
-  }
-
-  return typeof value === "string" ? value : value.toISOString();
-}
-
-function isPendingInvitation(invitation: RawOrganizationInvitation) {
+function isPendingInvitation(invitation: OrganizationInvitationRow) {
   return invitation.status === "pending";
 }
 
 function mapPendingInvitation(
-  invitation: RawOrganizationInvitation,
-): PendingOrganizationInvitation {
+  invitation: OrganizationInvitationRow,
+): OrganizationInvitationView {
   return {
     id: invitation.id,
     email: invitation.email,
@@ -57,7 +40,7 @@ export async function inviteOrganizationMember(input: {
 
 export async function listPendingOrganizationInvitations(
   organizationId: string,
-): Promise<PendingOrganizationInvitation[]> {
+): Promise<OrganizationInvitationView[]> {
   const requestHeaders = await headers();
 
   const invitations = await auth.api.listInvitations({
@@ -65,7 +48,7 @@ export async function listPendingOrganizationInvitations(
     headers: requestHeaders,
   });
 
-  return ((invitations ?? []) as RawOrganizationInvitation[])
+  return (invitations ?? [])
     .filter(isPendingInvitation)
     .map(mapPendingInvitation);
 }
@@ -89,7 +72,7 @@ export async function resendOrganizationInvitation(input: {
     headers: requestHeaders,
   });
   const invitation = (invitations ?? []).find(
-    (item: { id: string; status: string }) =>
+    (item: OrganizationInvitationRow) =>
       item.id === input.invitationId && item.status === "pending",
   );
 

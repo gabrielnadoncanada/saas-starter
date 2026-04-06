@@ -6,8 +6,10 @@ import type {
   OrganizationMemberView,
 } from "@/features/organizations/types";
 import { auth } from "@/shared/lib/auth/auth-config";
+import type { FullOrganization } from "@/shared/lib/auth/better-auth-inferred-types";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { getAuthSession } from "@/shared/lib/auth/get-session";
+import { toIsoString } from "@/shared/lib/date/to-iso-string";
 import {
   getPrimaryOrgRole,
   hasOrgRole,
@@ -15,24 +17,9 @@ import {
   parseOrgRoles,
 } from "@/shared/lib/db/enums";
 
-type RawOrganizationMember = {
-  id: string;
-  role?: string | null;
-  createdAt?: Date | string | null;
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-    image?: string | null;
-  };
-};
-
-type RawOrganization = {
-  id: string;
-  name: string;
-  stripeCustomerId?: string | null;
-  members?: RawOrganizationMember[];
-};
+type OrganizationMemberFromApi = NonNullable<
+  FullOrganization["members"]
+>[number];
 
 export type CurrentOrganizationContext = {
   user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
@@ -47,16 +34,8 @@ export type CurrentOrganizationContext = {
   isOwner: boolean;
 };
 
-function toIsoString(value?: Date | string | null) {
-  if (!value) {
-    return null;
-  }
-
-  return typeof value === "string" ? value : value.toISOString();
-}
-
 function mapOrganizationMember(
-  member: RawOrganizationMember,
+  member: OrganizationMemberFromApi,
 ): OrganizationMemberView {
   return {
     id: member.id,
@@ -73,7 +52,7 @@ function mapOrganizationMember(
 }
 
 function mapCurrentOrganization(
-  organization: RawOrganization,
+  organization: FullOrganization,
   subscription: Awaited<ReturnType<typeof getOrganizationSubscriptionSnapshot>>,
 ): CurrentOrganizationView {
   return {
@@ -117,7 +96,7 @@ export async function getCurrentOrganization(): Promise<CurrentOrganizationView 
     return null;
   }
 
-  return mapCurrentOrganization(organization as RawOrganization, subscription);
+  return mapCurrentOrganization(organization, subscription);
 }
 
 /** Full page context: organization + current user + roles + isOwner. Use in settings/org pages that need the viewer's membership. */

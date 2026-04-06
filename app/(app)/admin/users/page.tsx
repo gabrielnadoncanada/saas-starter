@@ -31,7 +31,7 @@ export default async function AdminUsersPage() {
       <AdminUsersTable
         currentUserId={currentUser.id}
         initialTotal={result.total}
-        initialUsers={result.users as any}
+        initialUsers={result.users}
         pageSize={PAGE_SIZE}
       />
     </Page>

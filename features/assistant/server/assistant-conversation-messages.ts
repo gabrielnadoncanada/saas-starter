@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { safeValidateUIMessages, type UIMessage } from "ai";
 
 import type {
@@ -68,12 +68,16 @@ async function parseMessages(messagesJson: Prisma.JsonValue) {
   return result.success ? result.data : [];
 }
 
-type ConversationRecord = {
-  id: string;
-  title: string;
-  messagesJson: Prisma.JsonValue;
-  lastMessageAt: Date;
-};
+export const assistantConversationSelect = {
+  id: true,
+  title: true,
+  messagesJson: true,
+  lastMessageAt: true,
+} as const satisfies Prisma.AiConversationSelect;
+
+export type ConversationRecord = Prisma.AiConversationGetPayload<{
+  select: typeof assistantConversationSelect;
+}>;
 
 export async function toConversationListItem(
   record: ConversationRecord,

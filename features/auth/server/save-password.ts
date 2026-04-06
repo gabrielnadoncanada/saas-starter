@@ -1,12 +1,13 @@
 import { headers } from "next/headers";
 
-import type { SavePasswordInput } from "@/features/auth/schemas/password-change.schema";
+import type { PasswordFormValues } from "@/features/auth/schemas/password-change.schema";
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
-type SavePasswordParams = {
-  currentPassword: string;
-  newPassword: string;
+type SavePasswordParams = Pick<
+  PasswordFormValues,
+  "currentPassword" | "newPassword"
+> & {
   hasPassword: boolean;
 };
 
@@ -14,7 +15,7 @@ export async function savePasswordServer({
   currentPassword,
   newPassword,
   hasPassword,
-}: SavePasswordParams): Promise<FormActionState<SavePasswordInput>> {
+}: SavePasswordParams): Promise<FormActionState<PasswordFormValues>> {
   try {
     if (hasPassword) {
       await auth.api.changePassword({

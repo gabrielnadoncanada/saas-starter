@@ -23,7 +23,15 @@ vi.mock("@/shared/lib/auth/auth-config", () => ({
 }));
 
 vi.mock("@/shared/lib/auth/authenticated-action", () => ({
-  validatedAuthenticatedAction: (_schema: unknown, action: unknown) => action,
+  validatedAuthenticatedAction: (_schema: unknown, action: unknown) => {
+    const fn = action as (
+      data: unknown,
+      formData: FormData,
+      user: { id: string; email: string },
+    ) => Promise<unknown>;
+    return async (_prevState: unknown, formData: FormData) =>
+      fn({}, formData, { id: "user_1", email: "user@example.com" });
+  },
 }));
 
 const { deleteAccountAction } =
@@ -40,10 +48,7 @@ describe("deleteAccountAction", () => {
       success: "Account deleted successfully.",
     });
 
-    const result = await deleteAccountAction({}, new FormData(), {
-      email: "user@example.com",
-      id: "user_1",
-    });
+    const result = await deleteAccountAction({}, new FormData());
 
     expect(deleteAccountMock).toHaveBeenCalledWith({
       userEmail: "user@example.com",
@@ -63,10 +68,7 @@ describe("deleteAccountAction", () => {
       error: "Leave your organization before deleting your account.",
     });
 
-    const result = await deleteAccountAction({}, new FormData(), {
-      email: "user@example.com",
-      id: "user_1",
-    });
+    const result = await deleteAccountAction({}, new FormData());
 
     expect(signOutMock).not.toHaveBeenCalled();
     expect(result).toEqual({

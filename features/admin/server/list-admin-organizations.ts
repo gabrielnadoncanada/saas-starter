@@ -1,6 +1,7 @@
 import { db } from "@/shared/lib/db/prisma";
 
 import type { ListAdminOrganizationsQuery } from "../types/admin-organizations.types";
+import { adminOrganizationListInclude } from "../types/admin-organizations.types";
 
 export async function listAdminOrganizations(
   query: ListAdminOrganizationsQuery,
@@ -16,14 +17,7 @@ export async function listAdminOrganizations(
   const [organizations, total] = await Promise.all([
     db.organization.findMany({
       where,
-      include: {
-        members: {
-          include: {
-            user: { select: { email: true, name: true, image: true } },
-          },
-        },
-        _count: { select: { members: true } },
-      },
+      include: adminOrganizationListInclude,
       orderBy: { createdAt: "desc" },
       take: limit,
       skip: offset,

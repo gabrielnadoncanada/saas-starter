@@ -41,27 +41,17 @@ export function TasksTable({
   onEditTask,
   onDeleteTask,
 }: TasksTableProps) {
+  const { rows, rowCount, pageCount, ...tableParams } = tasksPage;
+
   const columns = useMemo(
     () => getTasksColumns({ onEditTask, onDeleteTask }),
     [onDeleteTask, onEditTask],
   );
-  const tableParams = useMemo<TaskTableSearchParams>(
-    () => ({
-      page: tasksPage.page,
-      pageSize: tasksPage.pageSize,
-      q: tasksPage.q,
-      sort: tasksPage.sort,
-      order: tasksPage.order,
-      status: tasksPage.status,
-      priority: tasksPage.priority,
-    }),
-    [tasksPage],
-  );
 
   const table = useServerTable({
-    data: tasksPage.rows,
+    data: rows,
     columns,
-    pageCount: tasksPage.pageCount,
+    pageCount,
     params: tableParams,
     buildHref: buildTasksTableHref,
     sortableColumns,
@@ -82,7 +72,7 @@ export function TasksTable({
 
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground whitespace-nowrap">
-          {tasksPage.rowCount === 1 ? "1 task" : `${tasksPage.rowCount} tasks`}
+          {rowCount === 1 ? "1 task" : `${rowCount} tasks`}
         </p>
         <DataTablePagination table={table} className="mt-auto w-full px-0" />
       </div>

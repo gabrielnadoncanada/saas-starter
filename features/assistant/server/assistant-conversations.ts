@@ -3,6 +3,7 @@ import "server-only";
 import type { UIMessage } from "ai";
 
 import {
+  assistantConversationSelect,
   getConversationTitle,
   serializeMessages,
   toConversation,
@@ -44,13 +45,6 @@ function getConversationWhere(
   };
 }
 
-const conversationSelect = {
-  id: true,
-  title: true,
-  messagesJson: true,
-  lastMessageAt: true,
-} as const;
-
 export async function listAssistantConversations() {
   const scope = await resolveAssistantConversationScope();
   if (scope.kind !== "ok") {
@@ -60,7 +54,7 @@ export async function listAssistantConversations() {
   const records = await db.aiConversation.findMany({
     where: getConversationWhere(scope),
     orderBy: { lastMessageAt: "desc" },
-    select: conversationSelect,
+    select: assistantConversationSelect,
   });
 
   return Promise.all(records.map(toConversationListItem));
@@ -74,7 +68,7 @@ export async function getAssistantConversation(conversationId: string) {
 
   const record = await db.aiConversation.findFirst({
     where: getConversationWhere(scope, conversationId),
-    select: conversationSelect,
+    select: assistantConversationSelect,
   });
 
   return record ? toConversation(record) : null;
@@ -95,7 +89,7 @@ export async function createAssistantConversation(messages: UIMessage[]) {
       messagesJson: serializeMessages(messages),
       lastMessageAt: new Date(),
     },
-    select: conversationSelect,
+    select: assistantConversationSelect,
   });
 
   return toConversation(record);
@@ -126,7 +120,7 @@ export async function replaceAssistantConversation(
       messagesJson: serializeMessages(messages),
       lastMessageAt: new Date(),
     },
-    select: conversationSelect,
+    select: assistantConversationSelect,
   });
 
   return toConversation(record);

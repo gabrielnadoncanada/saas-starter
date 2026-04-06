@@ -1,3 +1,5 @@
+import type { Subscription } from "@prisma/client";
+
 import { getPlan, isPlanId } from "@/features/billing/catalog";
 import {
   type BillingInterval,
@@ -26,29 +28,7 @@ function toPricingModel(planId: string | null): PricingModel | null {
   return getPlan(planId).pricingModel;
 }
 
-export async function getOrganizationSubscriptionSnapshot(
-  organizationId: string,
-): Promise<SubscriptionSnapshot> {
-  const subscription = await db.subscription.findFirst({
-    where: { referenceId: organizationId },
-    orderBy: [{ updatedAt: "desc" }],
-  });
-
-  if (!subscription) {
-    return {
-      billingInterval: null,
-      cancelAt: null,
-      cancelAtPeriodEnd: false,
-      planId: null,
-      periodEnd: null,
-      pricingModel: null,
-      seats: null,
-      stripeCustomerId: null,
-      stripeSubscriptionId: null,
-      subscriptionStatus: null,
-    };
-  }
-
+function subscriptionRowToSnapshot(subscription: Subscription): SubscriptionSnapshot {
   return {
     billingInterval:
       subscription.billingInterval === "month" ||
@@ -65,4 +45,32 @@ export async function getOrganizationSubscriptionSnapshot(
     stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
     subscriptionStatus: subscription.status ?? null,
   };
+}
+
+const emptySnapshot: SubscriptionSnapshot = {
+  billingInterval: null,
+  cancelAt: null,
+  cancelAtPeriodEnd: false,
+  planId: null,
+  periodEnd: null,
+  pricingModel: null,
+  seats: null,
+  stripeCustomerId: null,
+  stripeSubscriptionId: null,
+  subscriptionStatus: null,
+};
+
+export async function getOrganizationSubscriptionSnapshot(
+  organizationId: string,
+): Promise<SubscriptionSnapshot> {
+  const subscription = await db.subscription.findFirst({
+    where: { referenceId: organizationId },
+    orderBy: [{ updatedAt: "desc" }],
+  });
+
+  if (!subscription) {
+    return emptySnapshot;
+  }
+
+  return subscriptionRowToSnapshot(subscription);
 }

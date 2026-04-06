@@ -27,7 +27,21 @@ vi.mock("next/headers", () => ({
 }));
 
 vi.mock("@/shared/lib/auth/authenticated-action", () => ({
-  validatedAuthenticatedAction: (_schema: unknown, action: unknown) => action,
+  validatedAuthenticatedAction: (_schema: unknown, action: unknown) => {
+    const fn = action as (
+      data: { email: string; role: "member" | "admin" },
+      formData: FormData,
+      user: { id: string; email: string },
+    ) => Promise<unknown>;
+    return async (_prevState: unknown, formData: FormData) => {
+      const raw = Object.fromEntries(formData.entries());
+      const data = {
+        email: String(raw.email ?? ""),
+        role: raw.role as "member" | "admin",
+      };
+      return fn(data, formData, { id: "owner_1", email: "owner@example.com" });
+    };
+  },
 }));
 
 vi.mock("@/features/organizations/server/organization-membership", () => ({
@@ -100,11 +114,11 @@ describe("inviteOrganizationMemberAction", () => {
   });
 
   it("invites a member", async () => {
-    const result = await inviteOrganizationMemberAction(
-      { email: "new@acme.com", role: "member" },
-      new FormData(),
-      { id: "owner_1" },
-    );
+    const formData = new FormData();
+    formData.set("email", "new@acme.com");
+    formData.set("role", "member");
+
+    const result = await inviteOrganizationMemberAction({}, formData);
 
     expect(requireActiveOrganizationRoleMock).toHaveBeenCalledWith(["owner"]);
     expect(assertCapabilityMock).toHaveBeenCalledWith(
@@ -132,11 +146,11 @@ describe("inviteOrganizationMemberAction", () => {
       throw new LimitReachedError("teamMembers", 1, 1, "Pro");
     });
 
-    const result = await inviteOrganizationMemberAction(
-      { email: "new@acme.com", role: "member" },
-      new FormData(),
-      { id: "owner_1" },
-    );
+    const formData = new FormData();
+    formData.set("email", "new@acme.com");
+    formData.set("role", "member");
+
+    const result = await inviteOrganizationMemberAction({}, formData);
 
     expect(inviteOrganizationMemberMock).not.toHaveBeenCalled();
     expect(result).toEqual({

@@ -14,7 +14,6 @@ export type ResetPasswordValues = Pick<
   PasswordFormValues,
   "newPassword" | "confirmPassword"
 >;
-export type SavePasswordInput = PasswordFormValues;
 
 export const passwordFormDefaultValues: PasswordFormValues = {
   currentPassword: "",

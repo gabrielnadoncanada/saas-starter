@@ -27,7 +27,7 @@ export default async function AdminOrganizationsPage() {
       </PageHeader>
 
       <AdminOrganizationsTable
-        initialOrganizations={organizations as any}
+        initialOrganizations={organizations}
         initialTotal={total}
         currentUserId={currentUser.id}
         pageSize={PAGE_SIZE}

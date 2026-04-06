@@ -1,33 +1,14 @@
-export type AdminUser = {
-  id: string;
-  name: string | null;
-  email: string;
-  image: string | null;
-  role: string | null;
-  banned: boolean | null;
-  banReason: string | null;
-  banExpires: string | Date | null;
-  emailVerified: boolean;
-  createdAt: Date;
-  updatedAt?: Date;
-};
+export type {
+  AdminApiSession,
+  AdminApiUser,
+  GetUserResult,
+  ListUsersQueryInput,
+  ListUsersResult,
+} from "@/shared/lib/auth/better-auth-inferred-types";
 
-export type UserSession = {
-  id: string;
-  token: string;
-  userId: string;
-  expiresAt: Date;
-  createdAt: Date;
-  ipAddress?: string | null;
-  userAgent?: string | null;
-};
+export type { AdminApiSession as UserSession, AdminApiUser as AdminUser } from "@/shared/lib/auth/better-auth-inferred-types";
 
-export type ListAdminUsersQuery = {
-  limit?: number;
-  offset?: number;
-  searchValue?: string;
-  searchField?: "email" | "name";
-  searchOperator?: "contains" | "starts_with" | "ends_with";
-  sortBy?: string;
-  sortDirection?: "asc" | "desc";
-};
+/** Filters passed from UI → `listAdminUsers` (defaults applied server-side). */
+export type ListAdminUsersQuery = Partial<
+  import("@/shared/lib/auth/better-auth-inferred-types").ListUsersQueryInput
+>;
