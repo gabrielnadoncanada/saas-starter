@@ -46,32 +46,26 @@ export type TaskTableSearchParams = z.output<
   typeof taskTableSearchParamsSchema
 >;
 
-function getFirstValue(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function getListValue(value: string | string[] | undefined) {
-  if (!value) {
-    return [];
-  }
-
-  return (Array.isArray(value) ? value : [value])
-    .flatMap((item) => item.split(","))
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
 export function parseTaskTableSearchParams(
   input: Record<string, string | string[] | undefined>,
 ): TaskTableSearchParams {
+  const first = (v: string | string[] | undefined) =>
+    Array.isArray(v) ? v[0] : v;
+
+  const list = (v: string | string[] | undefined) =>
+    (v ? (Array.isArray(v) ? v : [v]) : [])
+      .flatMap((s) => s.split(","))
+      .map((s) => s.trim())
+      .filter(Boolean);
+
   return taskTableSearchParamsSchema.parse({
-    page: getFirstValue(input.page),
-    pageSize: getFirstValue(input.pageSize),
-    q: getFirstValue(input.q),
-    sort: getFirstValue(input.sort),
-    order: getFirstValue(input.order),
-    status: getListValue(input.status),
-    priority: getListValue(input.priority),
+    page: first(input.page),
+    pageSize: first(input.pageSize),
+    q: first(input.q),
+    sort: first(input.sort),
+    order: first(input.order),
+    status: list(input.status),
+    priority: list(input.priority),
   });
 }
 

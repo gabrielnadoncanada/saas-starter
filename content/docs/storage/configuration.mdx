@@ -9,7 +9,7 @@ Storage is implemented with [unstorage](https://unstorage.unjs.io/) in `shared/l
 
 `getFileStorage()` resolves once per process: if every S3 variable is present, the S3 driver is used; otherwise the filesystem driver is used with a local directory under the project root.
 
-```7:16:shared/lib/storage/storage.ts
+```ts title="shared/lib/storage/storage.ts"
 function shouldUseS3Storage() {
   return Boolean(
     process.env.STORAGE_S3_ENDPOINT &&
@@ -27,7 +27,7 @@ function shouldUseS3Storage() {
 
 On first use, the code ensures a `.storage` directory exists at the project working directory and mounts the FS driver there:
 
-```18:22:shared/lib/storage/storage.ts
+```ts title="shared/lib/storage/storage.ts"
 async function ensureLocalStorageBase() {
   const basePath = path.join(process.cwd(), ".storage");
   await mkdir(basePath, { recursive: true });
@@ -35,7 +35,7 @@ async function ensureLocalStorageBase() {
 }
 ```
 
-```36:41:shared/lib/storage/storage.ts
+```ts title="shared/lib/storage/storage.ts"
 async function createFsStorage() {
   const base = await ensureLocalStorageBase();
 
@@ -59,7 +59,7 @@ When `shouldUseS3Storage()` is true, unstorage’s S3 driver is configured with:
 | `STORAGE_S3_SECRET_ACCESS_KEY` | Secret key |
 | `STORAGE_S3_REGION` | Region string required by the driver |
 
-```24:33:shared/lib/storage/storage.ts
+```ts title="shared/lib/storage/storage.ts"
 function createS3Storage() {
   return createStorage({
     driver: s3Driver({
@@ -77,7 +77,7 @@ function createS3Storage() {
 
 `getFileStorage()` caches the resolved storage instance for the lifetime of the Node process:
 
-```44:54:shared/lib/storage/storage.ts
+```ts title="shared/lib/storage/storage.ts"
 let storagePromise: Promise<ReturnType<typeof createS3Storage>> | null = null;
 
 export function getFileStorage() {

@@ -7,7 +7,7 @@ description: How this starter keeps secrets server-side, validates access on the
 
 Authenticated areas use **async server layouts and pages** that call session helpers before rendering. The app layout redirects unauthenticated users; dashboard and settings layouts load the user on the server with `getCurrentUser()`; the admin layout uses `requireAdmin()` so only platform admins reach admin routes.
 
-```3:17:app/(app)/layout.tsx
+```tsx title="app/(app)/layout.tsx"
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -35,7 +35,7 @@ export default async function AppLayout({
 - **Server-only secrets** (never prefixed with `NEXT_PUBLIC_`): for example `AUTH_SECRET`, `RESEND_API_KEY`, `STRIPE_SECRET_KEY`, database URLs, and webhook secrets. These are read in Node (route handlers, server actions, `process.env` in server modules).
 - **Public build-time vars** (`NEXT_PUBLIC_*`): embedded in the client bundle. This repo uses them sparingly—for example `NEXT_PUBLIC_ACCOUNT_MODE` drives UI behavior for account mode.
 
-```15:20:shared/config/account.config.ts
+```ts title="shared/config/account.config.ts"
 function resolveAccountMode(): AccountMode {
   const raw = process.env.NEXT_PUBLIC_ACCOUNT_MODE;
   if (raw && VALID_MODES.includes(raw as AccountMode)) {

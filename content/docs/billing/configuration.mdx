@@ -22,7 +22,7 @@ All product semantics for the app live in **`shared/config/billing.config.ts`** 
 - **`pricingModel`** — `"flat"` or `"per_seat"`.
 - **`BillingPlanDefinition`** — `id`, `name`, `description`, optional `highlighted`, `pricingModel`, `features` (marketing strings), `capabilities`, `limits`, and **`schedules`** per billing interval (`month` / `year`).
 
-```46:56:shared/config/billing.config.ts
+```ts title="shared/config/billing.config.ts"
 export type BillingPlanDefinition = {
   id: string;
   name: string;

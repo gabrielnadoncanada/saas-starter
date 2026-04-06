@@ -7,7 +7,7 @@ description: Google and GitHub OAuth in auth-config and UI-facing oauth-config h
 
 OAuth providers are added only when both client ID and secret env vars are present:
 
-```74:91:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
   socialProviders: {
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? {
@@ -30,7 +30,7 @@ OAuth providers are added only when both client ID and secret env vars are prese
 
 Account linking (optional) trusts Google and GitHub when enabled:
 
-```98:103:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
   account: {
     accountLinking: {
       enabled: process.env.ALLOW_EMAIL_ACCOUNT_LINKING === "true",
@@ -45,7 +45,7 @@ Set **`ALLOW_EMAIL_ACCOUNT_LINKING`** to `"true"` only when you accept email-bas
 
 Labels, enabled state, and typing for buttons are centralized:
 
-```3:18:shared/lib/auth/oauth-config.ts
+```ts title="shared/lib/auth/oauth-config.ts"
 const oauthProviders = [
   {
     id: "google",

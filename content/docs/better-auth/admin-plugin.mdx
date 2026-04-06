@@ -7,7 +7,7 @@ description: Better Auth admin plugin, platform admin role, and admin panel serv
 
 The `admin` plugin sets the default user role and which roles count as **administrators** for Better Auth’s admin APIs:
 
-```106:109:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
     admin({
       defaultRole: "user",
       adminRoles: [...PLATFORM_ADMIN_ROLES],
@@ -16,7 +16,7 @@ The `admin` plugin sets the default user role and which roles count as **adminis
 
 `PLATFORM_ADMIN_ROLES` is defined in `shared/lib/auth/roles.ts`:
 
-```30:34:shared/lib/auth/roles.ts
+```ts title="shared/lib/auth/roles.ts"
 export const PLATFORM_ADMIN_ROLES = ["admin"] as const;
 
 export function isPlatformAdmin(value: unknown): boolean {
@@ -38,7 +38,7 @@ Routes under `/admin` use `requireAdmin()` / `requireAdminAction()` from `featur
 
 Admin server actions call **`auth.api`** methods from the admin plugin, for example:
 
-```77:90:features/admin/actions/admin-users.actions.ts
+```ts title="features/admin/actions/admin-users.actions.ts"
 export async function setUserRoleAction(
   userId: string,
   role: "user" | "admin",

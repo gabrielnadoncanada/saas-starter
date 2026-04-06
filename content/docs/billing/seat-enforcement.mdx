@@ -16,7 +16,7 @@ Each plan defines `limits.teamMembers` in `billing.config.ts` (for example Free:
 3. Counts **current members** and **pending invitations**.
 4. **`assertLimit(entitlements, "teamMembers", memberCount + pendingCount)`** — throws `LimitReachedError` if adding another invite would exceed the cap.
 
-```106:126:features/organizations/actions/membership.actions.ts
+```ts title="features/organizations/actions/membership.actions.ts"
     try {
       assertCapability(entitlements, "team.invite");
 

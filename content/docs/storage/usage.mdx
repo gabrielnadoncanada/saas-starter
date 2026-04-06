@@ -13,7 +13,7 @@ Object keys are generated per upload: `{organizationId}/{uuid}-{sanitized-name}{
 
 Pass the active organization id, the uploading user id, and a Web `File` (for example from a form in a Server Action):
 
-```60:94:shared/lib/storage/storage-service.ts
+```ts title="shared/lib/storage/storage-service.ts"
 export async function saveStoredFile(input: {
   organizationId: string;
   uploadedByUserId: string;
@@ -58,7 +58,7 @@ export async function saveStoredFile(input: {
 
 Use the **storage key** from a `StoredFile` row (not the public URL alone):
 
-```41:57:shared/lib/storage/storage-service.ts
+```ts title="shared/lib/storage/storage-service.ts"
 export async function readStoredFileBody(storageKey: string) {
   const storage = await getFileStorage();
   const body = await storage.getItemRaw(storageKey);
@@ -83,7 +83,7 @@ export async function readStoredFileBody(storageKey: string) {
 
 Restricts by both `storedFileId` and `organizationId` so callers cannot cross organizations:
 
-```29:38:shared/lib/storage/storage-service.ts
+```ts title="shared/lib/storage/storage-service.ts"
 export async function getStoredFileRecord(
   storedFileId: string,
   organizationId: string,
@@ -101,7 +101,7 @@ export async function getStoredFileRecord(
 
 Removes the blob from backing storage, then deletes the database row:
 
-```97:112:shared/lib/storage/storage-service.ts
+```ts title="shared/lib/storage/storage-service.ts"
 export async function deleteStoredFile(
   storedFileId: string,
   organizationId: string,

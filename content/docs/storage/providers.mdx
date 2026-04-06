@@ -28,7 +28,7 @@ When **all** of these are set, the S3 driver is used:
 
 The configuration passed to unstorage is:
 
-```24:33:shared/lib/storage/storage.ts
+```ts title="shared/lib/storage/storage.ts"
 function createS3Storage() {
   return createStorage({
     driver: s3Driver({

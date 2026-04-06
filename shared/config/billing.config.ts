@@ -85,13 +85,7 @@ export type OrganizationEntitlements = {
   subscriptionStatus: string | null;
 };
 
-function usdPrice(priceId: string | undefined, unitAmount: number) {
-  return priceId
-    ? { priceId, unitAmount, currency: "usd" as const }
-    : undefined;
-}
-
-function recurringPrice(
+function price(
   priceId: string | undefined,
   unitAmount: number,
   trialDays?: number,
@@ -136,7 +130,7 @@ export const billingConfig = {
                 {
                   id: "base",
                   kind: "flat",
-                  price: recurringPrice(
+                  price: price(
                     process.env.STRIPE_PRICE_PRO_MONTHLY,
                     1900,
                     7,
@@ -151,7 +145,7 @@ export const billingConfig = {
                 {
                   id: "base",
                   kind: "flat",
-                  price: recurringPrice(
+                  price: price(
                     process.env.STRIPE_PRICE_PRO_YEARLY,
                     19000,
                     7,
@@ -189,7 +183,7 @@ export const billingConfig = {
                 {
                   id: "seat",
                   kind: "seat",
-                  price: recurringPrice(
+                  price: price(
                     process.env.STRIPE_PRICE_TEAM_MONTHLY,
                     4900,
                     7,
@@ -205,7 +199,7 @@ export const billingConfig = {
                 {
                   id: "seat",
                   kind: "seat",
-                  price: recurringPrice(
+                  price: price(
                     process.env.STRIPE_PRICE_TEAM_YEARLY,
                     49000,
                     7,
@@ -224,7 +218,7 @@ export const billingConfig = {
       name: "Storage Boost",
       description: "Add 10 GB of storage to this workspace.",
       features: ["10 GB extra storage"],
-      price: usdPrice(process.env.STRIPE_PRICE_STORAGE_BOOST, 7900),
+      price: price(process.env.STRIPE_PRICE_STORAGE_BOOST, 7900),
       limitEffect: { storageMb: 10_000 },
     },
   ],

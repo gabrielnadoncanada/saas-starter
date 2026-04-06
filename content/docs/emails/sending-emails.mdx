@@ -13,7 +13,7 @@ Email settings are read in **`shared/lib/email/config.ts`**. Required environmen
 
 The base URL for links inside emails comes from **`BASE_URL`** or **`AUTH_URL`**, falling back to `http://localhost:3000` when unset.
 
-```20:28:shared/lib/email/config.ts
+```ts title="shared/lib/email/config.ts"
 export function getEmailConfig(): EmailConfig {
   const replyTo = process.env.EMAIL_REPLY_TO?.trim();
 
@@ -30,7 +30,7 @@ export function getEmailConfig(): EmailConfig {
 
 **`shared/lib/email/client.ts`** creates a singleton `Resend` client and exposes **`sendEmail(payload, options?)`**.
 
-```16:44:shared/lib/email/client.ts
+```ts title="shared/lib/email/client.ts"
 export async function sendEmail(
   payload: EmailPayload,
   options: SendEmailOptions = {},
@@ -68,7 +68,7 @@ Payload shape is defined in **`shared/lib/email/types.ts`**: `to`, `subject`, **
 
 **`shared/lib/email/senders.ts`** exposes helpers such as **`sendTeamInvitationEmail`**, which builds a payload via `buildTeamInvitationEmail` in `templates.ts`, calls `sendEmail`, and logs success or failure.
 
-```12:38:shared/lib/email/senders.ts
+```ts title="shared/lib/email/senders.ts"
 export async function sendTeamInvitationEmail(input: {
   email: string;
   role: string;

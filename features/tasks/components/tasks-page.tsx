@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 
 import { TaskDeleteDialog } from "@/features/tasks/components/task-delete-dialog";
-import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
+import { TaskForm } from "@/features/tasks/components/task-form";
 import { TasksTable } from "@/features/tasks/components/tasks-table";
 import type { TaskTableSearchParams } from "@/features/tasks/task-table-search-params";
 import {
@@ -76,14 +76,14 @@ export function TasksPage({ tasksPage }: TasksPageProps) {
         />
       </Page>
 
-      <TaskFormSheet
+      <TaskForm
         mode="create"
         open={dialog === "create"}
         onOpenChange={handleDialogOpenChange}
       />
 
       {currentTask ? (
-        <TaskFormSheet
+        <TaskForm
           mode="update"
           task={currentTask}
           open={dialog === "update"}

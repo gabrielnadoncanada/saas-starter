@@ -13,13 +13,13 @@ cp .env.example .env
 
 The example file documents every variable; see [Environment variables](./environment-variables) for a full reference.
 
-> **Note:** The project expects a **`.env`** file by default (not necessarily `.env.local`), unless you change how config is loaded. Comment in `.env.example`: *Keep this as `.env`, not `.env.local`, unless you also change the app config.*
+> **Note:** The project expects a **`.env`** file by default (not necessarily `.env.local`), unless you change how config is loaded. Comment in `.env.example`: _Keep this as `.env`, not `.env.local`, unless you also change the app config._
 
 ## Configure PostgreSQL
 
 Set **`POSTGRES_URL`** in `.env` to a valid PostgreSQL connection string, for example:
 
-```env
+```
 POSTGRES_URL=postgresql://USER:PASSWORD@localhost:5432/DATABASE
 ```
 
@@ -45,13 +45,13 @@ This runs `pnpm exec prisma migrate dev`, creating or updating tables under `pri
 
 ### Other database commands (from `package.json`)
 
-| Script          | Purpose                                      |
-| --------------- | -------------------------------------------- |
-| `db:push`       | Push schema without a migration (dev only)   |
-| `db:reset`      | Reset DB and re-run migrations               |
-| `db:seed`       | Run the seed script                          |
-| `db:studio`     | Open Prisma Studio                           |
-| `db:setup`      | Interactive helper (`shared/lib/db/setup.ts`) |
+| Script      | Purpose                                       |
+| ----------- | --------------------------------------------- |
+| `db:push`   | Push schema without a migration (dev only)    |
+| `db:reset`  | Reset DB and re-run migrations                |
+| `db:seed`   | Run the seed script                           |
+| `db:studio` | Open Prisma Studio                            |
+| `db:setup`  | Interactive helper (`shared/lib/db/setup.ts`) |
 
 ## Seed demo data (optional)
 

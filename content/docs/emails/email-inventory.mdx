@@ -11,7 +11,7 @@ Runtime sends go through **`sendEmail`** in `shared/lib/email/client.ts` or **`s
 - **Tag:** `email_type` = `verify_email`
 - **When:** Better Auth **`emailVerification.sendVerificationEmail`** runs when verification mail is required. The config sets **`sendOnSignUp: true`** so new sign-ups receive a verification link.
 
-```60:71:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
@@ -45,7 +45,7 @@ Runtime sends go through **`sendEmail`** in `shared/lib/email/client.ts` or **`s
 - **Tag:** `email_type` = `team_invitation` (via `buildTeamInvitationEmail` in `templates.ts`)
 - **When:** An organization invitation is created through Better Auth’s **organization** plugin; **`sendInvitationEmail`** calls **`sendTeamInvitationEmail`**, which uses an idempotency key `team-invitation/${invitationToken}`.
 
-```125:136:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
       sendInvitationEmail: async ({
         invitation,
         organization: org,

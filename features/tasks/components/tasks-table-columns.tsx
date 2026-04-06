@@ -8,7 +8,7 @@ import {
   taskLabels,
   taskPriorities,
   taskStatuses,
-} from "@/features/tasks/task-options";
+} from "@/features/tasks/task.schema";
 import { DataTableColumnHeader } from "@/shared/components/data-table";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";

@@ -18,7 +18,7 @@ Shared validation for forms and server actions lives under **`features/*/schemas
 
 Schemas use standard Zod APIs: `z.object`, `z.string().email()`, `z.enum`, `.min`/`.max`, `.trim()`, and **`superRefine`** for cross-field rules (for example matching passwords).
 
-```35:48:features/auth/schemas/auth-forms.schema.ts
+```ts title="features/auth/schemas/auth-forms.schema.ts"
 export const signUpPasswordSchema = z
   .object({
     password: authPasswordSchema,
@@ -35,7 +35,7 @@ export const signUpPasswordSchema = z
   });
 ```
 
-```31:36:features/organizations/schemas/organization.schema.ts
+```ts title="features/organizations/schemas/organization.schema.ts"
 export const deleteOrganizationSchema = z.object({
   confirmation: z.literal(DELETE_ORGANIZATION_CONFIRMATION_WORD, {
     errorMap: () => ({ message: "Type DELETE to confirm." }),
@@ -52,7 +52,7 @@ Authenticated server actions are wrapped with **`validatedAuthenticatedAction`**
 3. On failure, returns field-level errors compatible with the shared form state contract.
 4. On success, calls your handler with **typed** `parsed.data`.
 
-```29:51:shared/lib/auth/authenticated-action.ts
+```ts title="shared/lib/auth/authenticated-action.ts"
   return async (_prevState: State, formData: FormData): Promise<State> => {
     const user = await getCurrentUser();
 

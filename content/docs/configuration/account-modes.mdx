@@ -10,7 +10,7 @@ The starter supports two **account modes**, selected with `NEXT_PUBLIC_ACCOUNT_M
 - **`personal-only`** — B2C-style: one workspace per user, no team/invitation-focused UI.
 - **`organizations-only`** — B2B-style: team features, org switcher, and organization creation (subject to auth plugin settings).
 
-```5:10:shared/config/account.config.ts
+```ts title="shared/config/account.config.ts"
  * Controls how users interact with the platform:
  * - "personal-only"      → B2C: single workspace per user, no teams/invitations
  * - "organizations-only" → B2B: always team-based, org switcher visible
@@ -23,7 +23,7 @@ The starter supports two **account modes**, selected with `NEXT_PUBLIC_ACCOUNT_M
 
 Valid values are enforced; anything else falls back to **`organizations-only`**.
 
-```15:23:shared/config/account.config.ts
+```ts title="shared/config/account.config.ts"
 function resolveAccountMode(): AccountMode {
   const raw = process.env.NEXT_PUBLIC_ACCOUNT_MODE;
   if (raw && VALID_MODES.includes(raw as AccountMode)) {
@@ -41,7 +41,7 @@ Set the variable at build time (it is `NEXT_PUBLIC_*` so it is available in the 
 
 All product behavior toggles derive from `accountMode`:
 
-```26:41:shared/config/account.config.ts
+```ts title="shared/config/account.config.ts"
 export const accountFlags = {
   /** Show team-related UI: members page, invitations, org settings. */
   enableTeamFeatures: accountMode !== "personal-only",
@@ -64,7 +64,7 @@ export const accountFlags = {
 
 The Better Auth `organization` plugin uses `allowCreateOrganization` from `accountFlags`:
 
-```121:123:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
     organization({
       allowUserToCreateOrganization: accountFlags.allowCreateOrganization,
       creatorRole: "owner",

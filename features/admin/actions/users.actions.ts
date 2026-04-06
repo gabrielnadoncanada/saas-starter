@@ -3,10 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-import {
-  requireAdminAction,
-  runAdminAction,
-} from "@/features/auth/server/require-admin";
+import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
@@ -21,11 +18,13 @@ function revalidateAdminUsersPage() {
 export async function listAdminUsersAction(
   query: Partial<ListUsersQueryInput>,
 ) {
-  return runAdminAction(() => listAdminUsers(query));
+  await requireAdminAction();
+  return listAdminUsers(query);
 }
 
 export async function getAdminUserDetailAction(userId: string) {
-  return runAdminAction(() => getAdminUserDetail(userId));
+  await requireAdminAction();
+  return getAdminUserDetail(userId);
 }
 
 export async function banUserAction(

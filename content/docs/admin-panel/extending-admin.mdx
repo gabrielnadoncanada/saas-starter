@@ -7,7 +7,7 @@ description: Add new admin pages and navigation following the existing layout, r
 
 All routes under `app/(app)/admin/` inherit `AdminLayout`, which calls `requireAdmin()` and renders `AdminSidebar` inside `AppShell`. New pages are automatically protected the same way as `/admin`, `/admin/users`, and `/admin/organizations`.
 
-```14:24:app/(app)/admin/layout.tsx
+```tsx title="app/(app)/admin/layout.tsx"
   const user = await requireAdmin();
 
   return (
@@ -31,7 +31,7 @@ Keep the route file thin: data loading and composition live in feature modules, 
 
 Add a sidebar entry in `features/admin/config/admin-navigation.ts` so the new page appears in `AdminSidebar`:
 
-```6:24:features/admin/config/admin-navigation.ts
+```ts title="features/admin/config/admin-navigation.ts"
 export const adminSidebarData: SidebarData = {
   navGroups: [
     {

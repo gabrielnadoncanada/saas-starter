@@ -9,7 +9,7 @@ description: Server auth instance, Prisma adapter, routes, session, plugins, and
 - **Re-export:** Root `auth.ts` re-exports for libraries that import from `@/auth` or the package root pattern.
 - **API route:** `app/api/auth/[...all]/route.ts` wires the handler:
 
-```1:6:app/api/auth/[...all]/route.ts
+```ts title="app/api/auth/[...all]/route.ts"
 import { toNextJsHandler } from "better-auth/next-js";
 
 import { auth } from "@/shared/lib/auth/auth-config";
@@ -21,7 +21,7 @@ export const { GET, POST } = toNextJsHandler(auth);
 
 ## Core options
 
-```18:24:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
@@ -41,7 +41,7 @@ Additional user fields include `role`, `phoneNumber`, and `twoFactorEnabled` (al
 
 Email/password and verification emails are configured as follows:
 
-```45:72:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

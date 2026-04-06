@@ -7,7 +7,7 @@ The public landing page is `app/(marketing)/page.tsx`. It is wrapped by `app/(ma
 
 ## Layout shell
 
-```1:15:app/(marketing)/layout.tsx
+```tsx title="app/(marketing)/layout.tsx"
 import { MarketingFooter } from "@/features/marketing/components/marketing-footer";
 import { MarketingHeader } from "@/features/marketing/components/marketing-header";
 
@@ -43,7 +43,7 @@ export default function MarketingLayout({
 11. **`BuyerFaq`** — `id="faq"`.
 12. **Closing CTA** — repeat pricing button and refund line.
 
-```29:108:app/(marketing)/page.tsx
+```tsx title="app/(marketing)/page.tsx"
 export default function HomePage() {
   return (
     <main>

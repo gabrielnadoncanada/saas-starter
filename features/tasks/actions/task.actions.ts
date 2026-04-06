@@ -26,7 +26,7 @@ import {
   updateTaskSchema,
   updateTaskStatusSchema,
   type UpdateTaskValues,
-} from "@/features/tasks/task-form.schema";
+} from "@/features/tasks/task.schema";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";

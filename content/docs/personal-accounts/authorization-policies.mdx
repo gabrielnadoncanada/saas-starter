@@ -9,7 +9,7 @@ description: How the starter enforces admin access, organization roles, and bill
 
 Loads the current user; redirects to login if unauthenticated; redirects non-admins to the app dashboard. Returns the user when `isPlatformAdmin(user.role)` is true.
 
-```9:21:features/auth/server/require-admin.ts
+```ts title="features/auth/server/require-admin.ts"
 export async function requireAdmin() {
   const user = await getCurrentUser();
 

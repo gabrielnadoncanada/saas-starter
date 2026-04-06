@@ -82,8 +82,8 @@ export function MarketingFeatureGrid() {
         </div>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
-            <div key={feature.title} className="rounded-lg border bg-card p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-orange-500 text-white">
+            <div key={feature.title} className=" bg-card p-6 glass-1">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md  text-white glass-4">
                 <feature.icon className="h-5 w-5" />
               </div>
               <h3 className="mt-4 text-base font-semibold text-foreground">

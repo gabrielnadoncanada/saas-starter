@@ -7,7 +7,7 @@ description: Stripe webhook events handled in-app and how they update subscripti
 
 `handleStripeWebhookEvent` in `features/billing/server/stripe/stripe-webhooks.ts` switches on `event.type` and returns early for unknown types.
 
-```150:167:features/billing/server/stripe/stripe-webhooks.ts
+```ts title="features/billing/server/stripe/stripe-webhooks.ts"
 export async function handleStripeWebhookEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":

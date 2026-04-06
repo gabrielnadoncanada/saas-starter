@@ -6,7 +6,7 @@ import { XIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { taskPriorities, taskStatuses } from "@/features/tasks/task-options";
+import { taskPriorities, taskStatuses } from "@/features/tasks/task.schema";
 import {
   buildTasksTableHref,
   type TaskTableSearchParams,

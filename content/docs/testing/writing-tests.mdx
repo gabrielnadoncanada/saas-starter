@@ -13,7 +13,7 @@ Tests use **`vi.mock`** for heavy dependencies: Prisma (`db`), billing guards, `
 
 Example from task creation tests: mock Prisma and billing modules, then **dynamic import** the code under test so mocks apply first.
 
-```32:39:test/tasks/create-task.test.ts
+```ts title="test/tasks/create-task.test.ts"
 const { db } = await import("@/shared/lib/db/prisma");
 const { getCurrentOrganizationEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
@@ -26,7 +26,7 @@ const { createTask } = await import("@/features/tasks/server/task-mutations");
 
 Organization action tests mock **`validatedAuthenticatedAction`** to pass the handler through directly, so the suite exercises the inner action logic with explicit “user” arguments.
 
-```29:31:test/organizations/organization-owner.actions.test.ts
+```ts title="test/organizations/organization-owner.actions.test.ts"
 vi.mock("@/shared/lib/auth/authenticated-action", () => ({
   validatedAuthenticatedAction: (_schema: unknown, action: unknown) => action,
 }));
@@ -41,7 +41,7 @@ vi.mock("@/shared/lib/auth/authenticated-action", () => ({
 
 **`billing-plan-selector.test.tsx`** starts with:
 
-```1:5:test/billing/billing-plan-selector.test.tsx
+```tsx title="test/billing/billing-plan-selector.test.tsx"
 // @vitest-environment jsdom
 
 import { render, screen } from "@testing-library/react";

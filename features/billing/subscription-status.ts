@@ -1,8 +1,4 @@
 const ACTIVE_BILLING_STATUSES = new Set(["active", "trialing"]);
-const TERMINAL_STRIPE_SUBSCRIPTION_STATUSES = new Set([
-  "canceled",
-  "incomplete_expired",
-]);
 
 export const CURRENT_SUBSCRIPTION_STATUSES = [
   "active",
@@ -33,12 +29,3 @@ export function hasCurrentStripeSubscription(
   );
 }
 
-export function isTerminalStripeSubscriptionStatus(
-  subscriptionStatus: string | null | undefined,
-) {
-  if (!subscriptionStatus) {
-    return false;
-  }
-
-  return TERMINAL_STRIPE_SUBSCRIPTION_STATUSES.has(subscriptionStatus);
-}

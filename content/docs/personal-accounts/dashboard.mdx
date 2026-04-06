@@ -7,7 +7,7 @@ description: Overview of the authenticated dashboard, widgets, and data loading.
 
 The app dashboard at `/dashboard` renders `DashboardOverview`, which loads organization context, billing entitlements, and workspace stats in one server pass via `getDashboardOverview()`.
 
-```1:5:app/(app)/dashboard/page.tsx
+```tsx title="app/(app)/dashboard/page.tsx"
 import { DashboardOverview } from "@/features/dashboard/components/dashboard-overview";
 
 export default async function DashboardPage() {
@@ -24,7 +24,7 @@ The overview shows:
 - **Organization members** — Member count for the active organization.
 - **AI Assistant** — Shown only when the workspace has the `ai.assistant` capability; surfaces whether any AI conversations exist.
 
-```87:102:features/dashboard/components/dashboard-overview.tsx
+```tsx title="features/dashboard/components/dashboard-overview.tsx"
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
@@ -43,7 +43,7 @@ The overview shows:
         </Card>
 ```
 
-```104:128:features/dashboard/components/dashboard-overview.tsx
+```tsx title="features/dashboard/components/dashboard-overview.tsx"
         <Card>
           <CardHeader>
             <CardDescription>Task creations this month</CardDescription>
@@ -77,7 +77,7 @@ The overview shows:
 - **Task activity this week** — A bar chart (`DashboardUsageChart`) of tasks created in the last seven days (weekday labels).
 - **Getting started** — `DashboardOnboardingChecklist` lists linked steps (first task, invite teammate, try assistant) with completion derived from live data; items are hidden when the plan does not allow them (for example `team.invite` or AI).
 
-```89:110:features/dashboard/server/get-dashboard-overview.ts
+```ts title="features/dashboard/server/get-dashboard-overview.ts"
   const checklist = [
     {
       id: "first-task",

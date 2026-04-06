@@ -15,7 +15,7 @@ The Frequently Asked Questions block on the marketing home page is implemented b
 
 Entries use `question` and `answer` strings:
 
-```6:16:features/marketing/components/buyer-faq.tsx
+```tsx title="features/marketing/components/buyer-faq.tsx"
 const faqs = [
   {
     question: "What exactly do I get?",
@@ -33,7 +33,7 @@ Add, remove, or reorder objects in the `faqs` array to change what appears on th
 
 ## Rendering loop
 
-```78:107:features/marketing/components/buyer-faq.tsx
+```tsx title="features/marketing/components/buyer-faq.tsx"
         <dl className="divide-y divide-border">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;

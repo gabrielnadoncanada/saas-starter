@@ -7,7 +7,7 @@ import { createTask } from "@/features/tasks/server/task-mutations";
 import {
   createTaskSchema,
   type CreateTaskValues,
-} from "@/features/tasks/task-form.schema";
+} from "@/features/tasks/task.schema";
 
 import { toAssistantToolFailure } from "./tool-result";
 

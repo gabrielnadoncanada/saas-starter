@@ -6,32 +6,34 @@ import {
 } from "@/shared/lib/auth/get-current-user";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
-const NOT_AUTHENTICATED = "You are not signed in.";
-const FORM_VALIDATION_FAILED = "Please fix the highlighted fields.";
-
-type ValidatedAuthenticatedActionHandler<
-  S extends z.ZodTypeAny,
-  TExtraState extends object,
-> = (
-  data: z.infer<S>,
-  formData: FormData,
-  user: CurrentUser,
-) => Promise<FormActionState<z.infer<S>> & TExtraState>;
-
+/**
+ * Wraps a server action with authentication + zod validation.
+ *
+ * Usage:
+ *   export const myAction = validatedAuthenticatedAction(mySchema, async (data, formData, user) => {
+ *     // data is already validated, user is guaranteed non-null
+ *     return { success: "Done" };
+ *   });
+ */
 export function validatedAuthenticatedAction<
-  S extends z.ZodTypeAny,
-  TExtraState extends object = {},
->(schema: S, action: ValidatedAuthenticatedActionHandler<S, TExtraState>) {
-  type Values = z.infer<S>;
-  type State = FormActionState<Values> & TExtraState;
+  Schema extends z.ZodTypeAny,
+  Result extends object = {},
+>(
+  schema: Schema,
+  handler: (
+    data: z.infer<Schema>,
+    formData: FormData,
+    user: CurrentUser,
+  ) => Promise<FormActionState<z.infer<Schema>> & Result>,
+) {
+  type Values = z.infer<Schema>;
+  type State = FormActionState<Values> & Result;
 
   return async (_prevState: State, formData: FormData): Promise<State> => {
     const user = await getCurrentUser();
 
     if (!user) {
-      return {
-        error: NOT_AUTHENTICATED,
-      } as State;
+      return { error: "You are not signed in." } as State;
     }
 
     const rawValues = Object.fromEntries(formData) as Record<string, unknown>;
@@ -41,12 +43,12 @@ export function validatedAuthenticatedAction<
       const flat = parsed.error.flatten();
 
       return {
-        error: FORM_VALIDATION_FAILED,
+        error: "Please fix the highlighted fields.",
         values: rawValues as Partial<Values>,
         fieldErrors: flat.fieldErrors as State["fieldErrors"],
       } as State;
     }
 
-    return action(parsed.data, formData, user);
+    return handler(parsed.data, formData, user);
   };
 }

@@ -45,7 +45,7 @@ features/tasks/
 
 `app/` should only define routes and compose feature components. For example, the admin users page imports the table from `features/admin` and calls server functions for the initial list:
 
-```13:20:app/(app)/admin/users/page.tsx
+```tsx title="app/(app)/admin/users/page.tsx"
 export default async function AdminUsersPage() {
   const currentUser = await requireAdmin();
   const result = await listAdminUsers({

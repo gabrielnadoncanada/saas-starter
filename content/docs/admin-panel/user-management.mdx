@@ -11,7 +11,7 @@ Platform admins manage users from `/admin/users`. The page is a Server Component
 
 The users page verifies the session with `requireAdmin()`, then loads the first page via `listAdminUsers` (Better Auth `listUsers`).
 
-```13:36:app/(app)/admin/users/page.tsx
+```tsx title="app/(app)/admin/users/page.tsx"
 export default async function AdminUsersPage() {
   const currentUser = await requireAdmin();
   const result = await listAdminUsers({
@@ -37,7 +37,7 @@ export default async function AdminUsersPage() {
 
 Server-side listing delegates to Better Auth with optional search and sort:
 
-```7:24:features/admin/server/list-admin-users.ts
+```ts title="features/admin/server/list-admin-users.ts"
 export async function listAdminUsers(query: ListAdminUsersQuery) {
   return auth.api.listUsers({
     query: {
@@ -64,7 +64,7 @@ export async function listAdminUsers(query: ListAdminUsersQuery) {
 
 Opening a user loads `getAdminUserDetail`, which fetches the user and normalizes sessions from `listUserSessions`:
 
-```24:41:features/admin/server/get-admin-user-detail.ts
+```ts title="features/admin/server/get-admin-user-detail.ts"
 export async function getAdminUserDetail(userId: string) {
   const requestHeaders = await headers();
 
@@ -98,7 +98,7 @@ All user actions call `requireAdminAction()` first, then Better Auth APIs. Examp
 
 Self-service protections: you cannot ban, delete, change the role of, or revoke all sessions for **your own** user id (enforced in the action).
 
-```28:49:features/admin/actions/admin-users.actions.ts
+```ts title="features/admin/actions/admin-users.actions.ts"
 export async function banUserAction(
   userId: string,
   banReason?: string,

@@ -7,7 +7,7 @@ description: The per_seat pricing model, seat line items, and how checkout compu
 
 Plans use `pricingModel: "per_seat"` when billing scales with **seat quantity**. In the default catalog, the **Team** plan uses `kind: "seat"` line items for monthly and yearly schedules (when `STRIPE_PRICE_TEAM_*` env vars are set).
 
-```165:218:shared/config/billing.config.ts
+```ts title="shared/config/billing.config.ts"
     {
       id: "team",
       name: "Team",
@@ -27,7 +27,7 @@ Plans use `pricingModel: "per_seat"` when billing scales with **seat quantity**.
                 {
                   id: "seat",
                   kind: "seat",
-                  price: recurringPrice(
+                  price: price(
                     process.env.STRIPE_PRICE_TEAM_MONTHLY,
                     4900,
                     7,
@@ -49,7 +49,7 @@ Plans use `pricingModel: "per_seat"` when billing scales with **seat quantity**.
 
 `BillingPlanSelector` shows a numeric **Seat quantity** input when `selectedPlan.pricingModel === "per_seat"`, with minimum 1, and posts `seatQuantity` as a hidden field with plan id and interval.
 
-```129:141:features/billing/components/billing-plan-selector.tsx
+```tsx title="features/billing/components/billing-plan-selector.tsx"
       {selectedPlan.pricingModel === "per_seat" ? (
         <label className="block space-y-2">
           <span className="text-sm font-medium">Seat quantity</span>

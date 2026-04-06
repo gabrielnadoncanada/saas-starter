@@ -1,19 +1,9 @@
-import type { Subscription } from "@prisma/client";
-
 import { getPlan, isPlanId } from "@/features/billing/catalog";
-import {
-  type BillingInterval,
-  type PricingModel,
+import type {
+  BillingInterval,
+  PricingModel,
 } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
-
-function toPricingModel(plan: string | null): PricingModel | null {
-  if (!plan || !isPlanId(plan)) {
-    return null;
-  }
-
-  return getPlan(plan).pricingModel;
-}
 
 export type SubscriptionSnapshot = {
   cancelAt: Date | null;
@@ -27,27 +17,6 @@ export type SubscriptionSnapshot = {
   subscriptionStatus: string | null;
   pricingModel: PricingModel | null;
 };
-
-function subscriptionRowToSnapshot(
-  subscription: Subscription,
-): SubscriptionSnapshot {
-  return {
-    cancelAt: subscription.cancelAt ?? null,
-    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd ?? false,
-    periodEnd: subscription.periodEnd ?? null,
-    seats: subscription.seats ?? null,
-    stripeCustomerId: subscription.stripeCustomerId ?? null,
-    stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
-    plan: subscription.plan,
-    billingInterval:
-      subscription.billingInterval === "month" ||
-      subscription.billingInterval === "year"
-        ? subscription.billingInterval
-        : null,
-    subscriptionStatus: subscription.status ?? null,
-    pricingModel: toPricingModel(subscription.plan),
-  };
-}
 
 const emptySnapshot: SubscriptionSnapshot = {
   billingInterval: null,
@@ -65,14 +34,29 @@ const emptySnapshot: SubscriptionSnapshot = {
 export async function getOrganizationSubscriptionSnapshot(
   organizationId: string,
 ): Promise<SubscriptionSnapshot> {
-  const subscription = await db.subscription.findFirst({
+  const sub = await db.subscription.findFirst({
     where: { referenceId: organizationId },
     orderBy: [{ updatedAt: "desc" }],
   });
 
-  if (!subscription) {
+  if (!sub) {
     return emptySnapshot;
   }
 
-  return subscriptionRowToSnapshot(subscription);
+  return {
+    cancelAt: sub.cancelAt ?? null,
+    cancelAtPeriodEnd: sub.cancelAtPeriodEnd ?? false,
+    periodEnd: sub.periodEnd ?? null,
+    seats: sub.seats ?? null,
+    stripeCustomerId: sub.stripeCustomerId ?? null,
+    stripeSubscriptionId: sub.stripeSubscriptionId ?? null,
+    plan: sub.plan,
+    billingInterval:
+      sub.billingInterval === "month" || sub.billingInterval === "year"
+        ? sub.billingInterval
+        : null,
+    subscriptionStatus: sub.status ?? null,
+    pricingModel:
+      sub.plan && isPlanId(sub.plan) ? getPlan(sub.plan).pricingModel : null,
+  };
 }

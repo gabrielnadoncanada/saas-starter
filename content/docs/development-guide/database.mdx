@@ -7,7 +7,7 @@ description: Prisma client usage, server-only modules, and transactions in this 
 
 The shared client is `db` from `shared/lib/db/prisma.ts`, configured with the PostgreSQL adapter and dev logging:
 
-```1:17:shared/lib/db/prisma.ts
+```ts title="shared/lib/db/prisma.ts"
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
@@ -33,7 +33,7 @@ Import `db` from feature `server/` files only; those files should start with `im
 
 Feature code reads and writes data through small functions. Example: listing tasks scopes by the current organization:
 
-```89:96:features/tasks/server/task-mutations.ts
+```ts title="features/tasks/server/task-mutations.ts"
 export async function listTasks() {
   const organizationId = await getOrganizationId();
 
@@ -50,7 +50,7 @@ Admin org listing uses `db.organization.findMany` with `include` for members and
 
 Use `db.$transaction` when multiple steps must succeed or fail together. Task creation consumes usage and creates a row inside one transaction:
 
-```41:77:features/tasks/server/task-mutations.ts
+```ts title="features/tasks/server/task-mutations.ts"
   return db.$transaction(async (tx) => {
     await consumeMonthlyUsage(
       entitlements.organizationId,

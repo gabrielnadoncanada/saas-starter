@@ -1,6 +1,5 @@
 import {
   buildPlanCheckoutLineItems,
-  buildRecurringSelectionItems,
   getOneTimeProduct,
   getPlan,
 } from "@/features/billing/catalog";
@@ -104,7 +103,7 @@ export async function createOrganizationSubscriptionCheckoutSession(params: {
         organizationId: params.organizationId,
         planId: plan.id,
       },
-      trial_period_days: buildRecurringSelectionItems(params)[0]
+      trial_period_days: lineItems.length > 0
         ? plan.schedules[params.billingInterval]?.lineItems[0]?.price.trialDays
         : undefined,
     },

@@ -7,33 +7,21 @@ description: Patterns for server actions, revalidation, and Zod-validated authen
 
 Mark the file with `"use server"` at the top. Import server-only modules (Prisma, feature mutations) from paths that do not leak into client bundles incorrectly.
 
-Admin actions use imperative guards and Better Auth APIs:
+Admin actions call `requireAdminAction()` then run the logic directly:
 
 ```typescript
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
-
-import {
-  requireAdminAction,
-  runAdminAction,
-} from "@/features/auth/server/require-admin";
-import { auth } from "@/shared/lib/auth/auth-config";
+import { requireAdminAction } from "@/features/auth/server/require-admin";
 import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
-import { getAdminUserDetail } from "../server/get-user-detail";
 import { listAdminUsers } from "../server/list-users";
-
-function revalidateAdminUsersPage() {
-  revalidatePath("/admin");
-  revalidatePath("/admin/users");
-}
 
 export async function listAdminUsersAction(
   query: Partial<ListUsersQueryInput>,
 ) {
-  return runAdminAction(() => listAdminUsers(query));
+  await requireAdminAction();
+  return listAdminUsers(query);
 }
 ```
 
@@ -51,7 +39,7 @@ For form posts from the app, the starter provides `validatedAuthenticatedAction`
 
 Task actions wrap this helper:
 
-```58:85:features/tasks/actions/task.actions.ts
+```ts title="features/tasks/actions/task.actions.ts"
 export const createTaskAction = validatedAuthenticatedAction<
   typeof createTaskSchema,
   { task?: Task }

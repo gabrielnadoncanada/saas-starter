@@ -11,7 +11,7 @@ Platform admins browse organizations at `/admin/organizations`. Data comes from 
 
 The page requires admin access and loads the first page of organizations with members and counts:
 
-```13:36:app/(app)/admin/organizations/page.tsx
+```tsx title="app/(app)/admin/layout.tsx"
 export default async function AdminOrganizationsPage() {
   const currentUser = await requireAdmin();
   const { organizations, total } = await listAdminOrganizations({
@@ -37,7 +37,7 @@ export default async function AdminOrganizationsPage() {
 
 `listAdminOrganizations` supports pagination and optional case-insensitive name search:
 
-```5:35:features/admin/server/list-admin-organizations.ts
+```tsx title="app/(app)/admin/layout.tsx"
 export async function listAdminOrganizations(
   query: ListAdminOrganizationsQuery,
 ) {
@@ -77,7 +77,7 @@ The client table `AdminOrganizationsTable` calls `listOrganizationsAction` for p
 
 Detail loads the org with ordered members and the latest subscription row when a Stripe customer id exists:
 
-```3:37:features/admin/server/get-admin-organization-detail.ts
+```tsx title="app/(app)/admin/layout.tsx"
 export async function getAdminOrganizationDetail(organizationId: string) {
   const organization = await db.organization.findUnique({
     where: { id: organizationId },
@@ -124,7 +124,7 @@ export async function getAdminOrganizationDetail(organizationId: string) {
 - You **cannot** delete an organization you are a member of.
 - If the org has a Stripe customer and an **active** or **trialing** subscription exists, deletion throws until you cancel the subscription.
 
-```24:59:features/admin/actions/admin-organizations.actions.ts
+```tsx title="app/(app)/admin/layout.tsx"
 export async function deleteOrganizationAction(organizationId: string) {
   const adminId = await requireAdminAction();
 

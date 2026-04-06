@@ -11,7 +11,7 @@ The starter does **not** configure Stripe graduated/tiered price tiers in code. 
 - Each line item has a **`kind`**: `"flat"` (quantity 1 in checkout) or `"seat"` (quantity derived from seat selection).
 - Optional **`includedQuantity`** on seat lines reduces billed seats before the minimum of 1 applies.
 
-```34:44:shared/config/billing.config.ts
+```ts title="shared/config/billing.config.ts"
 export type BillingRecurringLineItem = {
   id: string;
   kind: BillingLineItemKind;
@@ -31,7 +31,7 @@ export type BillingPlanSchedule = {
 
 `max(1, seatQuantity - (includedQuantity ?? 0))`.
 
-```157:166:features/billing/catalog.ts
+```ts title="features/billing/catalog.ts"
   return schedule.lineItems.map((lineItem) => ({
     componentKey: lineItem.id,
     itemKey: plan.id,
@@ -46,7 +46,7 @@ export type BillingPlanSchedule = {
 
 ## Catalog index for webhooks
 
-`catalog.ts` flattens all configured recurring prices into `recurringPricesById` so webhook sync can resolve Stripe price ids back to plan metadata (`findCatalogRecurringPriceByPriceId`).
+`catalog.ts` indexes all configured recurring prices so webhook sync can resolve Stripe price ids back to plan metadata via `findCatalogRecurringPriceByPriceId`.
 
 ## One-time products
 

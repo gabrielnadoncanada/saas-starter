@@ -13,7 +13,7 @@ Application-wide settings live in `shared/config/` as small, typed modules. Impo
 
 `accountMode` and `accountFlags` control how the product behaves for end users (personal vs team UI). They are derived from `NEXT_PUBLIC_ACCOUNT_MODE`.
 
-```12:41:shared/config/account.config.ts
+```ts title="shared/config/account.config.ts"
 const VALID_MODES = ["personal-only", "organizations-only"] as const;
 export type AccountMode = (typeof VALID_MODES)[number];
 
@@ -52,7 +52,7 @@ The Better Auth `organization` plugin reads `allowCreateOrganization` from these
 
 `billingConfig` defines the **catalog** of plans and one-time products: capabilities, usage limits, marketing copy, and (when env price IDs exist) Stripe recurring schedules.
 
-```104:116:shared/config/billing.config.ts
+```ts title="shared/config/billing.config.ts"
 export const billingConfig = {
   currency: "USD",
   plans: [

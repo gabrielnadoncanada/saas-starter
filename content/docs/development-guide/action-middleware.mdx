@@ -7,7 +7,7 @@ description: Guards for admin server actions and authenticated form actions.
 
 Server actions that perform platform admin work must assert an admin session before doing anything. The shared helper lives in `features/auth/server/require-admin.ts`:
 
-```23:37:features/auth/server/require-admin.ts
+```ts title="features/auth/server/require-admin.ts"
 export async function requireAdminAction(): Promise<string> {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -29,7 +29,7 @@ Return value is the **admin user id**, used when an action must prevent self-tar
 
 Use this at the **start** of every admin action:
 
-```18:21:features/admin/actions/admin-users.actions.ts
+```ts title="features/admin/actions/admin-users.actions.ts"
 export async function listAdminUsersAction(query: ListAdminUsersQuery) {
   await requireAdminAction();
   return listAdminUsers(query);
@@ -40,7 +40,7 @@ export async function listAdminUsersAction(query: ListAdminUsersQuery) {
 
 For Server Components and layouts, use `requireAdmin()` instead. It redirects to sign-in or the main dashboard rather than throwing:
 
-```9:21:features/auth/server/require-admin.ts
+```ts title="features/auth/server/require-admin.ts"
 export async function requireAdmin() {
   const user = await getCurrentUser();
 
@@ -64,7 +64,7 @@ For normal (signed-in) app users submitting forms, use `validatedAuthenticatedAc
 - Zod `safeParse` on `Object.fromEntries(formData)`.
 - A typed handler that receives parsed data, raw `FormData`, and the user object.
 
-```22:52:shared/lib/auth/authenticated-action.ts
+```ts title="shared/lib/auth/authenticated-action.ts"
 export function validatedAuthenticatedAction<
   S extends z.ZodTypeAny,
   TExtraState extends object = {},

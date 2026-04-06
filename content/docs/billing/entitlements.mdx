@@ -16,7 +16,7 @@ Resolved entitlements include plan id/name, pricing model, billing interval, cap
 3. If there is no subscription, or status fails `hasPlanAccess`, or plan id is unknown → **free defaults** via `getDefaultEntitlements`, then **`applyOneTimePurchaseLimits`** for add-ons.
 4. If subscribed → copies **capabilities** and **limits** from `getPlan(subscription.plan)`, merges **seats** from subscription or subscription items, attaches Stripe fields.
 
-```96:120:features/billing/server/organization-entitlements.ts
+```ts title="features/billing/server/organization-entitlements.ts"
   const plan = getPlan(subscription.plan);
   const seats =
     subscription.seats ??
@@ -52,7 +52,7 @@ Resolved entitlements include plan id/name, pricing model, billing interval, cap
 
 Example: creating a task calls `assertCapability(entitlements, "task.create")` before consuming usage.
 
-```33:40:features/billing/plan-guards.ts
+```ts title="features/billing/plan-guards.ts"
 export function assertCapability(
   entitlements: OrganizationEntitlements,
   capability: Capability,

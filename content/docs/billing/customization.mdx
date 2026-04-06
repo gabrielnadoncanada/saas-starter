@@ -7,7 +7,7 @@ description: Components used on marketing pricing and in-app billing settings.
 
 `PricingSection` loads paid plans from `getPricingPlans()` (plans that have at least one configured Stripe-backed interval), enriches them with monthly/yearly display prices, sorts by monthly amount, and renders **`PricingToggle`** (client) for the public pricing UI.
 
-```8:28:features/billing/components/pricing-section.tsx
+```tsx title="features/billing/components/pricing-section.tsx"
 export async function PricingSection() {
   const paidPlans = getPricingPlans()
     .map((plan) => ({

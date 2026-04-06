@@ -34,29 +34,14 @@ export function applyOneTimePurchaseLimits(
   return result;
 }
 
-async function getLatestSubscription(organizationId: string) {
-  return db.subscription.findFirst({
-    where: { referenceId: organizationId },
-    orderBy: { updatedAt: "desc" },
-  });
-}
-
-function withPurchasedOneTimeLimits(
-  entitlements: OrganizationEntitlements,
-  oneTimeProductIds: string[],
-): OrganizationEntitlements {
-  return {
-    ...entitlements,
-    limits: applyOneTimePurchaseLimits(entitlements.limits, oneTimeProductIds),
-    oneTimeProductIds,
-  };
-}
-
 export async function resolveOrganizationEntitlements(
   organizationId: string,
 ): Promise<OrganizationEntitlements> {
   const [subscription, purchases] = await Promise.all([
-    getLatestSubscription(organizationId),
+    db.subscription.findFirst({
+      where: { referenceId: organizationId },
+      orderBy: { updatedAt: "desc" },
+    }),
     db.purchase.findMany({
       where: {
         organizationId,
@@ -67,30 +52,24 @@ export async function resolveOrganizationEntitlements(
     }),
   ]);
 
-  const base = getDefaultEntitlements({
-    organizationId,
-  });
-
-  const oneTimeProductIds = purchases.map((purchase) => purchase.itemKey);
+  const oneTimeProductIds = purchases.map((p) => p.itemKey);
+  const base = getDefaultEntitlements({ organizationId });
 
   if (
     !subscription ||
     !hasPlanAccess(subscription.status) ||
     !isPlanId(subscription.plan)
   ) {
-    return withPurchasedOneTimeLimits(base, oneTimeProductIds);
+    return {
+      ...base,
+      limits: applyOneTimePurchaseLimits(base.limits, oneTimeProductIds),
+      oneTimeProductIds,
+    };
   }
 
   const subscriptionItems = await db.subscriptionItem.findMany({
-    where: {
-      subscriptionId: subscription.id,
-      status: "active",
-    },
-    select: {
-      itemKey: true,
-      itemType: true,
-      quantity: true,
-    },
+    where: { subscriptionId: subscription.id, status: "active" },
+    select: { itemKey: true, itemType: true, quantity: true },
   });
 
   const plan = getPlan(subscription.plan);
@@ -99,26 +78,24 @@ export async function resolveOrganizationEntitlements(
     subscriptionItems.find((item) => item.itemType === "plan")?.quantity ??
     null;
 
-  return withPurchasedOneTimeLimits(
-    {
-      ...base,
-      billingInterval:
-        subscription.billingInterval === "month" ||
-        subscription.billingInterval === "year"
-          ? subscription.billingInterval
-          : null,
-      capabilities: [...plan.capabilities],
-      limits: { ...plan.limits },
-      planId: plan.id as PlanId,
-      planName: plan.name,
-      pricingModel: plan.pricingModel,
-      seats,
-      stripeCustomerId: subscription.stripeCustomerId ?? null,
-      stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
-      subscriptionStatus: subscription.status ?? null,
-    },
+  return {
+    billingInterval:
+      subscription.billingInterval === "month" ||
+      subscription.billingInterval === "year"
+        ? subscription.billingInterval
+        : null,
+    capabilities: [...plan.capabilities],
+    limits: applyOneTimePurchaseLimits({ ...plan.limits }, oneTimeProductIds),
     oneTimeProductIds,
-  );
+    organizationId,
+    planId: plan.id as PlanId,
+    planName: plan.name,
+    pricingModel: plan.pricingModel,
+    seats,
+    stripeCustomerId: subscription.stripeCustomerId ?? null,
+    stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
+    subscriptionStatus: subscription.status ?? null,
+  };
 }
 
 export async function getCurrentOrganizationEntitlements() {

@@ -9,7 +9,7 @@ This starter does **not** ship a dedicated logo image asset for the marketing si
 
 Both `MarketingHeader` and `MarketingFooter` use the same pattern: a `Link` wrapping a flex row with a `rounded-md` box (orange background, single letter) and a text label.
 
-```32:40:features/marketing/components/marketing-header.tsx
+```tsx title="features/marketing/components/marketing-header.tsx"
         {/* Logo / brand */}
         <Link href={routes.marketing.home} className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-orange-500 text-sm font-bold text-white">
@@ -35,7 +35,7 @@ Remove the square `div` and keep a single heading-style `span` or logo wordmark.
 
 The authenticated-app marketing name does not appear here. `app/(auth)/layout.tsx` shows a **decorative** left panel with a Lucide `Command` icon and the title **“StreamDown”** (placeholder-style copy). That is separate from the marketing header/footer.
 
-```17:22:app/(auth)/layout.tsx
+```tsx title="app/(auth)/layout.tsx"
       <div className="relative order-2 hidden h-full rounded-3xl bg-primary lg:flex">
         <div className="absolute top-10 space-y-1 px-10 text-primary-foreground">
           <Command className="size-10" />

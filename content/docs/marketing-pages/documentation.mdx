@@ -9,7 +9,7 @@ End-user documentation is served under **`/docs`** using **Fumadocs** (`fumadocs
 
 `next.config.mjs` applies `createMDX()` from `fumadocs-mdx/next`:
 
-```1:15:next.config.mjs
+```js title="next.config.mjs"
 import { createMDX } from 'fumadocs-mdx/next';
 
 /** @type {import('next').NextConfig} */
@@ -31,7 +31,7 @@ export default withMDX(nextConfig);
 
 `source.config.ts` at the repo root registers the docs collection and directory:
 
-```1:7:source.config.ts
+```ts title="source.config.ts"
 import { defineDocs, defineConfig } from 'fumadocs-mdx/config';
 
 export const docs = defineDocs({
@@ -45,7 +45,7 @@ export default defineConfig();
 
 `shared/lib/docs/source.ts` turns the generated collection into a Fumadocs source with base URL `/docs`:
 
-```1:7:shared/lib/docs/source.ts
+```ts title="shared/lib/docs/source.ts"
 import { docs } from 'fumadocs-mdx:collections/server';
 import { loader } from 'fumadocs-core/source';
 

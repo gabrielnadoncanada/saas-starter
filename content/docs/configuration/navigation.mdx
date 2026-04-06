@@ -7,7 +7,7 @@ description: Sidebar data shapes, route constants, and where to edit app, admin,
 
 Navigation structure is typed in `shared/components/navigation/sidebar-types.ts`. A sidebar consists of **groups**, each with **items**. Items are either a single link (`url` + optional `icon`) or a **collapsible** group with nested `items` (no top-level `url`).
 
-```7:26:shared/components/navigation/sidebar-types.ts
+```ts title="shared/components/navigation/sidebar-types.ts"
 export type SidebarNavLink = SidebarBaseItem & {
   url: string;
   items?: never;
@@ -36,7 +36,7 @@ export type SidebarData = {
 
 Use `routes` from `shared/constants/routes.ts` for hrefs so URLs stay consistent:
 
-```19:36:shared/constants/routes.ts
+```ts title="shared/constants/routes.ts"
   app: {
     dashboard: "/dashboard",
     tasks: "/dashboard/tasks",
@@ -63,7 +63,7 @@ Add or change paths here when you add pages, then reference them from navigation
 
 Edit `features/dashboard/config/dashboard-navigation.ts`. Export `dashboardSidebarData` with `navGroups` (icons from `lucide-react`).
 
-```6:19:features/dashboard/config/dashboard-navigation.ts
+```ts title="features/dashboard/config/dashboard-navigation.ts"
 export const dashboardSidebarData: SidebarData = {
   navGroups: [
     {

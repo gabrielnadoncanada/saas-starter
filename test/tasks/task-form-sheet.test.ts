@@ -27,10 +27,6 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-vi.mock("@/features/tasks/components/task-form", () => ({
-  TaskForm: () => React.createElement("div", null, "Task form"),
-}));
-
 vi.mock("@/features/tasks/actions/task.actions", () => ({
   createTaskAction: vi.fn(),
   updateTaskAction: vi.fn(),
@@ -40,9 +36,34 @@ vi.mock("@/shared/hooks/use-toast-message", () => ({
   useToastMessage: useToastMessageMock,
 }));
 
-import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
+vi.mock("@/shared/components/ui/sheet", () => ({
+  Sheet: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children),
+  SheetContent: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children),
+  SheetHeader: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children),
+  SheetTitle: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children),
+  SheetDescription: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children),
+  SheetFooter: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children),
+  SheetClose: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children),
+}));
 
-describe("TaskFormSheet", () => {
+vi.mock("@/shared/components/billing/upgrade-prompt", () => ({
+  UpgradePrompt: () => null,
+}));
+
+vi.mock("@/shared/lib/get-field-state", () => ({
+  getFieldState: () => ({ error: undefined, invalid: false, value: "" }),
+}));
+
+import { TaskForm } from "@/features/tasks/components/task-form";
+
+describe("TaskForm", () => {
   beforeEach(() => {
     refreshMock.mockReset();
     useActionStateMock.mockReset();
@@ -56,7 +77,7 @@ describe("TaskFormSheet", () => {
 
     const firstOnOpenChange = vi.fn();
     const view = render(
-      React.createElement(TaskFormSheet, {
+      React.createElement(TaskForm, {
         mode: "create",
         open: true,
         onOpenChange: firstOnOpenChange,
@@ -68,7 +89,7 @@ describe("TaskFormSheet", () => {
 
     const secondOnOpenChange = vi.fn();
     view.rerender(
-      React.createElement(TaskFormSheet, {
+      React.createElement(TaskForm, {
         mode: "create",
         open: true,
         onOpenChange: secondOnOpenChange,
@@ -80,7 +101,7 @@ describe("TaskFormSheet", () => {
 
     currentState = { success: "Task created" };
     view.rerender(
-      React.createElement(TaskFormSheet, {
+      React.createElement(TaskForm, {
         mode: "create",
         open: true,
         onOpenChange: secondOnOpenChange,

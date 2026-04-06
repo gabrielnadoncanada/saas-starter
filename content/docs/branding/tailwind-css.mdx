@@ -9,13 +9,13 @@ This project uses **Tailwind CSS v4** with the PostCSS plugin. There is no `tail
 
 `app/layout.tsx` imports a single global stylesheet:
 
-```1:1:app/layout.tsx
+```tsx title="app/layout.tsx"
 import "@/shared/styles/globals.css";
 ```
 
 `shared/styles/globals.css` imports Tailwind, layers base styles, and pulls in theme and component CSS:
 
-```9:21:shared/styles/globals.css
+```css title="shared/styles/globals.css"
 /* Tailwind CSS */
 @import "tailwindcss";
 
@@ -37,7 +37,7 @@ PostCSS is configured with `@tailwindcss/postcss` in `postcss.config.mjs`.
 
 UI colors are defined as custom properties on `:root` and `.dark` in `shared/styles/shadcn-ui.css`. They use **oklch** values and map to shadcn conventions (`--background`, `--primary`, `--sidebar-*`, charts, etc.).
 
-```9:22:shared/styles/shadcn-ui.css
+```css title="shared/styles/shadcn-ui.css"
 @layer base {
   :root {
     --font-sans: -apple-system, BlinkMacSystemFont, var(--font-sans-fallback);

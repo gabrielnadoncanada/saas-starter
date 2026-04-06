@@ -7,21 +7,21 @@ This page complements `.env.example` and [Environment variables](../installation
 
 ## What usually changes from dev to prod
 
-| Area | Development | Production |
-| ---- | ----------- | ---------- |
-| **`BASE_URL`** | `http://localhost:3000` | `https://your-domain.com` |
-| **`POSTGRES_URL`** | Local or shared dev DB | Managed Postgres with TLS and backups |
-| **`AUTH_SECRET`** | Any strong random string | **New** long random string; never reuse dev |
-| **Stripe keys** | `sk_test_...`, test price IDs | `sk_live_...`, **live** price IDs |
-| **`STRIPE_WEBHOOK_SECRET`** | From `stripe listen` or Dashboard test endpoint | From **live** webhook endpoint |
-| **Resend** | Sandbox/testing sender | Verified domain, production API key |
-| **OAuth** | `http://localhost:3000/...` redirect URIs | Production `BASE_URL` redirect URIs |
+| Area                        | Development                                     | Production                                  |
+| --------------------------- | ----------------------------------------------- | ------------------------------------------- |
+| **`BASE_URL`**              | `http://localhost:3000`                         | `https://your-domain.com`                   |
+| **`POSTGRES_URL`**          | Local or shared dev DB                          | Managed Postgres with TLS and backups       |
+| **`AUTH_SECRET`**           | Any strong random string                        | **New** long random string; never reuse dev |
+| **Stripe keys**             | `sk_test_...`, test price IDs                   | `sk_live_...`, **live** price IDs           |
+| **`STRIPE_WEBHOOK_SECRET`** | From `stripe listen` or Dashboard test endpoint | From **live** webhook endpoint              |
+| **Resend**                  | Sandbox/testing sender                          | Verified domain, production API key         |
+| **OAuth**                   | `http://localhost:3000/...` redirect URIs       | Production `BASE_URL` redirect URIs         |
 
 > **Note:** `NEXT_PUBLIC_*` variables are embedded at build time. Change them before running `pnpm build` if they must differ per environment.
 
 ## Database
 
-```env
+```
 POSTGRES_URL=postgresql://...
 ```
 
@@ -31,7 +31,7 @@ Production should use a connection string from your host (SSL parameters as requ
 
 From `.env.example`:
 
-```18:21:.env.example
+```
 # App URLs and auth
 BASE_URL=http://localhost:3000
 AUTH_SECRET=***
@@ -44,7 +44,7 @@ BETTER_AUTH_API_KEY=
 
 ## Stripe
 
-```env
+```
 STRIPE_SECRET_KEY=sk_test_***
 STRIPE_WEBHOOK_SECRET=whsec_***
 ```
@@ -55,7 +55,7 @@ Billing behavior flags (`STRIPE_ENABLE_TRIAL_WITHOUT_CC`, tax, billing address) 
 
 ## Email
 
-```env
+```
 RESEND_API_KEY=re_***
 EMAIL_FROM=Acme <hello@example.com>
 EMAIL_REPLY_TO=
@@ -65,7 +65,7 @@ Production **`EMAIL_FROM`** should use a domain verified in Resend to avoid deli
 
 ## OAuth
 
-```env
+```
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GITHUB_CLIENT_ID=
@@ -77,7 +77,7 @@ Provider consoles must list production redirect URLs derived from **`BASE_URL`**
 
 ## Account mode
 
-```env
+```
 NEXT_PUBLIC_ACCOUNT_MODE=organizations-only
 ```
 

@@ -43,13 +43,5 @@
 }
 
 @layer component {
-  .three-tier-site-pricing {
-    --selection-background-color: #0099ff4d;
-    --selection-color: #09f;
-  }
-
-  .three-tier-site-pricing[data-selection="true"] * ::selection {
-    color: var(--selection-color, none);
-    background-color: var(--selection-background-color, none);
-  }
+ 
 }

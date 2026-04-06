@@ -7,7 +7,7 @@ description: Two-factor plugin, TOTP setup, backup codes, and the verify-2fa rou
 
 The `twoFactor` plugin is registered with a TOTP issuer name shown in authenticator apps:
 
-```139:141:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
     twoFactor({
       issuer: "SaaS Starter",
     }),
@@ -19,7 +19,7 @@ The user model exposes `twoFactorEnabled` as an additional field so server and c
 
 `shared/lib/auth/auth-client.ts` adds `twoFactorClient` with a redirect to the dedicated verification page when a second factor is required:
 
-```16:20:shared/lib/auth/auth-client.ts
+```ts title="shared/lib/auth/auth-client.ts"
     twoFactorClient({
       onTwoFactorRedirect: async () => {
         window.location.assign(routes.auth.twoFactor);
@@ -38,7 +38,7 @@ Settings live in `features/account/components/settings/two-factor-settings-card.
 3. **`twoFactor.disable({ password })`** — turns off MFA.
 4. **`twoFactor.generateBackupCodes({ password })`** — replaces backup codes.
 
-```45:75:features/account/components/settings/two-factor-settings-card.tsx
+```tsx title="features/account/components/settings/two-factor-settings-card.tsx"
   async function startSetup() {
     const result = await authClient.twoFactor.enable({
       password,

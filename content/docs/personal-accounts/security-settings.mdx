@@ -7,7 +7,7 @@ description: Two-factor authentication (2FA) setup and management for the signed
 
 Security settings are at **`/settings/security`**. The page loads the current user; if there is no session, it redirects to login.
 
-```13:30:app/(app)/settings/security/page.tsx
+```tsx title="app/(app)/settings/security/page.tsx"
 export default async function SecuritySettingsPage() {
   const user = await getCurrentUser();
 
@@ -48,7 +48,7 @@ export default async function SecuritySettingsPage() {
 
 Backup codes are shown in a grid when returned from the API (setup or regenerate).
 
-```45:76:features/account/components/settings/two-factor-settings-card.tsx
+```tsx title="features/account/components/settings/two-factor-settings-card.tsx"
   async function startSetup() {
     const result = await authClient.twoFactor.enable({
       password,

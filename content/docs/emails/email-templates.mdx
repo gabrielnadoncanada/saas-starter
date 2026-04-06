@@ -12,7 +12,7 @@ Templates use **`@react-email/components`** plus local building blocks:
 
 New templates should wrap content in **`EmailLayout`** and pass a short **`preview`** string (inbox preview line) and optional **`footerText`**.
 
-```20:38:shared/lib/email/templates/components/email-layout.tsx
+```tsx title="shared/lib/email/templates/components/email-layout.tsx"
 export function EmailLayout({
   preview,
   children,

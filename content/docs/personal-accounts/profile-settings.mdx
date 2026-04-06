@@ -14,7 +14,7 @@ The profile section shows avatar, name, and email. **Edit Profile** opens `EditP
 - **Name** — required text field.
 - **Phone number** — `PhoneInput` component, validated via the account schema.
 
-```75:100:features/account/components/settings/edit-profile-dialog.tsx
+```tsx title="features/account/components/settings/edit-profile-dialog.tsx"
         <form className="space-y-4" action={formAction}>
           <Field data-invalid={nameField.invalid}>
             <FieldLabel htmlFor="name">Name</FieldLabel>

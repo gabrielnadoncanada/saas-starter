@@ -7,7 +7,7 @@ description: Email and password, magic link, and related client helpers in this 
 
 Configured in `shared/lib/auth/auth-config.ts`:
 
-```45:57:shared/lib/auth/auth-config.ts
+```ts title="shared/lib/auth/auth-config.ts"
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -31,7 +31,7 @@ Sign-in and sign-up from the UI use `authClient` via `features/auth/client/auth-
 - **Reset:** `requestPasswordReset` / `resetPassword` wrapping `authClient.requestPasswordReset` and `authClient.resetPassword`.
 - **Change password:** `changePassword` or `set-password` fetch for OAuth-only users — see `savePassword` in the same file.
 
-```83:116:features/auth/client/auth-api-client.ts
+```ts title="features/auth/client/auth-api-client.ts"
 export async function signInWithPassword(
   email: string,
   password: string,
@@ -75,7 +75,7 @@ The server registers the `magicLink` plugin with `sendMagicLink` sending email v
 
 `features/auth/client/auth-api-client.ts` wraps sending:
 
-```58:66:features/auth/client/auth-api-client.ts
+```ts title="features/auth/client/auth-api-client.ts"
 export async function sendMagicLink(email: string, callbackUrl: string) {
   const { error } = await authClient.signIn.magicLink({
     email: email.trim().toLowerCase(),

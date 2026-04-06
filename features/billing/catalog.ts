@@ -72,12 +72,6 @@ const oneTimeProductsById = new Map<string, OneTimeProductDefinition>(
   billingConfig.oneTimeProducts.map((product) => [product.id, product]),
 );
 
-const oneTimePricesById = new Map<string, string>(
-  billingConfig.oneTimeProducts.flatMap((product) =>
-    product.price ? [[product.price.priceId, product.id]] : [],
-  ),
-);
-
 function getPlanSchedule(
   plan: BillingPlan,
   billingInterval: BillingInterval,
@@ -133,12 +127,6 @@ export function listOneTimeProducts(): OneTimeProductDefinition[] {
   return billingConfig.oneTimeProducts.filter((product) =>
     Boolean(product.price),
   ) as OneTimeProductDefinition[];
-}
-
-export function findOneTimeProductByPriceId(priceId: string) {
-  const itemKey = oneTimePricesById.get(priceId);
-
-  return itemKey ? getOneTimeProduct(itemKey) : null;
 }
 
 export function toBillingPlanOption(plan: BillingPlanDefinition): BillingPlanOption {

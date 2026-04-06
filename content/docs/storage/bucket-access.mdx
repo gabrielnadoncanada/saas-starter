@@ -9,7 +9,7 @@ The only HTTP surface for stored files in this starter is **`GET /api/files/[sto
 
 The handler calls `requireActiveOrganizationMembership()` from `features/organizations/server/organization-membership.ts`. That ensures the user is signed in and has an **active organization** membership. The stored file is then loaded only if its `organizationId` matches that membership:
 
-```9:23:app/api/files/[storedFileId]/route.ts
+```ts title="app/api/files/[storedFileId]/route.ts"
 export async function GET(
   _request: Request,
   context: { params: Promise<{ storedFileId: string }> },
@@ -36,7 +36,7 @@ So:
 
 The route reads bytes via `readStoredFileBody(storedFile.storageKey)` and returns them as a `Blob` with the stored `contentType`. Headers include private caching, attachment disposition, length, and type:
 
-```25:38:app/api/files/[storedFileId]/route.ts
+```ts title="app/api/files/[storedFileId]/route.ts"
     const body = await readStoredFileBody(storedFile.storageKey);
     const arrayBuffer = body.buffer.slice(
       body.byteOffset,
@@ -60,7 +60,7 @@ The route reads bytes via `readStoredFileBody(storedFile.storageKey)` and return
 
 Failures (including membership errors) are returned as JSON with status **400** and a message; missing files for the org return **404**.
 
-```40:47:app/api/files/[storedFileId]/route.ts
+```ts title="app/api/files/[storedFileId]/route.ts"
   } catch (error) {
     return NextResponse.json(
       {

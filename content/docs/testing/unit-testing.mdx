@@ -7,7 +7,7 @@ description: Vitest configuration, path aliases, global test setup, and where te
 
 **`vitest.config.ts`** enables globals, restricts tests to `test/**/*.test.ts`, and loads a single setup file. It mirrors the **`@/*`** alias used by the app.
 
-```1:15:vitest.config.ts
+```ts title="vitest.config.ts"
 import path from "path";
 import { defineConfig } from "vitest/config";
 
@@ -31,7 +31,7 @@ export default defineConfig({
 
 **`test/vitest.d.ts`** references Vitest globals so `describe` / `it` / `expect` / `vi` work without per-file imports in typings:
 
-```1:1:test/vitest.d.ts
+```ts title="test/vitest.d.ts"
 /// <reference types="vitest/globals" />
 ```
 
@@ -39,7 +39,7 @@ export default defineConfig({
 
 **`test/setup.ts`** runs before every test file. It sets **dummy `process.env` values** so modules that read `AUTH_SECRET`, Stripe, Resend, AI keys, etc. do not fail when imported. It also mocks the **`server-only`** package (an empty module) because Vitest executes in Node without Next’s full bundling.
 
-```1:16:test/setup.ts
+```ts title="test/setup.ts"
 import { vi } from "vitest";
 
 process.env.BASE_URL = "http://localhost:3000";

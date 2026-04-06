@@ -22,7 +22,7 @@ From **`.env.example`** (use a real `.env` locally):
 - `STRIPE_ENABLE_TRIAL_WITHOUT_CC` — When `true`, Checkout uses `payment_method_collection: "if_required"` for trials.
 - `ENABLE_AUTOMATIC_TAX_CALCULATION`, `ENABLE_TAX_ID_COLLECTION`, `STRIPE_REQUIRE_BILLING_ADDRESS` — Passed into Checkout session creation (billing address defaults on if tax options are enabled).
 
-```22:27:.env.example
+```
 # Stripe billing behavior
 STRIPE_ENABLE_TRIAL_WITHOUT_CC=false
 ENABLE_AUTOMATIC_TAX_CALCULATION=false
@@ -36,7 +36,7 @@ Also set `BASE_URL` so success/cancel URLs resolve correctly for Checkout and th
 
 `POST /api/stripe/webhook` verifies the `stripe-signature` header with `STRIPE_WEBHOOK_SECRET`, constructs the event, and delegates to `handleStripeWebhookEvent`.
 
-```7:37:app/api/stripe/webhook/route.ts
+```ts title="app/api/stripe/webhook/route.ts"
 export async function POST(request: Request) {
   const payload = await request.text();
   const signature = (await headers()).get("stripe-signature");

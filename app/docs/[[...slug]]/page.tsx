@@ -5,6 +5,8 @@ import {
   DocsPage,
   DocsTitle,
 } from "fumadocs-ui/page";
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { docsSource } from "@/shared/lib/docs/source";
 
 export default async function DocsSlugPage(props: {
@@ -25,7 +27,13 @@ export default async function DocsSlugPage(props: {
       <DocsDescription>{page.data.description}</DocsDescription>
 
       <DocsBody>
-        <MDXContent />
+        <MDXContent
+          components={{
+            ...defaultMdxComponents,
+            File,
+            Files,
+          }}
+        />
       </DocsBody>
     </DocsPage>
   );

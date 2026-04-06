@@ -17,7 +17,7 @@ For a given organization, limit key, and entitlements:
 4. **`updateMany`** increments `count` only while `count < limit` (atomic guard).
 5. If no row was updated, loads current usage and throws **`LimitReachedError`**.
 
-```19:62:features/billing/server/usage-service.ts
+```ts title="features/billing/server/usage-service.ts"
 export async function consumeMonthlyUsage(
   organizationId: string,
   limitKey: LimitKey,

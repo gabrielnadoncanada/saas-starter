@@ -11,7 +11,7 @@ import type {
   BulkUpdateTaskStatusValues,
   CreateTaskValues,
   UpdateTaskValues,
-} from "@/features/tasks/task-form.schema";
+} from "@/features/tasks/task.schema";
 import type { TaskStatus } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 

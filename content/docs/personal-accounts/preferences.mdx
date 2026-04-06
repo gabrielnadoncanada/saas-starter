@@ -7,7 +7,7 @@ description: Theme and display preferences for the authenticated app.
 
 User preferences are at **`/settings/preferences`**. The page only renders the theme card (no extra layout header on this route in the current codebase).
 
-```1:10:app/(app)/settings/preferences/page.tsx
+```tsx title="app/(app)/settings/preferences/page.tsx"
 import { ThemePreferencesCard } from "@/features/account/components/settings/theme-preferences-card";
 import { Page } from "@/shared/components/layout/page-layout";
 
@@ -28,7 +28,7 @@ export default async function PreferencesPage() {
 - **Dark**
 - **System** — follows the OS preference.
 
-```16:20:features/account/components/settings/theme-preferences-card.tsx
+```tsx title="features/account/components/settings/theme-preferences-card.tsx"
 const themeOptions = [
   { value: "light", label: "Light", icon: Sun },
   { value: "dark", label: "Dark", icon: Moon },
@@ -38,7 +38,7 @@ const themeOptions = [
 
 The component tracks `mounted` so theme buttons stay disabled until the client has hydrated, avoiding a flash of the wrong active state.
 
-```42:60:features/account/components/settings/theme-preferences-card.tsx
+```tsx title="features/account/components/settings/theme-preferences-card.tsx"
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {themeOptions.map((option) => {
             const Icon = option.icon;

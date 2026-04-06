@@ -2,12 +2,21 @@
 
 import type { Task } from "@prisma/client";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef } from "react";
 
+import {
+  createTaskAction,
+  type CreateTaskActionState,
+  updateTaskAction,
+} from "@/features/tasks/actions/task.actions";
+import type { UpdateTaskValues } from "@/features/tasks/task.schema";
 import {
   taskLabels,
   taskPriorities,
   taskStatuses,
-} from "@/features/tasks/task-options";
+} from "@/features/tasks/task.schema";
+import { UpgradePrompt } from "@/shared/components/billing/upgrade-prompt";
 import { Button } from "@/shared/components/ui/button";
 import {
   Field,
@@ -33,45 +42,79 @@ import {
   SheetTitle,
 } from "@/shared/components/ui/sheet";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { getFieldState } from "@/shared/lib/get-field-state";
+import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
-type TaskFormValues = {
-  title: string;
-  description?: string;
-  label: string;
-  priority: string;
-  status?: string;
-  taskId?: number;
-};
+// --- Props ---
 
-type TaskFormProps = {
-  mode: "create" | "update";
+type CreateTaskFormProps = {
+  mode: "create";
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  state: FormActionState<TaskFormValues>;
-  formAction: (payload: FormData) => void;
-  isPending: boolean;
-  task?: Task;
-  banner?: React.ReactNode;
 };
 
-export function TaskForm({
-  mode,
-  open,
-  onOpenChange,
-  state,
-  formAction,
-  isPending,
-  task,
-  banner,
-}: TaskFormProps) {
+type UpdateTaskFormProps = {
+  mode: "update";
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  task: Task;
+};
+
+type TaskFormProps = CreateTaskFormProps | UpdateTaskFormProps;
+
+// --- Component ---
+
+export function TaskForm(props: TaskFormProps) {
+  const router = useRouter();
+  const { mode, open, onOpenChange } = props;
+  const task = mode === "update" ? props.task : undefined;
+  const lastHandledStateRef = useRef<
+    CreateTaskActionState | FormActionState<UpdateTaskValues> | null
+  >(null);
+
+  const createState = useActionState<CreateTaskActionState, FormData>(
+    createTaskAction,
+    {},
+  );
+  const updateState = useActionState<
+    FormActionState<UpdateTaskValues>,
+    FormData
+  >(updateTaskAction, {});
+  const [state, formAction, isPending] =
+    mode === "create" ? createState : updateState;
+
+  const isBillingError = Boolean(state.errorCode);
+
+  useToastMessage(state.error, {
+    kind: "error",
+    skip: Boolean(state.fieldErrors) || isBillingError,
+    trigger: state,
+  });
+  useToastMessage(state.success, { kind: "success", trigger: state });
+
+  useEffect(() => {
+    if (!state.success || lastHandledStateRef.current === state) {
+      return;
+    }
+
+    lastHandledStateRef.current = state;
+    router.refresh();
+    onOpenChange(false);
+  }, [onOpenChange, router, state]);
+
+  const fieldState = (name: string, fallback: string) => {
+    const error = state.fieldErrors?.[name as keyof typeof state.fieldErrors]?.[0];
+    const raw = state.values?.[name as keyof typeof state.values];
+    const value = raw === undefined ? fallback : String(raw);
+    return { error, invalid: Boolean(error), value };
+  };
+
+  const title = fieldState("title", task?.title ?? "");
+  const description = fieldState("description", task?.description ?? "");
+  const label = fieldState("label", task?.label ?? "FEATURE");
+  const priority = fieldState("priority", task?.priority ?? "MEDIUM");
+  const status = fieldState("status", task?.status ?? "TODO");
   const isUpdate = mode === "update";
-  const title = getFieldState(state, "title", task?.title ?? "");
-  const description = getFieldState(state, "description", task?.description ?? "");
-  const label = getFieldState(state, "label", task?.label ?? "FEATURE");
-  const priority = getFieldState(state, "priority", task?.priority ?? "MEDIUM");
-  const status = getFieldState(state, "status", task?.status ?? "TODO");
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -91,7 +134,7 @@ export function TaskForm({
         >
           {task ? <input type="hidden" name="taskId" value={task.id} /> : null}
 
-          {banner}
+          <UpgradePrompt errorCode={state.errorCode} message={state.error} />
 
           <FieldGroup className="gap-4">
             <Field data-invalid={title.invalid}>

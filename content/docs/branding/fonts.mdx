@@ -7,7 +7,7 @@ description: How the root layout loads Inter and how font variables connect to g
 
 The app uses **Inter** from `next/font/google`. The font instance exposes a CSS variable `--font-sans-fallback` and is attached to `<html>` via `className`.
 
-```24:40:app/layout.tsx
+```tsx title="app/layout.tsx"
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans-fallback",
@@ -35,7 +35,7 @@ Next.js inlines optimized `@font-face` rules for Inter and sets `--font-sans-fal
 
 `shared/styles/shadcn-ui.css` wires the loaded variable into the stack used across the UI:
 
-```10:12:shared/styles/shadcn-ui.css
+```css title="shared/styles/shadcn-ui.css"
   :root {
     --font-sans: -apple-system, BlinkMacSystemFont, var(--font-sans-fallback);
     --font-heading: var(--font-sans);
