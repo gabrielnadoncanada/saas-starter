@@ -1,21 +1,97 @@
-MIT License
+Tenviq Commercial License
 
-Copyright (c) 2025 Vercel
+Copyright (c) 2026 Tenviq. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and associated documentation (the "Software") are the
+proprietary product of Tenviq.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+By purchasing a license you agree to the following terms.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+
+1. GRANT OF LICENSE
+
+A single license grants ONE individual or ONE legal entity the right to:
+
+  (a) Use the Software to build unlimited end-products (websites,
+      applications, SaaS products) for yourself or your clients.
+  (b) Modify the Software to fit your project needs.
+  (c) Deploy the Software on unlimited servers and domains for
+      end-products you build.
+
+A "team license" extends the same rights to every employee or contractor
+of the purchasing entity, up to the seat count stated at purchase.
+
+
+2. RESTRICTIONS
+
+You MAY NOT:
+
+  (a) Redistribute, share, sublicense, resell, or give away the
+      Software source code, in whole or in part, whether modified
+      or unmodified.
+  (b) Create a competing product — any starter kit, boilerplate,
+      template, or code-generation tool — that is substantially
+      derived from the Software.
+  (c) Publish the Software source code in any public repository,
+      package registry, or file-sharing service.
+  (d) Transfer your license to another individual or entity without
+      prior written consent from Tenviq.
+  (e) Remove or alter any proprietary notices, labels, or marks
+      contained in the Software.
+  (f) Use the Software to provide a "white-label" or "reskinned"
+      starter kit or template service to third parties.
+  (g) Claim authorship of the unmodified Software.
+
+
+3. OWNERSHIP
+
+The Software remains the exclusive intellectual property of Tenviq.
+No title or ownership rights are transferred to you. Your license
+grants a usage right only.
+
+
+4. END-PRODUCTS
+
+End-products you build with the Software may be sold, licensed, or
+distributed freely. Your customers do NOT receive any rights to the
+original Software source code — only to the compiled or deployed
+end-product.
+
+
+5. UPDATES
+
+License holders receive access to updates published during their
+active license period. Updates are governed by the same terms.
+
+
+6. REFUNDS
+
+Because the Software is delivered as source code, all sales are
+final once source code access has been granted. No refunds will be
+issued after delivery.
+
+
+7. TERMINATION
+
+This license terminates automatically if you breach any of its
+terms. Upon termination you must destroy all copies of the Software
+in your possession. Sections 2, 3, 6, and 8 survive termination.
+
+
+8. WARRANTY DISCLAIMER
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED. TENVIQ DISCLAIMS ALL WARRANTIES INCLUDING BUT
+NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+AND NON-INFRINGEMENT. IN NO EVENT SHALL TENVIQ BE LIABLE FOR ANY
+CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF THE
 SOFTWARE.
+
+
+9. GOVERNING LAW
+
+This license is governed by the laws of the Province of Quebec,
+Canada, without regard to conflict-of-law provisions.
+
+
+For licensing questions: contact@tenviq.com

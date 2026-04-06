@@ -83,7 +83,7 @@ Copy `.env.example` and configure:
 | `ALLOW_EMAIL_ACCOUNT_LINKING`               | Set `true` to link OAuth accounts by verified email                                  |
 | `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email                                            |
 
-See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for the full checklist (including Stripe price IDs) and [docs/STRIPE_TEST_MODE_SETUP.md](docs/STRIPE_TEST_MODE_SETUP.md) for the billing flow. The authoritative list is `.env.example`.
+See the [Installation docs](/docs/installation/environment-variables) for the full checklist and the [Stripe Setup guide](/docs/billing/stripe-setup) for the billing flow. The authoritative list is `.env.example`.
 
 Auth emails and organization invitation emails ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
 
@@ -98,7 +98,7 @@ Your config decides what that plan gives.
 
 **To add a plan:** Create the prices in Stripe, add their `STRIPE_PRICE_*` env vars, then define capabilities, limits, and pricing behavior in `shared/config/billing.config.ts`.
 
-**To test billing locally:** Follow [docs/STRIPE_TEST_MODE_SETUP.md](docs/STRIPE_TEST_MODE_SETUP.md) and forward Stripe webhooks to `/api/stripe/webhook`.
+**To test billing locally:** Follow the [Stripe Setup guide](/docs/billing/stripe-setup) and forward Stripe webhooks to `/api/stripe/webhook`.
 
 **To gate a feature:** Call `assertCapability(planId, "your.capability")` in your server action.
 
@@ -123,7 +123,7 @@ shared/             -> Cross-feature infrastructure
   hooks/            -> Reusable React hooks
   constants/        -> Routes, terminology
 prisma/             -> Schema, migrations, seed
-docs/               -> Setup, customization, and reference guides
+content/docs/       -> Full documentation (Fumadocs MDX)
 ```
 
 ## Why this starter
@@ -136,12 +136,12 @@ docs/               -> Setup, customization, and reference guides
 
 ## Documentation
 
-Core documentation lives in this repo:
+Full documentation is available at `/docs` when the app is running, or browse `content/docs/` in the repo. Key sections:
 
-- [Environment setup](docs/ENVIRONMENT_SETUP.md)
-- [Stripe test mode setup](docs/STRIPE_TEST_MODE_SETUP.md)
-- [Adding a feature](features/ADDING_A_FEATURE.md)
-- [Testing a feature](docs/TESTING_A_FEATURE.md)
+- [Installation](/docs/installation) — prerequisites, setup, environment variables
+- [Billing](/docs/billing) — Stripe setup, pricing, entitlements, usage
+- [Development Guide](/docs/development-guide) — adding features, server actions, forms
+- [Testing](/docs/testing) — unit testing, writing tests
 - [Assistant tool integration](features/assistant/TOOL_INTEGRATION.md)
 
 ## Scripts
@@ -159,4 +159,4 @@ Core documentation lives in this repo:
 
 ## License
 
-MIT
+This software is proprietary and licensed under the [Tenviq Commercial License](LICENSE). You may use it to build unlimited end-products, but you may not redistribute, resell, or share the source code. See the LICENSE file for full terms.
