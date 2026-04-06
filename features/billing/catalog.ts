@@ -89,9 +89,7 @@ export function getOneTimeProduct(productId: string) {
   return oneTimeProductsById.get(productId) ?? null;
 }
 
-export function isBillingInterval(value: string): value is BillingInterval {
-  return value === "month" || value === "year";
-}
+export { isBillingInterval } from "@/features/billing/billing-intervals";
 
 export function getPlanDisplayPrice(
   planId: string,

@@ -15,11 +15,11 @@ import {
   ModelSelectorTrigger,
 } from "@/shared/components/ai-elements/model-selector";
 import { PromptInputButton } from "@/shared/components/ai-elements/prompt-input";
-import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
+import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
 
 type AssistantModelSelectorProps = {
   modelId: AiModelId;
-  modelOptions: AiModelOption[];
+  modelOptions: AiModelDefinition[];
   onOpenChange: (open: boolean) => void;
   onSelect: (modelId: AiModelId) => void;
   open: boolean;

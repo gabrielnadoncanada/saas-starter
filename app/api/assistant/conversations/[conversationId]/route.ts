@@ -1,44 +1,20 @@
 import {
+  assertAssistantAccess,
+  getScopeErrorResponse,
+} from "@/features/assistant/server/assistant-api-errors";
+import {
   deleteAssistantConversation,
   getAssistantConversation,
   replaceAssistantConversation,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/assistant-conversations";
 import { parseAssistantMessagesBody } from "@/features/assistant/server/parse-assistant-messages-body";
-import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-access";
-import { UpgradeRequiredError } from "@/features/billing/billing-errors";
 
 type RouteContext = {
   params: Promise<{
     conversationId: string;
   }>;
 };
-
-function getScopeErrorResponse(
-  scope: Awaited<ReturnType<typeof resolveAssistantConversationScope>>,
-) {
-  if (scope.kind === "unauthorized") {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  return new Response("Organization not found", { status: 403 });
-}
-
-async function assertAssistantAccess() {
-  try {
-    await assertOrganizationAiAccess();
-  } catch (error) {
-    if (error instanceof UpgradeRequiredError) {
-      return Response.json(
-        { error: error.message, code: "UPGRADE_REQUIRED" },
-        { status: 403 },
-      );
-    }
-    throw error;
-  }
-
-  return null;
-}
 
 export async function GET(_req: Request, context: RouteContext) {
   const scope = await resolveAssistantConversationScope();
@@ -53,7 +29,7 @@ export async function GET(_req: Request, context: RouteContext) {
   const conversation = await getAssistantConversation(conversationId);
 
   if (!conversation) {
-    return new Response("Conversation not found", { status: 404 });
+    return Response.json({ error: "Conversation not found" }, { status: 404 });
   }
 
   return Response.json(conversation);
@@ -81,7 +57,7 @@ export async function PATCH(req: Request, context: RouteContext) {
   );
 
   if (!conversation) {
-    return new Response("Conversation not found", { status: 404 });
+    return Response.json({ error: "Conversation not found" }, { status: 404 });
   }
 
   return Response.json(conversation);
@@ -100,7 +76,7 @@ export async function DELETE(_req: Request, context: RouteContext) {
   const deleted = await deleteAssistantConversation(conversationId);
 
   if (!deleted) {
-    return new Response("Conversation not found", { status: 404 });
+    return Response.json({ error: "Conversation not found" }, { status: 404 });
   }
 
   return new Response(null, { status: 204 });

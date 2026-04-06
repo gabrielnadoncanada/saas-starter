@@ -2,13 +2,11 @@ import type { UIMessage } from "ai";
 import { z } from "zod";
 
 import {
+  type AssistantConversation,
+  type AssistantConversationListItem,
   assistantConversationListSchema,
   assistantConversationSchema,
 } from "@/features/assistant/schemas/conversation-api.schema";
-import type {
-  AssistantConversation,
-  AssistantConversationListItem,
-} from "@/features/assistant/types";
 
 async function parseConversationResponse<T>(
   response: Response,
@@ -43,11 +41,10 @@ export async function fetchAssistantConversation(conversationId: string) {
   const response = await fetch(
     `/api/assistant/conversations/${conversationId}`,
   );
-  const data = await parseConversationResponse(
+  return await parseConversationResponse(
     response,
     assistantConversationSchema,
-  );
-  return data as AssistantConversation;
+  ) as AssistantConversation;
 }
 
 export async function createAssistantConversationRequest(
@@ -59,11 +56,10 @@ export async function createAssistantConversationRequest(
     body: JSON.stringify({ messages }),
   });
 
-  const data = await parseConversationResponse(
+  return await parseConversationResponse(
     response,
     assistantConversationSchema,
-  );
-  return data as AssistantConversation;
+  ) as AssistantConversation;
 }
 
 export async function replaceAssistantConversationRequest(
@@ -79,11 +75,10 @@ export async function replaceAssistantConversationRequest(
     },
   );
 
-  const data = await parseConversationResponse(
+  return await parseConversationResponse(
     response,
     assistantConversationSchema,
-  );
-  return data as AssistantConversation;
+  ) as AssistantConversation;
 }
 
 export async function deleteAssistantConversationRequest(

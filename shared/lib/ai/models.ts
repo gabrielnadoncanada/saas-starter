@@ -9,11 +9,6 @@ export type AiModelDefinition = {
   providerLabel: string;
 };
 
-export type AiModelOption = Pick<
-  AiModelDefinition,
-  "id" | "name" | "provider" | "providerLabel"
->;
-
 export const aiModels = [
   {
     id: "gemini-2.5-flash",
@@ -43,12 +38,3 @@ export function getAiModelDefinition(modelId: AiModelId): AiModelDefinition {
   return aiModelsById[modelId];
 }
 
-export function getAllAiModelIds(): AiModelId[] {
-  return aiModels.map((model) => model.id);
-}
-
-export function getAiModelOptions(modelIds?: readonly AiModelId[]) {
-  return (modelIds ?? getAllAiModelIds()).map((modelId) =>
-    getAiModelDefinition(modelId),
-  );
-}

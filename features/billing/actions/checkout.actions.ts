@@ -3,12 +3,9 @@
 import { redirect } from "next/navigation";
 
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
-import {
-  getOneTimeProduct,
-  getPlanDisplayPrice,
-  isBillingInterval,
-  isPlanId,
-} from "@/features/billing/catalog";
+import { isBillingInterval } from "@/features/billing/billing-intervals";
+import { getOneTimeProduct, isPlanId } from "@/features/billing/catalog";
+import { parseSubscriptionForm } from "@/features/billing/server/parse-subscription-form";
 import {
   createOrganizationOneTimeCheckoutSession,
   createOrganizationSubscriptionCheckoutSession,
@@ -21,28 +18,23 @@ import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
 export async function startSubscriptionCheckoutAction(formData: FormData) {
   const user = await getCurrentUser();
-  const rawPlanId = formData.get("planId");
-  const rawBillingInterval = formData.get("billingInterval");
-  const rawSeatQuantity = formData.get("seatQuantity");
-  const planId = typeof rawPlanId === "string" ? rawPlanId : null;
-  const billingInterval =
-    typeof rawBillingInterval === "string" ? rawBillingInterval : null;
-  const seatQuantity =
-    typeof rawSeatQuantity === "string" ? Number(rawSeatQuantity) : NaN;
 
   if (!user) {
+    const rawPlanId = formData.get("planId");
+    const rawInterval = formData.get("billingInterval");
+    const planId =
+      typeof rawPlanId === "string" && isPlanId(rawPlanId) && rawPlanId !== "free"
+        ? rawPlanId
+        : null;
+    const billingInterval =
+      typeof rawInterval === "string" && isBillingInterval(rawInterval)
+        ? rawInterval
+        : null;
+
     redirect(
       buildCallbackURL(
         routes.auth.login,
-        buildPostSignInCallbackURL({
-          billingInterval:
-            billingInterval && isBillingInterval(billingInterval)
-              ? billingInterval
-              : null,
-          planId:
-            planId && isPlanId(planId) && planId !== "free" ? planId : null,
-          redirect: "checkout",
-        }),
+        buildPostSignInCallbackURL({ billingInterval, planId, redirect: "checkout" }),
       ),
     );
   }
@@ -56,24 +48,13 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
     throw new Error("Organization not found");
   }
 
-  if (
-    !planId ||
-    !isPlanId(planId) ||
-    planId === "free" ||
-    !billingInterval ||
-    !isBillingInterval(billingInterval) ||
-    !getPlanDisplayPrice(planId, billingInterval)
-  ) {
-    throw new Error("Invalid billing selection.");
-  }
+  const selection = parseSubscriptionForm(formData);
 
   const url = await createOrganizationSubscriptionCheckoutSession({
-    billingInterval,
+    billingInterval: selection.billingInterval,
     organizationId: organization.id,
-    planId,
-    seatQuantity: Number.isFinite(seatQuantity)
-      ? Math.max(1, seatQuantity)
-      : organization.members.length,
+    planId: selection.planId,
+    seatQuantity: selection.seatQuantity ?? organization.members.length,
   });
 
   redirect(url);

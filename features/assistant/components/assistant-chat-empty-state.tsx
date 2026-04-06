@@ -29,11 +29,7 @@ export function AssistantChatEmptyState({ onPromptClick }: EmptyStateProps) {
   ];
 
   return (
-    <ConversationEmptyState
-      description={description}
-      icon={<Sparkles className="h-6 w-6 text-orange-500" />}
-      title={title}
-    >
+    <ConversationEmptyState>
       <div className="flex size-full flex-col items-center justify-center gap-6 px-4 py-10 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10">
           <Sparkles className="h-6 w-6 text-orange-500" />

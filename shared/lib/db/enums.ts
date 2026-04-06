@@ -1,15 +1,5 @@
-import {
-  getPrimaryRole,
-  hasAnyRole,
-  hasRole,
-  parseRoles,
-} from "@/shared/lib/auth/roles";
+import { parseRoles } from "@/shared/lib/auth/roles";
 
-/**
- * Re-exports Prisma-generated enums so feature code never imports
- * directly from the Prisma client path. If Prisma's export surface
- * changes after an upgrade, only this file needs updating.
- */
 export {
   PlatformRole,
   TaskLabel,
@@ -17,10 +7,6 @@ export {
   TaskStatus,
 } from "@prisma/client";
 
-/**
- * Organization member roles used by the better-auth organization plugin.
- * These are stored as plain strings in the database, not Prisma enums.
- */
 export const ORG_ROLES = ["owner", "admin", "member"] as const;
 
 export type OrgRole = (typeof ORG_ROLES)[number];
@@ -33,20 +19,26 @@ export function parseOrgRoles(value: unknown): OrgRole[] {
   return parseRoles(value).filter(isOrgRole);
 }
 
-export function hasOrgRole(value: unknown, role: OrgRole): boolean {
-  return hasRole(value, role);
+export function hasOrgRole(
+  value: unknown,
+  role: OrgRole,
+): boolean {
+  const roles = Array.isArray(value) ? value : parseOrgRoles(value);
+  return roles.includes(role);
 }
 
 export function hasAnyOrgRole(
   value: unknown,
   roles: readonly OrgRole[],
 ): boolean {
-  return hasAnyRole(value, roles);
+  const parsed = Array.isArray(value) ? value : parseOrgRoles(value);
+  return roles.some((role) => parsed.includes(role));
 }
 
 export function getPrimaryOrgRole(
   value: unknown,
   fallback: OrgRole = "member",
 ): OrgRole {
-  return getPrimaryRole(parseOrgRoles(value), ORG_ROLES, fallback);
+  const parsed = parseOrgRoles(value);
+  return ORG_ROLES.find((role) => parsed.includes(role)) ?? fallback;
 }

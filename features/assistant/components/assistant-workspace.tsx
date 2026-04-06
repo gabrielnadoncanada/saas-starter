@@ -6,14 +6,14 @@ import { useEffect, useRef, useState } from "react";
 
 import { fetchAssistantConversation } from "@/features/assistant/client/assistant-conversations-api";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
-import type { AssistantConversation } from "@/features/assistant/types";
-import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
+import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
+import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
 
 type AssistantWorkspaceProps = {
   initialConversation: AssistantConversation | null;
   initialConversationId: string | null;
   initialDefaultModelId: AiModelId;
-  initialModelOptions: AiModelOption[];
+  initialModelOptions: AiModelDefinition[];
 };
 
 function buildConversationUrl(pathname: string, conversationId: string | null) {

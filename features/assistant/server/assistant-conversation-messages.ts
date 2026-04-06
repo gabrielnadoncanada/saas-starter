@@ -4,7 +4,7 @@ import { safeValidateUIMessages, type UIMessage } from "ai";
 import type {
   AssistantConversation,
   AssistantConversationListItem,
-} from "@/features/assistant/types";
+} from "@/features/assistant/schemas/conversation-api.schema";
 
 const DEFAULT_TITLE = "New conversation";
 const TITLE_MAX_LENGTH = 72;

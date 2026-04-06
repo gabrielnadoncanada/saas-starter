@@ -1,8 +1,6 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { routes } from "@/shared/constants/routes";
-import { auth } from "@/shared/lib/auth/auth-config";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 
@@ -21,19 +19,17 @@ export async function requireAdmin() {
 }
 
 export async function requireAdminAction(): Promise<string> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const user = await getCurrentUser();
 
-  if (!session?.user?.id) {
+  if (!user) {
     throw new Error("Unauthorized");
   }
 
-  if (!isPlatformAdmin(session.user.role)) {
+  if (!isPlatformAdmin(user.role)) {
     throw new Error("Forbidden: admin role required");
   }
 
-  return session.user.id;
+  return user.id;
 }
 
 export async function runAdminAction<T>(fn: () => Promise<T>): Promise<T> {

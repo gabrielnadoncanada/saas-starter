@@ -13,7 +13,7 @@ import {
 import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
 import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
 import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
-import type { AssistantConversation } from "@/features/assistant/types";
+import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
 import {
   Conversation,
   ConversationContent,
@@ -29,13 +29,13 @@ import {
   PromptInputTextarea,
   PromptInputTools,
 } from "@/shared/components/ai-elements/prompt-input";
-import type { AiModelId, AiModelOption } from "@/shared/lib/ai/models";
+import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
 
 type AssistantChatProps = {
   conversationId: string | null;
   defaultModelId: AiModelId;
   initialMessages: UIMessage[];
-  modelOptions: AiModelOption[];
+  modelOptions: AiModelDefinition[];
   onConversationCreated: (conversation: AssistantConversation) => void;
   onConversationUpdated: (conversation: AssistantConversation) => void;
   resetKey: number;

@@ -4,7 +4,7 @@ import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { hasCapability } from "@/features/billing/plan-guards";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { Page } from "@/shared/components/layout/page-layout";
-import { defaultAiModelId, getAiModelOptions } from "@/shared/lib/ai/models";
+import { aiModels, defaultAiModelId } from "@/shared/lib/ai/models";
 
 type AssistantPageProps = {
   searchParams: Promise<{
@@ -25,7 +25,7 @@ export default async function AssistantPage({
       ? await getAssistantConversation(conversationId)
       : null;
   const modelOptions =
-    entitlements && canUseAssistant ? getAiModelOptions() : [];
+    entitlements && canUseAssistant ? [...aiModels] : [];
 
   return (
     <Page fixed>

@@ -14,7 +14,6 @@ import { toIsoString } from "@/shared/lib/date/to-iso-string";
 import {
   getPrimaryOrgRole,
   hasOrgRole,
-  type OrgRole,
   parseOrgRoles,
 } from "@/shared/lib/db/enums";
 
@@ -22,14 +21,9 @@ type OrganizationMemberFromApi = NonNullable<
   FullOrganization["members"]
 >[number];
 
-type CurrentOrganization = CurrentOrganizationView;
-
 export type CurrentOrganizationContext = {
   user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
-  organization: CurrentOrganization;
-  currentMember: NonNullable<CurrentOrganization["members"][number]>;
-  roles: OrgRole[];
-  primaryRole: OrgRole;
+  organization: CurrentOrganizationView;
   isOwner: boolean;
 };
 
@@ -119,16 +113,9 @@ export async function getCurrentOrganizationContext(): Promise<CurrentOrganizati
     return null;
   }
 
-  const roles = currentMember.roles;
-  const primaryRole = currentMember.primaryRole;
-  const isOwner = hasOrgRole(roles, "owner");
-
   return {
     user,
     organization,
-    currentMember,
-    roles,
-    primaryRole,
-    isOwner,
+    isOwner: hasOrgRole(currentMember.roles, "owner"),
   };
 }

@@ -1,9 +1,9 @@
 import "server-only";
 
 import {
+  aiModels,
   defaultAiModelId,
   getAiModelDefinition,
-  getAiModelOptions,
   isAiModelId,
 } from "@/shared/lib/ai/models";
 
@@ -29,6 +29,6 @@ export async function resolveOrganizationAssistantModelSelection(
   return {
     model: getAiModelDefinition(modelId),
     defaultModelId: defaultAiModelId,
-    allowedModels: getAiModelOptions(),
+    allowedModels: [...aiModels],
   };
 }

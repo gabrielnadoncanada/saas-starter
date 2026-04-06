@@ -63,10 +63,7 @@ export function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval)
   return interval === "year" ? plan.yearly : plan.monthly;
 }
 
-// Duplicated from catalog.ts — catalog uses "server-only" and cannot be imported in client components
-function isBillingInterval(value: string): value is BillingInterval {
-  return value === "month" || value === "year";
-}
+import { isBillingInterval } from "@/features/billing/billing-intervals";
 
 function BillingPlanPrice({
   price,
