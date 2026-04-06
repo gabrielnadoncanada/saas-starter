@@ -20,7 +20,6 @@ type UsersTableRowsProps = {
   isPending: boolean;
   onBan: (userId: string) => void;
   onCopy: (value: string) => void;
-  onImpersonate: (userId: string) => void;
   onOpen: (user: AdminUser) => void;
   onRemove: (userId: string) => void;
   onSetRole: (userId: string, role: "user" | "admin") => void;
@@ -33,7 +32,6 @@ export function UsersTableRows({
   isPending,
   onBan,
   onCopy,
-  onImpersonate,
   onOpen,
   onRemove,
   onSetRole,
@@ -107,7 +105,6 @@ export function UsersTableRows({
                     onBan={onBan}
                     onUnban={onUnban}
                     onRemove={onRemove}
-                    onImpersonate={onImpersonate}
                   />
                 </div>
               ) : null}

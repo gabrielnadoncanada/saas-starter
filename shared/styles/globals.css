@@ -1,3 +1,5 @@
+@layer base, component;
+
 /*
 * global.css
 *
@@ -11,7 +13,8 @@
 @import "./theme.css";
 @import "./theme.utilities.css";
 @import "./shadcn-ui.css";
-
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
 /* plugins - update the below if you add a new plugin */
 
 /* variants - update the below if you add a new variant */
@@ -36,5 +39,17 @@
   input::placeholder,
   textarea::placeholder {
     color: theme(--color-muted-foreground);
+  }
+}
+
+@layer component {
+  .three-tier-site-pricing {
+    --selection-background-color: #0099ff4d;
+    --selection-color: #09f;
+  }
+
+  .three-tier-site-pricing[data-selection="true"] * ::selection {
+    color: var(--selection-color, none);
+    background-color: var(--selection-background-color, none);
   }
 }

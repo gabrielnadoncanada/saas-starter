@@ -10,7 +10,6 @@ type RawAuthSession = NonNullable<
 export type AuthSession = RawAuthSession & {
   session: RawAuthSession["session"] & {
     activeOrganizationId?: string | null;
-    impersonatedBy?: string | null;
   };
 };
 

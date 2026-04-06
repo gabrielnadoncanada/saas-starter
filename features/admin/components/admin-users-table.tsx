@@ -1,7 +1,6 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -27,8 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { authClient } from "@/shared/lib/auth/auth-client";
-
 import { UserDetailSheet } from "./user-detail-sheet";
 import { UsersTableRows } from "./users-table-rows";
 
@@ -59,7 +56,6 @@ export function AdminUsersTable({
   initialUsers,
   pageSize,
 }: AdminUsersTableProps) {
-  const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
   const [total, setTotal] = useState(initialTotal);
   const [offset, setOffset] = useState(0);
@@ -123,19 +119,6 @@ export function AdminUsersTable({
     } finally {
       setIsLoadingUserDetail(false);
     }
-  }
-
-  async function handleImpersonate(userId: string) {
-    const { error } = await authClient.admin.impersonateUser({ userId });
-
-    if (error) {
-      toast.error(error.message ?? "Failed to impersonate user");
-      return;
-    }
-
-    toast.success("Now impersonating user");
-    router.push("/dashboard");
-    router.refresh();
   }
 
   function copyToClipboard(value: string) {
@@ -239,7 +222,6 @@ export function AdminUsersTable({
             isPending={isPending}
             onBan={confirmBanUser}
             onCopy={copyToClipboard}
-            onImpersonate={handleImpersonate}
             onOpen={openUserDetail}
             onRemove={confirmDeleteUser}
             onSetRole={confirmSetUserRole}
@@ -261,7 +243,6 @@ export function AdminUsersTable({
         copyToClipboard={copyToClipboard}
         currentUserId={currentUserId}
         loadingDetail={isLoadingUserDetail}
-        onImpersonate={handleImpersonate}
         onOpenChange={setIsSheetOpen}
         onRevokeAllSessions={confirmRevokeAllSessions}
         open={isSheetOpen}

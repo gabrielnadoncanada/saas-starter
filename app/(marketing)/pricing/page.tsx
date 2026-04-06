@@ -19,7 +19,11 @@ export const revalidate = 3600;
 export default async function PricingPage() {
   return (
     <>
-      <PricingSection />
+      <section className="bg-black px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <PricingSection />
+        </div>
+      </section>
       <FaqSection />
     </>
   );

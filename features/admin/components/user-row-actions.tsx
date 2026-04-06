@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   ShieldOff,
   Trash2,
-  UserCheck,
 } from "lucide-react";
 
 import type { AdminUser } from "@/features/admin/types/admin-users.types";
@@ -26,7 +25,6 @@ type UserRowActionsProps = {
   onBan: (userId: string) => void;
   onUnban: (userId: string) => void;
   onRemove: (userId: string) => void;
-  onImpersonate: (userId: string) => void;
 };
 
 export function UserRowActions({
@@ -35,7 +33,6 @@ export function UserRowActions({
   onBan,
   onUnban,
   onRemove,
-  onImpersonate,
 }: UserRowActionsProps) {
   const isAdmin = isPlatformAdmin(user.role);
 
@@ -48,13 +45,6 @@ export function UserRowActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onImpersonate(user.id)}>
-          <UserCheck className="size-4" />
-          Impersonate
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
         {isAdmin ? (
           <DropdownMenuItem onClick={() => onSetRole(user.id, "user")}>
             <ShieldOff className="size-4" />

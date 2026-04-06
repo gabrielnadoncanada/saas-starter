@@ -7,7 +7,6 @@ import {
   CircleUser,
   Copy,
   Mail,
-  UserCheck,
   X,
   XCircle,
 } from "lucide-react";
@@ -36,7 +35,6 @@ import {
 type UserDetailSheetProps = {
   currentUserId: string;
   loadingDetail: boolean;
-  onImpersonate: (userId: string) => Promise<void>;
   onOpenChange: (open: boolean) => void;
   onRevokeAllSessions: (userId: string) => void;
   open: boolean;
@@ -74,7 +72,6 @@ function UserDetailField({
 export function UserDetailSheet({
   currentUserId,
   loadingDetail,
-  onImpersonate,
   onOpenChange,
   onRevokeAllSessions,
   open,
@@ -120,17 +117,6 @@ export function UserDetailSheet({
               </p>
             </div>
           </div>
-
-          {!isCurrentUser ? (
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => onImpersonate(selectedUser.id)}
-            >
-              <UserCheck className="size-4" />
-              Impersonate User
-            </Button>
-          ) : null}
 
           <Card>
             <CardContent>

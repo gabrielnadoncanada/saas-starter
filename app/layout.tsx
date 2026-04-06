@@ -2,11 +2,7 @@ import "@/shared/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { Suspense } from "react";
-
-import { ImpersonationBannerWrapper } from "@/features/admin/components/impersonation-banner-wrapper";
-import { ThemeProvider } from "@/shared/components/app/theme-provider";
-import { Toaster } from "@/shared/components/ui/sonner";
+import { Providers } from "@/shared/components/providers/providers";
 
 export const metadata: Metadata = {
   title: {
@@ -38,19 +34,8 @@ export default async function RootLayout({
 }) {
   return (
     <html lang={"en"} suppressHydrationWarning className={inter.variable}>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Suspense>
-            <ImpersonationBannerWrapper />
-          </Suspense>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+      <body suppressHydrationWarning>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
