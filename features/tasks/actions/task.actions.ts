@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/billing-errors";
+} from "@/features/billing/plan-guards";
 import {
   bulkDeleteTasks,
   bulkUpdateTaskStatus,
@@ -62,11 +62,13 @@ export const createTaskAction = validatedAuthenticatedAction<
         task,
       };
     } catch (error) {
-      if (
-        error instanceof UpgradeRequiredError ||
-        error instanceof LimitReachedError ||
-        (error instanceof Error && error.message === "Organization not found")
-      ) {
+      if (error instanceof UpgradeRequiredError) {
+        return { error: error.message, errorCode: "UPGRADE_REQUIRED" };
+      }
+      if (error instanceof LimitReachedError) {
+        return { error: error.message, errorCode: "LIMIT_REACHED" };
+      }
+      if (error instanceof Error && error.message === "Organization not found") {
         return { error: error.message };
       }
 

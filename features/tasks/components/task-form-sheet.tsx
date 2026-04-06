@@ -11,6 +11,7 @@ import {
   updateTaskAction,
 } from "@/features/tasks/actions/task.actions";
 import type { UpdateTaskValues } from "@/features/tasks/task-form.schema";
+import { UpgradePrompt } from "@/shared/components/billing/upgrade-prompt";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
@@ -47,9 +48,11 @@ export function TaskFormSheet(props: TaskFormSheetProps) {
   const [state, formAction, isPending] =
     props.mode === "create" ? createState : updateState;
 
+  const isBillingError = Boolean(state.errorCode);
+
   useToastMessage(state.error, {
     kind: "error",
-    skip: Boolean(state.fieldErrors),
+    skip: Boolean(state.fieldErrors) || isBillingError,
     trigger: state,
   });
   useToastMessage(state.success, { kind: "success", trigger: state });
@@ -68,6 +71,10 @@ export function TaskFormSheet(props: TaskFormSheetProps) {
     onOpenChange(false);
   }, [onOpenChange, router, state]);
 
+  const upgradePrompt = (
+    <UpgradePrompt errorCode={state.errorCode} message={state.error} />
+  );
+
   return props.mode === "create" ? (
     <TaskForm
       mode="create"
@@ -76,6 +83,7 @@ export function TaskFormSheet(props: TaskFormSheetProps) {
       state={state}
       formAction={formAction}
       isPending={isPending}
+      banner={upgradePrompt}
     />
   ) : (
     <TaskForm

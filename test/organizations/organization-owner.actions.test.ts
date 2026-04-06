@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError } from "@/features/billing/billing-errors";
+import { LimitReachedError } from "@/features/billing/plan-guards";
 
 const {
   headersMock,
@@ -55,10 +55,15 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: getCurrentOrganizationEntitlementsMock,
 }));
 
-vi.mock("@/features/billing/plan-guards", () => ({
-  assertCapability: assertCapabilityMock,
-  assertLimit: assertLimitMock,
-}));
+vi.mock("@/features/billing/plan-guards", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/features/billing/plan-guards")>();
+  return {
+    ...actual,
+    assertCapability: assertCapabilityMock,
+    assertLimit: assertLimitMock,
+  };
+});
 
 vi.mock("@/features/organizations/server/organization-invitations", () => ({
   cancelOrganizationInvitation: vi.fn(),
@@ -155,6 +160,7 @@ describe("inviteOrganizationMemberAction", () => {
     expect(inviteOrganizationMemberMock).not.toHaveBeenCalled();
     expect(result).toEqual({
       error: 'Limit reached for "teamMembers": 1/1 (plan: Pro)',
+      errorCode: "LIMIT_REACHED",
     });
   });
 });

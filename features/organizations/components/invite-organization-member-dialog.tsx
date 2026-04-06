@@ -9,6 +9,7 @@ import {
   inviteOrganizationMemberAction,
   type InviteOrganizationMemberActionState,
 } from "@/features/organizations/actions/membership.actions";
+import { UpgradePrompt } from "@/shared/components/billing/upgrade-prompt";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -43,8 +44,10 @@ export function InviteOrganizationMemberDialog({
   const emailField = getFieldState(state, "email");
   const roleField = getFieldState(state, "role", "member");
 
+  const isBillingError = Boolean(state.errorCode);
+
   useEffect(() => {
-    if (state.error && !state.fieldErrors) {
+    if (state.error && !state.fieldErrors && !state.errorCode) {
       toast.error(state.error);
     }
 
@@ -56,7 +59,7 @@ export function InviteOrganizationMemberDialog({
     if (state.refreshKey) {
       router.refresh();
     }
-  }, [router, state.error, state.fieldErrors, state.refreshKey, state.success]);
+  }, [router, state.error, state.errorCode, state.fieldErrors, state.refreshKey, state.success]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -73,6 +76,10 @@ export function InviteOrganizationMemberDialog({
             Send an invitation to join your organization.
           </DialogDescription>
         </DialogHeader>
+
+        {isBillingError ? (
+          <UpgradePrompt errorCode={state.errorCode} message={state.error} />
+        ) : null}
 
         <form action={formAction} className="space-y-4">
           <Field data-invalid={emailField.invalid}>

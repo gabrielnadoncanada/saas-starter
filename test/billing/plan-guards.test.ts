@@ -2,15 +2,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import { getPlan, isPlanId } from "@/features/billing/catalog";
 import {
-  LimitReachedError,
-  UpgradeRequiredError,
-} from "@/features/billing/billing-errors";
-import {
   assertCapability,
   assertLimit,
   checkLimit,
   getPlanLimit,
   hasCapability,
+  LimitReachedError,
+  UpgradeRequiredError,
 } from "@/features/billing/plan-guards";
 import type {
   OrganizationEntitlements,

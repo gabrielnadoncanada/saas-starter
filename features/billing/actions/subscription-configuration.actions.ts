@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { parseSubscriptionForm } from "@/features/billing/server/parse-subscription-form";
+import { parseSubscriptionForm } from "@/features/billing/catalog";
 import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscription-items";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";

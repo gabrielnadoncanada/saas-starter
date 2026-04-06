@@ -2,7 +2,7 @@ import type { AssistantToolFailure } from "@/features/assistant/types";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/billing-errors";
+} from "@/features/billing/plan-guards";
 
 export function toAssistantToolFailure(error: unknown): AssistantToolFailure {
   if (error instanceof UpgradeRequiredError) {

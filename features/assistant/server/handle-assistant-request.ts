@@ -12,7 +12,7 @@ import { assistantTools } from "@/features/assistant/server/tools";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/billing-errors";
+} from "@/features/billing/plan-guards";
 import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 

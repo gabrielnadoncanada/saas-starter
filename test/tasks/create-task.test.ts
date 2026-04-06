@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/billing-errors";
+} from "@/features/billing/plan-guards";
 
 vi.mock("server-only", () => ({}));
 
@@ -21,9 +21,14 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
-vi.mock("@/features/billing/plan-guards", () => ({
-  assertCapability: vi.fn(),
-}));
+vi.mock("@/features/billing/plan-guards", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/features/billing/plan-guards")>();
+  return {
+    ...actual,
+    assertCapability: vi.fn(),
+  };
+});
 
 vi.mock("@/features/billing/server/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),

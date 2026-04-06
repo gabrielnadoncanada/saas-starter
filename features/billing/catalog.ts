@@ -1,3 +1,15 @@
+// Billing catalog: resolves billing.config.ts definitions into lookups and checkout helpers.
+//
+// Mental model:
+//   Plan (free/pro/team) → Schedule (month/year) → Line Items → Prices
+//   One-time products (storage boost, etc.) have a single price each.
+//
+// Main entry points:
+//   getPricingPlans()              → plans with at least one configured price
+//   buildPlanCheckoutLineItems()   → Stripe-ready line items for checkout
+//   parseSubscriptionForm()        → validate + extract plan selection from FormData
+//   getDefaultEntitlements()       → free-plan entitlements for new orgs
+
 import {
   billingConfig,
   type BillingInterval,
@@ -89,7 +101,9 @@ export function getOneTimeProduct(productId: string) {
   return oneTimeProductsById.get(productId) ?? null;
 }
 
-export { isBillingInterval } from "@/features/billing/billing-intervals";
+export function isBillingInterval(value: string): value is BillingInterval {
+  return value === "month" || value === "year";
+}
 
 export function getPlanDisplayPrice(
   planId: string,
@@ -172,6 +186,45 @@ export function buildRecurringSelectionItems(params: {
         ? Math.max(1, params.seatQuantity - (lineItem.includedQuantity ?? 0))
         : 1,
   }));
+}
+
+export type SubscriptionFormSelection = {
+  planId: PlanId;
+  billingInterval: BillingInterval;
+  seatQuantity: number | null;
+};
+
+export function parseSubscriptionForm(
+  formData: FormData,
+): SubscriptionFormSelection {
+  const rawPlanId = formData.get("planId");
+  const rawBillingInterval = formData.get("billingInterval");
+  const rawSeatQuantity = formData.get("seatQuantity");
+
+  const planId = typeof rawPlanId === "string" ? rawPlanId : null;
+  const billingInterval =
+    typeof rawBillingInterval === "string" ? rawBillingInterval : null;
+  const seatQuantity =
+    typeof rawSeatQuantity === "string" ? Number(rawSeatQuantity) : NaN;
+
+  if (
+    !planId ||
+    !isPlanId(planId) ||
+    planId === "free" ||
+    !billingInterval ||
+    !isBillingInterval(billingInterval) ||
+    !getPlanDisplayPrice(planId, billingInterval)
+  ) {
+    throw new Error("Invalid billing selection.");
+  }
+
+  return {
+    planId,
+    billingInterval,
+    seatQuantity: Number.isFinite(seatQuantity)
+      ? Math.max(1, seatQuantity)
+      : null,
+  };
 }
 
 export function getDefaultEntitlements(params: {

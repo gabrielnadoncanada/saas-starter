@@ -53,6 +53,7 @@ type TaskFormProps = {
   formAction: (payload: FormData) => void;
   isPending: boolean;
   task?: Task;
+  banner?: React.ReactNode;
 };
 
 export function TaskForm({
@@ -63,6 +64,7 @@ export function TaskForm({
   formAction,
   isPending,
   task,
+  banner,
 }: TaskFormProps) {
   const isUpdate = mode === "update";
   const title = getFieldState(state, "title", task?.title ?? "");
@@ -88,6 +90,8 @@ export function TaskForm({
           className="flex flex-1 flex-col gap-6 overflow-y-auto px-4"
         >
           {task ? <input type="hidden" name="taskId" value={task.id} /> : null}
+
+          {banner}
 
           <FieldGroup className="gap-4">
             <Field data-invalid={title.invalid}>

@@ -1,3 +1,4 @@
+import "@/shared/lib/env";
 import "@/shared/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";

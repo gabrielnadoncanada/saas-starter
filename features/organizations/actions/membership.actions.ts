@@ -6,7 +6,7 @@ import { z } from "zod";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/billing-errors";
+} from "@/features/billing/plan-guards";
 import {
   assertCapability,
   assertLimit,
@@ -123,11 +123,11 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction<
 
       assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
     } catch (error) {
-      if (
-        error instanceof UpgradeRequiredError ||
-        error instanceof LimitReachedError
-      ) {
-        return { error: error.message };
+      if (error instanceof UpgradeRequiredError) {
+        return { error: error.message, errorCode: "UPGRADE_REQUIRED" as const };
+      }
+      if (error instanceof LimitReachedError) {
+        return { error: error.message, errorCode: "LIMIT_REACHED" as const };
       }
 
       throw error;
