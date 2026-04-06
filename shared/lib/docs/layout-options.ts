@@ -1,9 +1,7 @@
-import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 
-export function getDocsLayoutOptions(): BaseLayoutProps {
-  return {
-    nav: {
-      title: 'SaaS Starter',
-    },
-  };
-}
+export const docsLayoutOptions: BaseLayoutProps = {
+  nav: {
+    title: "SaaS Starter",
+  },
+};

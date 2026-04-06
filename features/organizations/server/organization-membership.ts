@@ -1,6 +1,7 @@
 import "server-only";
 
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { auth } from "@/shared/lib/auth/auth-config";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -96,15 +97,34 @@ export async function requireActiveOrganizationMembership() {
   return membership;
 }
 
+type RequireOrgRoleOptions = {
+  /** When set, membership/role failures redirect here instead of throwing. */
+  redirectTo?: string;
+};
+
 /** Guard for server actions that require specific roles (e.g. owner, admin). */
-export async function requireActiveOrganizationRole(allowedRoles: OrgRole[]) {
-  const membership = await requireActiveOrganizationMembership();
+export async function requireActiveOrganizationRole(
+  allowedRoles: OrgRole[],
+  options?: RequireOrgRoleOptions,
+) {
+  try {
+    const membership = await requireActiveOrganizationMembership();
 
-  if (!hasAnyOrgRole(membership.roles, allowedRoles)) {
-    throw new OrganizationMembershipError(
-      "You do not have permission to perform this action",
-    );
+    if (!hasAnyOrgRole(membership.roles, allowedRoles)) {
+      throw new OrganizationMembershipError(
+        "You do not have permission to perform this action",
+      );
+    }
+
+    return membership;
+  } catch (error) {
+    if (
+      options?.redirectTo &&
+      error instanceof OrganizationMembershipError
+    ) {
+      redirect(options.redirectTo);
+    }
+
+    throw error;
   }
-
-  return membership;
 }

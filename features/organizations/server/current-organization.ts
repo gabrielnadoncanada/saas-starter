@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { cache } from "react";
 
 import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscription-snapshot";
 import type {
@@ -21,9 +22,7 @@ type OrganizationMemberFromApi = NonNullable<
   FullOrganization["members"]
 >[number];
 
-type CurrentOrganization = NonNullable<
-  Awaited<ReturnType<typeof getCurrentOrganization>>
->;
+type CurrentOrganization = CurrentOrganizationView;
 
 export type CurrentOrganizationContext = {
   user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
@@ -70,34 +69,36 @@ function mapCurrentOrganization(
 }
 
 /** Fetch the active organization with members and subscription snapshot. Use in pages/layouts that render org data. */
-export async function getCurrentOrganization(): Promise<CurrentOrganizationView | null> {
-  const session = await getAuthSession();
+export const getCurrentOrganization = cache(
+  async (): Promise<CurrentOrganizationView | null> => {
+    const session = await getAuthSession();
 
-  if (!session?.user) {
-    return null;
-  }
+    if (!session?.user) {
+      return null;
+    }
 
-  const reqHeaders = await headers();
-  const orgId = session.session.activeOrganizationId ?? null;
+    const reqHeaders = await headers();
+    const orgId = session.session.activeOrganizationId ?? null;
 
-  if (!orgId) {
-    return null;
-  }
+    if (!orgId) {
+      return null;
+    }
 
-  const [organization, subscription] = await Promise.all([
-    auth.api.getFullOrganization({
-      query: { organizationId: orgId },
-      headers: reqHeaders,
-    }),
-    getOrganizationSubscriptionSnapshot(orgId),
-  ]);
+    const [organization, subscription] = await Promise.all([
+      auth.api.getFullOrganization({
+        query: { organizationId: orgId },
+        headers: reqHeaders,
+      }),
+      getOrganizationSubscriptionSnapshot(orgId),
+    ]);
 
-  if (!organization) {
-    return null;
-  }
+    if (!organization) {
+      return null;
+    }
 
-  return mapCurrentOrganization(organization, subscription);
-}
+    return mapCurrentOrganization(organization, subscription);
+  },
+);
 
 /** Full page context: organization + current user + roles + isOwner. Use in settings/org pages that need the viewer's membership. */
 export async function getCurrentOrganizationContext(): Promise<CurrentOrganizationContext | null> {

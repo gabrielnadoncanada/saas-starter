@@ -1,11 +1,10 @@
-import type { UIMessage } from "ai";
-
 import {
   deleteAssistantConversation,
   getAssistantConversation,
   replaceAssistantConversation,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/assistant-conversations";
+import { parseAssistantMessagesBody } from "@/features/assistant/server/parse-assistant-messages-body";
 import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-access";
 import { UpgradeRequiredError } from "@/features/billing/billing-errors";
 
@@ -69,18 +68,16 @@ export async function PATCH(req: Request, context: RouteContext) {
   const planError = await assertAssistantAccess();
   if (planError) return planError;
 
-  const body = (await req.json()) as { messages?: UIMessage[] };
-  if (!Array.isArray(body.messages) || body.messages.length === 0) {
-    return Response.json(
-      { error: "Conversation messages are required." },
-      { status: 400 },
-    );
+  const body = await req.json();
+  const parsed = await parseAssistantMessagesBody(body);
+  if (!parsed.ok) {
+    return Response.json({ error: parsed.error }, { status: 400 });
   }
 
   const { conversationId } = await context.params;
   const conversation = await replaceAssistantConversation(
     conversationId,
-    body.messages,
+    parsed.messages,
   );
 
   if (!conversation) {

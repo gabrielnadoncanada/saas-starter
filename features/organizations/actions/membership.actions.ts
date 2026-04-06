@@ -26,10 +26,8 @@ import {
   inviteOrganizationMember,
   resendOrganizationInvitation,
 } from "@/features/organizations/server/organization-invitations";
-import {
-  type AuthenticatedUser,
-  validatedAuthenticatedAction,
-} from "@/shared/lib/auth/authenticated-action";
+import { type CurrentUser } from "@/shared/lib/auth/get-current-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
@@ -41,7 +39,7 @@ function validatedOrganizationOwnerAction<
   action: (
     data: z.infer<S>,
     formData: FormData,
-    context: { organizationId: string; user: AuthenticatedUser },
+    context: { organizationId: string; user: CurrentUser },
   ) => Promise<FormActionState<z.infer<S>> & TExtraState>,
 ) {
   type State = FormActionState<z.infer<S>> & TExtraState;

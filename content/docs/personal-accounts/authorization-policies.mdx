@@ -44,7 +44,7 @@ Use this pattern for destructive or sensitive actions that must not rely on UI h
 Not under `features/auth/server`, but central to access control:
 
 - `requireActiveOrganizationMembership()` / `requireActiveOrganizationRole()` in `features/organizations/server/organization-membership.ts` guard server actions (e.g. invites, billing owner actions).
-- `requireBillingOwner()` in `features/billing/require-billing-owner.ts` restricts billing settings to the org **owner** (redirects to members settings if the role check fails).
+- Billing checkout and portal actions call `requireActiveOrganizationRole(["owner"], { redirectTo: routes.settings.members })` so only the org **owner** can act (others are redirected to members settings).
 
 ## Billing capabilities (related)
 

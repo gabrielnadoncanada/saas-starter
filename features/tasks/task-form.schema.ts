@@ -31,8 +31,8 @@ const taskIdsSchema = z
 export const createTaskSchema = z.object({
   title: taskTitleSchema,
   description: taskDescriptionSchema,
-  label: taskLabelSchema,
-  priority: taskPrioritySchema.default("MEDIUM"),
+  label: taskLabelSchema.default(TaskLabel.FEATURE),
+  priority: taskPrioritySchema.default(TaskPriority.MEDIUM),
 });
 
 export const updateTaskSchema = z.object({
@@ -53,9 +53,20 @@ export const bulkUpdateTaskStatusSchema = z.object({
   status: taskStatusSchema,
 });
 
+export const deleteTaskSchema = z.object({
+  taskId: z.coerce.number().int().positive(),
+});
+
+export const updateTaskStatusSchema = z.object({
+  taskId: z.coerce.number().int().positive(),
+  status: taskStatusSchema,
+});
+
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;
 export type UpdateTaskValues = z.infer<typeof updateTaskSchema>;
 export type BulkDeleteTasksValues = z.infer<typeof bulkDeleteTasksSchema>;
 export type BulkUpdateTaskStatusValues = z.infer<
   typeof bulkUpdateTaskStatusSchema
 >;
+export type DeleteTaskValues = z.infer<typeof deleteTaskSchema>;
+export type UpdateTaskStatusValues = z.infer<typeof updateTaskStatusSchema>;

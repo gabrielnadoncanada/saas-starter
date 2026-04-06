@@ -7,17 +7,6 @@ import {
 } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
-type SubscriptionSnapshot = Pick<
-  Subscription,
-  "cancelAt" | "periodEnd" | "seats" | "stripeCustomerId" | "stripeSubscriptionId"
-> & {
-  cancelAtPeriodEnd: boolean;
-  plan: string | null;
-  billingInterval: BillingInterval | null;
-  subscriptionStatus: string | null;
-  pricingModel: PricingModel | null;
-};
-
 function toPricingModel(plan: string | null): PricingModel | null {
   if (!plan || !isPlanId(plan)) {
     return null;
@@ -25,6 +14,19 @@ function toPricingModel(plan: string | null): PricingModel | null {
 
   return getPlan(plan).pricingModel;
 }
+
+export type SubscriptionSnapshot = {
+  cancelAt: Date | null;
+  cancelAtPeriodEnd: boolean;
+  periodEnd: Date | null;
+  seats: number | null;
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  plan: string | null;
+  billingInterval: BillingInterval | null;
+  subscriptionStatus: string | null;
+  pricingModel: PricingModel | null;
+};
 
 function subscriptionRowToSnapshot(
   subscription: Subscription,
@@ -36,14 +38,14 @@ function subscriptionRowToSnapshot(
     seats: subscription.seats ?? null,
     stripeCustomerId: subscription.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
-    plan: subscription.plan ?? null,
+    plan: subscription.plan,
     billingInterval:
       subscription.billingInterval === "month" ||
       subscription.billingInterval === "year"
         ? subscription.billingInterval
         : null,
     subscriptionStatus: subscription.status ?? null,
-    pricingModel: toPricingModel(subscription.plan ?? null),
+    pricingModel: toPricingModel(subscription.plan),
   };
 }
 

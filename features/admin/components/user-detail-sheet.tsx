@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 
 import type {
-  AdminUser,
-  UserSession,
-} from "@/features/admin/types/admin-users.types";
+  AdminApiSession,
+  AdminApiUser,
+} from "@/shared/lib/auth/better-auth-inferred-types";
 import {
   Avatar,
   AvatarFallback,
@@ -38,8 +38,8 @@ type UserDetailSheetProps = {
   onOpenChange: (open: boolean) => void;
   onRevokeAllSessions: (userId: string) => void;
   open: boolean;
-  selectedUser: AdminUser | null;
-  sessions: UserSession[];
+  selectedUser: AdminApiUser | null;
+  sessions: AdminApiSession[];
   copyToClipboard: (value: string) => void;
 };
 

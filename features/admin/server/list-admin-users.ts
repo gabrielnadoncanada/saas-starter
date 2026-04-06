@@ -1,10 +1,9 @@
 import { headers } from "next/headers";
 
 import { auth } from "@/shared/lib/auth/auth-config";
+import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
-import type { ListAdminUsersQuery } from "../types/admin-users.types";
-
-export async function listAdminUsers(query: ListAdminUsersQuery) {
+export async function listAdminUsers(query: Partial<ListUsersQueryInput>) {
   return auth.api.listUsers({
     query: {
       limit: query.limit ?? 20,

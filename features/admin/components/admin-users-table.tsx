@@ -14,9 +14,9 @@ import {
   unbanUserAction,
 } from "@/features/admin/actions/admin-users.actions";
 import type {
-  AdminUser,
-  UserSession,
-} from "@/features/admin/types/admin-users.types";
+  AdminApiSession,
+  AdminApiUser,
+} from "@/shared/lib/auth/better-auth-inferred-types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Input } from "@/shared/components/ui/input";
@@ -33,7 +33,7 @@ import { UsersTableRows } from "./users-table-rows";
 type AdminUsersTableProps = {
   currentUserId: string;
   initialTotal: number;
-  initialUsers: AdminUser[];
+  initialUsers: AdminApiUser[];
   pageSize: number;
 };
 
@@ -61,8 +61,8 @@ export function AdminUsersTable({
   const [total, setTotal] = useState(initialTotal);
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  const [sessions, setSessions] = useState<UserSession[]>([]);
+  const [selectedUser, setSelectedUser] = useState<AdminApiUser | null>(null);
+  const [sessions, setSessions] = useState<AdminApiSession[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(emptyConfirmState);
@@ -101,7 +101,7 @@ export function AdminUsersTable({
     setConfirmDialog({ open: true, title, description, action });
   }
 
-  async function openUserDetail(user: AdminUser) {
+  async function openUserDetail(user: AdminApiUser) {
     setSelectedUser(user);
     setSessions([]);
     setIsSheetOpen(true);

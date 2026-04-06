@@ -2,7 +2,6 @@
 
 import type { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
 import {
   LimitReachedError,
@@ -23,22 +22,14 @@ import {
   type BulkUpdateTaskStatusValues,
   createTaskSchema,
   type CreateTaskValues,
+  deleteTaskSchema,
   updateTaskSchema,
+  updateTaskStatusSchema,
   type UpdateTaskValues,
 } from "@/features/tasks/task-form.schema";
 import { routes } from "@/shared/constants/routes";
-import { TaskStatus } from "@/shared/lib/db/enums";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";
-
-const deleteTaskSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-});
-
-const updateTaskStatusSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-  status: z.nativeEnum(TaskStatus),
-});
 
 export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
   task?: Task;

@@ -129,4 +129,4 @@ export async function banUserAction(
 - `UsersTableRows` / `UserRowActions` — per-row menu for role, ban/unban, delete.
 - `UserDetailSheet` — user info and session list; uses `getAdminUserDetailAction` and session revoke actions.
 
-Types for list queries and session shape live in `features/admin/types/admin-users.types.ts`.
+List query input uses `Partial<ListUsersQueryInput>` from `shared/lib/auth/better-auth-inferred-types`; admin user and session rows use `AdminApiUser` and `AdminApiSession` from the same module.

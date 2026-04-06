@@ -2,7 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 
-import { requireAdminAction } from "@/features/auth/server/require-admin";
+import {
+  requireAdminAction,
+  runAdminAction,
+} from "@/features/auth/server/require-admin";
 import { db } from "@/shared/lib/db/prisma";
 
 import { getAdminOrganizationDetail } from "../server/get-admin-organization-detail";
@@ -12,13 +15,11 @@ import type { ListAdminOrganizationsQuery } from "../types/admin-organizations.t
 export async function listOrganizationsAction(
   query: ListAdminOrganizationsQuery,
 ) {
-  await requireAdminAction();
-  return listAdminOrganizations(query);
+  return runAdminAction(() => listAdminOrganizations(query));
 }
 
 export async function getOrganizationDetailAction(organizationId: string) {
-  await requireAdminAction();
-  return getAdminOrganizationDetail(organizationId);
+  return runAdminAction(() => getAdminOrganizationDetail(organizationId));
 }
 
 export async function deleteOrganizationAction(organizationId: string) {

@@ -9,12 +9,12 @@ import {
   isBillingInterval,
   isPlanId,
 } from "@/features/billing/catalog";
-import { requireBillingOwner } from "@/features/billing/require-billing-owner";
 import {
   createOrganizationOneTimeCheckoutSession,
   createOrganizationSubscriptionCheckoutSession,
 } from "@/features/billing/server/stripe/stripe-checkout";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -47,7 +47,9 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
     );
   }
 
-  await requireBillingOwner();
+  await requireActiveOrganizationRole(["owner"], {
+    redirectTo: routes.settings.members,
+  });
 
   const organization = await getCurrentOrganization();
   if (!organization) {
@@ -86,7 +88,9 @@ export async function startOneTimeCheckoutAction(formData: FormData) {
     redirect(routes.auth.login);
   }
 
-  await requireBillingOwner();
+  await requireActiveOrganizationRole(["owner"], {
+    redirectTo: routes.settings.members,
+  });
 
   const organization = await getCurrentOrganization();
   if (!organization) {

@@ -9,13 +9,6 @@ import {
   UpgradeRequiredError,
 } from "./billing-errors";
 
-function getEntitlementLimit(
-  entitlements: OrganizationEntitlements,
-  limitKey: LimitKey,
-) {
-  return entitlements.limits[limitKey];
-}
-
 export function hasCapability(
   entitlements: OrganizationEntitlements,
   capability: Capability,
@@ -27,7 +20,7 @@ export function getPlanLimit(
   entitlements: OrganizationEntitlements,
   limitKey: LimitKey,
 ): number {
-  return getEntitlementLimit(entitlements, limitKey);
+  return entitlements.limits[limitKey];
 }
 
 export function assertCapability(

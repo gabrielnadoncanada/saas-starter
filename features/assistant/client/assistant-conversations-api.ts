@@ -1,30 +1,53 @@
 import type { UIMessage } from "ai";
+import { z } from "zod";
 
+import {
+  assistantConversationListSchema,
+  assistantConversationSchema,
+} from "@/features/assistant/schemas/conversation-api.schema";
 import type {
   AssistantConversation,
   AssistantConversationListItem,
 } from "@/features/assistant/types";
 
-async function parseConversationResponse<T>(response: Response) {
-  if (response.ok) {
-    return (await response.json()) as T;
+async function parseConversationResponse<T>(
+  response: Response,
+  schema: z.ZodType<T>,
+): Promise<T> {
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Unable to load conversation");
   }
 
-  const errorText = await response.text();
-  throw new Error(errorText || "Unable to load conversation");
+  const raw: unknown = await response.json();
+  const parsed = schema.safeParse(raw);
+  if (!parsed.success) {
+    throw new Error("Invalid response");
+  }
+
+  return parsed.data;
 }
 
 export async function listAssistantConversationsRequest() {
   const response = await fetch("/api/assistant/conversations");
   if (!response.ok) return [];
-  return (await response.json()) as AssistantConversationListItem[];
+  const raw: unknown = await response.json();
+  const parsed = assistantConversationListSchema.safeParse(raw);
+  if (!parsed.success) {
+    return [];
+  }
+  return parsed.data;
 }
 
 export async function fetchAssistantConversation(conversationId: string) {
   const response = await fetch(
     `/api/assistant/conversations/${conversationId}`,
   );
-  return parseConversationResponse<AssistantConversation>(response);
+  const data = await parseConversationResponse(
+    response,
+    assistantConversationSchema,
+  );
+  return data as AssistantConversation;
 }
 
 export async function createAssistantConversationRequest(
@@ -36,7 +59,11 @@ export async function createAssistantConversationRequest(
     body: JSON.stringify({ messages }),
   });
 
-  return parseConversationResponse<AssistantConversation>(response);
+  const data = await parseConversationResponse(
+    response,
+    assistantConversationSchema,
+  );
+  return data as AssistantConversation;
 }
 
 export async function replaceAssistantConversationRequest(
@@ -52,7 +79,11 @@ export async function replaceAssistantConversationRequest(
     },
   );
 
-  return parseConversationResponse<AssistantConversation>(response);
+  const data = await parseConversationResponse(
+    response,
+    assistantConversationSchema,
+  );
+  return data as AssistantConversation;
 }
 
 export async function deleteAssistantConversationRequest(

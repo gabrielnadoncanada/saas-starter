@@ -3,26 +3,29 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-import { requireAdminAction } from "@/features/auth/server/require-admin";
+import {
+  requireAdminAction,
+  runAdminAction,
+} from "@/features/auth/server/require-admin";
 import { auth } from "@/shared/lib/auth/auth-config";
+import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
 import { getAdminUserDetail } from "../server/get-admin-user-detail";
 import { listAdminUsers } from "../server/list-admin-users";
-import type { ListAdminUsersQuery } from "../types/admin-users.types";
 
 function revalidateAdminUsersPage() {
   revalidatePath("/admin");
   revalidatePath("/admin/users");
 }
 
-export async function listAdminUsersAction(query: ListAdminUsersQuery) {
-  await requireAdminAction();
-  return listAdminUsers(query);
+export async function listAdminUsersAction(
+  query: Partial<ListUsersQueryInput>,
+) {
+  return runAdminAction(() => listAdminUsers(query));
 }
 
 export async function getAdminUserDetailAction(userId: string) {
-  await requireAdminAction();
-  return getAdminUserDetail(userId);
+  return runAdminAction(() => getAdminUserDetail(userId));
 }
 
 export async function banUserAction(

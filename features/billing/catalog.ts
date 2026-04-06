@@ -9,15 +9,13 @@ import {
   type OneTimeProductDefinition,
   type OrganizationEntitlements,
   type PlanId,
-  type PricingModel,
 } from "@/shared/config/billing.config";
 
-export type BillingPlanOption = {
+export type BillingPlanOption = Pick<
+  BillingPlanDefinition,
+  "name" | "description" | "features" | "pricingModel"
+> & {
   id: PlanId;
-  name: string;
-  description: string;
-  features: string[];
-  pricingModel: PricingModel;
   monthly: BillingPrice | null;
   yearly: BillingPrice | null;
 };

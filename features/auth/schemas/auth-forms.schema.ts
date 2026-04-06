@@ -30,12 +30,14 @@ export const signInPasswordDefaultValues: SignInPasswordValues = {
   password: "",
 };
 
-const confirmPasswordSchema = z.string().min(1, "Confirm your password.");
+export function confirmPasswordField(emptyMessage: string) {
+  return z.string().min(1, emptyMessage);
+}
 
 export const signUpPasswordSchema = z
   .object({
     password: authPasswordSchema,
-    confirmPassword: confirmPasswordSchema,
+    confirmPassword: confirmPasswordField("Confirm your password."),
   })
   .superRefine((values, ctx) => {
     if (values.password !== values.confirmPassword) {

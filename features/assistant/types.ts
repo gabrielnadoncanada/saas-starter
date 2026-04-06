@@ -1,5 +1,7 @@
 import type { UIMessage } from "ai";
 
+import type { TaskStatus } from "@/shared/lib/db/enums";
+
 /** DB filter for ai conversations; single surface in this app. */
 export const assistantConversationSurface = "assistant";
 
@@ -33,7 +35,7 @@ export type CreateTaskToolResult =
       result: {
         taskCode: string;
         title: string;
-        status: string;
+        status: TaskStatus;
       };
     }
   | AssistantToolFailure;

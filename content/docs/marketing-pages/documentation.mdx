@@ -59,7 +59,9 @@ export const docsSource = loader({
 
 `app/docs/layout.tsx` wraps docs pages with `RootProvider` (theme toggle disabled so app theme applies) and `DocsLayout` using the page tree from `docsSource`:
 
-```7:18:app/docs/layout.tsx
+```tsx
+import { docsLayoutOptions } from "@/shared/lib/docs/layout-options";
+
 export default function DocsRootLayout({ children }: { children: ReactNode }) {
   return (
     <RootProvider
@@ -67,7 +69,7 @@ export default function DocsRootLayout({ children }: { children: ReactNode }) {
         enabled: false,
       }}
     >
-      <DocsLayout tree={docsSource.pageTree} {...getDocsLayoutOptions()}>
+      <DocsLayout tree={docsSource.pageTree} {...docsLayoutOptions}>
         {children}
       </DocsLayout>
     </RootProvider>
@@ -75,7 +77,7 @@ export default function DocsRootLayout({ children }: { children: ReactNode }) {
 }
 ```
 
-`shared/lib/docs/layout-options.ts` sets the docs chrome title (e.g. nav label) to **“SaaS Starter”**.
+`shared/lib/docs/layout-options.ts` exports `docsLayoutOptions` with the docs chrome title (e.g. nav label) **“SaaS Starter”**.
 
 `app/docs/[[...slug]]/page.tsx` resolves the slug, loads the MDX body, and renders `DocsTitle`, `DocsDescription`, and `DocsBody` with a table of contents.
 

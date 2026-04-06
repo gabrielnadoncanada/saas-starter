@@ -52,7 +52,7 @@ function getConversationPreview(messages: UIMessage[]) {
 export function serializeMessages(
   messages: UIMessage[],
 ): Prisma.InputJsonValue {
-  return JSON.parse(JSON.stringify(messages));
+  return messages as unknown as Prisma.InputJsonValue;
 }
 
 async function parseMessages(messagesJson: Prisma.JsonValue) {

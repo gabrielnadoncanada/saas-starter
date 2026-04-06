@@ -1,14 +1,13 @@
 import { z } from "zod";
 
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import {
+  type CurrentUser,
+  getCurrentUser,
+} from "@/shared/lib/auth/get-current-user";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
 const NOT_AUTHENTICATED = "You are not signed in.";
 const FORM_VALIDATION_FAILED = "Please fix the highlighted fields.";
-
-export type AuthenticatedUser = NonNullable<
-  Awaited<ReturnType<typeof getCurrentUser>>
->;
 
 type ValidatedAuthenticatedActionHandler<
   S extends z.ZodTypeAny,
@@ -16,7 +15,7 @@ type ValidatedAuthenticatedActionHandler<
 > = (
   data: z.infer<S>,
   formData: FormData,
-  user: AuthenticatedUser,
+  user: CurrentUser,
 ) => Promise<FormActionState<z.infer<S>> & TExtraState>;
 
 export function validatedAuthenticatedAction<

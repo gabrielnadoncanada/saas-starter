@@ -1,12 +1,14 @@
 import { z } from "zod";
 
-import { authPasswordSchema } from "@/features/auth/schemas/auth-forms.schema";
+import {
+  authPasswordSchema,
+  confirmPasswordField,
+} from "@/features/auth/schemas/auth-forms.schema";
 
-const confirmPasswordSchema = z.string().min(1, "Confirm your new password.");
 const passwordChangeBaseSchema = z.object({
   currentPassword: z.string().default(""),
   newPassword: authPasswordSchema,
-  confirmPassword: confirmPasswordSchema,
+  confirmPassword: confirmPasswordField("Confirm your new password."),
 });
 
 export type PasswordFormValues = z.infer<typeof passwordChangeBaseSchema>;

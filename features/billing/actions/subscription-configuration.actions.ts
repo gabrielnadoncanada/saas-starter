@@ -7,9 +7,9 @@ import {
   isBillingInterval,
   isPlanId,
 } from "@/features/billing/catalog";
-import { requireBillingOwner } from "@/features/billing/require-billing-owner";
 import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscription-items";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -30,7 +30,9 @@ export async function updateSubscriptionConfigurationAction(
     redirect(routes.auth.login);
   }
 
-  await requireBillingOwner();
+  await requireActiveOrganizationRole(["owner"], {
+    redirectTo: routes.settings.members,
+  });
 
   const organization = await getCurrentOrganization();
   if (!organization) {

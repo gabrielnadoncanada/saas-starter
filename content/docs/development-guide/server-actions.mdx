@@ -9,27 +9,31 @@ Mark the file with `"use server"` at the top. Import server-only modules (Prisma
 
 Admin actions use imperative guards and Better Auth APIs:
 
-```1:21:features/admin/actions/admin-users.actions.ts
+```typescript
 "use server";
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-import { requireAdminAction } from "@/features/auth/server/require-admin";
+import {
+  requireAdminAction,
+  runAdminAction,
+} from "@/features/auth/server/require-admin";
 import { auth } from "@/shared/lib/auth/auth-config";
+import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
 import { getAdminUserDetail } from "../server/get-admin-user-detail";
 import { listAdminUsers } from "../server/list-admin-users";
-import type { ListAdminUsersQuery } from "../types/admin-users.types";
 
 function revalidateAdminUsersPage() {
   revalidatePath("/admin");
   revalidatePath("/admin/users");
 }
 
-export async function listAdminUsersAction(query: ListAdminUsersQuery) {
-  await requireAdminAction();
-  return listAdminUsers(query);
+export async function listAdminUsersAction(
+  query: Partial<ListUsersQueryInput>,
+) {
+  return runAdminAction(() => listAdminUsers(query));
 }
 ```
 

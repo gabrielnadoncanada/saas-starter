@@ -35,3 +35,8 @@ export async function requireAdminAction(): Promise<string> {
 
   return session.user.id;
 }
+
+export async function runAdminAction<T>(fn: () => Promise<T>): Promise<T> {
+  await requireAdminAction();
+  return fn();
+}

@@ -8,7 +8,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-import type { AdminUser } from "@/features/admin/types/admin-users.types";
+import type { AdminApiUser } from "@/shared/lib/auth/better-auth-inferred-types";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -20,7 +20,7 @@ import {
 import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 
 type UserRowActionsProps = {
-  user: AdminUser;
+  user: AdminApiUser;
   onSetRole: (userId: string, role: "user" | "admin") => void;
   onBan: (userId: string) => void;
   onUnban: (userId: string) => void;

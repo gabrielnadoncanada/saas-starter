@@ -3,7 +3,7 @@
 import { format } from "date-fns";
 import { Copy } from "lucide-react";
 
-import type { AdminUser } from "@/features/admin/types/admin-users.types";
+import type { AdminApiUser } from "@/shared/lib/auth/better-auth-inferred-types";
 import {
   Avatar,
   AvatarFallback,
@@ -20,11 +20,11 @@ type UsersTableRowsProps = {
   isPending: boolean;
   onBan: (userId: string) => void;
   onCopy: (value: string) => void;
-  onOpen: (user: AdminUser) => void;
+  onOpen: (user: AdminApiUser) => void;
   onRemove: (userId: string) => void;
   onSetRole: (userId: string, role: "user" | "admin") => void;
   onUnban: (userId: string) => void;
-  users: AdminUser[];
+  users: AdminApiUser[];
 };
 
 export function UsersTableRows({

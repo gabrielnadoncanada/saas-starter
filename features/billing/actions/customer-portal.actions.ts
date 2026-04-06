@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 
-import { requireBillingOwner } from "@/features/billing/require-billing-owner";
 import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-portal";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -15,7 +15,9 @@ export async function customerPortalAction() {
     redirect(routes.auth.login);
   }
 
-  await requireBillingOwner();
+  await requireActiveOrganizationRole(["owner"], {
+    redirectTo: routes.settings.members,
+  });
 
   const organization = await getCurrentOrganization();
   if (!organization?.stripeCustomerId || !organization?.subscriptionStatus) {
