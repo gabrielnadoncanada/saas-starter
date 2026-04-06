@@ -79,7 +79,7 @@ Copy `.env.example` and configure:
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                                              |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                                              |
 | `BETTER_AUTH_API_KEY`                       | Optional API key if you enable Better Auth’s API routes                              |
-| `NEXT_PUBLIC_ACCOUNT_MODE`                  | `personal-only` \| `organizations-only` \| `hybrid` (defaults to organizations-only) |
+| `NEXT_PUBLIC_ACCOUNT_MODE`                  | `personal-only` \| `organizations-only` (defaults to organizations-only) |
 | `ALLOW_EMAIL_ACCOUNT_LINKING`               | Set `true` to link OAuth accounts by verified email                                  |
 | `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email                                            |
 
