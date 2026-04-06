@@ -12,7 +12,7 @@ import {
   revokeAllUserSessionsAction,
   setUserRoleAction,
   unbanUserAction,
-} from "@/features/admin/actions/admin-users.actions";
+} from "@/features/admin/actions/users.actions";
 import type {
   AdminApiSession,
   AdminApiUser,

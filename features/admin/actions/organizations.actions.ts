@@ -8,9 +8,9 @@ import {
 } from "@/features/auth/server/require-admin";
 import { db } from "@/shared/lib/db/prisma";
 
-import { getAdminOrganizationDetail } from "../server/get-admin-organization-detail";
-import { listAdminOrganizations } from "../server/list-admin-organizations";
-import type { ListAdminOrganizationsQuery } from "../types/admin-organizations.types";
+import { getAdminOrganizationDetail } from "../server/get-organization-detail";
+import { listAdminOrganizations } from "../server/list-organizations";
+import type { ListAdminOrganizationsQuery } from "../types/organizations.types";
 
 export async function listOrganizationsAction(
   query: ListAdminOrganizationsQuery,

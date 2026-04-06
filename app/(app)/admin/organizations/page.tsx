@@ -1,5 +1,5 @@
-import { AdminOrganizationsTable } from "@/features/admin/components/admin-organizations-table";
-import { listAdminOrganizations } from "@/features/admin/server/list-admin-organizations";
+import { AdminOrganizationsTable } from "@/features/admin/components/organizations-table";
+import { listAdminOrganizations } from "@/features/admin/server/list-organizations";
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import {
   Page,

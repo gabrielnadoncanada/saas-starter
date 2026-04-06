@@ -1,7 +1,7 @@
 import { db } from "@/shared/lib/db/prisma";
 
-import type { OrgSubscription } from "../types/admin-organizations.types";
-import { adminOrganizationListInclude } from "../types/admin-organizations.types";
+import type { OrgSubscription } from "../types/organizations.types";
+import { adminOrganizationListInclude } from "../types/organizations.types";
 
 export async function getAdminOrganizationDetail(organizationId: string) {
   const organization = await db.organization.findUnique({

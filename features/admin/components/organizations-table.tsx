@@ -8,17 +8,17 @@ import {
   deleteOrganizationAction,
   getOrganizationDetailAction,
   listOrganizationsAction,
-} from "@/features/admin/actions/admin-organizations.actions";
+} from "@/features/admin/actions/organizations.actions";
 import type {
   AdminOrganization,
   OrgSubscription,
-} from "@/features/admin/types/admin-organizations.types";
+} from "@/features/admin/types/organizations.types";
 import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Input } from "@/shared/components/ui/input";
 
-import { AdminOrganizationDetailSheet } from "./admin-organization-detail-sheet";
-import { AdminOrganizationsTableContent } from "./admin-organizations-table-content";
+import { AdminOrganizationDetailSheet } from "./organization-detail-sheet";
+import { AdminOrganizationsTableContent } from "./organizations-table-content";
 
 type AdminOrganizationsTableProps = {
   currentUserId: string;

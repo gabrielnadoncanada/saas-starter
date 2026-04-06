@@ -46,7 +46,7 @@ const {
   removeUserAction,
   revokeAllUserSessionsAction,
   setUserRoleAction,
-} = await import("@/features/admin/actions/admin-users.actions");
+} = await import("@/features/admin/actions/users.actions");
 
 describe("admin-users.actions", () => {
   beforeEach(() => {

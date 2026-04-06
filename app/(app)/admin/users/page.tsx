@@ -1,5 +1,5 @@
-import { AdminUsersTable } from "@/features/admin/components/admin-users-table";
-import { listAdminUsers } from "@/features/admin/server/list-admin-users";
+import { AdminUsersTable } from "@/features/admin/components/users-table";
+import { listAdminUsers } from "@/features/admin/server/list-users";
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import {
   Page,

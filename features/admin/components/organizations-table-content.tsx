@@ -3,7 +3,7 @@
 import { format } from "date-fns";
 import { Building2, MoreVertical, Trash2, Users } from "lucide-react";
 
-import type { AdminOrganization } from "@/features/admin/types/admin-organizations.types";
+import type { AdminOrganization } from "@/features/admin/types/organizations.types";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,

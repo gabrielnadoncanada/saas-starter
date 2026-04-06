@@ -1,7 +1,7 @@
 import { db } from "@/shared/lib/db/prisma";
 
-import type { ListAdminOrganizationsQuery } from "../types/admin-organizations.types";
-import { adminOrganizationListInclude } from "../types/admin-organizations.types";
+import type { ListAdminOrganizationsQuery } from "../types/organizations.types";
+import { adminOrganizationListInclude } from "../types/organizations.types";
 
 export async function listAdminOrganizations(
   query: ListAdminOrganizationsQuery,

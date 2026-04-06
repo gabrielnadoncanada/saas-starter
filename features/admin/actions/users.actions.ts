@@ -10,8 +10,8 @@ import {
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
-import { getAdminUserDetail } from "../server/get-admin-user-detail";
-import { listAdminUsers } from "../server/list-admin-users";
+import { getAdminUserDetail } from "../server/get-user-detail";
+import { listAdminUsers } from "../server/list-users";
 
 function revalidateAdminUsersPage() {
   revalidatePath("/admin");
