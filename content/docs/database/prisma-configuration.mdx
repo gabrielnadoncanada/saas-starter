@@ -1,0 +1,59 @@
+---
+title: Prisma configuration
+description: How the Prisma schema is structured, where the database URL comes from, and how the multi-file layout works.
+---
+
+## Root schema file
+
+The root `prisma/schema.prisma` declares the **generator** and **datasource** only. Models live in separate files under `prisma/models/`.
+
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+```
+
+> **Note:** The datasource does not embed a connection string here. Prisma 7 reads it from `prisma.config.ts` (see below).
+
+## Prisma config (`prisma.config.ts`)
+
+Project-level settings are defined with `defineConfig` from `prisma/config`:
+
+```ts
+import { defineConfig, env } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma",
+  migrations: {
+    path: "prisma/migrations",
+    seed: "tsx shared/lib/db/seed.ts",
+  },
+  datasource: {
+    url: env("POSTGRES_URL"),
+  },
+});
+```
+
+- **`schema: "prisma"`** — Treats the `prisma` directory as the schema root so Prisma loads `schema.prisma` plus all `prisma/models/*.prisma` files as one logical schema.
+- **`migrations.path`** — SQL migrations live in `prisma/migrations/`.
+- **`migrations.seed`** — `pnpm db:seed` runs `tsx shared/lib/db/seed.ts`.
+- **`datasource.url`** — Loaded from the **`POSTGRES_URL`** environment variable (often set via `.env`).
+
+## Multi-file schema layout
+
+| Location | Role |
+| -------- | ---- |
+| `prisma/schema.prisma` | Generator + datasource |
+| `prisma/models/*.prisma` | Domain models split by area (auth, billing, teams, etc.) |
+
+Splitting models keeps each file focused and easier to navigate. Prisma merges them when generating the client and when running migrations.
+
+## Generator
+
+The client uses the default **`prisma-client-js`** generator. After schema changes, run `pnpm db:generate` (or rely on `postinstall`, which runs `prisma generate`).
+
+> **Warning:** If `POSTGRES_URL` is missing or wrong, CLI commands that touch the database will fail until the variable is set.

@@ -1,0 +1,54 @@
+---
+title: Deployment
+description: How to build and run this Next.js app on common platforms; the repo has no Dockerfile.
+---
+
+The starter is a standard **Next.js 16** App Router project using **pnpm**. Production entrypoints come from `package.json`:
+
+```4:16:package.json
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "email:dev": "email dev -d shared/lib/email/templates -p 3001",
+    "build": "next build",
+    ...
+    "start": "next start",
+```
+
+- **`pnpm build`** — Production bundle (`next build`).
+- **`pnpm start`** — Serves the built app (`next start`). Set **`PORT`** if the platform assigns a non-default port.
+
+Configuration lives in **`next.config.mjs`** (MDX via fumadocs, image remote patterns). There is **no** checked-in Dockerfile in this repository.
+
+## Vercel
+
+1. Connect the Git repository and select the Next.js framework preset.
+2. Set **Install command** to `pnpm install` (or rely on automatic detection).
+3. Set **Build command** to `pnpm build` and **Output** as default (Next.js on Vercel handles this).
+4. Add all environment variables from `.env.example` plus optional **`STORAGE_S3_*`** for production storage.
+5. Use Vercel’s managed Postgres or attach an external `POSTGRES_URL`.
+
+> **Note:** Ephemeral filesystem: local `.storage` will not persist across invocations. Use S3-compatible storage for uploads in production.
+
+## Railway (or similar PaaS)
+
+1. Create a **Web** service from the repo; set **start** to `pnpm start` after `pnpm build`.
+2. Provision **PostgreSQL** and set `POSTGRES_URL`.
+3. Inject secrets via the platform’s env UI (same keys as `.env.example`).
+4. Ensure the allocated **memory/CPU** fit Prisma + Next; run migrations as a **release phase** or one-off command (`pnpm exec prisma migrate deploy`).
+
+## Docker (bring your own)
+
+The repo does not include a Dockerfile. A typical approach:
+
+1. Use a **Node 22** (or the version you standardize on) image.
+2. Copy the project, run `pnpm install --frozen-lockfile`, `pnpm exec prisma generate`, `pnpm build`.
+3. Run `pnpm start` (or `node node_modules/next/dist/bin/next start`) with env vars injected at runtime.
+4. For migrations, run `prisma migrate deploy` before or as part of container startup.
+
+Mount **persistent volume** only if you insist on filesystem storage; otherwise prefer **S3** env vars so blobs survive container restarts.
+
+## After deploy
+
+- Point **`BASE_URL`** at the live URL.
+- Configure Stripe webhook to **`https://<your-domain>/api/stripe/webhook`** with the matching **`STRIPE_WEBHOOK_SECRET`**.
+- Smoke-test sign-in, billing, and file download routes if you use storage.

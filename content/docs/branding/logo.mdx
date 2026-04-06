@@ -1,0 +1,53 @@
+---
+title: Logo and brand mark
+description: Where the marketing brand appears and how to swap it for your own logo or name.
+---
+
+This starter does **not** ship a dedicated logo image asset for the marketing site. The visible “logo” is inline JSX: a small colored square with a letter plus the product name.
+
+## Marketing header and footer
+
+Both `MarketingHeader` and `MarketingFooter` use the same pattern: a `Link` wrapping a flex row with a `rounded-md` box (orange background, single letter) and a text label.
+
+```32:40:features/marketing/components/marketing-header.tsx
+        {/* Logo / brand */}
+        <Link href={routes.marketing.home} className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-orange-500 text-sm font-bold text-white">
+            S
+          </div>
+          <span className="text-base font-semibold text-foreground">
+            SaaS Starter
+          </span>
+        </Link>
+```
+
+The footer repeats the same block inside its brand column.
+
+### Replacing with an image
+
+Use `next/image` (or an `<img>`) inside the `Link` instead of the `div` + letter, and keep dimensions consistent (`h-8 w-8` or your chosen size). Update the label `span` to your product name. Search for `bg-orange-500` in `features/marketing/` if you also want to align accent marketing colors with your brand.
+
+### Replacing with text only
+
+Remove the square `div` and keep a single heading-style `span` or logo wordmark.
+
+## Auth layout (sign-in / sign-up)
+
+The authenticated-app marketing name does not appear here. `app/(auth)/layout.tsx` shows a **decorative** left panel with a Lucide `Command` icon and the title **“StreamDown”** (placeholder-style copy). That is separate from the marketing header/footer.
+
+```17:22:app/(auth)/layout.tsx
+      <div className="relative order-2 hidden h-full rounded-3xl bg-primary lg:flex">
+        <div className="absolute top-10 space-y-1 px-10 text-primary-foreground">
+          <Command className="size-10" />
+          <h1 className="font-medium text-2xl">StreamDown</h1>
+          <p className="text-sm">Design. Build. Launch. Repeat.</p>
+        </div>
+```
+
+Edit this block to match your product name and tagline for the auth chrome.
+
+## Dashboard and admin sidebars
+
+The dashboard sidebar (`features/dashboard/components/dashboard-sidebar.tsx`) does **not** include a top logo image. The header slot uses `DashboardSidebarUser` (account switcher / user menu). The admin sidebar (`features/admin/components/admin-sidebar.tsx`) shows a **“Back to dashboard”** link with an arrow icon, not a product logo.
+
+> **Note:** After changing visible names, also update `app/layout.tsx` metadata (`title`, `openGraph.siteName`) so browser tabs and social previews match your brand.

@@ -1,0 +1,66 @@
+---
+title: Entitlements and feature gating
+description: How organization entitlements are resolved from subscriptions and how capabilities gate features.
+---
+
+## `OrganizationEntitlements` shape
+
+Resolved entitlements include plan id/name, pricing model, billing interval, capabilities, limits, seat count, Stripe ids, subscription status, and purchased one-time product ids. See `OrganizationEntitlements` in `billing.config.ts`.
+
+## Resolution (`resolveOrganizationEntitlements`)
+
+`features/billing/server/organization-entitlements.ts`:
+
+1. Loads the latest **subscription** for the organization (`referenceId`).
+2. Loads **completed** one-time **purchases** for limit bumps.
+3. If there is no subscription, or status fails `hasPlanAccess`, or plan id is unknown → **free defaults** via `getDefaultEntitlements`, then **`applyOneTimePurchaseLimits`** for add-ons.
+4. If subscribed → copies **capabilities** and **limits** from `getPlan(subscription.plan)`, merges **seats** from subscription or subscription items, attaches Stripe fields.
+
+```96:120:features/billing/server/organization-entitlements.ts
+  const plan = getPlan(subscription.plan);
+  const seats =
+    subscription.seats ??
+    subscriptionItems.find((item) => item.itemType === "plan")?.quantity ??
+    null;
+
+  return withPurchasedOneTimeLimits(
+    {
+      ...base,
+      billingInterval:
+        subscription.billingInterval === "month" ||
+        subscription.billingInterval === "year"
+          ? subscription.billingInterval
+          : null,
+      capabilities: [...plan.capabilities],
+      limits: { ...plan.limits },
+      planId: plan.id as PlanId,
+      planName: plan.name,
+      pricingModel: plan.pricingModel,
+      seats,
+      stripeCustomerId: subscription.stripeCustomerId ?? null,
+      stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
+      subscriptionStatus: subscription.status ?? null,
+    },
+    oneTimeProductIds,
+  );
+```
+
+## Runtime guards (`plan-guards.ts`)
+
+- **`hasCapability`** / **`assertCapability`** — Throws `UpgradeRequiredError` if the capability string is missing.
+- **`getPlanLimit`**, **`checkLimit`**, **`assertLimit`** — Enforce numeric **limits** (tasks, members, storage).
+
+Example: creating a task calls `assertCapability(entitlements, "task.create")` before consuming usage.
+
+```33:40:features/billing/plan-guards.ts
+export function assertCapability(
+  entitlements: OrganizationEntitlements,
+  capability: Capability,
+): void {
+  if (!hasCapability(entitlements, capability)) {
+    throw new UpgradeRequiredError(capability, entitlements.planName);
+  }
+}
+```
+
+> **Note:** The dashboard and billing UI also use `hasCapability` for conditional sections (for example hiding the AI card or upgrade prompts).

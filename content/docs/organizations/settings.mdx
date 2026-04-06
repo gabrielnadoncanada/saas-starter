@@ -1,0 +1,39 @@
+---
+title: Organization settings
+description: Rename, delete, and danger-zone behavior for the active workspace.
+---
+
+## Route
+
+Organization settings live at **`/settings/organization`**, implemented in `app/(app)/settings/organization/page.tsx`. The settings layout runs `ensureActiveOrganization()` so a session always has an active org when possible (`features/organizations/server/organization-membership.ts`).
+
+## Rename
+
+`RenameOrganizationPanel` submits to `renameOrganizationAction`, which requires **owner** role and updates the org via Better Auth:
+
+```ts
+const membership = await requireActiveOrganizationRole(["owner"]);
+
+await auth.api.updateOrganization({
+  headers: await headers(),
+  body: {
+    organizationId: membership.organizationId,
+    data: { name },
+  },
+});
+```
+
+Non-owners see the form disabled and a short note that only owners can rename.
+
+## Delete
+
+Owners see a **Delete Organization** card with `DeleteOrganizationDialog`. The server action `deleteOrganizationAction`:
+
+1. Requires **owner** role.
+2. Loads the org’s `stripeCustomerId` and **blocks deletion** if there is an **active or trialing** Stripe subscription (`delete-organization.actions.ts`).
+3. Otherwise deletes the `Organization` row (cascade removes related data per Prisma relations).
+4. Picks another org from `auth.api.listOrganizations` if any, and calls `setActiveOrganization`; then redirects to the app dashboard.
+
+The form requires typing the literal confirmation word `DELETE` (see `DELETE_ORGANIZATION_CONFIRMATION_WORD` in `organization.schema.ts`).
+
+> **Warning:** Deletion is permanent for that organization and its dependent records. Cancel billing first when a subscription is active.

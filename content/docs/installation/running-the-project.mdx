@@ -1,0 +1,59 @@
+---
+title: Running the project
+description: Start the Next.js dev server and optional email preview.
+---
+
+## Development server
+
+From the repository root:
+
+```bash
+pnpm dev
+```
+
+This runs **`next dev --turbopack`** (see `package.json`), so the dev server uses Turbopack.
+
+### Verify locally
+
+Open [http://localhost:3000](http://localhost:3000). You should see the marketing site or app entrypoint depending on routing; if you ran `pnpm db:seed`, use the demo accounts listed in `README.MD`.
+
+> **Note:** Next.js defaults to port **3000**. If the port is busy, the CLI will suggest another port in the terminal output.
+
+## Production build (optional check)
+
+```bash
+pnpm build
+pnpm start
+```
+
+- `build` — `next build`
+- `start` — `next start` (serve the production build; set `BASE_URL` and secrets for your environment)
+
+## Email template preview
+
+Preview React Email templates in isolation:
+
+```bash
+pnpm email:dev
+```
+
+From `package.json` this runs:
+
+```json
+"email:dev": "email dev -d shared/lib/email/templates -p 3001"
+```
+
+Templates are served from `shared/lib/email/templates` on port **3001** by default.
+
+## Other useful scripts
+
+| Script        | What it runs (abbrev.)     |
+| ------------- | -------------------------- |
+| `lint`        | `eslint .`                 |
+| `lint:fix`    | ESLint with `--fix`        |
+| `format`      | Prettier on project paths  |
+| `test`        | `vitest run`               |
+| `test:watch`  | `vitest` (watch mode)      |
+| `dead-code`   | `pnpm exec knip`           |
+
+Full definitions are in **`package.json`** under `"scripts"`.

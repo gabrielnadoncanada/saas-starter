@@ -1,0 +1,70 @@
+---
+title: Marketing FAQ
+description: Where the landing page FAQ lives and how to edit questions and answers.
+---
+
+The Frequently Asked Questions block on the marketing home page is implemented by **`BuyerFaq`** in `features/marketing/components/buyer-faq.tsx`. It is not driven by CMS or config files: questions and answers are a **TypeScript array** in that file.
+
+## Section and behavior
+
+- The section has **`id="faq"`** so in-page links such as `/#faq` scroll to it (see `MarketingHeader` nav).
+- It is a client component (`"use client"`) using React state to track which item is open (`openIndex`).
+- Each item is a `<button>` in a `<dt>` toggling visibility of the answer in `<dd>`.
+
+## Data shape
+
+Entries use `question` and `answer` strings:
+
+```6:16:features/marketing/components/buyer-faq.tsx
+const faqs = [
+  {
+    question: "What exactly do I get?",
+    answer:
+      "You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions, PostgreSQL + Prisma setup, email templates, and 72 documentation files including 31 step-by-step customization guides.",
+  },
+  {
+    question: "What is NOT included?",
+    answer:
+      "This is a starter, not a finished product. You will need to build your own product features on top of it. It does not include hosting, domain names, Stripe account setup, or third-party API keys. It also does not include a mobile app, admin panel, analytics dashboard, a real email inbox integration, or persisted invoicing flows - those are features you build yourself using the patterns provided.",
+  },
+```
+
+Add, remove, or reorder objects in the `faqs` array to change what appears on the page.
+
+## Rendering loop
+
+```78:107:features/marketing/components/buyer-faq.tsx
+        <dl className="divide-y divide-border">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+
+            return (
+              <div key={index} className="py-4">
+                <dt>
+                  <button
+                    type="button"
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    className="flex w-full items-center justify-between text-left"
+                  >
+                    <span className="text-base font-medium text-foreground">
+                      {faq.question}
+                    </span>
+                    <ChevronDown
+                      className={`ml-4 h-5 w-5 shrink-0 text-muted-foreground transition-transform ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                </dt>
+                {isOpen && (
+                  <dd className="mt-2 pr-12 text-sm leading-relaxed text-muted-foreground">
+                    {faq.answer}
+                  </dd>
+                )}
+              </div>
+            );
+          })}
+        </dl>
+```
+
+> **Note:** Only one FAQ can be open at a time (`openIndex`). To allow multiple open items, you would switch to a `Set` of indices or per-item boolean state.

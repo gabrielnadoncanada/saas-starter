@@ -1,0 +1,80 @@
+---
+title: Storage API reference
+description: Exported functions from storage.ts and storage-service.ts with their signatures and roles.
+---
+
+## `shared/lib/storage/storage.ts`
+
+### `getFileStorage`
+
+Returns a **Promise** of the singleton unstorage instance (filesystem or S3 depending on env). The implementation caches the first resolved instance in `storagePromise`.
+
+```ts
+export function getFileStorage(): Promise<
+  ReturnType<typeof createS3Storage>
+>;
+```
+
+(Typescript uses `createS3Storage` as the return type alias; the filesystem branch returns the same `createStorage` shape.)
+
+---
+
+## `shared/lib/storage/storage-service.ts`
+
+All exports below are **async** unless noted. The module is `server-only`.
+
+### `getOrganizationStorageUsage`
+
+```ts
+export async function getOrganizationStorageUsage(
+  organizationId: string,
+): Promise<number>;
+```
+
+Returns the sum of `StoredFile.sizeBytes` for the organization (0 if none).
+
+### `getStoredFileRecord`
+
+```ts
+export async function getStoredFileRecord(
+  storedFileId: string,
+  organizationId: string,
+): Promise<StoredFile | null>;
+```
+
+`StoredFile` is the Prisma model (see `prisma/models/platform.prisma`). Loads a row only when both id and organization match.
+
+### `readStoredFileBody`
+
+```ts
+export async function readStoredFileBody(
+  storageKey: string,
+): Promise<Buffer>;
+```
+
+Reads raw bytes from backing storage; throws if the object is missing.
+
+### `saveStoredFile`
+
+```ts
+export async function saveStoredFile(input: {
+  organizationId: string;
+  uploadedByUserId: string;
+  file: File;
+}): Promise<StoredFile>;
+```
+
+Enforces plan entitlements and `storageMb` quota, writes the blob, creates the DB row. Throws on entitlement mismatch or over quota.
+
+### `deleteStoredFile`
+
+```ts
+export async function deleteStoredFile(
+  storedFileId: string,
+  organizationId: string,
+): Promise<void>;
+```
+
+Deletes backing object and DB row; throws `"File not found"` if no matching row.
+
+> **Note:** Import `StoredFile` from `@prisma/client` after `pnpm db:generate` if you need it in TypeScript.

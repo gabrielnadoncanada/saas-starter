@@ -1,0 +1,64 @@
+---
+title: Preferences
+description: Theme and display preferences for the authenticated app.
+---
+
+## Route
+
+User preferences are at **`/settings/preferences`**. The page only renders the theme card (no extra layout header on this route in the current codebase).
+
+```1:10:app/(app)/settings/preferences/page.tsx
+import { ThemePreferencesCard } from "@/features/account/components/settings/theme-preferences-card";
+import { Page } from "@/shared/components/layout/page-layout";
+
+export default async function PreferencesPage() {
+  return (
+    <Page fixed>
+      <ThemePreferencesCard />
+    </Page>
+  );
+}
+```
+
+## Theme preferences
+
+`ThemePreferencesCard` uses **`next-themes`** (`useTheme`) to switch between:
+
+- **Light**
+- **Dark**
+- **System** — follows the OS preference.
+
+```16:20:features/account/components/settings/theme-preferences-card.tsx
+const themeOptions = [
+  { value: "light", label: "Light", icon: Sun },
+  { value: "dark", label: "Dark", icon: Moon },
+  { value: "system", label: "System", icon: Monitor },
+] as const;
+```
+
+The component tracks `mounted` so theme buttons stay disabled until the client has hydrated, avoiding a flash of the wrong active state.
+
+```42:60:features/account/components/settings/theme-preferences-card.tsx
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {themeOptions.map((option) => {
+            const Icon = option.icon;
+            const isActive = activeTheme === option.value;
+
+            return (
+              <Button
+                key={option.value}
+                type="button"
+                variant={isActive ? "default" : "outline"}
+                className="justify-center"
+                onClick={() => setTheme(option.value)}
+                disabled={!mounted}
+                aria-pressed={isActive}
+              >
+                <Icon className="size-4" />
+                <span>{option.label}</span>
+              </Button>
+            );
+          })}
+```
+
+> **Note:** There is no separate “locale” or “timezone” preference in this starter; only theme selection is implemented under preferences.

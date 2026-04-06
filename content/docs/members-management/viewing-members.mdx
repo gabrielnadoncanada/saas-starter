@@ -1,0 +1,40 @@
+---
+title: Viewing members
+description: How the members table lists people in the active organization.
+---
+
+## Page and data
+
+The members screen is **`/settings/members`** (`app/(app)/settings/members/page.tsx`). It loads **`getCurrentOrganizationContext()`**, which includes `context.organization.members` as `OrganizationMemberView[]` (see `features/organizations/types.ts`).
+
+Each member exposes parsed roles, a **primary** role for display, `joinedAt`, and nested `user` (id, name, email, image).
+
+## OrganizationMembersTable
+
+`features/organizations/components/organization-members-table.tsx` renders a table with:
+
+| Column   | Content |
+|----------|---------|
+| Member   | Avatar, display name (name or email), email, “You” badge for the signed-in user |
+| Role     | `primaryRole` as a badge (capitalized) |
+| Joined   | `joinedAt` formatted with `date-fns` (`MMM d, yyyy`) or “Unknown” |
+| Actions  | Optional overflow menu (see below) |
+
+```tsx
+<OrganizationMembersTable
+  currentUserId={context.user.id}
+  canManageMembers={context.isOwner}
+  members={context.organization.members}
+/>
+```
+
+## Removing a member
+
+When **`canManageMembers`** is true (this starter passes **`context.isOwner` only**), a row can show **Remove member** if:
+
+- The target is **not** an owner (`!hasOrgRole(member.roles, "owner")`), and  
+- The target is **not** the current user.
+
+The action posts to `removeOrganizationMemberAction`, which uses the Better Auth API `removeMember` with `memberIdOrEmail` and `organizationId`. Toasts and `router.refresh()` run from the action state.
+
+> **Note:** Owners cannot be removed from this UI; there is no “transfer ownership” flow in the starter.

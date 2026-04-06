@@ -1,0 +1,50 @@
+---
+title: Seat enforcement
+description: How member and invitation limits relate to plan limits and Stripe seat quantity.
+---
+
+## Plan limit: `teamMembers`
+
+Each plan defines `limits.teamMembers` in `billing.config.ts` (for example Free: 1, Pro: 5, Team: 50). This caps how many people can belong to the workspace **including pending invitations** for the invite flow.
+
+## Invite flow enforcement
+
+`inviteOrganizationMemberAction` (organizations feature):
+
+1. Loads entitlements via `getCurrentOrganizationEntitlements()`.
+2. **`assertCapability(entitlements, "team.invite")`** — fails if the plan does not include invites.
+3. Counts **current members** and **pending invitations**.
+4. **`assertLimit(entitlements, "teamMembers", memberCount + pendingCount)`** — throws `LimitReachedError` if adding another invite would exceed the cap.
+
+```106:126:features/organizations/actions/membership.actions.ts
+    try {
+      assertCapability(entitlements, "team.invite");
+
+      const requestHeaders = await headers();
+      const [members, invitations] = await Promise.all([
+        auth.api.listMembers({
+          query: { organizationId },
+          headers: requestHeaders,
+        }),
+        auth.api.listInvitations({
+          query: { organizationId },
+          headers: requestHeaders,
+        }),
+      ]);
+
+      const memberCount = members?.members.length ?? 0;
+      const pendingCount = (invitations ?? []).filter(
+        (invitation: { status: string }) => invitation.status === "pending",
+      ).length;
+
+      assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
+```
+
+Errors are surfaced to the user as action error messages when they match upgrade/limit exceptions.
+
+## Stripe seats vs app limits
+
+- **Billing UI** — Per-seat plans let the owner set **seat quantity** for Checkout or subscription updates; Stripe charges that quantity.
+- **App enforcement** — The **teamMembers** limit still applies from entitlements; if Stripe seats and org policy diverge, resolve by aligning plan limits in config or adjusting subscription quantity so expectations match.
+
+> **Note:** `entitlements.seats` stores the synced subscription seat quantity for display and billing settings; member caps are enforced via **`teamMembers`** limits and invite checks, not by reading Stripe quantities on every request in the snippet above.

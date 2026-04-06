@@ -1,0 +1,40 @@
+---
+title: Invitations
+description: Sending, listing, resending, and accepting organization invitations.
+---
+
+## Sending invites (owners)
+
+`InviteOrganizationMemberDialog` posts to **`inviteOrganizationMemberAction`** with `email` and `role` (`member` or `admin` only). The action:
+
+1. Requires **owner** via `requireActiveOrganizationRole(["owner"])`.
+2. Checks plan **capability** `team.invite` and **team size** limits (`assertCapability`, `assertLimit` against current members + pending invites).
+3. Calls **`inviteOrganizationMember`** in `features/organizations/server/organization-invitations.ts`, which wraps `auth.api.createInvitation`.
+
+```ts
+return auth.api.createInvitation({
+  headers: await headers(),
+  body: {
+    organizationId: input.organizationId,
+    email: input.email,
+    role: input.role,
+  },
+});
+```
+
+## Email delivery
+
+Better Auth’s `organization()` plugin in `shared/lib/auth/auth-config.ts` implements **`sendInvitationEmail`**, which calls `sendTeamInvitationEmail` with the invitation id as token content. Configure Resend and `BASE_URL` so links reach users.
+
+## Pending invitations table
+
+`OrganizationInvitationsTable` lists pending invites with email, status badge (“Pending”), and expiry date. Owners can **Resend** or **Cancel**:
+
+- **Resend** cancels the pending invitation and creates a new one with the same email and role (`resendOrganizationInvitation` in `organization-invitations.ts`).
+- **Cancel** calls `auth.api.cancelInvitation`.
+
+## Accepting or declining
+
+Public route **`/accept-invitation/[id]`** (`app/accept-invitation/[id]/page.tsx`) redirects unauthenticated users to sign-in with a return URL to the same path. Authenticated users see **`OrganizationInvitationPage`**, which loads the invite with `authClient.organization.getInvitation` and offers **Decline** / **Accept** via `rejectInvitation` and `acceptInvitation`, then navigates to the app dashboard.
+
+> **Warning:** Invitation expiry is configured on the plugin (`invitationExpiresIn: 7 * 24 * 60 * 60` seconds). Expired or invalid invites show an “Invitation unavailable” state.

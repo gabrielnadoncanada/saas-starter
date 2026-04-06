@@ -1,0 +1,37 @@
+---
+title: Organization lifecycle
+description: Creation, invitations, and deletion—what runs when workspaces change.
+---
+
+## No separate “lifecycle hooks” module
+
+This codebase does **not** define a custom hooks API (e.g. `afterOrganizationCreate`) outside Better Auth and app actions. Behavior is implemented in **auth plugin options**, **layouts**, and **server actions** instead.
+
+## Creation
+
+New workspaces are created from the client via `authClient.organization.create` (see `CreateOrganizationDialog`), with `setActive` called on success. Whether users may create orgs is controlled by `allowUserToCreateOrganization` in the Better Auth `organization()` plugin and by `accountFlags.allowCreateOrganization` in `shared/config/account.config.ts`.
+
+```ts
+organization({
+  allowUserToCreateOrganization: accountFlags.allowCreateOrganization,
+  creatorRole: "owner",
+  invitationExpiresIn: 7 * 24 * 60 * 60,
+  sendInvitationEmail: async ({ invitation, organization: org, inviter }) => {
+    await sendTeamInvitationEmail({ /* ... */ });
+  },
+});
+```
+
+## Invitations email
+
+When an invitation is created through Better Auth, **`sendInvitationEmail`** runs and sends mail via `sendTeamInvitationEmail` (`shared/lib/email/senders.ts`). That is the main server-side “hook” tied to the invitation lifecycle.
+
+## Active organization on load
+
+`ensureActiveOrganization()` (used in dashboard and settings layouts) **auto-selects the first listed organization** if the session has no `activeOrganizationId`, by calling `auth.api.setActiveOrganization`. That keeps pages from rendering without a workspace when one exists.
+
+## Deletion
+
+`deleteOrganizationAction` handles teardown: Stripe subscription check, Prisma `organization.delete`, then switching the active org to another membership or redirecting. See `features/organizations/actions/delete-organization.actions.ts`.
+
+> **Note:** To add custom logic when orgs are created or deleted, extend the relevant server actions or Better Auth plugin callbacks rather than looking for a separate hooks registry.

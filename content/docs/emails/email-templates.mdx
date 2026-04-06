@@ -1,0 +1,60 @@
+---
+title: Email templates (React Email)
+description: React Email templates in shared/lib/email/templates, shared layout and button components, and how to add a new template.
+---
+
+## Layout and primitives
+
+Templates use **`@react-email/components`** plus local building blocks:
+
+- **`templates/components/email-layout.tsx`** — `Html`, `Body`, `Container`, preview text, optional footer disclaimer.
+- **`templates/components/email-button.tsx`** — Primary CTA button for links.
+
+New templates should wrap content in **`EmailLayout`** and pass a short **`preview`** string (inbox preview line) and optional **`footerText`**.
+
+```20:38:shared/lib/email/templates/components/email-layout.tsx
+export function EmailLayout({
+  preview,
+  children,
+  footerText,
+}: EmailLayoutProps) {
+  return (
+    <Html lang="fr">
+      <Head>
+        <Font
+          fontFamily="Inter"
+          fallbackFontFamily="Helvetica"
+          webFont={{
+            url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
+            format: "woff2",
+          }}
+        />
+      </Head>
+      <Preview>{preview}</Preview>
+      <Body style={body}>
+        <Container style={container}>
+          <Section style={content}>{children}</Section>
+```
+
+## Template modules (pages)
+
+| File | Export | Role |
+| --- | --- | --- |
+| `verify-email.tsx` | `VerifyEmailTemplate` | Email verification link |
+| `reset-password.tsx` | `ResetPasswordTemplate` | Password reset link |
+| `magic-link.tsx` | `MagicLinkEmail` | Passwordless sign-in link |
+| `team-invitation.tsx` | `TeamInvitationEmail` | Org invitation CTA |
+| `password-changed.tsx` | `PasswordChangedTemplate` | Confirmation copy only (see inventory) |
+
+**`shared/lib/email/templates.ts`** exports **`buildTeamInvitationEmail`**, which turns invitation input into an **`EmailPayload`** (React element + plain `text` + Resend tags) for the sender in `senders.ts`.
+
+## Adding a new template
+
+1. Create **`shared/lib/email/templates/your-feature.tsx`** exporting a function component. Accept only the props you need (URLs, names). Use **`EmailLayout`** and **`EmailButton`** where appropriate.
+2. Provide both **`react`** and a **`text`** body if you add a dedicated sender, so mail clients without HTML still work.
+3. Either:
+   - Add a **`build…Email`** helper in **`templates.ts`** and a function in **`senders.ts`**, or
+   - Call **`sendEmail`** from server code with `createElement(YourTemplate, props)` (as in `auth-config.ts`).
+4. Run **`pnpm email:dev`** to preview the template locally ([Local development](./local-development)).
+
+> **Note:** Keep props serializable and avoid importing server-only modules into templates; they are rendered in Node when sending and in the React Email dev server when previewing.

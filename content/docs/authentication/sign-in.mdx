@@ -1,0 +1,53 @@
+---
+title: Sign in
+description: Email/password, magic link, and OAuth sign-in flows and how the sign-in page wires them together.
+---
+
+## Where it lives
+
+- **Page:** `app/(auth)/sign-in/page.tsx` — Card layout, Terms/Privacy links, passes `callbackUrl` and OAuth/magic-link flags into the form.
+- **Form:** `features/auth/components/sign-in-form.tsx` — Two-step email then password UI, secondary actions, verification resend.
+- **API calls:** `features/auth/client/auth-api-client.ts` — Normalized Better Auth client calls.
+
+## Callback URL
+
+The page reads optional `?callbackUrl=` from the query string, validates it with `getCallbackURL`, and defaults navigation after success to **`/post-sign-in`** when nothing safe is provided. Sign-up links preserve the same callback via `buildCallbackURL`.
+
+## Email + password flow
+
+1. User enters email and submits (**Continue**). Email is trimmed and lowercased.
+2. **`AuthPasswordStep`** shows the password field and a **Forgot password?** link to `/forgot-password`.
+3. Submit calls `signInWithPassword(email, password)` which uses `authClient.signIn.email` under the hood.
+4. On success, the browser navigates to `callbackUrl` via `window.location.href`.
+
+If the server returns **email not verified**, the form shows **`ResendVerificationForm`** (from `features/auth/components/oauth/resend-verification-form.tsx`) so the user can resend verification.
+
+```ts
+const result = await signInWithPassword(submittedEmail, password);
+
+if (result.status !== "success") {
+  passwordForm.setError("root", { /* ... */ });
+  setShowVerification(result.status === "verification_required");
+  return;
+}
+
+window.location.href = nextCallbackUrl;
+```
+
+## Magic link
+
+When magic link is enabled in OAuth config, the user can request a link without a password. The app calls `sendMagicLink(email, callbackUrl)` then redirects to **`/check-email`** with `email` and `callbackUrl` query params (`buildCheckEmailHref`).
+
+## OAuth
+
+Enabled providers are listed from `getEnabledOAuthProviderIds()`. Clicking a provider runs `signInWithOAuth(provider, callbackUrl)` (`authClient.signIn.social`). Query param `?error=` is surfaced (for example **OAuthAccountNotLinked**) via `useToastMessage`.
+
+## Related routes
+
+| Path | Purpose |
+| ---- | ------- |
+| `/sign-in` | Sign-in page |
+| `/check-email` | After magic link sent |
+| `/verify-2fa` | Two-factor step (separate page) |
+
+> **Note:** Client components use `auth-api-client.ts` so all flows share the same result types and user-facing messages.

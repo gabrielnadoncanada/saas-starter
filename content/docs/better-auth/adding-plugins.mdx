@@ -1,0 +1,79 @@
+---
+title: Adding plugins
+description: How this repo wires Better Auth plugins on the server and client.
+---
+
+## Pattern in this codebase
+
+1. **Import** the plugin from `better-auth/plugins` (or the package path documented for that plugin).
+2. **Add** it to the `plugins` array in `shared/lib/auth/auth-config.ts` (order can matter for some plugins — keep `nextCookies()` last as in the current file).
+3. **Mirror** any required **client plugin** in `shared/lib/auth/auth-client.ts` using the matching export from `better-auth/client/plugins`.
+
+Example — server plugins today:
+
+```105:143:shared/lib/auth/auth-config.ts
+  plugins: [
+    admin({
+      defaultRole: "user",
+      adminRoles: [...PLATFORM_ADMIN_ROLES],
+    }),
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await sendEmail({
+          to: [email],
+          subject: "Your sign-in link",
+          react: createElement(MagicLinkEmail, { url }),
+          text: `Your sign-in link: ${url}`,
+          tags: [{ name: "email_type", value: "magic_link" }],
+        });
+      },
+    }),
+    organization({
+      allowUserToCreateOrganization: accountFlags.allowCreateOrganization,
+      creatorRole: "owner",
+      invitationExpiresIn: 7 * 24 * 60 * 60,
+      sendInvitationEmail: async ({
+        invitation,
+        organization: org,
+        inviter,
+      }) => {
+        await sendTeamInvitationEmail({
+          email: invitation.email,
+          role: invitation.role,
+          inviterName: inviter.user.name || inviter.user.email,
+          organizationName: org.name,
+          invitationToken: invitation.id,
+        });
+      },
+    }),
+    twoFactor({
+      issuer: "SaaS Starter",
+    }),
+    nextCookies(),
+  ],
+```
+
+Matching client setup:
+
+```11:21:shared/lib/auth/auth-client.ts
+export const authClient = createAuthClient({
+  plugins: [
+    adminClient(),
+    magicLinkClient(),
+    organizationClient(),
+    twoFactorClient({
+      onTwoFactorRedirect: async () => {
+        window.location.assign(routes.auth.twoFactor);
+      },
+    }),
+  ],
+});
+```
+
+## After adding a plugin
+
+- Extend **types** or **user/session fields** if the plugin adds columns or session claims (coordinate with Prisma schema and Better Auth docs).
+- Use **server** `auth.api` only from server actions or route handlers; use **`authClient`** in client components.
+- Run **`pnpm db:generate`** if schema changes are required.
+
+> **Warning:** Do not add client-only workarounds for missing server plugins — the client and server plugin sets must stay aligned for type-safe APIs and runtime behavior.

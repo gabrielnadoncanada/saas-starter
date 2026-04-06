@@ -1,0 +1,41 @@
+---
+title: Account and workspace switcher
+description: How users pick the active organization from the app shell.
+---
+
+## Where it appears
+
+The sidebar footer (`features/dashboard/components/dashboard-sidebar-user.tsx`) shows the **active organization** name and avatar. Opening the menu reveals the user block, optional workspace switcher, Settings, optional Admin (platform admins), and Sign out.
+
+When `accountFlags.showOrgSwitcher` is true (see `shared/config/account.config.ts`), the menu includes `OrganizationSwitcher`:
+
+```tsx
+{accountFlags.showOrgSwitcher && (
+  <>
+    <OrganizationSwitcher onCreateWorkspace={() => setShowCreateOrg(true)} />
+    <DropdownMenuSeparator />
+  </>
+)}
+```
+
+The same component labels the subtitle as “Organization” vs “Account” depending on `enableTeamFeatures`.
+
+## Switching workspaces
+
+`features/organizations/components/organization-switcher.tsx` uses the Better Auth client hooks `useListOrganizations()` and `useActiveOrganization()`. Choosing another org calls:
+
+```ts
+const { error } = await authClient.organization.setActive({
+  organizationId,
+});
+// ...
+router.refresh();
+```
+
+If the list is still loading or empty, the switcher returns `null` (nothing rendered).
+
+## Creating a workspace
+
+“Create workspace” opens `CreateOrganizationDialog`, which calls `authClient.organization.create`, then `setActive` with the new id and `router.refresh()`. Creation is gated by `accountFlags.allowCreateOrganization` (disabled in `personal-only` mode).
+
+> **Warning:** If switching fails, the UI shows a toast; the active org in the session is unchanged until `setActive` succeeds.

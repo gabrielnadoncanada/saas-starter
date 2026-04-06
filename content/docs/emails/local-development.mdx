@@ -1,0 +1,28 @@
+---
+title: Local email preview
+description: Use the React Email CLI to preview templates from shared/lib/email/templates on a local port.
+---
+
+## Script
+
+The repo includes a dedicated script in **`package.json`**:
+
+```6:6:package.json
+    "email:dev": "email dev -d shared/lib/email/templates -p 3001",
+```
+
+- **`email dev`** — React Email dev server (from the `react-email` package).
+- **`-d shared/lib/email/templates`** — Template root directory (all `*.tsx` templates and `components/` live here).
+- **`-p 3001`** — Listen on port **3001** so it does not clash with Next.js on **3000**.
+
+## Usage
+
+From the project root:
+
+```bash
+pnpm email:dev
+```
+
+Open the URL the CLI prints (typically **http://localhost:3001**) to browse and preview each template. Edit `.tsx` files under `shared/lib/email/templates/` and refresh to iterate on layout and copy.
+
+> **Note:** This previews HTML only. Full send behavior (Resend API, `EMAIL_FROM`, idempotency) still requires server configuration and is documented in [Sending emails](./sending-emails).

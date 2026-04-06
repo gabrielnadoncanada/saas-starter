@@ -1,0 +1,69 @@
+---
+title: Social providers
+description: Google and GitHub OAuth in auth-config and UI-facing oauth-config helpers.
+---
+
+## Server configuration
+
+OAuth providers are added only when both client ID and secret env vars are present:
+
+```74:91:shared/lib/auth/auth-config.ts
+  socialProviders: {
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? {
+          google: {
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          },
+        }
+      : {}),
+    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
+      ? {
+          github: {
+            clientId: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+          },
+        }
+      : {}),
+  },
+```
+
+Account linking (optional) trusts Google and GitHub when enabled:
+
+```98:103:shared/lib/auth/auth-config.ts
+  account: {
+    accountLinking: {
+      enabled: process.env.ALLOW_EMAIL_ACCOUNT_LINKING === "true",
+      trustedProviders: ["google", "github"],
+    },
+  },
+```
+
+Set **`ALLOW_EMAIL_ACCOUNT_LINKING`** to `"true"` only when you accept email-based linking for those providers.
+
+## UI helpers (`oauth-config.ts`)
+
+Labels, enabled state, and typing for buttons are centralized:
+
+```3:18:shared/lib/auth/oauth-config.ts
+const oauthProviders = [
+  {
+    id: "google",
+    label: "Google",
+    authButtonLabel: "Continue with Google",
+    isEnabled: () =>
+      Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+  },
+  {
+    id: "github",
+    label: "GitHub",
+    authButtonLabel: "Continue with GitHub",
+    isEnabled: () =>
+      Boolean(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
+  },
+] as const;
+```
+
+`getEnabledOAuthProviderIds()` returns only providers with credentials. Sign-in uses `authClient.signIn.social` via `signInWithOAuth` in `features/auth/client/auth-api-client.ts`.
+
+> **Warning:** OAuth apps must use redirect URLs that match your deployment `BASE_URL` and Better Auth’s `/api/auth` callback paths. Configure that in the Google Cloud and GitHub OAuth app settings.

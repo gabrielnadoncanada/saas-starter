@@ -1,0 +1,53 @@
+---
+title: Authorization and policies
+description: How the starter enforces admin access, organization roles, and billing capabilities.
+---
+
+## Platform admin (`features/auth/server`)
+
+### `requireAdmin` (pages)
+
+Loads the current user; redirects to login if unauthenticated; redirects non-admins to the app dashboard. Returns the user when `isPlatformAdmin(user.role)` is true.
+
+```9:21:features/auth/server/require-admin.ts
+export async function requireAdmin() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(routes.auth.login);
+  }
+
+  if (!isPlatformAdmin(user.role)) {
+    redirect(routes.app.dashboard);
+  }
+
+  return user;
+}
+```
+
+### `requireAdminAction` (server actions)
+
+Uses Better Auth `getSession` and throws **`Unauthorized`** if there is no user id, or **`Forbidden: admin role required`** if the role is not a platform admin. Returns the admin user id on success.
+
+Use this pattern for destructive or sensitive actions that must not rely on UI hiding alone.
+
+## Password updates (`savePasswordServer`)
+
+`features/auth/server/save-password.ts` wraps Better Auth **`changePassword`** (when the user already has a password) or **`setPassword`** (first password). It returns structured `FormActionState` messages and maps common “incorrect/invalid” errors to the current-password field.
+
+## Workspace bootstrap (`ensureUserWorkspace`)
+
+`ensureUserWorkspace` in `onboarding.ts` ensures an active organization: lists orgs, sets the first as active, or creates one (`Personal` or `{email}'s Team` depending on `accountFlags.enableTeamFeatures`) and sets it active. Used when a user needs a default workspace.
+
+## Organization membership (related)
+
+Not under `features/auth/server`, but central to access control:
+
+- `requireActiveOrganizationMembership()` / `requireActiveOrganizationRole()` in `features/organizations/server/organization-membership.ts` guard server actions (e.g. invites, billing owner actions).
+- `requireBillingOwner()` in `features/billing/require-billing-owner.ts` restricts billing settings to the org **owner** (redirects to members settings if the role check fails).
+
+## Billing capabilities (related)
+
+Plan checks live in `features/billing/plan-guards.ts` — `hasCapability`, `assertCapability`, `checkLimit`, `assertLimit` — backed by `getCurrentOrganizationEntitlements()`. Example: task creation asserts `task.create` and consumes monthly usage; invites assert `team.invite` and `teamMembers` limits.
+
+> **Note:** Always enforce rules on the server (actions, mutations, webhooks). Client components may hide buttons, but authorization is duplicated in server actions and guards in this codebase.

@@ -1,0 +1,88 @@
+---
+title: Documentation site (Fumadocs)
+description: How MDX docs are built, loaded, and rendered at /docs.
+---
+
+End-user documentation is served under **`/docs`** using **Fumadocs** (`fumadocs-core`, `fumadocs-ui`, `fumadocs-mdx`). Content lives in `content/docs/` as MDX files; Next.js is wrapped with the Fumadocs MDX plugin.
+
+## Next.js integration
+
+`next.config.mjs` applies `createMDX()` from `fumadocs-mdx/next`:
+
+```1:15:next.config.mjs
+import { createMDX } from 'fumadocs-mdx/next';
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      { hostname: 'lh3.googleusercontent.com' },
+      { hostname: 'avatars.githubusercontent.com' },
+    ],
+  },
+};
+
+const withMDX = createMDX();
+
+export default withMDX(nextConfig);
+```
+
+## Content configuration
+
+`source.config.ts` at the repo root registers the docs collection and directory:
+
+```1:7:source.config.ts
+import { defineDocs, defineConfig } from 'fumadocs-mdx/config';
+
+export const docs = defineDocs({
+  dir: 'content/docs',
+});
+
+export default defineConfig();
+```
+
+## Source loader
+
+`shared/lib/docs/source.ts` turns the generated collection into a Fumadocs source with base URL `/docs`:
+
+```1:7:shared/lib/docs/source.ts
+import { docs } from 'fumadocs-mdx:collections/server';
+import { loader } from 'fumadocs-core/source';
+
+export const docsSource = loader({
+  baseUrl: '/docs',
+  source: docs.toFumadocsSource(),
+});
+```
+
+## Layout and page
+
+`app/docs/layout.tsx` wraps docs pages with `RootProvider` (theme toggle disabled so app theme applies) and `DocsLayout` using the page tree from `docsSource`:
+
+```7:18:app/docs/layout.tsx
+export default function DocsRootLayout({ children }: { children: ReactNode }) {
+  return (
+    <RootProvider
+      theme={{
+        enabled: false,
+      }}
+    >
+      <DocsLayout tree={docsSource.pageTree} {...getDocsLayoutOptions()}>
+        {children}
+      </DocsLayout>
+    </RootProvider>
+  );
+}
+```
+
+`shared/lib/docs/layout-options.ts` sets the docs chrome title (e.g. nav label) to **“SaaS Starter”**.
+
+`app/docs/[[...slug]]/page.tsx` resolves the slug, loads the MDX body, and renders `DocsTitle`, `DocsDescription`, and `DocsBody` with a table of contents.
+
+## Adding or editing pages
+
+1. Add or edit an `.mdx` file under `content/docs/`, with **frontmatter** `title` and `description` at minimum (matching existing pages such as `content/docs/index.mdx`).
+2. Use folder segments for URL paths, e.g. `content/docs/branding/fonts.mdx` → `/docs/branding/fonts`.
+3. Run the dev server or build so **fumadocs-mdx** regenerates collection output under `.source/` as needed.
+
+> **Note:** `shared/styles/globals.css` imports Fumadocs UI styles (`fumadocs-ui/css/neutral.css` and `preset.css`) so doc pages match the rest of the app’s visual baseline.

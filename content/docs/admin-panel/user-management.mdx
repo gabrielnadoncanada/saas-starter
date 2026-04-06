@@ -1,0 +1,132 @@
+---
+title: User management
+description: Admin user listing, detail, and moderation actions using Better Auth admin APIs.
+---
+
+## Overview
+
+Platform admins manage users from `/admin/users`. The page is a Server Component that loads an initial batch of users; the table is a client component that paginates, searches, and opens a detail sheet. Mutations run through server actions in `features/admin/actions/admin-users.actions.ts`, which call Better Auth’s admin APIs (`auth.api.*`).
+
+## Route and data loading
+
+The users page verifies the session with `requireAdmin()`, then loads the first page via `listAdminUsers` (Better Auth `listUsers`).
+
+```13:36:app/(app)/admin/users/page.tsx
+export default async function AdminUsersPage() {
+  const currentUser = await requireAdmin();
+  const result = await listAdminUsers({
+    limit: PAGE_SIZE,
+    offset: 0,
+    sortBy: "createdAt",
+    sortDirection: "desc",
+  });
+
+  return (
+    <Page>
+      ...
+      <AdminUsersTable
+        currentUserId={currentUser.id}
+        initialTotal={result.total}
+        initialUsers={result.users as any}
+        pageSize={PAGE_SIZE}
+      />
+    </Page>
+  );
+}
+```
+
+Server-side listing delegates to Better Auth with optional search and sort:
+
+```7:24:features/admin/server/list-admin-users.ts
+export async function listAdminUsers(query: ListAdminUsersQuery) {
+  return auth.api.listUsers({
+    query: {
+      limit: query.limit ?? 20,
+      offset: query.offset ?? 0,
+      ...(query.searchValue
+        ? {
+            searchValue: query.searchValue,
+            searchField: query.searchField ?? "email",
+            searchOperator: query.searchOperator ?? "contains",
+          }
+        : {}),
+      sortBy: query.sortBy ?? "createdAt",
+      sortDirection: query.sortDirection ?? "desc",
+    },
+    headers: await headers(),
+  });
+}
+```
+
+> **Note:** Search in the UI is wired to `searchField: "email"` in `AdminUsersTable`. The query type also allows `"name"` if you extend the client.
+
+## User detail
+
+Opening a user loads `getAdminUserDetail`, which fetches the user and normalizes sessions from `listUserSessions`:
+
+```24:41:features/admin/server/get-admin-user-detail.ts
+export async function getAdminUserDetail(userId: string) {
+  const requestHeaders = await headers();
+
+  const [user, sessionsResult] = await Promise.all([
+    auth.api.getUser({
+      query: { id: userId },
+      headers: requestHeaders,
+    }),
+    auth.api.listUserSessions({
+      body: { userId },
+      headers: requestHeaders,
+    }),
+  ]);
+
+  return {
+    user,
+    sessions: normalizeUserSessions(sessionsResult),
+  };
+}
+```
+
+## Actions (server)
+
+All user actions call `requireAdminAction()` first, then Better Auth APIs. Examples:
+
+- **`setUserRoleAction`** — `auth.api.setRole` with role `"user"` or `"admin"`.
+- **`banUserAction` / `unbanUserAction`** — `banUser` / `unbanUser`.
+- **`removeUserAction`** — `removeUser`.
+- **`revokeUserSessionAction`** — `revokeUserSession` (single session token).
+- **`revokeAllUserSessionsAction`** — `revokeUserSessions`.
+
+Self-service protections: you cannot ban, delete, change the role of, or revoke all sessions for **your own** user id (enforced in the action).
+
+```28:49:features/admin/actions/admin-users.actions.ts
+export async function banUserAction(
+  userId: string,
+  banReason?: string,
+  banExpiresIn?: number,
+) {
+  const adminId = await requireAdminAction();
+
+  if (userId === adminId) {
+    throw new Error("You cannot ban yourself");
+  }
+
+  await auth.api.banUser({
+    body: {
+      userId,
+      ...(banReason ? { banReason } : {}),
+      ...(banExpiresIn ? { banExpiresIn } : {}),
+    },
+    headers: await headers(),
+  });
+
+  revalidateAdminUsersPage();
+}
+```
+
+## UI components
+
+- `AdminUsersTable` — pagination, email search, loads pages via `listAdminUsersAction`.
+- `UsersTableRows` / `UserRowActions` — per-row menu for role, ban/unban, delete.
+- `UserDetailSheet` — user info and session list; uses `getAdminUserDetailAction` and session revoke actions.
+
+Types for list queries and session shape live in `features/admin/types/admin-users.types.ts`.

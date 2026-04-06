@@ -1,0 +1,146 @@
+---
+title: Organization management
+description: Admin organization listing, detail sheet, subscription summary, and deletion rules.
+---
+
+## Overview
+
+Platform admins browse organizations at `/admin/organizations`. Data comes from Prisma (`Organization`, members, Stripe-linked subscription). Listing and detail are implemented under `features/admin/server/`; mutations go through `features/admin/actions/admin-organizations.actions.ts`.
+
+## Route and initial load
+
+The page requires admin access and loads the first page of organizations with members and counts:
+
+```13:36:app/(app)/admin/organizations/page.tsx
+export default async function AdminOrganizationsPage() {
+  const currentUser = await requireAdmin();
+  const { organizations, total } = await listAdminOrganizations({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+
+  return (
+    <Page>
+      ...
+      <AdminOrganizationsTable
+        initialOrganizations={organizations as any}
+        initialTotal={total}
+        currentUserId={currentUser.id}
+        pageSize={PAGE_SIZE}
+      />
+    </Page>
+  );
+}
+```
+
+## Listing organizations
+
+`listAdminOrganizations` supports pagination and optional case-insensitive name search:
+
+```5:35:features/admin/server/list-admin-organizations.ts
+export async function listAdminOrganizations(
+  query: ListAdminOrganizationsQuery,
+) {
+  const limit = query.limit ?? 20;
+  const offset = query.offset ?? 0;
+  const search = query.search?.trim() || undefined;
+
+  const where = search
+    ? { name: { contains: search, mode: "insensitive" as const } }
+    : {};
+
+  const [organizations, total] = await Promise.all([
+    db.organization.findMany({
+      where,
+      include: {
+        members: {
+          include: {
+            user: { select: { email: true, name: true, image: true } },
+          },
+        },
+        _count: { select: { members: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      skip: offset,
+    }),
+    db.organization.count({ where }),
+  ]);
+
+  return { organizations, total };
+}
+```
+
+The client table `AdminOrganizationsTable` calls `listOrganizationsAction` for pagination and search, and `getOrganizationDetailAction` when opening a row.
+
+## Organization detail
+
+Detail loads the org with ordered members and the latest subscription row when a Stripe customer id exists:
+
+```3:37:features/admin/server/get-admin-organization-detail.ts
+export async function getAdminOrganizationDetail(organizationId: string) {
+  const organization = await db.organization.findUnique({
+    where: { id: organizationId },
+    include: {
+      members: {
+        include: {
+          user: { select: { name: true, email: true, image: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      },
+      _count: { select: { members: true } },
+    },
+  });
+
+  if (!organization) {
+    throw new Error("Organization not found");
+  }
+
+  let subscription: {
+    id: string;
+    plan: string;
+    status: string;
+    periodEnd: Date | null;
+  } | null = null;
+
+  if (organization.stripeCustomerId) {
+    subscription = await db.subscription.findFirst({
+      where: { stripeCustomerId: organization.stripeCustomerId },
+      select: { id: true, plan: true, status: true, periodEnd: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  return { organization, subscription };
+}
+```
+
+`AdminOrganizationDetailSheet` and `AdminOrganizationMembersList` render this payload.
+
+## Deleting an organization
+
+`deleteOrganizationAction` applies extra rules before `db.organization.delete`:
+
+- You **cannot** delete an organization you are a member of.
+- If the org has a Stripe customer and an **active** or **trialing** subscription exists, deletion throws until you cancel the subscription.
+
+```24:59:features/admin/actions/admin-organizations.actions.ts
+export async function deleteOrganizationAction(organizationId: string) {
+  const adminId = await requireAdminAction();
+
+  const membership = await db.member.findFirst({
+    where: { organizationId, userId: adminId },
+  });
+
+  if (membership) {
+    throw new Error("You cannot delete an organization you belong to");
+  }
+  ...
+  await db.organization.delete({ where: { id: organizationId } });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/organizations");
+}
+```
+
+> **Note:** After a successful delete, the action revalidates `/admin` and `/admin/organizations` so lists stay in sync.

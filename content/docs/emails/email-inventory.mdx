@@ -1,0 +1,71 @@
+---
+title: Email inventory
+description: Every transactional email this app sends at runtime, what triggers it, and the password-changed template that is not wired to sending yet.
+---
+
+Runtime sends go through **`sendEmail`** in `shared/lib/email/client.ts` or **`sendTeamInvitationEmail`** in `shared/lib/email/senders.ts`. A grep of the codebase shows **`sendEmail(`** only in **`shared/lib/auth/auth-config.ts`** and **`shared/lib/email/senders.ts`**.
+
+## Verify email
+
+- **Template:** `VerifyEmailTemplate` (`shared/lib/email/templates/verify-email.tsx`)
+- **Tag:** `email_type` = `verify_email`
+- **When:** Better Auth **`emailVerification.sendVerificationEmail`** runs when verification mail is required. The config sets **`sendOnSignUp: true`** so new sign-ups receive a verification link.
+
+```60:71:shared/lib/auth/auth-config.ts
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendEmail({
+        to: [user.email],
+        subject: "Verify your email address",
+        react: createElement(VerifyEmailTemplate, { verificationUrl: url }),
+        text: `Verify your email address: ${url}`,
+        tags: [{ name: "email_type", value: "verify_email" }],
+      });
+    },
+  },
+```
+
+## Reset password
+
+- **Template:** `ResetPasswordTemplate` (`reset-password.tsx`)
+- **Tag:** `email_type` = `reset_password`
+- **When:** User initiates password reset; **`emailAndPassword.sendResetPassword`** sends the link.
+
+## Magic link
+
+- **Template:** `MagicLinkEmail` (`magic-link.tsx`)
+- **Tag:** `email_type` = `magic_link`
+- **When:** User signs in or signs up with the **magic link** plugin; **`sendMagicLink`** delivers the one-time URL.
+
+## Team invitation
+
+- **Template:** `TeamInvitationEmail` (`team-invitation.tsx`)
+- **Tag:** `email_type` = `team_invitation` (via `buildTeamInvitationEmail` in `templates.ts`)
+- **When:** An organization invitation is created through Better Auth’s **organization** plugin; **`sendInvitationEmail`** calls **`sendTeamInvitationEmail`**, which uses an idempotency key `team-invitation/${invitationToken}`.
+
+```125:136:shared/lib/auth/auth-config.ts
+      sendInvitationEmail: async ({
+        invitation,
+        organization: org,
+        inviter,
+      }) => {
+        await sendTeamInvitationEmail({
+          email: invitation.email,
+          role: invitation.role,
+          inviterName: inviter.user.name || inviter.user.email,
+          organizationName: org.name,
+          invitationToken: invitation.id,
+        });
+      },
+```
+
+## Password changed (template only)
+
+- **Template:** `PasswordChangedTemplate` (`password-changed.tsx`)
+- **Runtime send:** **Not implemented.** There is no `sendEmail` call using this template; password updates go through **`savePasswordServer`** / Better Auth APIs without sending this notification in the current codebase.
+
+Use the template as a starting point if you want to send a confirmation email after `changePassword` / `setPassword`—for example by calling `sendEmail` from `features/auth/server/save-password.ts` after a successful update.
+
+> **Note:** Resend tags and subjects are set next to each `sendEmail` call in `auth-config.ts` and in `buildTeamInvitationEmail` for invitations.

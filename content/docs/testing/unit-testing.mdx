@@ -1,0 +1,64 @@
+---
+title: Unit testing with Vitest
+description: Vitest configuration, path aliases, global test setup, and where tests live in this repo.
+---
+
+## Configuration
+
+**`vitest.config.ts`** enables globals, restricts tests to `test/**/*.test.ts`, and loads a single setup file. It mirrors the **`@/*`** alias used by the app.
+
+```1:15:vitest.config.ts
+import path from "path";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    globals: true,
+    include: ["test/**/*.test.ts"],
+    setupFiles: ["./test/setup.ts"],
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "."),
+    },
+  },
+});
+```
+
+> **Note:** `vitest.config.ts` only includes **`test/**/*.test.ts`**. The file **`test/billing/billing-plan-selector.test.tsx`** is present in the repo but is **not** part of the Vitest run until you add `**/*.test.tsx` to `include` (or rename the file). `pnpm test` currently reports **20** test files.
+
+## Global types
+
+**`test/vitest.d.ts`** references Vitest globals so `describe` / `it` / `expect` / `vi` work without per-file imports in typings:
+
+```1:1:test/vitest.d.ts
+/// <reference types="vitest/globals" />
+```
+
+## Setup file: env and mocks
+
+**`test/setup.ts`** runs before every test file. It sets **dummy `process.env` values** so modules that read `AUTH_SECRET`, Stripe, Resend, AI keys, etc. do not fail when imported. It also mocks the **`server-only`** package (an empty module) because Vitest executes in Node without Next’s full bundling.
+
+```1:16:test/setup.ts
+import { vi } from "vitest";
+
+process.env.BASE_URL = "http://localhost:3000";
+process.env.AUTH_SECRET = "test-auth-secret";
+process.env.STRIPE_SECRET_KEY = "sk_test_123";
+process.env.STRIPE_WEBHOOK_SECRET = "whsec_test_123";
+process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
+process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
+process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
+process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
+process.env.RESEND_API_KEY = "re_test_123";
+process.env.EMAIL_FROM = "Acme <hello@example.com>";
+process.env.GOOGLE_GENERATIVE_AI_API_KEY = "google_test_123";
+process.env.GROQ_API_KEY = "groq_test_123";
+
+vi.mock("server-only", () => ({}));
+```
+
+## Commands
+
+- **`pnpm test`** — `vitest run` (CI-friendly single run).
+- **`pnpm test:watch`** — `vitest` in watch mode.

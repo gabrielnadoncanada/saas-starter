@@ -1,0 +1,86 @@
+---
+title: Security settings
+description: Two-factor authentication (2FA) setup and management for the signed-in user.
+---
+
+## Route
+
+Security settings are at **`/settings/security`**. The page loads the current user; if there is no session, it redirects to login.
+
+```13:30:app/(app)/settings/security/page.tsx
+export default async function SecuritySettingsPage() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(routes.auth.login);
+  }
+
+  return (
+    <Page>
+      <PageHeader>
+        <PageTitle>Security</PageTitle>
+        <PageDescription>
+          Review the security controls that protect your account.
+        </PageDescription>
+      </PageHeader>
+
+      <TwoFactorSettingsCard enabled={user.twoFactorEnabled} />
+    </Page>
+  );
+}
+```
+
+## Two-factor authentication card
+
+`TwoFactorSettingsCard` is a client component that uses **Better Auth client** methods: `twoFactor.enable`, `twoFactor.verifyTotp`, `twoFactor.disable`, and `twoFactor.generateBackupCodes`.
+
+### Enabling 2FA
+
+1. Enter **current password**.
+2. Click **Set up two-factor** — calls `authClient.twoFactor.enable({ password })`, which returns a TOTP URI and backup codes.
+3. A QR code is generated locally (`qrcode` → data URL) for the authenticator app.
+4. Enter the **verification code** from the app and click **Verify and enable** — `authClient.twoFactor.verifyTotp({ code })`.
+
+### After 2FA is active
+
+- **Regenerate backup codes** — requires password; replaces the displayed backup codes.
+- **Disable two-factor** — requires password; clears local UI state on success.
+
+Backup codes are shown in a grid when returned from the API (setup or regenerate).
+
+```45:76:features/account/components/settings/two-factor-settings-card.tsx
+  async function startSetup() {
+    const result = await authClient.twoFactor.enable({
+      password,
+    });
+
+    if (result.error) {
+      toast.error(result.error.message ?? "Unable to start two-factor setup.");
+      return;
+    }
+
+    setTotpUri(result.data.totpURI);
+    setBackupCodes(result.data.backupCodes);
+    toast.success(
+      "Scan the QR code, then verify with a code from your authenticator app.",
+    );
+  }
+
+  async function verifySetup() {
+    const result = await authClient.twoFactor.verifyTotp({
+      code,
+    });
+
+    if (result.error) {
+      toast.error(result.error.message ?? "Invalid verification code.");
+      return;
+    }
+
+    setEnabled(true);
+    setTotpUri(null);
+    setCode("");
+    toast.success("Two-factor authentication enabled.");
+  }
+```
+
+> **Note:** Password change and OAuth linking are handled under **Account Settings** (`/settings`), not on this page. This page is dedicated to TOTP-based 2FA only.

@@ -1,0 +1,191 @@
+---
+title: Dialogs and overlays
+description: Modal dialog, sheet, popover, tooltip, dropdown menu, and alert dialog from shared/components/ui.
+---
+
+> **Note:** These components build on Radix primitives under the `radix-ui` package. Interactive pieces use `"use client"`.
+
+## Dialog
+
+Centered modal with overlay. `DialogContent` includes a close button by default (`showCloseButton`).
+
+```tsx
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/components/ui/dialog";
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="outline">Open</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Edit profile</DialogTitle>
+      <DialogDescription>Changes apply immediately.</DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <Button type="submit">Save</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+Exports also include `DialogClose`, `DialogPortal`, `DialogOverlay`. `DialogFooter` optionally accepts `showCloseButton` to append a outline close button.
+
+## Sheet
+
+Side panel using the same primitive family as dialog; slides from `side`: `top` | `right` | `bottom` | `left`.
+
+```tsx
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/shared/components/ui/sheet";
+
+<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="outline">Open sheet</Button>
+  </SheetTrigger>
+  <SheetContent side="right">
+    <SheetHeader>
+      <SheetTitle>Filters</SheetTitle>
+      <SheetDescription>Adjust and apply.</SheetDescription>
+    </SheetHeader>
+  </SheetContent>
+</Sheet>
+```
+
+## Popover
+
+Anchored floating panel:
+
+```tsx
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
+
+<Popover>
+  <PopoverTrigger asChild>
+    <Button variant="outline">Details</Button>
+  </PopoverTrigger>
+  <PopoverContent>Popover body</PopoverContent>
+</Popover>
+```
+
+Also exported: `PopoverAnchor`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription`.
+
+## Tooltip
+
+Wrap the tree with `TooltipProvider` (already done inside `AppShell`). Default delay is `0` in this codebase.
+
+```tsx
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
+
+<Tooltip>
+  <TooltipTrigger asChild>
+    <Button size="icon" variant="ghost" aria-label="Info">
+      ?
+    </Button>
+  </TooltipTrigger>
+  <TooltipContent>Helpful text</TooltipContent>
+</Tooltip>
+```
+
+## Dropdown menu
+
+Context and action menus:
+
+```tsx
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline">Menu</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+    <DropdownMenuLabel>Account</DropdownMenuLabel>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem>Profile</DropdownMenuItem>
+    <DropdownMenuItem variant="destructive">Sign out</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+`DropdownMenuItem` supports `variant?: "default" | "destructive"` and `inset`.
+
+## Alert dialog
+
+Confirmation and destructive flows; use instead of `Dialog` when focus must be trapped for a critical choice.
+
+```tsx
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/components/ui/alert-dialog";
+
+<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button variant="destructive">Delete</Button>
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+      <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction>Continue</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+`AlertDialogContent` accepts `size?: "default" | "sm"`.

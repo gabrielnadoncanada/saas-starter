@@ -1,0 +1,57 @@
+---
+title: Sign up
+description: Creating an account with email and password, OAuth, or magic link, and the email verification step after registration.
+---
+
+## Where it lives
+
+- **Page:** `app/(auth)/sign-up/page.tsx` — Same card pattern as sign-in: `callbackUrl`, OAuth providers, magic link flag.
+- **Form:** `features/auth/components/sign-up-form.tsx`
+- **Post-registration page:** `app/(auth)/verify-email/sent/page.tsx` — Confirms that a verification email was sent.
+
+## Email + password registration
+
+1. User enters email (**Continue**).
+2. **`AuthPasswordStep`** collects **password** and **confirm password** (Zod schemas in `features/auth/schemas/auth-forms.schema`).
+3. Submit calls `signUpWithEmail(email, password, callbackUrl)` which wraps `authClient.signUp.email` with `name: ""` and the same `callbackURL` used for redirects after verification.
+
+```ts
+const result = await signUpWithEmail(
+  submittedEmail,
+  password,
+  nextCallbackUrl,
+);
+
+if (result.status !== "success") {
+  if (result.status === "email_taken") {
+    setShowPasswordStep(false);
+    setError("email", { type: "server", message: result.message });
+    return;
+  }
+  // ...
+}
+
+router.push(successHref);
+```
+
+4. On success, the client navigates to **`/verify-email/sent`**, preserving `callbackUrl` in the query string (`buildCallbackURL(routes.auth.verifyEmailSent, nextCallbackUrl)`).
+
+The **verify-email/sent** page tells the user to open the verification link in email, then links back to sign-in with the callback preserved.
+
+## Email verification
+
+The starter expects users to **verify email** before password sign-in is fully allowed. The auth client maps **`EMAIL_NOT_VERIFIED`** on sign-in to a **verification_required** state so `SignInForm` can show **`ResendVerificationForm`**, which uses `resendVerificationEmail` (`authClient.sendVerificationEmail`).
+
+> **Note:** Exact verification URLs and mail content come from Better Auth and your email provider configuration—not from these React components alone.
+
+## Magic link and OAuth
+
+Same building blocks as sign-in: **`sendMagicLink`** → **`/check-email`**, and **`signInWithOAuth`** for social sign-up (same underlying social flow as sign-in).
+
+## Related routes
+
+| Constant / path | Role |
+| --------------- | ---- |
+| `routes.auth.signup` → `/sign-up` | Registration |
+| `routes.auth.verifyEmailSent` → `/verify-email/sent` | “Check your email” after sign-up |
+| `routes.auth.checkEmail` → `/check-email` | Magic link instructions |

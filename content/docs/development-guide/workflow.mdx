@@ -1,0 +1,51 @@
+---
+title: Development workflow
+description: Local dev server, Turbopack, and how the repo is organized for day-to-day work.
+---
+
+## Start the app
+
+From the project root, install dependencies with `pnpm` (the repo’s package manager), then run the dev server:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+The `dev` script runs Next.js with **Turbopack** enabled:
+
+```5:7:package.json
+    "dev": "next dev --turbopack",
+    "email:dev": "email dev -d shared/lib/email/templates -p 3001",
+    "build": "next build",
+```
+
+> **Note:** Email template preview uses a separate port (`pnpm email:dev` → `3001` by default) so it does not conflict with the main app.
+
+## Hot reload
+
+Editing React components, route files, styles, and server modules triggers Fast Refresh / rebuilds as usual for Next.js. No extra configuration is required for typical changes.
+
+## Common commands
+
+| Command | Purpose |
+|--------|---------|
+| `pnpm dev` | Development server (Turbopack) |
+| `pnpm build` | Production build |
+| `pnpm start` | Run production server after build |
+| `pnpm test` | Vitest test run |
+| `pnpm lint` | ESLint |
+| `pnpm db:migrate` | Prisma migrations |
+| `pnpm db:studio` | Prisma Studio |
+
+## Where code lives
+
+- **`app/`** — Route segments: `page.tsx`, `layout.tsx`, `route.ts`, loading and error UI. Keep these thin.
+- **`features/`** — Feature modules: actions, components, server-only data access, schemas, types.
+- **`shared/`** — Cross-cutting UI, config, hooks, auth, db client, constants.
+
+This matches the structure described in the project’s contributor docs: product behavior belongs in `features/` and `shared/`, not buried in `app/` route files.
+
+## Environment
+
+Copy and fill env vars as described in the installation docs (`POSTGRES_URL`, auth secrets, Stripe keys, etc.). The dev server expects a reachable PostgreSQL instance for Prisma.

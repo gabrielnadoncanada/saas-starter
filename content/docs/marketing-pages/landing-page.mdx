@@ -1,0 +1,80 @@
+---
+title: Landing page
+description: Structure of the marketing home page and where to edit each section.
+---
+
+The public landing page is `app/(marketing)/page.tsx`. It is wrapped by `app/(marketing)/layout.tsx`, which renders `MarketingHeader`, page content, and `MarketingFooter`.
+
+## Layout shell
+
+```1:15:app/(marketing)/layout.tsx
+import { MarketingFooter } from "@/features/marketing/components/marketing-footer";
+import { MarketingHeader } from "@/features/marketing/components/marketing-header";
+
+export default function MarketingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex min-h-screen flex-col">
+      <MarketingHeader />
+      <div className="flex-1">{children}</div>
+      <MarketingFooter />
+    </div>
+  );
+}
+```
+
+## Home page composition
+
+`HomePage` exports metadata for SEO, then composes sections in order:
+
+1. **Hero** — headline, subcopy, CTAs to `#pricing` and `#screenshots`, tech stack line.
+2. **`CodeProof`** — code-oriented value prop.
+3. **`AiProof`** — AI-related value prop.
+4. **`MarketingFeatureGrid`** — `id="features"`.
+5. **`ScreenshotsGallery`** — `id="screenshots"`.
+6. **`ComparisonSection`** — `id="compare"`.
+7. **`IncludedItemsSection`** — bullet list of what is included.
+8. **Stack strip** — `id="stack"`; lists technologies as text.
+9. **`StarterPricing`** — `id="pricing"`.
+10. **`BuilderSection`** — `id="built-by"`.
+11. **`BuyerFaq`** — `id="faq"`.
+12. **Closing CTA** — repeat pricing button and refund line.
+
+```29:108:app/(marketing)/page.tsx
+export default function HomePage() {
+  return (
+    <main>
+      <section className="py-20 lg:py-28">
+        ...
+      </section>
+
+      <CodeProof />
+      <AiProof />
+      <MarketingFeatureGrid />
+      <ScreenshotsGallery />
+      <ComparisonSection />
+      <IncludedItemsSection />
+
+      <section id="stack" className="border-t py-14">
+        ...
+      </section>
+
+      <StarterPricing />
+      <BuilderSection />
+      <BuyerFaq />
+      ...
+    </main>
+  );
+}
+```
+
+## Customization
+
+- **Copy and headings:** Edit the hero and closing sections inline in `page.tsx`, or open the feature components under `features/marketing/components/` (each file owns its own strings and structure).
+- **Navigation anchors:** `MarketingHeader` links to `/#features`, `/#screenshots`, `/#compare`, `/#pricing`, and `/#faq`. Keep those IDs in sync with the `id` attributes on sections inside the components above.
+- **Accent color:** The hero highlights “plan gating” with `text-orange-500`; other blocks use `bg-orange-500` for badges and icons. Align these classes with your brand palette or semantic tokens if you migrate away from orange.
+
+> **Note:** There is a separate route at `app/(marketing)/pricing/page.tsx` if you add a dedicated pricing URL; the home page still embeds `StarterPricing` for the main funnel.

@@ -1,0 +1,66 @@
+---
+title: Forms
+description: Form patterns with Zod, server actions, react-hook-form, and shared field state.
+---
+
+## Pattern A: Server Actions + `useActionState` (app features)
+
+The tasks feature uses native HTML forms submitted to Zod-wrapped server actions. The client wrapper uses React’s `useActionState`:
+
+```39:48:features/tasks/components/task-form-sheet.tsx
+  const createState = useActionState<CreateTaskActionState, FormData>(
+    createTaskAction,
+    {},
+  );
+  const updateState = useActionState<FormActionState<UpdateTaskValues>, FormData>(
+    updateTaskAction,
+    {},
+  );
+  const [state, formAction, isPending] =
+    props.mode === "create" ? createState : updateState;
+```
+
+The form passes `formAction` to `<form action={formAction}>` and reads validation state for `Field` / `FieldError`:
+
+```86:99:features/tasks/components/task-form.tsx
+        <form
+          action={formAction}
+          className="flex flex-1 flex-col gap-6 overflow-y-auto px-4"
+        >
+          {task ? <input type="hidden" name="taskId" value={task.id} /> : null}
+
+          <FieldGroup className="gap-4">
+            <Field data-invalid={title.invalid}>
+              <FieldLabel htmlFor="task-title">Title</FieldLabel>
+              <Input
+                id="task-title"
+                name="title"
+                defaultValue={title.value}
+```
+
+`getFieldState` from `shared/lib/get-field-state` merges server `fieldErrors` with default values for controlled display after validation failures.
+
+Schemas live in `features/tasks/task-form.schema.ts` and are imported by `task.actions.ts` through `validatedAuthenticatedAction`.
+
+## Pattern B: `react-hook-form` + Zod (auth and multi-step flows)
+
+Sign-in and other auth flows use `useForm` with `zodResolver` for client-side validation before calling auth client helpers (not always a server action):
+
+```55:61:features/auth/components/sign-in-form.tsx
+  const emailForm = useForm<EmailValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: emailDefaultValues,
+  });
+  const passwordForm = useForm<SignInPasswordValues>({
+    resolver: zodResolver(signInPasswordSchema),
+    defaultValues: signInPasswordDefaultValues,
+  });
+```
+
+Use this style when you need fine-grained client control (multi-step UX, OAuth side effects) while still using Zod schemas from `features/auth/schemas/`.
+
+## Shared state shape
+
+Server actions return `FormActionState` values (`success`, `error`, `fieldErrors`, optional `values`) defined in `shared/types/form-action-state.ts`. Keep new form actions consistent with that contract when using `validatedAuthenticatedAction`.
+
+> **Note:** Pick **one** pattern per surface: progressive-enhancement forms with `useActionState` for CRUD tied to server actions; `react-hook-form` when the UX is primarily client-driven (like auth).

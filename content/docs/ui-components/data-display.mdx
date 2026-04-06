@@ -1,0 +1,123 @@
+---
+title: Data display
+description: Tables, cards, badges, avatars, and TanStack-powered data table helpers.
+---
+
+## Table
+
+`Table` wraps a `<table>` in a horizontal scroll container. Compose with `TableHeader`, `TableBody`, `TableFooter`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`.
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead className="text-end">Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow data-state="selected">
+      <TableCell>Acme</TableCell>
+      <TableCell className="text-end">Active</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+## Card
+
+```tsx
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+
+<Card>
+  <CardHeader>
+    <CardTitle>Usage</CardTitle>
+    <CardDescription>Current billing period</CardDescription>
+    <CardAction>
+      <Button size="sm" variant="outline">
+        Manage
+      </Button>
+    </CardAction>
+  </CardHeader>
+  <CardContent>…</CardContent>
+  <CardFooter className="border-t">…</CardFooter>
+</Card>
+```
+
+## Badge
+
+```tsx
+import { Badge } from "@/shared/components/ui/badge";
+
+<Badge>New</Badge>
+<Badge variant="secondary">Draft</Badge>
+<Badge variant="destructive">Failed</Badge>
+<Badge variant="outline">Beta</Badge>
+```
+
+Variants include `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`. Use `asChild` to render as a child element (e.g. anchor) with badge styles.
+
+## Avatar
+
+```tsx
+"use client";
+
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/shared/components/ui/avatar";
+
+<Avatar size="default">
+  <AvatarImage src="/avatar.png" alt="User" />
+  <AvatarFallback>AB</AvatarFallback>
+</Avatar>
+```
+
+`size` is `default` | `sm` | `lg`. Also exported: `AvatarBadge`, `AvatarGroup`, `AvatarGroupCount` for stacked avatars and counts.
+
+## Data table helpers (`@tanstack/react-table`)
+
+Exports from `shared/components/data-table/`:
+
+| Export                    | Role |
+| ------------------------- | ---- |
+| `DataTableContent`        | Renders header/body from a `Table` instance; supports column `meta` for `className` / `thClassName` / `tdClassName` |
+| `DataTableColumnHeader`   | Sortable header with dropdown (asc/desc/hide) |
+| `DataTablePagination`     | Page size select + page navigation |
+| `DataTableFacetedFilter`  | Popover + command list for multi-select filters |
+| `DataTableViewOptions`    | Toggle column visibility |
+| `DataTableBulkActions`    | Toolbar when rows are selected |
+
+Example pattern:
+
+```tsx
+"use client";
+
+import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
+import { DataTableContent } from "@/shared/components/data-table";
+
+const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
+
+<DataTableContent table={table} />;
+```
+
+Wire sorting and pagination in your table options to match `DataTableColumnHeader` and `DataTablePagination` expectations.

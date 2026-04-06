@@ -1,0 +1,61 @@
+---
+title: Adding features
+description: Feature module layout under features/ and how routes consume feature code.
+---
+
+## Feature folder pattern
+
+Business logic and UI for a capability live under `features/<name>/`. The starter uses a consistent split:
+
+- **`actions/`** — Server Actions (`"use server"`) exposed to the client.
+- **`components/`** — Feature UI (client and server components as needed).
+- **`server/`** — Server-only helpers: Prisma queries, auth/org guards, mutations. Often starts with `import "server-only"`.
+- **`schemas/`** — Zod schemas for forms and validation (example: `features/organizations/schemas/organization.schema.ts`).
+- **`types/`** or **`types.ts`** — Shared TypeScript types for the feature.
+
+Flat files are also used when a single schema file is enough (for example `features/tasks/task-form.schema.ts`).
+
+## Example: organizations
+
+The organizations feature includes schemas, actions, and server helpers:
+
+```
+features/organizations/
+  actions/
+  components/
+  schemas/organization.schema.ts
+  server/
+  types.ts
+```
+
+## Example: tasks
+
+Tasks demonstrate actions wired to Zod and server mutations:
+
+```
+features/tasks/
+  actions/task.actions.ts
+  components/...
+  server/task-mutations.ts
+  server/get-tasks-page.ts
+  task-form.schema.ts
+```
+
+## App routes stay thin
+
+`app/` should only define routes and compose feature components. For example, the admin users page imports the table from `features/admin` and calls server functions for the initial list:
+
+```13:20:app/(app)/admin/users/page.tsx
+export default async function AdminUsersPage() {
+  const currentUser = await requireAdmin();
+  const result = await listAdminUsers({
+    limit: PAGE_SIZE,
+    offset: 0,
+    sortBy: "createdAt",
+    sortDirection: "desc",
+  });
+```
+
+Dependency direction in this codebase is **`app` → `features` → `shared/lib`**. Feature folders should not depend on `features/admin` for domain behavior; admin is a shell.
+
+> **Note:** Add new cross-app helpers to `shared/` only when multiple features need them; otherwise keep code inside the feature folder.

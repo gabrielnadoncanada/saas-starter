@@ -1,0 +1,94 @@
+---
+title: Utilities
+description: Separator, scroll area, collapsible, accordion, and related layout helpers in shared/components/ui.
+---
+
+## Separator
+
+Visual divider; horizontal or vertical:
+
+```tsx
+import { Separator } from "@/shared/components/ui/separator";
+
+<div className="space-y-2">
+  <p>Above</p>
+  <Separator />
+  <p>Below</p>
+</div>
+
+<div className="flex h-5 items-center gap-2">
+  <span>Left</span>
+  <Separator orientation="vertical" />
+  <span>Right</span>
+</div>
+```
+
+Props match Radix `Separator`: `orientation` defaults to `horizontal`, `decorative` defaults to `true`.
+
+## Scroll area
+
+Custom scrollbars with `ScrollArea` (viewport + scrollbar + corner):
+
+```tsx
+"use client";
+
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
+
+<ScrollArea className="h-72 rounded-md border p-4">
+  <div className="space-y-4">…long content…</div>
+</ScrollArea>
+```
+
+`ScrollBar` is exported if you need a standalone scrollbar.
+
+## Collapsible
+
+Expand/collapse without accordion semantics:
+
+```tsx
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/components/ui/collapsible";
+
+<Collapsible>
+  <CollapsibleTrigger asChild>
+    <Button variant="ghost" size="sm">
+      Toggle
+    </Button>
+  </CollapsibleTrigger>
+  <CollapsibleContent>Hidden until open</CollapsibleContent>
+</Collapsible>
+```
+
+## Accordion
+
+Single or multiple open sections:
+
+```tsx
+"use client";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/shared/components/ui/accordion";
+
+<Accordion type="single" collapsible>
+  <AccordionItem value="one">
+    <AccordionTrigger>First</AccordionTrigger>
+    <AccordionContent>Answer text.</AccordionContent>
+  </AccordionItem>
+</Accordion>
+```
+
+## Other primitives in this folder
+
+The same directory includes additional building blocks you can import when needed, for example: `AspectRatio`, `Breadcrumb`, `Carousel`, `Calendar`, `Chart`, `Command`, `Combobox`, `Drawer`, `Empty`, `InputOTP`, `Kbd`, `Menubar`, `NavigationMenu`, `Pagination`, `Resizable`, `Slider`, `Tabs`, `Toggle`, `ToggleGroup`, and `Sidebar`. Add them through the shadcn CLI or copy patterns from existing usage in `features/` and `app/`.
+
+> **Note:** Prefer reusing these primitives over one-off styled divs so the design stays consistent with the shared theme tokens.

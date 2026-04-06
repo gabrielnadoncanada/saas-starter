@@ -1,0 +1,62 @@
+---
+title: Stripe setup
+description: Environment variables, webhook endpoint, and customer lifecycle helpers for Stripe.
+---
+
+## Environment variables
+
+From **`.env.example`** (use a real `.env` locally):
+
+**Core**
+
+- `STRIPE_SECRET_KEY` — Secret API key (test `sk_test_...` in development).
+- `STRIPE_WEBHOOK_SECRET` — Signing secret from the Stripe Dashboard webhook endpoint (`whsec_...`).
+
+**Price ids (required for paid plans in UI)**
+
+- `STRIPE_PRICE_PRO_MONTHLY`, `STRIPE_PRICE_PRO_YEARLY`
+- `STRIPE_PRICE_TEAM_MONTHLY`, `STRIPE_PRICE_TEAM_YEARLY`
+
+**Behavior toggles**
+
+- `STRIPE_ENABLE_TRIAL_WITHOUT_CC` — When `true`, Checkout uses `payment_method_collection: "if_required"` for trials.
+- `ENABLE_AUTOMATIC_TAX_CALCULATION`, `ENABLE_TAX_ID_COLLECTION`, `STRIPE_REQUIRE_BILLING_ADDRESS` — Passed into Checkout session creation (billing address defaults on if tax options are enabled).
+
+```22:27:.env.example
+# Stripe billing behavior
+STRIPE_ENABLE_TRIAL_WITHOUT_CC=false
+ENABLE_AUTOMATIC_TAX_CALCULATION=false
+ENABLE_TAX_ID_COLLECTION=false
+STRIPE_REQUIRE_BILLING_ADDRESS=false
+```
+
+Also set `BASE_URL` so success/cancel URLs resolve correctly for Checkout and the billing portal.
+
+## Webhook route
+
+`POST /api/stripe/webhook` verifies the `stripe-signature` header with `STRIPE_WEBHOOK_SECRET`, constructs the event, and delegates to `handleStripeWebhookEvent`.
+
+```7:37:app/api/stripe/webhook/route.ts
+export async function POST(request: Request) {
+  const payload = await request.text();
+  const signature = (await headers()).get("stripe-signature");
+  // ...
+  event = stripe.webhooks.constructEvent(
+    payload,
+    signature,
+    process.env.STRIPE_WEBHOOK_SECRET!,
+  );
+  // ...
+  await handleStripeWebhookEvent(event);
+  return NextResponse.json({ received: true });
+}
+```
+
+## Customers and portal
+
+- **`ensureOrganizationStripeCustomer`** — Creates a Stripe Customer if the organization has none, stores `stripeCustomerId` on the org.
+- **`createOrganizationBillingPortalSession`** — Opens the Stripe Customer Portal with `return_url` back to `/settings/billing`.
+
+Point your Stripe webhook to `https://<your-domain>/api/stripe/webhook` and subscribe to the events handled in `stripe-webhooks.ts` (see the lifecycle hooks doc).
+
+> **Warning:** Without valid price env vars, `getPricingPlans()` filters out plans with no configured monthly price, and checkout cannot build line items.

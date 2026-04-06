@@ -1,0 +1,61 @@
+---
+title: Prerequisites
+description: Software and tooling required to run this Next.js SaaS starter locally.
+---
+
+## Overview
+
+Before you install the project, install the tools below. Versions match what this repo is developed and tested with (see `package.json` for exact framework and library versions).
+
+## Required software
+
+### Node.js (20 or newer)
+
+Next.js **16.2.x** and the toolchain expect a current Node.js LTS. Use **Node.js 20+** (22 LTS is fine).
+
+Verify:
+
+```bash
+node -v
+```
+
+You should see `v20.x`, `v22.x`, or newer.
+
+### pnpm
+
+This project uses **pnpm** as the package manager (no `npm` / `yarn` lockfiles).
+
+Install: [https://pnpm.io/installation](https://pnpm.io/installation)
+
+Verify:
+
+```bash
+pnpm -v
+```
+
+### PostgreSQL (16+)
+
+The app uses **PostgreSQL** with Prisma (`provider = "postgresql"` in `prisma/schema.prisma`). Use **PostgreSQL 16 or newer** locally or a managed instance (Neon, Supabase, RDS, etc.).
+
+Verify (if `psql` is on your PATH):
+
+```bash
+psql --version
+```
+
+### Git
+
+You need **Git** to clone the repository and track changes.
+
+Verify:
+
+```bash
+git --version
+```
+
+## Optional but useful
+
+- **Docker** — README quick start uses `docker compose up -d` for a local database if you prefer containers.
+- **Stripe CLI** — Helpful for webhook secrets and local testing (`shared/lib/db/setup.ts` can integrate with it during setup).
+
+> **Note:** After installing Node, use the same major version your team documents for CI to avoid subtle dependency issues.

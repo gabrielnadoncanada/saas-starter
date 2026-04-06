@@ -1,0 +1,88 @@
+---
+title: Key packages
+description: Main dependencies from package.json used by this SaaS starter.
+---
+
+Versions below are taken from **`package.json`** at the time of writing; run `pnpm list <pkg>` or open `package.json` for the exact semver ranges in your checkout.
+
+## Framework and runtime
+
+| Package   | Role |
+| --------- | ---- |
+| `next`    | **16.2.x** — App Router, dev server (`pnpm dev` uses `--turbopack`). |
+| `react` / `react-dom` | **19.2.x** — UI runtime. |
+| `typescript` | Type-checking (devDependency). |
+
+```json
+"next": "16.2.1",
+"react": "19.2.4",
+"react-dom": "19.2.4"
+```
+
+## Database
+
+| Package           | Role |
+| ----------------- | ---- |
+| `@prisma/client`  | Generated client for PostgreSQL. |
+| `prisma`          | CLI (migrations, generate, studio) — devDependency. |
+| `@prisma/adapter-pg` | Prisma driver adapter for `pg`. |
+| `pg`              | Node PostgreSQL driver. |
+
+Schema is split under `prisma/models/*.prisma` with a root `prisma/schema.prisma` datasource using `provider = "postgresql"`.
+
+## Authentication and payments
+
+| Package              | Role |
+| -------------------- | ---- |
+| `better-auth`        | Authentication core. |
+| `@better-auth/stripe` | Stripe plugin for Better Auth. |
+| `@better-auth/infra` | Better Auth infrastructure helpers. |
+| `stripe`             | Stripe server SDK. |
+
+## AI
+
+| Package           | Role |
+| ----------------- | ---- |
+| `ai`              | Vercel AI SDK. |
+| `@ai-sdk/react`   | React hooks for AI UI. |
+| `@ai-sdk/openai` / `@ai-sdk/google` / `@ai-sdk/groq` | Model provider packages. |
+| `ai-elements`     | Prebuilt AI/chat UI components. |
+
+## UI and styling
+
+| Package        | Role |
+| -------------- | ---- |
+| `tailwindcss`  | **4.1.x** — styling (`@tailwindcss/postcss` for build). |
+| `radix-ui`     | Unstyled primitives (shadcn-style stack). |
+| `@base-ui/react` | Additional headless UI primitives. |
+| `lucide-react` | Icons. |
+| `class-variance-authority` / `clsx` / `tailwind-merge` | Class composition. |
+| `next-themes`  | Theme switching. |
+
+## Forms, validation, tables
+
+| Package                  | Role |
+| ------------------------ | ---- |
+| `zod`                    | Schema validation. |
+| `react-hook-form`        | Form state. |
+| `@hookform/resolvers`    | Connect Zod to RHF. |
+| `@tanstack/react-table`  | Data tables. |
+
+## Email and docs site
+
+| Package           | Role |
+| ----------------- | ---- |
+| `resend`          | Transactional email API. |
+| `@react-email/components` / `react-email` | Email templates and dev preview. |
+| `fumadocs-core` / `fumadocs-mdx` / `fumadocs-ui` | Documentation UI and MDX. |
+
+## Testing and quality
+
+| Package              | Role |
+| -------------------- | ---- |
+| `vitest`             | Unit tests (`pnpm test`). |
+| `@playwright/test`   | E2E (devDependency). |
+| `eslint` / `prettier` | Lint and format. |
+| `knip`               | Dead-code analysis (`pnpm dead-code`). |
+
+> **Note:** This is not an exhaustive list—see **`package.json`** `dependencies` and `devDependencies` for every package.

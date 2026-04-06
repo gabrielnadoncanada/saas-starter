@@ -1,0 +1,66 @@
+---
+title: Project setup
+description: Environment file, database URL, migrations, and optional seed data.
+---
+
+## Copy environment variables
+
+From the repository root:
+
+```bash
+cp .env.example .env
+```
+
+The example file documents every variable; see [Environment variables](./environment-variables) for a full reference.
+
+> **Note:** The project expects a **`.env`** file by default (not necessarily `.env.local`), unless you change how config is loaded. Comment in `.env.example`: *Keep this as `.env`, not `.env.local`, unless you also change the app config.*
+
+## Configure PostgreSQL
+
+Set **`POSTGRES_URL`** in `.env` to a valid PostgreSQL connection string, for example:
+
+```env
+POSTGRES_URL=postgresql://USER:PASSWORD@localhost:5432/DATABASE
+```
+
+The Prisma CLI reads this variable through `prisma.config.ts`:
+
+```ts
+datasource: {
+  url: env("POSTGRES_URL"),
+},
+```
+
+You can use Docker for a local server (see the root `README.MD` quick start: `docker compose up -d`) or any PostgreSQL 16+ instance.
+
+## Run migrations
+
+Apply the schema to your database:
+
+```bash
+pnpm db:migrate
+```
+
+This runs `pnpm exec prisma migrate dev`, creating or updating tables under `prisma/migrations`.
+
+### Other database commands (from `package.json`)
+
+| Script          | Purpose                                      |
+| --------------- | -------------------------------------------- |
+| `db:push`       | Push schema without a migration (dev only)   |
+| `db:reset`      | Reset DB and re-run migrations               |
+| `db:seed`       | Run the seed script                          |
+| `db:studio`     | Open Prisma Studio                           |
+| `db:setup`      | Interactive helper (`shared/lib/db/setup.ts`) |
+
+## Seed demo data (optional)
+
+After migrations:
+
+```bash
+pnpm db:seed
+```
+
+The seed entry is configured in `prisma.config.ts` (`seed: "tsx shared/lib/db/seed.ts"`). Seeded accounts are listed in `README.MD` (for example `demo@starter.local` / `demo123`).
+
+> **Warning:** Do not point `POSTGRES_URL` at production data when running `db:reset` or experimental `db:push` workflows.

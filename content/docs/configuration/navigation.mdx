@@ -1,0 +1,94 @@
+---
+title: Navigation
+description: Sidebar data shapes, route constants, and where to edit app, admin, and settings menus.
+---
+
+## Shared types
+
+Navigation structure is typed in `shared/components/navigation/sidebar-types.ts`. A sidebar consists of **groups**, each with **items**. Items are either a single link (`url` + optional `icon`) or a **collapsible** group with nested `items` (no top-level `url`).
+
+```7:26:shared/components/navigation/sidebar-types.ts
+export type SidebarNavLink = SidebarBaseItem & {
+  url: string;
+  items?: never;
+};
+
+export type SidebarNavCollapsible = SidebarBaseItem & {
+  items: (SidebarBaseItem & { url: string })[];
+  url?: never;
+};
+
+export type SidebarNavItem = SidebarNavCollapsible | SidebarNavLink;
+
+export type SidebarNavGroup = {
+  title: string;
+  items: SidebarNavItem[];
+};
+
+export type SidebarData = {
+  navGroups: SidebarNavGroup[];
+};
+```
+
+`NavGroup` (`shared/components/navigation/nav-group.tsx`) renders these structures and highlights active routes from `usePathname()`.
+
+## Route paths
+
+Use `routes` from `shared/constants/routes.ts` for hrefs so URLs stay consistent:
+
+```19:36:shared/constants/routes.ts
+  app: {
+    dashboard: "/dashboard",
+    tasks: "/dashboard/tasks",
+    assistant: "/dashboard/assistant",
+  },
+  admin: {
+    dashboard: "/admin",
+    users: "/admin/users",
+    organizations: "/admin/organizations",
+  },
+  settings: {
+    profile: "/settings",
+    preferences: "/settings/preferences",
+    security: "/settings/security",
+    billing: "/settings/billing",
+    organization: "/settings/organization",
+    members: "/settings/members",
+  },
+```
+
+Add or change paths here when you add pages, then reference them from navigation data.
+
+## App (dashboard) sidebar
+
+Edit `features/dashboard/config/dashboard-navigation.ts`. Export `dashboardSidebarData` with `navGroups` (icons from `lucide-react`).
+
+```6:19:features/dashboard/config/dashboard-navigation.ts
+export const dashboardSidebarData: SidebarData = {
+  navGroups: [
+    {
+      title: "General",
+      items: [
+        {
+          title: "Dashboard",
+          url: routes.app.dashboard,
+          icon: LayoutDashboard,
+        },
+        { title: "Tasks", url: routes.app.tasks, icon: ListTodo },
+      ],
+    },
+  ],
+};
+```
+
+The command palette (`shared/components/command/command-menu.tsx`) reuses `dashboardSidebarData` for quick navigation.
+
+## Admin sidebar
+
+Edit `features/admin/config/admin-navigation.ts` — same `SidebarData` shape, `routes.admin.*` links.
+
+## Settings sidebar
+
+`shared/components/navigation/settings-sidebar.tsx` defines `settingsSidebarData` inline. Workspace items (organization, members) are included only when `accountFlags.enableTeamFeatures` is true — see `workspaceItems` and the Account / Workspace groups.
+
+> **Note:** There is no separate JSON config file for navigation; adjust the TypeScript objects above and keep icons and titles in one place per surface.

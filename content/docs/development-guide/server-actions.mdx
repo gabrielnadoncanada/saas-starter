@@ -1,0 +1,83 @@
+---
+title: Server actions
+description: Patterns for server actions, revalidation, and Zod-validated authenticated forms.
+---
+
+## Declaring server actions
+
+Mark the file with `"use server"` at the top. Import server-only modules (Prisma, feature mutations) from paths that do not leak into client bundles incorrectly.
+
+Admin actions use imperative guards and Better Auth APIs:
+
+```1:21:features/admin/actions/admin-users.actions.ts
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+
+import { requireAdminAction } from "@/features/auth/server/require-admin";
+import { auth } from "@/shared/lib/auth/auth-config";
+
+import { getAdminUserDetail } from "../server/get-admin-user-detail";
+import { listAdminUsers } from "../server/list-admin-users";
+import type { ListAdminUsersQuery } from "../types/admin-users.types";
+
+function revalidateAdminUsersPage() {
+  revalidatePath("/admin");
+  revalidatePath("/admin/users");
+}
+
+export async function listAdminUsersAction(query: ListAdminUsersQuery) {
+  await requireAdminAction();
+  return listAdminUsers(query);
+}
+```
+
+## Revalidation
+
+After mutations, call `revalidatePath` (and optionally `revalidateTag`) for routes that show stale data. Admin user actions revalidate `/admin` and `/admin/users`; organization delete revalidates `/admin` and `/admin/organizations`.
+
+## Authenticated actions with Zod
+
+For form posts from the app, the starter provides `validatedAuthenticatedAction` in `shared/lib/auth/authenticated-action.ts`. It:
+
+1. Resolves the current user with `getCurrentUser()`.
+2. Parses `FormData` with a Zod schema.
+3. Returns structured `FormActionState` with `fieldErrors` on validation failure.
+
+Task actions wrap this helper:
+
+```58:85:features/tasks/actions/task.actions.ts
+export const createTaskAction = validatedAuthenticatedAction<
+  typeof createTaskSchema,
+  { task?: Task }
+>(
+  createTaskSchema,
+  async (data) => {
+    try {
+      const task = await createTask(data);
+
+      revalidatePath(routes.app.tasks);
+
+      return {
+        success: "Task created",
+        task,
+      };
+    } catch (error) {
+      if (
+        error instanceof UpgradeRequiredError ||
+        error instanceof LimitReachedError ||
+        (error instanceof Error && error.message === "Organization not found")
+      ) {
+        return { error: error.message };
+      }
+
+      throw error;
+    }
+  },
+);
+```
+
+Business logic stays in `features/tasks/server/task-mutations.ts`; the action layer handles HTTP-ish concerns (revalidate, user-visible errors).
+
+> **Note:** Admin actions use `requireAdminAction()` instead of `validatedAuthenticatedAction` because they are invoked programmatically from admin UI, not always via a single `FormData` shape.

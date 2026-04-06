@@ -1,0 +1,85 @@
+---
+title: Updating the codebase
+description: Stay in sync with upstream Git changes and resolve merge conflicts.
+---
+
+## Typical layout: origin and upstream
+
+After you [clone](./clone-repository) your fork:
+
+1. **origin** — your fork (push here).
+2. **upstream** — the original starter repository (pull updates from here).
+
+Add `upstream` once (replace the URL with the real upstream):
+
+```bash
+git remote add upstream https://github.com/ORIGINAL_ORG/saas-starter.git
+git remote -v
+```
+
+If `upstream` already exists, skip `git remote add` or use `git remote set-url upstream <url>` to fix it.
+
+## Fetch and merge upstream
+
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+```
+
+Use `master` instead of `main` if your default branch name differs.
+
+## Rebase instead of merge (optional)
+
+For a linear history:
+
+```bash
+git fetch upstream
+git checkout main
+git rebase upstream/main
+```
+
+Resolve conflicts during the rebase, then:
+
+```bash
+git rebase --continue
+```
+
+> **Warning:** Do not rebase commits you have already pushed to a shared branch unless your team agrees; it rewrites history.
+
+## Merge conflicts
+
+When Git stops with conflicts:
+
+1. Open the listed files; look for conflict markers `<<<<<<<`, `=======`, `>>>>>>>`.
+2. Edit to keep the correct combined code (or choose one side intentionally).
+3. Mark resolved and continue:
+
+```bash
+git add path/to/resolved-file.ts
+git merge --continue
+```
+
+Or during rebase:
+
+```bash
+git add path/to/resolved-file.ts
+git rebase --continue
+```
+
+## Push your updated fork
+
+```bash
+git push origin main
+```
+
+## Staying clean before updating
+
+Commit or stash local work before merging or rebasing so you can roll back easily:
+
+```bash
+git status
+git stash push -m "wip before upstream merge"
+```
+
+After updating, `git stash pop` if needed.

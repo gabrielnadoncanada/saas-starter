@@ -1,0 +1,90 @@
+---
+title: Environment variables
+description: Reference for environment variables used by the starter, based on .env.example and the codebase.
+---
+
+## How to configure
+
+Copy `.env.example` to `.env`. The example file recommends `.env` over `.env.local` unless you align tooling with that choice.
+
+> **Note:** `getAppBaseUrl()` in `shared/lib/email/config.ts` resolves `BASE_URL`, then `AUTH_URL`, then `http://localhost:3000` for email links when `BASE_URL` is unset.
+
+## Database
+
+| Variable | Purpose |
+| --- | --- |
+| `POSTGRES_URL` | PostgreSQL connection string for Prisma (`shared/lib/db/prisma.ts`). |
+
+## Stripe
+
+| Variable | Purpose |
+| --- | --- |
+| `STRIPE_SECRET_KEY` | Stripe SDK secret key (`shared/lib/stripe/client.ts`). |
+| `STRIPE_WEBHOOK_SECRET` | Verifies webhook signatures (`app/api/stripe/webhook/route.ts`). |
+| `STRIPE_PRICE_PRO_MONTHLY` | Pro plan monthly price ID (`shared/config/billing.config.ts`). |
+| `STRIPE_PRICE_PRO_YEARLY` | Pro plan yearly price ID. |
+| `STRIPE_PRICE_TEAM_MONTHLY` | Team plan monthly price ID. |
+| `STRIPE_PRICE_TEAM_YEARLY` | Team plan yearly price ID. |
+| `STRIPE_PRICE_STORAGE_BOOST` | Optional one-time storage add-on price ID. |
+| `STRIPE_ENABLE_TRIAL_WITHOUT_CC` | `"true"` / `"false"` — trials without card (`features/billing/server/stripe/stripe-checkout.ts`). |
+| `ENABLE_AUTOMATIC_TAX_CALCULATION` | Stripe Checkout automatic tax. |
+| `ENABLE_TAX_ID_COLLECTION` | Collect tax IDs at checkout. |
+| `STRIPE_REQUIRE_BILLING_ADDRESS` | Require billing address; defaults to true if tax flags imply it. |
+
+## App URLs and auth
+
+| Variable | Purpose |
+| --- | --- |
+| `BASE_URL` | Public app URL; used by Better Auth (`baseURL`), Stripe return URLs, and email base URL. |
+| `AUTH_SECRET` | Better Auth secret (`shared/lib/auth/auth-config.ts`). |
+| `BETTER_AUTH_API_KEY` | Documented in `.env.example` for optional Better Auth API usage; keep empty if unused. |
+| `AUTH_URL` | Fallback base URL for `getAppBaseUrl()` when `BASE_URL` is not set. |
+
+## Email (Resend)
+
+| Variable | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Required when sending mail (`shared/lib/email/config.ts`). |
+| `EMAIL_FROM` | Required sender address. |
+| `EMAIL_REPLY_TO` | Optional reply-to address. |
+
+Magic link and transactional emails also require these; `hasMagicLinkProvider()` in `shared/lib/auth/oauth-config.ts` checks `RESEND_API_KEY` and `EMAIL_FROM`.
+
+## OAuth
+
+| Variable | Purpose |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth; both must be set for the provider to register. |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth; same rule. |
+| `ALLOW_EMAIL_ACCOUNT_LINKING` | Set to `"true"` to enable OAuth account linking by email (`auth-config.ts`). |
+
+## Account mode
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_ACCOUNT_MODE` | `"personal-only"` or `"organizations-only"` (default if invalid or missing: `organizations-only`). |
+
+## AI assistant
+
+| Variable | Purpose |
+| --- | --- |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Google Gemini models (`shared/lib/ai/providers/google.ts`). |
+| `GROQ_API_KEY` | Groq-hosted models (`shared/lib/ai/providers/groq.ts`). |
+
+Model choice is by feature code (`shared/lib/ai/models.ts`), not a separate `AI_PROVIDER` env var.
+
+## Optional S3 storage
+
+When all of the following are set, S3 storage is enabled (`shared/lib/storage/storage.ts`):
+
+- `STORAGE_S3_ENDPOINT`
+- `STORAGE_S3_BUCKET`
+- `STORAGE_S3_ACCESS_KEY_ID`
+- `STORAGE_S3_SECRET_ACCESS_KEY`
+- `STORAGE_S3_REGION`
+
+## Runtime
+
+| Variable | Purpose |
+| --- | --- |
+| `NODE_ENV` | Prisma logging and dev-only behavior (`shared/lib/db/prisma.ts`). |

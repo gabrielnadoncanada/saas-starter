@@ -1,0 +1,51 @@
+---
+title: Subscription lifecycle hooks
+description: Stripe webhook events handled in-app and how they update subscriptions and purchases.
+---
+
+## Entry point
+
+`handleStripeWebhookEvent` in `features/billing/server/stripe/stripe-webhooks.ts` switches on `event.type` and returns early for unknown types.
+
+```150:167:features/billing/server/stripe/stripe-webhooks.ts
+export async function handleStripeWebhookEvent(event: Stripe.Event) {
+  switch (event.type) {
+    case "checkout.session.completed":
+      await handleCheckoutCompleted(
+        event.data.object as Stripe.Checkout.Session,
+      );
+      return;
+    case "customer.deleted":
+      await handleCustomerDeleted(event.data.object as Stripe.Customer);
+      return;
+    case "customer.subscription.created":
+    case "customer.subscription.updated":
+    case "customer.subscription.deleted":
+      await syncSubscription(event.data.object as Stripe.Subscription);
+      return;
+    default:
+      return;
+  }
+}
+```
+
+## `checkout.session.completed`
+
+- Resolves **organization** from `session.metadata.organizationId` or `client_reference_id`.
+- Syncs Stripe customer id onto the organization.
+- If `mode === "payment"`, upserts a **completed** `purchase` row for one-time products (metadata `itemKey`).
+
+## Subscription sync (`customer.subscription.*`)
+
+`syncSubscription`:
+
+1. Resolves **reference id** (org) from subscription metadata or by looking up the Stripe customer id.
+2. Resolves **plan id** from `subscription.metadata.planId` or by matching subscription item prices to the catalog.
+3. Upserts the local **`subscription`** row (status, periods, trial dates, seat quantity from primary item, Stripe ids).
+4. Calls **`syncSubscriptionItems`** to mirror Stripe subscription line items into `subscriptionItem` rows.
+
+## `customer.deleted`
+
+`clearStripeCustomerBillingState` clears `stripeCustomerId` on affected organizations and deletes related subscription rows for that customer id.
+
+> **Note:** Plan access for entitlements treats **`active`** and **`trialing`** Stripe statuses as having access (`hasPlanAccess` in `subscription-status.ts`); other statuses are handled for “current subscription” UI vs terminal states.

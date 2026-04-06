@@ -1,0 +1,70 @@
+---
+title: RBAC and admin permissions
+description: How platform admin access is determined and enforced in routes and server actions.
+---
+
+## Platform admin role
+
+Roles are parsed from the user record as comma-separated strings when needed. The codebase defines platform admins as users whose role set includes `admin`:
+
+```30:34:shared/lib/auth/roles.ts
+export const PLATFORM_ADMIN_ROLES = ["admin"] as const;
+
+export function isPlatformAdmin(value: unknown): boolean {
+  return hasAnyRole(value, PLATFORM_ADMIN_ROLES);
+}
+```
+
+Helpers `parseRoles`, `hasRole`, `hasAnyRole`, and `getPrimaryRole` support generic role checks; admin-specific checks go through `isPlatformAdmin`.
+
+## Server-rendered admin routes
+
+`app/(app)/admin/layout.tsx` wraps every admin page with `requireAdmin()`. That loads the current user and **redirects** unauthenticated users to sign-in and non-admins to the app dashboard:
+
+```9:21:features/auth/server/require-admin.ts
+export async function requireAdmin() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(routes.auth.login);
+  }
+
+  if (!isPlatformAdmin(user.role)) {
+    redirect(routes.app.dashboard);
+  }
+
+  return user;
+}
+```
+
+Use `requireAdmin()` in admin `page.tsx` files when you need the current user (for example to pass `currentUserId` into tables).
+
+## Server actions (admin)
+
+Admin mutations cannot rely on redirects; they use `requireAdminAction()`, which reads the session via Better Auth and **throws** if the caller is not authorized:
+
+```23:37:features/auth/server/require-admin.ts
+export async function requireAdminAction(): Promise<string> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  if (!isPlatformAdmin(session.user.role)) {
+    throw new Error("Forbidden: admin role required");
+  }
+
+  return session.user.id;
+}
+```
+
+Every function in `features/admin/actions/admin-users.actions.ts` and `admin-organizations.actions.ts` starts with `await requireAdminAction()` (or uses its return value for self-service checks).
+
+## Client-side hints
+
+Some UI (for example `UserRowActions`) calls `isPlatformAdmin(user.role)` to decide whether to show “Make admin” vs “Remove admin”. That is presentation only; **authorization is always enforced on the server** in `requireAdmin` / `requireAdminAction` and Better Auth APIs.
+
+> **Note:** Changing a user’s role to `admin` is done with `setUserRoleAction` and Better Auth’s `setRole`. Only users who already pass `requireAdminAction` can invoke it.
