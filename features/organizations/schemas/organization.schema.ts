@@ -26,3 +26,13 @@ export const inviteOrganizationMemberSchema = z.object({
 export const invitationIdSchema = z.object({
   invitationId: z.string(),
 });
+
+export const DELETE_ORGANIZATION_CONFIRMATION_WORD = "DELETE";
+
+export const deleteOrganizationSchema = z.object({
+  confirmation: z.literal(DELETE_ORGANIZATION_CONFIRMATION_WORD, {
+    errorMap: () => ({ message: "Type DELETE to confirm." }),
+  }),
+});
+
+export type DeleteOrganizationInput = z.infer<typeof deleteOrganizationSchema>;

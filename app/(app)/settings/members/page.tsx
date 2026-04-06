@@ -23,16 +23,14 @@ export default async function MembersPage() {
   );
 
   return (
-    <Page fixed className="ml-0">
+    <Page fixed>
       <PageHeader>
         <PageTitle>Members</PageTitle>
         <PageDescription>
           Manage your organization members and invitations.
         </PageDescription>
         <PageHeaderActions>
-          <InviteOrganizationMemberDialog
-            canInviteMembers={context.isOwner}
-          />
+          <InviteOrganizationMemberDialog canInviteMembers={context.isOwner} />
         </PageHeaderActions>
       </PageHeader>
 

@@ -3,7 +3,7 @@ import { Page } from "@/shared/components/layout/page-layout";
 
 export default async function PreferencesPage() {
   return (
-    <Page fixed className="ml-0 space-y-6">
+    <Page fixed>
       <ThemePreferencesCard />
     </Page>
   );

@@ -25,7 +25,7 @@ export default async function SettingsBillingPage() {
     data;
 
   return (
-    <Page fixed className="ml-0">
+    <Page fixed>
       <div className="max-w-5xl space-y-5">
         <Card>
           <CardHeader>

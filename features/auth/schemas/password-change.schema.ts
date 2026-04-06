@@ -4,7 +4,7 @@ import { authPasswordSchema } from "@/features/auth/schemas/auth-forms.schema";
 
 const confirmPasswordSchema = z.string().min(1, "Confirm your new password.");
 const passwordChangeBaseSchema = z.object({
-  currentPassword: z.string(),
+  currentPassword: z.string().default(""),
   newPassword: authPasswordSchema,
   confirmPassword: confirmPasswordSchema,
 });

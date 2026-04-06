@@ -2,13 +2,9 @@
 
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { type FormEvent, useState } from "react";
 import { toast } from "sonner";
 
-import {
-  createOrganizationAction,
-  type CreateOrganizationActionState,
-} from "@/features/organizations/actions/create-organization.actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -21,7 +17,8 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import { getFieldState } from "@/shared/lib/get-field-state";
+import { accountFlags } from "@/shared/config/account.config";
+import { authClient } from "@/shared/lib/auth/auth-client";
 
 type CreateOrganizationDialogProps = {
   open: boolean;
@@ -33,27 +30,55 @@ export function CreateOrganizationDialog({
   onOpenChange,
 }: CreateOrganizationDialogProps) {
   const router = useRouter();
-  const [state, formAction, isPending] = useActionState<
-    CreateOrganizationActionState,
-    FormData
-  >(createOrganizationAction, {});
+  const [isPending, setIsPending] = useState(false);
+  const [nameError, setNameError] = useState<string>();
 
-  const nameField = getFieldState(state, "name");
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
 
-  useEffect(() => {
-    if (state.error && !state.fieldErrors) {
-      toast.error(state.error);
+    if (!name.trim()) {
+      setNameError("Name is required");
+      return;
     }
 
-    if (state.success) {
-      toast.success(state.success);
+    if (!accountFlags.allowCreateOrganization) {
+      toast.error("Creating organizations is not enabled.");
+      return;
+    }
+
+    setIsPending(true);
+    setNameError(undefined);
+
+    try {
+      const { data: organization, error } =
+        await authClient.organization.create({
+          name,
+          slug: crypto.randomUUID(),
+        });
+
+      if (error) {
+        throw new Error(error.message ?? "Failed to create organization");
+      }
+
+      await authClient.organization.setActive({
+        organizationId: organization.id,
+      });
+
+      toast.success("Organization created");
       onOpenChange(false);
-    }
-
-    if (state.refreshKey) {
       router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to create organization",
+      );
+    } finally {
+      setIsPending(false);
     }
-  }, [onOpenChange, router, state.error, state.fieldErrors, state.refreshKey, state.success]);
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -66,19 +91,18 @@ export function CreateOrganizationDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form action={formAction} className="space-y-4">
-          <Field data-invalid={nameField.invalid}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Field data-invalid={!!nameError}>
             <FieldLabel htmlFor="create-org-name">Name</FieldLabel>
             <Input
               id="create-org-name"
               name="name"
               placeholder="Acme Inc."
-              defaultValue={nameField.value}
-              aria-invalid={nameField.invalid}
+              aria-invalid={!!nameError}
               autoFocus
               required
             />
-            <FieldError>{nameField.error}</FieldError>
+            <FieldError>{nameError}</FieldError>
           </Field>
 
           <DialogFooter>

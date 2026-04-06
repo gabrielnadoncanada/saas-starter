@@ -46,7 +46,6 @@ export async function DashboardOverview() {
     planId,
     plan,
     memberCount,
-    taskCount,
     tasksUsage,
     assistantConversationCount,
     taskLimit,
@@ -107,7 +106,7 @@ export async function DashboardOverview() {
             <CardDescription>Task creations this month</CardDescription>
             <CardTitle className="flex items-center gap-2 text-2xl">
               <CheckCircle2 className="h-5 w-5 text-orange-500" />
-              {taskCount}
+              {tasksUsage}
             </CardTitle>
           </CardHeader>
           <CardContent>

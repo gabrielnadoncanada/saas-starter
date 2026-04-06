@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { SignOutDialog } from "@/features/auth/components/sign-out-dialog";
+import { CreateOrganizationDialog } from "@/features/organizations/components/create-organization-dialog";
 import { OrganizationSwitcher } from "@/features/organizations/components/organization-switcher";
 import { useUser } from "@/shared/components/providers/user-provider";
 import {
@@ -35,6 +36,7 @@ import { isPlatformAdmin } from "@/shared/lib/auth/roles";
 export function DashboardSidebarUser() {
   const { state } = useSidebar();
   const [open, setOpen] = useState(false);
+  const [showCreateOrg, setShowCreateOrg] = useState(false);
   const user = useUser();
   const { data: organizationsData } = authClient.useListOrganizations();
   const organizations = organizationsData ?? [];
@@ -100,7 +102,9 @@ export function DashboardSidebarUser() {
               <DropdownMenuSeparator />
               {accountFlags.showOrgSwitcher && (
                 <>
-                  <OrganizationSwitcher />
+                  <OrganizationSwitcher
+                    onCreateWorkspace={() => setShowCreateOrg(true)}
+                  />
                   <DropdownMenuSeparator />
                 </>
               )}
@@ -131,6 +135,10 @@ export function DashboardSidebarUser() {
       </SidebarMenu>
 
       <SignOutDialog open={open} onOpenChange={setOpen} />
+      <CreateOrganizationDialog
+        open={showCreateOrg}
+        onOpenChange={setShowCreateOrg}
+      />
     </>
   );
 }
