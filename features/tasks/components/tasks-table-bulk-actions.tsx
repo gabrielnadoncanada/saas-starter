@@ -3,8 +3,13 @@
 import type { Task } from "@prisma/client";
 import type { Table } from "@tanstack/react-table";
 import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   bulkDeleteTasksAction,
@@ -38,7 +43,6 @@ function serializeTaskIds(tasks: Task[]) {
 }
 
 export function TasksBulkActions({ table }: TasksBulkActionsProps) {
-  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const selectedTasks = useMemo(
     () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
@@ -78,10 +82,9 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
       return;
     }
 
-    router.refresh();
     table.resetRowSelection();
     setIsDeleteOpen(false);
-  }, [deleteState.success, router, statusState.success, table]);
+  }, [deleteState.success, statusState.success, table]);
 
   return (
     <>
@@ -112,21 +115,20 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
 
           <DropdownMenuContent sideOffset={14}>
             {taskStatuses.map((status) => (
-              <DropdownMenuItem key={status.value} asChild>
-                <form action={statusAction} className="w-full">
-                  <input type="hidden" name="taskIds" value={taskIds} />
-                  <input type="hidden" name="status" value={status.value} />
-                  <button
-                    type="submit"
-                    className="flex w-full items-center gap-2 text-left"
-                    disabled={isStatusPending || isDeletePending}
-                  >
-                    {status.icon ? (
-                      <status.icon className="size-4 text-muted-foreground" />
-                    ) : null}
-                    {status.label}
-                  </button>
-                </form>
+              <DropdownMenuItem
+                key={status.value}
+                disabled={isStatusPending || isDeletePending}
+                onSelect={() => {
+                  const formData = new FormData();
+                  formData.set("taskIds", taskIds);
+                  formData.set("status", status.value);
+                  startTransition(() => statusAction(formData));
+                }}
+              >
+                {status.icon ? (
+                  <status.icon className="size-4 text-muted-foreground" />
+                ) : null}
+                {status.label}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -161,7 +163,7 @@ export function TasksBulkActions({ table }: TasksBulkActionsProps) {
         handleConfirm={() => {
           const formData = new FormData();
           formData.set("taskIds", taskIds);
-          deleteAction(formData);
+          startTransition(() => deleteAction(formData));
         }}
         destructive
         isLoading={isDeletePending}
