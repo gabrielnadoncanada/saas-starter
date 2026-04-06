@@ -21,14 +21,14 @@ type OrganizationMemberFromApi = NonNullable<
   FullOrganization["members"]
 >[number];
 
+type CurrentOrganization = NonNullable<
+  Awaited<ReturnType<typeof getCurrentOrganization>>
+>;
+
 export type CurrentOrganizationContext = {
   user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
-  organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>;
-  currentMember: NonNullable<
-    NonNullable<
-      Awaited<ReturnType<typeof getCurrentOrganization>>
-    >["members"][number]
-  >;
+  organization: CurrentOrganization;
+  currentMember: NonNullable<CurrentOrganization["members"][number]>;
   roles: OrgRole[];
   primaryRole: OrgRole;
   isOwner: boolean;
@@ -59,7 +59,7 @@ function mapCurrentOrganization(
     id: organization.id,
     name: organization.name,
     billingInterval: subscription.billingInterval,
-    planId: subscription.planId,
+    plan: subscription.plan,
     pricingModel: subscription.pricingModel,
     stripeCustomerId:
       organization.stripeCustomerId ?? subscription.stripeCustomerId ?? null,

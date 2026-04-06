@@ -87,7 +87,6 @@ describe("ai conversations", () => {
     expect(conversation).toEqual(
       expect.objectContaining({
         id: "conv_1",
-        surface: assistantConversationSurface,
         title: "Create a high-priority task to follow up with Acme Corp.",
         preview: "Create a high-priority task to follow up with Acme Corp.",
       }),
@@ -124,7 +123,6 @@ describe("ai conversations", () => {
     expect(conversations).toEqual([
       {
         id: "conv_1",
-        surface: assistantConversationSurface,
         title: "Tasks",
         preview: "Created task TASK-1 for you.",
         lastMessageAt: "2026-03-17T13:00:00.000Z",

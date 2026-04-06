@@ -77,7 +77,6 @@ export function upsertConversationListItem(
 ) {
   const nextItem: AssistantConversationListItem = {
     id: conversation.id,
-    surface: conversation.surface,
     title: conversation.title,
     preview: conversation.preview,
     lastMessageAt: conversation.lastMessageAt,

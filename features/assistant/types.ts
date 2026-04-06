@@ -1,12 +1,10 @@
 import type { UIMessage } from "ai";
 
+/** DB filter for ai conversations; single surface in this app. */
 export const assistantConversationSurface = "assistant";
-
-export type AssistantConversationSurface = typeof assistantConversationSurface;
 
 export type AssistantConversationListItem = {
   id: string;
-  surface: AssistantConversationSurface;
   title: string;
   preview: string | null;
   lastMessageAt: string;

@@ -5,7 +5,6 @@ import type {
   AssistantConversation,
   AssistantConversationListItem,
 } from "@/features/assistant/types";
-import { assistantConversationSurface } from "@/features/assistant/types";
 
 const DEFAULT_TITLE = "New conversation";
 const TITLE_MAX_LENGTH = 72;
@@ -86,7 +85,6 @@ export async function toConversationListItem(
 
   return {
     id: record.id,
-    surface: assistantConversationSurface,
     title: record.title,
     preview: getConversationPreview(messages),
     lastMessageAt: record.lastMessageAt.toISOString(),
@@ -100,7 +98,6 @@ export async function toConversation(
 
   return {
     id: record.id,
-    surface: assistantConversationSurface,
     title: record.title,
     messages,
     preview: getConversationPreview(messages),

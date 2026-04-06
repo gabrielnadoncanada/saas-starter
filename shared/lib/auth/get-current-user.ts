@@ -9,12 +9,10 @@ export type CurrentUser = NonNullable<
   twoFactorEnabled: boolean;
 };
 
-export type SidebarUser = {
-  name: string;
-  email: string;
-  image: string | null;
-  role: string | null;
-};
+export type SidebarUser = Pick<
+  CurrentUser,
+  "name" | "email" | "image" | "role"
+>;
 
 export function toSidebarUser(user: CurrentUser): SidebarUser {
   return {
