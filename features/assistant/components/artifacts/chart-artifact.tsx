@@ -42,7 +42,9 @@ const DEFAULT_PALETTE = [
 ];
 
 function getSeriesColor(series: ChartSpec["series"], index: number): string {
-  return series[index]?.color || DEFAULT_PALETTE[index % DEFAULT_PALETTE.length];
+  return (
+    series[index]?.color || DEFAULT_PALETTE[index % DEFAULT_PALETTE.length]
+  );
 }
 
 function buildConfig(chart: ChartSpec): ChartConfig {
@@ -58,129 +60,179 @@ function buildConfig(chart: ChartSpec): ChartConfig {
   return config;
 }
 
-function renderChart(chart: ChartSpec) {
-  switch (chart.type) {
-    case "bar": {
-      const hasPerRowColors = chart.data.some((row) => typeof row.color === "string");
-      return (
-        <BarChart data={chart.data} accessibilityLayer>
-          <CartesianGrid vertical={false} />
-          <XAxis dataKey={chart.xAxisKey} tickLine={false} axisLine={false} tickMargin={8} />
-          <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          {chart.series.map((s, i) => {
-            const seriesColor = getSeriesColor(chart.series, i);
-            return (
-              <Bar key={s.dataKey} dataKey={s.dataKey} fill={seriesColor} radius={4}>
-                {hasPerRowColors &&
-                  chart.data.map((row, j) => (
-                    <Cell
-                      key={String(row[chart.xAxisKey] ?? j)}
-                      fill={typeof row.color === "string" ? row.color : seriesColor}
-                    />
-                  ))}
-              </Bar>
-            );
-          })}
-        </BarChart>
-      );
-    }
-
-    case "line":
-      return (
-        <LineChart data={chart.data} accessibilityLayer>
-          <CartesianGrid vertical={false} />
-          <XAxis dataKey={chart.xAxisKey} tickLine={false} axisLine={false} tickMargin={8} />
-          <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          {chart.series.map((s, i) => (
-            <Line
-              key={s.dataKey}
-              dataKey={s.dataKey}
-              type="monotone"
-              stroke={getSeriesColor(chart.series, i)}
-              strokeWidth={2}
-              dot={{ r: 4 }}
-            />
-          ))}
-        </LineChart>
-      );
-
-    case "area":
-      return (
-        <AreaChart data={chart.data} accessibilityLayer>
-          <CartesianGrid vertical={false} />
-          <XAxis dataKey={chart.xAxisKey} tickLine={false} axisLine={false} tickMargin={8} />
-          <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          {chart.series.map((s, i) => {
-            const color = getSeriesColor(chart.series, i);
-            return (
-              <Area
-                key={s.dataKey}
-                dataKey={s.dataKey}
-                type="monotone"
-                fill={color}
-                stroke={color}
-                fillOpacity={0.2}
-                strokeWidth={2}
-              />
-            );
-          })}
-        </AreaChart>
-      );
-
-    case "pie": {
-      const dataKey = chart.series[0]?.dataKey ?? "value";
-      return (
-        <PieChart accessibilityLayer>
-          <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-          <Legend content={<ChartLegendContent />} />
-          <Pie data={chart.data} dataKey={dataKey} nameKey={chart.xAxisKey} cx="50%" cy="50%" outerRadius="70%" label>
-            {chart.data.map((row, i) => (
-              <Cell
-                key={String(row[chart.xAxisKey])}
-                fill={typeof row.color === "string" ? row.color : DEFAULT_PALETTE[i % DEFAULT_PALETTE.length]}
-              />
-            ))}
-          </Pie>
-        </PieChart>
-      );
-    }
-
-    case "radar":
-      return (
-        <RadarChart data={chart.data} cx="50%" cy="50%" outerRadius="70%">
-          <PolarGrid />
-          <PolarAngleAxis dataKey={chart.xAxisKey} />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          {chart.series.map((s, i) => {
-            const color = getSeriesColor(chart.series, i);
-            return (
-              <Radar
-                key={s.dataKey}
-                dataKey={s.dataKey}
-                fill={color}
-                fillOpacity={0.2}
-                stroke={color}
-                strokeWidth={2}
-              />
-            );
-          })}
-        </RadarChart>
-      );
-
-    default:
-      return null;
-  }
+function BarChartRenderer({
+  chart,
+}: {
+  chart: ChartSpec;
+  config: ChartConfig;
+}) {
+  return (
+    <BarChart data={chart.data} accessibilityLayer>
+      <CartesianGrid vertical={false} />
+      <XAxis
+        dataKey={chart.xAxisKey}
+        tickLine={false}
+        axisLine={false}
+        tickMargin={8}
+      />
+      <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+      <ChartTooltip content={<ChartTooltipContent />} />
+      <ChartLegend content={<ChartLegendContent />} />
+      {chart.series.map((s, i) => (
+        <Bar
+          key={s.dataKey}
+          dataKey={s.dataKey}
+          fill={getSeriesColor(chart.series, i)}
+          radius={4}
+        />
+      ))}
+    </BarChart>
+  );
 }
+
+function LineChartRenderer({
+  chart,
+}: {
+  chart: ChartSpec;
+  config: ChartConfig;
+}) {
+  return (
+    <LineChart data={chart.data} accessibilityLayer>
+      <CartesianGrid vertical={false} />
+      <XAxis
+        dataKey={chart.xAxisKey}
+        tickLine={false}
+        axisLine={false}
+        tickMargin={8}
+      />
+      <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+      <ChartTooltip content={<ChartTooltipContent />} />
+      <ChartLegend content={<ChartLegendContent />} />
+      {chart.series.map((s, i) => (
+        <Line
+          key={s.dataKey}
+          dataKey={s.dataKey}
+          type="monotone"
+          stroke={getSeriesColor(chart.series, i)}
+          strokeWidth={2}
+          dot={{ r: 4 }}
+        />
+      ))}
+    </LineChart>
+  );
+}
+
+function AreaChartRenderer({
+  chart,
+}: {
+  chart: ChartSpec;
+  config: ChartConfig;
+}) {
+  return (
+    <AreaChart data={chart.data} accessibilityLayer>
+      <CartesianGrid vertical={false} />
+      <XAxis
+        dataKey={chart.xAxisKey}
+        tickLine={false}
+        axisLine={false}
+        tickMargin={8}
+      />
+      <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+      <ChartTooltip content={<ChartTooltipContent />} />
+      <ChartLegend content={<ChartLegendContent />} />
+      {chart.series.map((s, i) => {
+        const color = getSeriesColor(chart.series, i);
+        return (
+          <Area
+            key={s.dataKey}
+            dataKey={s.dataKey}
+            type="monotone"
+            fill={color}
+            stroke={color}
+            fillOpacity={0.2}
+            strokeWidth={2}
+          />
+        );
+      })}
+    </AreaChart>
+  );
+}
+
+function PieChartRenderer({
+  chart,
+}: {
+  chart: ChartSpec;
+  config: ChartConfig;
+}) {
+  const dataKey = chart.series[0]?.dataKey ?? "value";
+
+  return (
+    <PieChart accessibilityLayer>
+      <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+      <Legend content={<ChartLegendContent />} />
+      <Pie
+        data={chart.data}
+        dataKey={dataKey}
+        nameKey={chart.xAxisKey}
+        cx="50%"
+        cy="50%"
+        outerRadius="70%"
+        label
+      >
+        {chart.data.map((row, i) => (
+          <Cell
+            key={String(row[chart.xAxisKey])}
+            fill={DEFAULT_PALETTE[i % DEFAULT_PALETTE.length]}
+          />
+        ))}
+      </Pie>
+    </PieChart>
+  );
+}
+
+function RadarChartRenderer({
+  chart,
+}: {
+  chart: ChartSpec;
+  config: ChartConfig;
+}) {
+  return (
+    <RadarChart data={chart.data} cx="50%" cy="50%" outerRadius="70%">
+      <PolarGrid />
+      <PolarAngleAxis dataKey={chart.xAxisKey} />
+      <ChartTooltip content={<ChartTooltipContent />} />
+      <ChartLegend content={<ChartLegendContent />} />
+      {chart.series.map((s, i) => {
+        const color = getSeriesColor(chart.series, i);
+        return (
+          <Radar
+            key={s.dataKey}
+            dataKey={s.dataKey}
+            fill={color}
+            fillOpacity={0.2}
+            stroke={color}
+            strokeWidth={2}
+          />
+        );
+      })}
+    </RadarChart>
+  );
+}
+
+const renderers: Record<
+  ChartSpec["type"],
+  React.ComponentType<{ chart: ChartSpec; config: ChartConfig }>
+> = {
+  bar: BarChartRenderer,
+  line: LineChartRenderer,
+  area: AreaChartRenderer,
+  pie: PieChartRenderer,
+  radar: RadarChartRenderer,
+};
 
 export function AssistantChartArtifact({ chart }: { chart: ChartSpec }) {
   const config = buildConfig(chart);
+  const Renderer = renderers[chart.type] ?? BarChartRenderer;
 
   return (
     <div className="w-full space-y-3 rounded-xl border bg-card p-4">
@@ -191,7 +243,7 @@ export function AssistantChartArtifact({ chart }: { chart: ChartSpec }) {
         ) : null}
       </div>
       <ChartContainer config={config} className="min-h-[280px] w-full">
-        {renderChart(chart)}
+        <Renderer chart={chart} config={config} />
       </ChartContainer>
     </div>
   );
