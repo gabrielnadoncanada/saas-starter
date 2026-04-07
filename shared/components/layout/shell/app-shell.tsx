@@ -23,7 +23,7 @@ export function AppShell({ defaultOpen, sidebar, children }: AppShellProps) {
           {sidebar}
           <SidebarInset
             className={cn(
-              "@container/content",
+              "@container/content border",
               "has-data-[layout=fixed]:h-svh",
               "peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]",
             )}

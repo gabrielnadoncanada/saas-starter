@@ -10,9 +10,9 @@ function Page({ fixed, className, fluid, ...props }: PageProps) {
   return (
     <div
       className={cn(
-        "px-4 py-6 flex flex-1 flex-col gap-4 sm:gap-6",
+        "p-6 flex flex-1 flex-col gap-4 sm:gap-6",
         fixed && "flex grow flex-col overflow-hidden max-h-dvh",
-        !fluid && "container flex min-w-0 flex-1 flex-col lg:px-4",
+        !fluid && "flex min-w-0 flex-1 flex-col",
         className,
       )}
       {...props}

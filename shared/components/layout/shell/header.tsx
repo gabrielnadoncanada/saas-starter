@@ -8,8 +8,8 @@ type HeaderProps = {
 
 export function Header({ children }: HeaderProps) {
   return (
-    <header className="z-50 flex items-center gap-2 px-3 pt-2">
-      <div className="relative flex h-full items-center gap-3  py-2 sm:gap-4 ">
+    <header className="flex h-16 w-full items-center justify-between gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+      <div className="relative h-full flex items-center gap-2 px-4">
         <SidebarTrigger variant="outline" />
         {children}
       </div>

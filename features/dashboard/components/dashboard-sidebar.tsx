@@ -18,13 +18,14 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarRail,
 } from "@/shared/components/ui/sidebar";
 
 export function DashboardSidebar() {
   const { navGroups } = dashboardSidebarData;
 
   return (
-    <Sidebar collapsible="icon" variant="floating">
+    <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
         <DashboardSidebarUser />
       </SidebarHeader>
@@ -48,6 +49,7 @@ export function DashboardSidebar() {
           </Collapsible>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarRail />
     </Sidebar>
   );
 }
