@@ -1,12 +1,11 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { fetchAssistantConversation } from "@/features/assistant/client/assistant-conversations-api";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
+import { routes } from "@/shared/constants/routes";
 import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
 
 type AssistantWorkspaceProps = {
@@ -16,12 +15,12 @@ type AssistantWorkspaceProps = {
   initialModelOptions: AiModelDefinition[];
 };
 
-function buildConversationUrl(pathname: string, conversationId: string | null) {
+function buildConversationUrl(conversationId: string | null) {
   if (!conversationId) {
-    return pathname;
+    return routes.app.assistant;
   }
 
-  return `${pathname}?conversationId=${conversationId}`;
+  return `${routes.app.assistant}?conversationId=${conversationId}`;
 }
 
 export function AssistantWorkspace({
@@ -30,14 +29,10 @@ export function AssistantWorkspace({
   initialDefaultModelId,
   initialModelOptions,
 }: AssistantWorkspaceProps) {
-  const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const pendingConversationUrlRef = useRef<string | null | undefined>(
-    undefined,
-  );
+  const pendingConversationIdRef = useRef<string | null>(null);
+  const selectedConversationIdRef = useRef<string | null>(initialConversationId);
   const [chatResetKey, setChatResetKey] = useState(0);
-  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [selectedConversation, setSelectedConversation] =
     useState<AssistantConversation | null>(initialConversation);
   const [selectedConversationId, setSelectedConversationId] = useState<
@@ -45,59 +40,33 @@ export function AssistantWorkspace({
   >(initialConversationId);
 
   const replaceConversationUrl = (conversationId: string | null) => {
-    pendingConversationUrlRef.current = conversationId;
-    router.replace(buildConversationUrl(pathname, conversationId), {
+    pendingConversationIdRef.current = conversationId;
+    router.replace(buildConversationUrl(conversationId), {
       scroll: false,
     });
   };
 
-  const resetChat = () => {
-    setSelectedConversation(null);
-    setSelectedConversationId(null);
-    setChatResetKey((value) => value + 1);
-  };
-
-  const loadConversation = async (conversationId: string) => {
-    setIsLoadingConversation(true);
-
-    try {
-      const conversation = await fetchAssistantConversation(conversationId);
-      setSelectedConversation(conversation);
-      setSelectedConversationId(conversation.id);
-      setChatResetKey((value) => value + 1);
-      replaceConversationUrl(conversation.id);
-    } catch {
-      // Conversation loading is handled by sidebar navigation
-    } finally {
-      setIsLoadingConversation(false);
-    }
-  };
+  useEffect(() => {
+    selectedConversationIdRef.current = selectedConversationId;
+  }, [selectedConversationId]);
 
   useEffect(() => {
-    const conversationId = searchParams.get("conversationId");
-
-    if (pendingConversationUrlRef.current !== undefined) {
-      if (conversationId !== pendingConversationUrlRef.current) {
-        return;
-      }
-
-      pendingConversationUrlRef.current = undefined;
-      return;
-    }
-
-    if (!conversationId && selectedConversationId) {
-      resetChat();
-      return;
-    }
-
     if (
-      conversationId &&
-      conversationId !== selectedConversationId &&
-      !isLoadingConversation
+      pendingConversationIdRef.current &&
+      initialConversationId === pendingConversationIdRef.current
     ) {
-      void loadConversation(conversationId);
+      pendingConversationIdRef.current = null;
+      return;
     }
-  }, [isLoadingConversation, searchParams, selectedConversationId]);
+
+    if (selectedConversationIdRef.current === initialConversationId) {
+      return;
+    }
+
+    setSelectedConversation(initialConversation);
+    setSelectedConversationId(initialConversationId);
+    setChatResetKey((value) => value + 1);
+  }, [initialConversation, initialConversationId]);
 
   return (
     <AssistantChat

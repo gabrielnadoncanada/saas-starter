@@ -31,6 +31,13 @@ type AssistantChatProps = {
   resetKey: number;
 };
 
+type AssistantChatState = {
+  conversationId: string | null;
+  modelId: AiModelId;
+  onConversationCreated: (conversation: AssistantConversation) => void;
+  onConversationUpdated: (conversation: AssistantConversation) => void;
+};
+
 export function AssistantChat({
   conversationId,
   defaultModelId,
@@ -48,57 +55,51 @@ export function AssistantChat({
     throw new Error("AssistantChat requires at least one AI model option.");
   }
 
-  const stateRef = useRef({
+  const chatStateRef = useRef<AssistantChatState>({
     conversationId,
-    initialMessages,
     modelId: selectedModelId,
     onConversationCreated,
     onConversationUpdated,
   });
+  const transportRef = useRef<DefaultChatTransport | null>(null);
 
-  const [transport] = useState(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/assistant",
-        prepareSendMessagesRequest: async ({ messages, body }) => {
-          const {
-            conversationId: currentConversationId,
-            modelId: nextModelId,
-          } = stateRef.current;
+  const syncConversation = async (messages: UIMessage[]) => {
+    const currentState = chatStateRef.current;
 
-          if (currentConversationId) {
-            const conversation = await replaceAssistantConversationRequest(
-              currentConversationId,
-              messages,
-            );
-            stateRef.current.onConversationUpdated(conversation);
+    if (currentState.conversationId) {
+      const conversation = await replaceAssistantConversationRequest(
+        currentState.conversationId,
+        messages,
+      );
+      currentState.onConversationUpdated(conversation);
 
-            return {
-              body: {
-                ...body,
-                messages,
-                conversationId: currentConversationId,
-                modelId: nextModelId,
-              },
-            };
-          }
+      return conversation.id;
+    }
 
-          const conversation =
-            await createAssistantConversationRequest(messages);
-          stateRef.current.conversationId = conversation.id;
-          stateRef.current.onConversationCreated(conversation);
+    const conversation = await createAssistantConversationRequest(messages);
+    chatStateRef.current.conversationId = conversation.id;
+    currentState.onConversationCreated(conversation);
 
-          return {
-            body: {
-              ...body,
-              messages,
-              conversationId: conversation.id,
-              modelId: nextModelId,
-            },
-          };
-        },
-      }),
-  );
+    return conversation.id;
+  };
+
+  if (!transportRef.current) {
+    transportRef.current = new DefaultChatTransport({
+      api: "/api/assistant",
+      prepareSendMessagesRequest: async ({ messages, body }) => {
+        const nextConversationId = await syncConversation(messages);
+
+        return {
+          body: {
+            ...body,
+            messages,
+            conversationId: nextConversationId,
+            modelId: chatStateRef.current.modelId,
+          },
+        };
+      },
+    });
+  }
   const {
     clearError,
     error,
@@ -108,24 +109,22 @@ export function AssistantChat({
     status,
     stop,
   } = useChat({
+    messages: initialMessages,
     onFinish: ({ isAbort, isDisconnect, isError, messages: nextMessages }) => {
-      if (
-        isAbort ||
-        isDisconnect ||
-        isError ||
-        !stateRef.current.conversationId
-      ) {
+      const currentConversationId = chatStateRef.current.conversationId;
+
+      if (isAbort || isDisconnect || isError || !currentConversationId) {
         return;
       }
 
       void replaceAssistantConversationRequest(
-        stateRef.current.conversationId,
+        currentConversationId,
         nextMessages,
       ).then((conversation) => {
-        stateRef.current.onConversationUpdated(conversation);
+        chatStateRef.current.onConversationUpdated(conversation);
       });
     },
-    transport,
+    transport: transportRef.current,
   });
 
   useEffect(() => {
@@ -135,23 +134,18 @@ export function AssistantChat({
   }, [defaultModelId, modelId, modelOptions]);
 
   useEffect(() => {
-    stateRef.current.conversationId = conversationId;
-    stateRef.current.initialMessages = initialMessages;
-    stateRef.current.modelId = selectedModelId;
-    stateRef.current.onConversationCreated = onConversationCreated;
-    stateRef.current.onConversationUpdated = onConversationUpdated;
+    chatStateRef.current = {
+      conversationId,
+      modelId: selectedModelId,
+      onConversationCreated,
+      onConversationUpdated,
+    };
   }, [
     conversationId,
-    initialMessages,
     onConversationCreated,
     onConversationUpdated,
     selectedModelId,
   ]);
-
-  useEffect(() => {
-    clearError();
-    setMessages(stateRef.current.initialMessages);
-  }, [clearError, setMessages]);
 
   useEffect(() => {
     if (resetKey === 0) {
@@ -160,8 +154,8 @@ export function AssistantChat({
 
     stop();
     clearError();
-    setMessages(stateRef.current.initialMessages);
-  }, [clearError, resetKey, setMessages, stop]);
+    setMessages(initialMessages);
+  }, [clearError, initialMessages, resetKey, setMessages, stop]);
 
   const isLoading = status === "streaming" || status === "submitted";
 

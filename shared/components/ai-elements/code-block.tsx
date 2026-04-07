@@ -1,14 +1,5 @@
 "use client";
 
-import { Button } from "@/shared/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/components/ui/select";
-import { cn } from "@/shared/lib/utils";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import type { ComponentProps, CSSProperties, HTMLAttributes } from "react";
 import {
@@ -28,6 +19,16 @@ import type {
   ThemedToken,
 } from "shiki";
 import { createHighlighter } from "shiki";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
+import { cn } from "@/shared/lib/utils";
 
 // Shiki uses bitflags for font styles: 1=italic, 2=bold, 4=underline
 // oxlint-disable-next-line eslint(no-bitwise)
@@ -382,41 +383,27 @@ export const CodeBlockContent = ({
 }) => {
   // Memoized raw tokens for immediate display
   const rawTokens = useMemo(() => createRawTokens(code), [code]);
-
-  // Synchronous cache lookup — avoids setState in effect for cached results
-  const syncTokens = useMemo(
-    () => highlightCode(code, language) ?? rawTokens,
-    [code, language, rawTokens]
-  );
-
-  // Async highlighting result (populated after shiki loads)
-  const [asyncTokens, setAsyncTokens] = useState<TokenizedCode | null>(null);
-  const asyncKeyRef = useRef({ code, language });
-
-  // Invalidate stale async tokens synchronously during render
-  if (
-    asyncKeyRef.current.code !== code ||
-    asyncKeyRef.current.language !== language
-  ) {
-    asyncKeyRef.current = { code, language };
-    setAsyncTokens(null);
-  }
+  const [tokenized, setTokenized] = useState<TokenizedCode>(rawTokens);
 
   useEffect(() => {
     let cancelled = false;
+    setTokenized(rawTokens);
+
+    const cachedTokens = highlightCode(code, language);
+    if (cachedTokens) {
+      setTokenized(cachedTokens);
+    }
 
     highlightCode(code, language, (result) => {
       if (!cancelled) {
-        setAsyncTokens(result);
+        setTokenized(result);
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [code, language]);
-
-  const tokenized = asyncTokens ?? syncTokens;
+  }, [code, language, rawTokens]);
 
   return (
     <div className="relative overflow-auto">

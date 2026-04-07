@@ -2,15 +2,67 @@
 
 import type { UIMessage } from "ai";
 
+import { AssistantChartArtifact } from "@/features/assistant/components/artifacts/chart-artifact";
 import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
 import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
+import type {
+  ChartSpec,
+  GenerateChartToolResult,
+} from "@/features/assistant/types";
 import {
   Message,
   MessageContent,
   MessageResponse,
 } from "@/shared/components/ai-elements/message";
 import type { ToolPart } from "@/shared/components/ai-elements/tool";
-import { Spinner } from "@/shared/components/ui/spinner";
+
+function isToolPart(part: UIMessage["parts"][number]): part is ToolPart {
+  return part.type === "dynamic-tool" || part.type.startsWith("tool-");
+}
+
+function getToolName(part: ToolPart) {
+  return part.type === "dynamic-tool"
+    ? part.toolName
+    : part.type.replace("tool-", "");
+}
+
+function getChartArtifact(part: UIMessage["parts"][number]) {
+  if (!isToolPart(part)) {
+    return null;
+  }
+
+  const toolName = getToolName(part);
+  if (toolName !== "generateChart" || !("output" in part)) {
+    return null;
+  }
+
+  const output = part.output as GenerateChartToolResult | undefined;
+  if (!output || !output.success) {
+    return null;
+  }
+
+  return output.chart as ChartSpec;
+}
+
+function renderInlinePart(
+  messageId: string,
+  part: UIMessage["parts"][number],
+  index: number,
+) {
+  if (part.type === "text" && part.text) {
+    return (
+      <MessageResponse key={`${messageId}-${index}`}>
+        {part.text}
+      </MessageResponse>
+    );
+  }
+
+  if (isToolPart(part)) {
+    return <AssistantToolResult key={`${messageId}-${index}`} part={part} />;
+  }
+
+  return null;
+}
 
 export function AssistantChatMessageList({
   error,
@@ -29,40 +81,35 @@ export function AssistantChatMessageList({
 
   return (
     <>
-      {messages.map((message) => (
-        <Message from={message.role} key={message.id}>
-          <MessageContent>
-            {message.parts.map((part, index) => {
-              if (part.type === "text" && part.text) {
-                return (
-                  <MessageResponse key={`${message.id}-${index}`}>
-                    {part.text}
-                  </MessageResponse>
-                );
-              }
+      {messages.map((message) => {
+        const artifactParts = message.parts
+          .map((part, index) => ({
+            chart: getChartArtifact(part),
+            key: `${message.id}-artifact-${index}`,
+          }))
+          .filter((item) => item.chart !== null);
+        const inlineParts = message.parts
+          .map((part, index) => renderInlinePart(message.id, part, index))
+          .filter(Boolean);
 
-              if (part.type.startsWith("tool-")) {
-                return (
-                  <AssistantToolResult
-                    key={`${message.id}-${index}`}
-                    part={part as ToolPart}
-                  />
-                );
-              }
-
-              return null;
-            })}
-          </MessageContent>
-        </Message>
-      ))}
+        return (
+          <Message from={message.role} key={message.id}>
+            {inlineParts.length > 0 ? (
+              <MessageContent>{inlineParts}</MessageContent>
+            ) : null}
+            {artifactParts.map((item) =>
+              item.chart ? (
+                <AssistantChartArtifact chart={item.chart} key={item.key} />
+              ) : null,
+            )}
+          </Message>
+        );
+      })}
 
       {isLoading && messages[messages.length - 1]?.role !== "assistant" ? (
         <Message from="assistant">
-          <MessageContent className="rounded-lg border bg-muted/30 px-4 py-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Spinner />
-              <span>Working...</span>
-            </div>
+          <MessageContent>
+            <MessageResponse>Working...</MessageResponse>
           </MessageContent>
         </Message>
       ) : null}

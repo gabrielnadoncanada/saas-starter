@@ -1,7 +1,5 @@
 "use client";
 
-import { GlobeIcon, Sparkles } from "lucide-react";
-
 import {
   Attachment,
   AttachmentPreview,
@@ -95,16 +93,6 @@ export function AssistantChatComposer({
               <PromptInputActionAddScreenshot />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu>
-
-          <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-orange-500" />
-            Billing copilot
-          </div>
-
-          <div className="hidden items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground sm:flex">
-            <GlobeIcon className="h-3.5 w-3.5" />
-            Web off
-          </div>
 
           <PromptInputSelect
             onValueChange={(value) => onModelChange(value as AiModelId)}

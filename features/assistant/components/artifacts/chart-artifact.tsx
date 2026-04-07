@@ -22,12 +22,12 @@ import {
 
 import type { ChartSpec } from "@/features/assistant/types";
 import {
+  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/shared/components/ui/chart";
 
 const DEFAULT_PALETTE = [
@@ -242,7 +242,7 @@ export function AssistantChartArtifact({ chart }: { chart: ChartSpec }) {
           <p className="text-xs text-muted-foreground">{chart.description}</p>
         ) : null}
       </div>
-      <ChartContainer config={config} className="min-h-[280px] w-full">
+      <ChartContainer config={config} className="h-[320px] w-full">
         <Renderer chart={chart} config={config} />
       </ChartContainer>
     </div>

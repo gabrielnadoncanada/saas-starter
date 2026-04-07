@@ -37,16 +37,6 @@ export async function listAssistantConversationsRequest() {
   return parsed.data;
 }
 
-export async function fetchAssistantConversation(conversationId: string) {
-  const response = await fetch(
-    `/api/assistant/conversations/${conversationId}`,
-  );
-  return await parseConversationResponse(
-    response,
-    assistantConversationSchema,
-  ) as AssistantConversation;
-}
-
 export async function createAssistantConversationRequest(
   messages: UIMessage[],
 ) {
