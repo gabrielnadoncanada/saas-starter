@@ -1,5 +1,7 @@
 import { Check, Minus, X } from "lucide-react";
 
+import { MARKETING_DOC_COUNT } from "@/features/marketing/site";
+
 type ComparisonRow = {
   feature: string;
   thisStarter: "yes" | "no" | "partial";
@@ -59,7 +61,7 @@ const rows: ComparisonRow[] = [
     buildFromScratch: "yes",
   },
   {
-    feature: "72 documentation files",
+    feature: `${MARKETING_DOC_COUNT} documentation files`,
     thisStarter: "yes",
     freeBoilerplate: "no",
     heavierStarter: "partial",

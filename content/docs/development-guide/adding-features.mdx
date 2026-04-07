@@ -13,7 +13,7 @@ Business logic and UI for a capability live under `features/<name>/`. The starte
 - **`schemas/`** — Zod schemas for forms and validation (example: `features/organizations/schemas/organization.schema.ts`).
 - **`types/`** or **`types.ts`** — Shared TypeScript types for the feature.
 
-Flat files are also used when a single schema file is enough (for example `features/tasks/task-form.schema.ts`).
+Flat files are also used when a single schema file is enough (for example `features/tasks/task.schema.ts`).
 
 ## Example: organizations
 
@@ -38,7 +38,7 @@ features/tasks/
   components/...
   server/task-mutations.ts
   server/get-tasks-page.ts
-  task-form.schema.ts
+  task.schema.ts
 ```
 
 ## App routes stay thin

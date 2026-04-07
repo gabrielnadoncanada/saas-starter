@@ -3,32 +3,22 @@
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
-import { GlobeIcon, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
 } from "@/features/assistant/client/assistant-conversations-api";
+import { AssistantChatComposer } from "@/features/assistant/components/assistant-chat-composer";
 import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
 import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
-import { AssistantModelSelector } from "@/features/assistant/components/assistant-model-selector";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/shared/components/ai-elements/conversation";
-import {
-  PromptInput,
-  PromptInputBody,
-  PromptInputFooter,
-  type PromptInputMessage,
-  PromptInputProvider,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputTools,
-} from "@/shared/components/ai-elements/prompt-input";
+import { type PromptInputMessage } from "@/shared/components/ai-elements/prompt-input";
 import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
 
 type AssistantChatProps = {
@@ -51,18 +41,17 @@ export function AssistantChat({
   resetKey,
 }: AssistantChatProps) {
   const [modelId, setModelId] = useState<AiModelId>(defaultModelId);
-  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
-  const selectedModel =
-    modelOptions.find((model) => model.id === modelId) ?? modelOptions[0];
+  const selectedModelId =
+    modelOptions.find((model) => model.id === modelId)?.id ?? modelOptions[0]?.id;
 
-  if (!selectedModel) {
+  if (!selectedModelId) {
     throw new Error("AssistantChat requires at least one AI model option.");
   }
 
   const stateRef = useRef({
     conversationId,
     initialMessages,
-    modelId: selectedModel.id,
+    modelId: selectedModelId,
     onConversationCreated,
     onConversationUpdated,
   });
@@ -148,7 +137,7 @@ export function AssistantChat({
   useEffect(() => {
     stateRef.current.conversationId = conversationId;
     stateRef.current.initialMessages = initialMessages;
-    stateRef.current.modelId = selectedModel.id;
+    stateRef.current.modelId = selectedModelId;
     stateRef.current.onConversationCreated = onConversationCreated;
     stateRef.current.onConversationUpdated = onConversationUpdated;
   }, [
@@ -156,7 +145,7 @@ export function AssistantChat({
     initialMessages,
     onConversationCreated,
     onConversationUpdated,
-    selectedModel.id,
+    selectedModelId,
   ]);
 
   useEffect(() => {
@@ -190,59 +179,34 @@ export function AssistantChat({
   };
 
   return (
-    <PromptInputProvider>
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Conversation>
-          <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
-            <AssistantChatMessageList
-              error={error}
-              isLoading={isLoading}
-              messages={messages}
-              onPromptClick={(text) =>
-                sendAssistantMessage({ files: [], text })
-              }
-            />
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <Conversation>
+        <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
+          <AssistantChatMessageList
+            error={error}
+            isLoading={isLoading}
+            messages={messages}
+            onPromptClick={(text) => sendAssistantMessage({ files: [], text })}
+          />
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
 
-        {error ? (
-          <AssistantChatErrorState error={error} onDismiss={clearError} />
-        ) : null}
+      {error ? (
+        <AssistantChatErrorState error={error} onDismiss={clearError} />
+      ) : null}
 
-        <div className="mx-auto w-full max-w-3xl px-4 pb-4">
-          <PromptInput className="w-full" onSubmit={sendAssistantMessage}>
-            <PromptInputBody>
-              <PromptInputTextarea
-                disabled={isLoading}
-                placeholder={
-                  "Ask me to create a task or summarize what you need..."
-                }
-              />
-            </PromptInputBody>
-            <PromptInputFooter>
-              <PromptInputTools>
-                <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
-                  <Sparkles className="h-3.5 w-3.5 text-orange-500" />
-                  Billing copilot
-                </div>
-                <div className="hidden items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground sm:flex">
-                  <GlobeIcon className="h-3.5 w-3.5" />
-                  Web off
-                </div>
-                <AssistantModelSelector
-                  modelId={modelId}
-                  modelOptions={modelOptions}
-                  onOpenChange={setModelSelectorOpen}
-                  onSelect={setModelId}
-                  open={modelSelectorOpen}
-                />
-              </PromptInputTools>
-              <PromptInputSubmit onStop={stop} status={status} />
-            </PromptInputFooter>
-          </PromptInput>
-        </div>
+      <div className="mx-auto w-full max-w-3xl px-4 pb-4">
+        <AssistantChatComposer
+          isLoading={isLoading}
+          modelId={modelId}
+          modelOptions={modelOptions}
+          onModelChange={setModelId}
+          onSubmit={sendAssistantMessage}
+          status={status}
+          stop={stop}
+        />
       </div>
-    </PromptInputProvider>
+    </div>
   );
 }

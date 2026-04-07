@@ -1,3 +1,5 @@
+import { MARKETING_DOC_COUNT } from "@/features/marketing/site";
+
 const includedItems = [
   {
     label: "Source code",
@@ -40,7 +42,7 @@ const includedItems = [
       "PostgreSQL + Prisma, migrations, seed script, feature-split schema",
   },
   {
-    label: "72 docs",
+    label: `${MARKETING_DOC_COUNT} docs`,
     detail: "Setup, architecture, 31 customization guides, troubleshooting",
   },
 ];

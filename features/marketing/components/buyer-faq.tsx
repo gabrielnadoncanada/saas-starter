@@ -3,21 +3,23 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
+import { MARKETING_DOC_COUNT } from "@/features/marketing/site";
+
 const faqs = [
   {
     question: "What exactly do I get?",
     answer:
-      "You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions, PostgreSQL + Prisma setup, email templates, and 72 documentation files including 31 step-by-step customization guides.",
+      `You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions, PostgreSQL + Prisma setup, email templates, and ${MARKETING_DOC_COUNT} documentation files including 31 step-by-step customization guides.`,
   },
   {
     question: "What is NOT included?",
     answer:
-      "This is a starter, not a finished product. You will need to build your own product features on top of it. It does not include hosting, domain names, Stripe account setup, or third-party API keys. It also does not include a mobile app, admin panel, analytics dashboard, a real email inbox integration, or persisted invoicing flows - those are features you build yourself using the patterns provided.",
+      "This is a starter, not a finished product. You will need to build your own product features on top of it. It does not include hosting, domain names, Stripe account setup, or third-party API keys. It also does not include a mobile app, analytics dashboard, a real email inbox integration, or persisted invoicing flows — those are features you build yourself using the patterns provided. An admin panel for users and organizations is included; product analytics and mobile are not.",
   },
   {
     question: "What is the license?",
     answer:
-      "Starter and Pro include an MIT license for use in one commercial product. The Agency tier includes rights to use the starter across unlimited client projects and internal products. You may not resell or redistribute the starter itself.",
+      "Use is governed by the Tenviq Commercial License (see the LICENSE file in the repository). Tier limits on how many commercial products or client projects you may ship are defined at purchase. You may not resell or redistribute the starter itself.",
   },
   {
     question: "Do I get updates?",
@@ -27,7 +29,7 @@ const faqs = [
   {
     question: "What kind of support is included?",
     answer:
-      "Starter is documentation-only - the 72 included docs cover setup, architecture, customization, and troubleshooting. Pro includes priority email support for 6 months. Agency includes priority email support for 12 months. This is not an agency-style retainer - support covers questions about the starter itself, not custom feature development.",
+      `Starter is documentation-only — the ${MARKETING_DOC_COUNT} included docs cover setup, architecture, customization, and troubleshooting. Pro includes priority email support for 6 months. Agency includes priority email support for 12 months. This is not an agency-style retainer — support covers questions about the starter itself, not custom feature development.`,
   },
   {
     question: "Is there a refund policy?",
@@ -42,7 +44,7 @@ const faqs = [
   {
     question: "How is this different from free boilerplates?",
     answer:
-      "Free boilerplates give you auth and maybe Stripe checkout. This starter gives you enforced plan gating - capability-based feature flags and usage limits that actually control what users can do based on their plan. It also includes three billing models, team management, 72 docs, a working CRUD example, and an AI-ready monetization pattern you can adapt instead of inventing from scratch.",
+      `Free boilerplates give you auth and maybe Stripe checkout. This starter gives you enforced plan gating — capability-based feature flags and usage limits that actually control what users can do based on their plan. It also includes three billing models, team management, ${MARKETING_DOC_COUNT} docs, a working CRUD example, and an AI-ready monetization pattern you can adapt instead of inventing from scratch.`,
   },
   {
     question: "How is this different from ShipFast or MakerKit?",

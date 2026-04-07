@@ -1,5 +1,12 @@
 "use client";
 
+import { Badge } from "@/shared/components/ui/badge";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/components/ui/collapsible";
+import { cn } from "@/shared/lib/utils";
 import type { DynamicToolUIPart, ToolUIPart } from "ai";
 import {
   CheckCircleIcon,
@@ -12,26 +19,20 @@ import {
 import type { ComponentProps, ReactNode } from "react";
 import { isValidElement } from "react";
 
-import { Badge } from "@/shared/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shared/components/ui/collapsible";
-import { cn } from "@/shared/lib/utils";
+import { CodeBlock } from "./code-block";
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
 export const Tool = ({ className, ...props }: ToolProps) => (
   <Collapsible
-    className={cn("group not-prose w-full rounded-md border", className)}
+    className={cn("group not-prose mb-4 w-full rounded-md border", className)}
     {...props}
   />
 );
 
 export type ToolPart = ToolUIPart | DynamicToolUIPart;
 
-type ToolHeaderProps = {
+export type ToolHeaderProps = {
   title?: string;
   className?: string;
 } & (
@@ -63,6 +64,13 @@ const statusIcons: Record<ToolPart["state"], ReactNode> = {
   "output-error": <XCircleIcon className="size-4 text-red-600" />,
 };
 
+export const getStatusBadge = (status: ToolPart["state"]) => (
+  <Badge className="gap-1.5 rounded-full text-xs" variant="secondary">
+    {statusIcons[status]}
+    {statusLabels[status]}
+  </Badge>
+);
+
 export const ToolHeader = ({
   className,
   title,
@@ -78,38 +86,50 @@ export const ToolHeader = ({
     <CollapsibleTrigger
       className={cn(
         "flex w-full items-center justify-between gap-4 p-3",
-        className,
+        className
       )}
       {...props}
     >
       <div className="flex items-center gap-2">
         <WrenchIcon className="size-4 text-muted-foreground" />
         <span className="font-medium text-sm">{title ?? derivedName}</span>
-        <Badge className="gap-1.5 rounded-full text-xs" variant="secondary">
-          {statusIcons[state]}
-          {statusLabels[state]}
-        </Badge>
+        {getStatusBadge(state)}
       </div>
       <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
     </CollapsibleTrigger>
   );
 };
 
-type ToolContentProps = ComponentProps<typeof CollapsibleContent>;
+export type ToolContentProps = ComponentProps<typeof CollapsibleContent>;
 
 export const ToolContent = ({ className, ...props }: ToolContentProps) => (
   <CollapsibleContent
     className={cn(
-      "space-y-3 border-t p-4 text-popover-foreground outline-none",
-      className,
+      "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 space-y-4 p-4 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
+      className
     )}
     {...props}
   />
 );
 
-type ToolOutputProps = ComponentProps<"div"> & {
-  output?: ReactNode;
-  errorText?: string;
+export type ToolInputProps = ComponentProps<"div"> & {
+  input: ToolPart["input"];
+};
+
+export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
+  <div className={cn("space-y-2 overflow-hidden", className)} {...props}>
+    <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+      Parameters
+    </h4>
+    <div className="rounded-md bg-muted/50">
+      <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
+    </div>
+  </div>
+);
+
+export type ToolOutputProps = ComponentProps<"div"> & {
+  output: ToolPart["output"];
+  errorText: ToolPart["errorText"];
 };
 
 export const ToolOutput = ({
@@ -122,21 +142,14 @@ export const ToolOutput = ({
     return null;
   }
 
-  let content = output;
-  if (
-    typeof output === "object" &&
-    output !== null &&
-    !isValidElement(output)
-  ) {
-    content = (
-      <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs">
-        {JSON.stringify(output, null, 2)}
-      </pre>
+  let Output = <div>{output as ReactNode}</div>;
+
+  if (typeof output === "object" && !isValidElement(output)) {
+    Output = (
+      <CodeBlock code={JSON.stringify(output, null, 2)} language="json" />
     );
   } else if (typeof output === "string") {
-    content = (
-      <pre className="whitespace-pre-wrap font-mono text-xs">{output}</pre>
-    );
+    Output = <CodeBlock code={output} language="json" />;
   }
 
   return (
@@ -146,13 +159,14 @@ export const ToolOutput = ({
       </h4>
       <div
         className={cn(
-          "overflow-x-auto rounded-md p-3 text-xs [&_table]:w-full",
+          "overflow-x-auto rounded-md text-xs [&_table]:w-full",
           errorText
             ? "bg-destructive/10 text-destructive"
-            : "bg-muted/50 text-foreground",
+            : "bg-muted/50 text-foreground"
         )}
       >
-        {errorText ? <div>{errorText}</div> : content}
+        {errorText && <div>{errorText}</div>}
+        {Output}
       </div>
     </div>
   );

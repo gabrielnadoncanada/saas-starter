@@ -1,4 +1,3 @@
-import { z } from "zod";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowDown,
@@ -10,6 +9,7 @@ import {
   HelpCircle,
   Timer,
 } from "lucide-react";
+import { z } from "zod";
 
 import {
   TaskLabel,

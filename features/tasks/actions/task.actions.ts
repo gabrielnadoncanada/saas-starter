@@ -25,7 +25,6 @@ import {
   deleteTaskSchema,
   updateTaskSchema,
   updateTaskStatusSchema,
-  type UpdateTaskValues,
 } from "@/features/tasks/task.schema";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";

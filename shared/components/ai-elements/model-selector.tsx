@@ -1,89 +1,213 @@
-"use client";
-
-import type { ComponentProps, HTMLAttributes } from "react";
-
 import {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
+  CommandShortcut,
 } from "@/shared/components/ui/command";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import { cn } from "@/shared/lib/utils";
+import type { ComponentProps, ReactNode } from "react";
 
-const logos: Record<string, string> = {
-  google: "G",
-  groq: "Q",
-};
+export type ModelSelectorProps = ComponentProps<typeof Dialog>;
 
-export const ModelSelector = (props: ComponentProps<typeof Dialog>) => (
+export const ModelSelector = (props: ModelSelectorProps) => (
   <Dialog {...props} />
 );
-export const ModelSelectorTrigger = (
-  props: ComponentProps<typeof DialogTrigger>,
-) => <DialogTrigger {...props} />;
+
+export type ModelSelectorTriggerProps = ComponentProps<typeof DialogTrigger>;
+
+export const ModelSelectorTrigger = (props: ModelSelectorTriggerProps) => (
+  <DialogTrigger {...props} />
+);
+
+export type ModelSelectorContentProps = ComponentProps<typeof DialogContent> & {
+  title?: ReactNode;
+};
+
 export const ModelSelectorContent = ({
-  children,
   className,
+  children,
+  title = "Model Selector",
   ...props
-}: ComponentProps<typeof DialogContent>) => (
+}: ModelSelectorContentProps) => (
   <DialogContent
-    className={cn("gap-0 overflow-hidden p-0", className)}
+    aria-describedby={undefined}
+    className={cn(
+      "outline! border-none! p-0 outline-border! outline-solid!",
+      className
+    )}
     {...props}
   >
-    <Command>{children}</Command>
+    <DialogTitle className="sr-only">{title}</DialogTitle>
+    <Command className="**:data-[slot=command-input-wrapper]:h-auto">
+      {children}
+    </Command>
   </DialogContent>
 );
-export const ModelSelectorInput = (
-  props: ComponentProps<typeof CommandInput>,
-) => <CommandInput {...props} />;
-export const ModelSelectorList = (
-  props: ComponentProps<typeof CommandList>,
-) => <CommandList {...props} />;
-export const ModelSelectorEmpty = (
-  props: ComponentProps<typeof CommandEmpty>,
-) => <CommandEmpty {...props} />;
-export const ModelSelectorGroup = (
-  props: ComponentProps<typeof CommandGroup>,
-) => <CommandGroup {...props} />;
-export const ModelSelectorItem = (
-  props: ComponentProps<typeof CommandItem>,
-) => <CommandItem {...props} />;
+
+export type ModelSelectorDialogProps = ComponentProps<typeof CommandDialog>;
+
+export const ModelSelectorDialog = (props: ModelSelectorDialogProps) => (
+  <CommandDialog {...props} />
+);
+
+export type ModelSelectorInputProps = ComponentProps<typeof CommandInput>;
+
+export const ModelSelectorInput = ({
+  className,
+  ...props
+}: ModelSelectorInputProps) => (
+  <CommandInput className={cn("h-auto py-3.5", className)} {...props} />
+);
+
+export type ModelSelectorListProps = ComponentProps<typeof CommandList>;
+
+export const ModelSelectorList = (props: ModelSelectorListProps) => (
+  <CommandList {...props} />
+);
+
+export type ModelSelectorEmptyProps = ComponentProps<typeof CommandEmpty>;
+
+export const ModelSelectorEmpty = (props: ModelSelectorEmptyProps) => (
+  <CommandEmpty {...props} />
+);
+
+export type ModelSelectorGroupProps = ComponentProps<typeof CommandGroup>;
+
+export const ModelSelectorGroup = (props: ModelSelectorGroupProps) => (
+  <CommandGroup {...props} />
+);
+
+export type ModelSelectorItemProps = ComponentProps<typeof CommandItem>;
+
+export const ModelSelectorItem = (props: ModelSelectorItemProps) => (
+  <CommandItem {...props} />
+);
+
+export type ModelSelectorShortcutProps = ComponentProps<typeof CommandShortcut>;
+
+export const ModelSelectorShortcut = (props: ModelSelectorShortcutProps) => (
+  <CommandShortcut {...props} />
+);
+
+export type ModelSelectorSeparatorProps = ComponentProps<
+  typeof CommandSeparator
+>;
+
+export const ModelSelectorSeparator = (props: ModelSelectorSeparatorProps) => (
+  <CommandSeparator {...props} />
+);
+
+export type ModelSelectorLogoProps = Omit<
+  ComponentProps<"img">,
+  "src" | "alt"
+> & {
+  provider:
+    | "moonshotai-cn"
+    | "lucidquery"
+    | "moonshotai"
+    | "zai-coding-plan"
+    | "alibaba"
+    | "xai"
+    | "vultr"
+    | "nvidia"
+    | "upstage"
+    | "groq"
+    | "github-copilot"
+    | "mistral"
+    | "vercel"
+    | "nebius"
+    | "deepseek"
+    | "alibaba-cn"
+    | "google-vertex-anthropic"
+    | "venice"
+    | "chutes"
+    | "cortecs"
+    | "github-models"
+    | "togetherai"
+    | "azure"
+    | "baseten"
+    | "huggingface"
+    | "opencode"
+    | "fastrouter"
+    | "google"
+    | "google-vertex"
+    | "cloudflare-workers-ai"
+    | "inception"
+    | "wandb"
+    | "openai"
+    | "zhipuai-coding-plan"
+    | "perplexity"
+    | "openrouter"
+    | "zenmux"
+    | "v0"
+    | "iflowcn"
+    | "synthetic"
+    | "deepinfra"
+    | "zhipuai"
+    | "submodel"
+    | "zai"
+    | "inference"
+    | "requesty"
+    | "morph"
+    | "lmstudio"
+    | "anthropic"
+    | "aihubmix"
+    | "fireworks-ai"
+    | "modelscope"
+    | "llama"
+    | "scaleway"
+    | "amazon-bedrock"
+    | "cerebras"
+    // oxlint-disable-next-line typescript-eslint(ban-types) -- intentional pattern for autocomplete-friendly string union
+    | (string & {});
+};
+
+export const ModelSelectorLogo = ({
+  provider,
+  className,
+  ...props
+}: ModelSelectorLogoProps) => (
+  <img
+    {...props}
+    alt={`${provider} logo`}
+    className={cn("size-3 dark:invert", className)}
+    height={12}
+    src={`https://models.dev/logos/${provider}.svg`}
+    width={12}
+  />
+);
+
+export type ModelSelectorLogoGroupProps = ComponentProps<"div">;
+
 export const ModelSelectorLogoGroup = ({
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => (
+}: ModelSelectorLogoGroupProps) => (
   <div
-    className={cn("ml-auto flex items-center gap-1", className)}
+    className={cn(
+      "flex shrink-0 items-center -space-x-1 [&>img]:rounded-full [&>img]:bg-background [&>img]:p-px [&>img]:ring-1 dark:[&>img]:bg-foreground",
+      className
+    )}
     {...props}
   />
 );
+
+export type ModelSelectorNameProps = ComponentProps<"span">;
+
 export const ModelSelectorName = ({
   className,
   ...props
-}: HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cn("truncate", className)} {...props} />
+}: ModelSelectorNameProps) => (
+  <span className={cn("flex-1 truncate text-left", className)} {...props} />
 );
-export function ModelSelectorLogo({
-  className,
-  provider,
-  ...props
-}: Omit<React.ComponentProps<"div">, "children"> & { provider: string }) {
-  return (
-    <div
-      className={cn(
-        "flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-semibold uppercase",
-        className,
-      )}
-      {...props}
-    >
-      {logos[provider] ?? provider.slice(0, 1)}
-    </div>
-  );
-}

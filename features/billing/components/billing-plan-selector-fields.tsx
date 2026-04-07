@@ -63,7 +63,9 @@ export function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval)
   return interval === "year" ? plan.yearly : plan.monthly;
 }
 
-import { isBillingInterval } from "@/features/billing/catalog";
+function isBillingInterval(value: string): value is BillingInterval {
+  return value === "month" || value === "year";
+}
 
 function BillingPlanPrice({
   price,

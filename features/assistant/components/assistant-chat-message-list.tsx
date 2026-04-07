@@ -9,6 +9,7 @@ import {
   MessageContent,
   MessageResponse,
 } from "@/shared/components/ai-elements/message";
+import type { ToolPart } from "@/shared/components/ai-elements/tool";
 import { Spinner } from "@/shared/components/ui/spinner";
 
 export function AssistantChatMessageList({
@@ -41,21 +42,10 @@ export function AssistantChatMessageList({
               }
 
               if (part.type.startsWith("tool-")) {
-                const toolPart = part as {
-                  output?: unknown;
-                  state?: string;
-                  type: string;
-                };
-
                 return (
                   <AssistantToolResult
-                    done={
-                      toolPart.state === "output-available" ||
-                      toolPart.state === "output-error"
-                    }
                     key={`${message.id}-${index}`}
-                    output={toolPart.output}
-                    toolName={toolPart.type.replace("tool-", "")}
+                    part={part as ToolPart}
                   />
                 );
               }

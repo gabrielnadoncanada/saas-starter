@@ -9,42 +9,43 @@ type Screenshot = {
 const screenshots: Screenshot[] = [
   {
     slot: "login",
-    src: null,
+    src: "/marketing/screenshots/login.png",
     caption:
       "Sign in with magic link, Google, or GitHub. Account linking built in.",
   },
   {
     slot: "dashboard",
-    src: null,
+    src: "/marketing/screenshots/dashboard.png",
     caption: "Dashboard with plan status, usage meters, and team overview.",
   },
   {
     slot: "tasks",
-    src: null,
+    src: "/marketing/screenshots/tasks.png",
     caption:
       "Tasks CRUD with sort, filter, pagination, and plan-gated creation.",
   },
   {
     slot: "team",
-    src: null,
+    src: "/marketing/screenshots/team.png",
     caption: "Team management with roles, invitations, and team switching.",
   },
   {
     slot: "settings",
-    src: null,
+    src: "/marketing/screenshots/settings.png",
     caption:
       "Settings: profile, linked auth providers, and account management.",
   },
   {
     slot: "billing",
-    src: null,
+    src: "/marketing/screenshots/billing.png",
     caption:
       "Pricing page with monthly plans and Stripe-powered subscriptions.",
   },
   {
     slot: "plan-gate",
-    src: null,
-    caption: "Plan gating in action - upgrade prompts when limits are reached.",
+    src: "/marketing/screenshots/plan-gate.png",
+    caption:
+      "Pricing and tiers on the landing page (swap for an in-app upgrade modal if you prefer).",
   },
 ];
 
@@ -84,8 +85,11 @@ export function ScreenshotsGallery() {
             See what you're getting
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">
-            Every screen is real, functional, and ready to customize. Drop in
-            your brand and start building.
+            Dark mode captures. Regenerate with{" "}
+            <code className="rounded bg-muted px-1.5 py-0.5 text-sm">
+              pnpm marketing:screenshots
+            </code>{" "}
+            (dev server running; sign in first for authenticated views).
           </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

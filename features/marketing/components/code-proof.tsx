@@ -13,17 +13,17 @@ export function CodeProof() {
             </p>
             <p className="mt-3 text-muted-foreground">
               Gate any feature with a capability check. Enforce any usage quota
-              with a limit check. Credits, add-ons, and seats resolve into one
-              entitlement object. Stripe decides what is active. Your catalog
-              decides what it gives.
+              with a limit check. Subscriptions, seats, and one-time products
+              resolve into one entitlement object. Stripe decides what is active.
+              Your catalog decides what it gives.
             </p>
             <ul className="mt-6 space-y-3">
               {[
-                "assertCapability() - gate features by entitlements",
+                "assertCapability() — gate features by entitlements",
                 "assertLimit() — enforce usage quotas",
-                "consumeCredits() - bill AI usage with prepaid balance",
-                "Billing catalog - one source of truth for plans and add-ons",
-                "Four billing models - one-time, subscription, seats, add-ons",
+                "consumeMonthlyUsage() — meter AI and tasks against monthly quotas",
+                "Billing catalog — one source of truth for plans and line items",
+                "Three billing models — flat subscription, per-seat subscription, one-time",
               ].map((item) => (
                 <li
                   key={item}
@@ -53,7 +53,7 @@ export function CodeProof() {
             {/* Code example 2: plan config */}
             <div className="rounded-lg bg-gray-900 p-4 text-sm font-mono text-gray-100 overflow-x-auto">
               <p className="mb-1 text-xs text-gray-500">
-                // plans.ts — single source of truth
+                // Simplified shape — real config: shared/config/billing.config.ts
               </p>
               <pre className="whitespace-pre leading-relaxed">
                 {`export const plans = {

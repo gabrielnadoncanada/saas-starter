@@ -11,6 +11,7 @@ import { IncludedItemsSection } from "@/features/marketing/components/included-i
 import { MarketingFeatureGrid } from "@/features/marketing/components/marketing-feature-grid";
 import { ScreenshotsGallery } from "@/features/marketing/components/screenshots-gallery";
 import { StarterPricing } from "@/features/marketing/components/starter-pricing";
+import { MARKETING_DOC_COUNT } from "@/features/marketing/site";
 import { Button } from "@/shared/components/ui/button";
 
 export const metadata: Metadata = {
@@ -55,8 +56,8 @@ export default function HomePage() {
               <Link href="#screenshots">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="w-full rounded-full text-lg sm:w-auto"
+                  variant="glow"
+                  className="w-full rounded-md text-lg sm:w-auto"
                 >
                   See What&apos;s Included
                 </Button>
@@ -115,7 +116,8 @@ export default function HomePage() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
               Auth, billing, plan gating, teams, AI-ready monetization patterns,
-              and 72 docs. Buy once, own the code, launch your SaaS this week.
+              and {MARKETING_DOC_COUNT} docs. Buy once, own the code, launch your
+              SaaS this week.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Link href="#pricing">

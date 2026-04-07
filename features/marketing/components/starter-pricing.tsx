@@ -1,6 +1,10 @@
 import { Check } from "lucide-react";
 
+import { MARKETING_DOC_COUNT } from "@/features/marketing/site";
 import { Button } from "@/shared/components/ui/button";
+
+const purchaseUrl =
+  process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL?.trim() || "#pricing";
 
 type Tier = {
   name: string;
@@ -31,8 +35,8 @@ const tiers: Tier[] = [
       "AI-ready assistant module with real task actions and honest scaffolds",
       "PostgreSQL + Prisma with migrations and seed",
       "Email templates with Resend",
-      "72 documentation files including 31 customization guides",
-      "MIT license — use for one commercial product",
+      `${MARKETING_DOC_COUNT} documentation files including 31 customization guides`,
+      "Tenviq Commercial License — see LICENSE in the repo",
     ],
     cta: "Get the Starter",
   },
@@ -104,7 +108,13 @@ function TierCard({ tier }: { tier: Tier }) {
         ))}
       </ul>
       <div className="mt-8">
-        <a href="#purchase" className="block">
+        <a
+          href={purchaseUrl}
+          className="block"
+          {...(purchaseUrl.startsWith("http")
+            ? { target: "_blank" as const, rel: "noopener noreferrer" }
+            : {})}
+        >
           <Button
             size="lg"
             className={`w-full rounded-full text-base ${
