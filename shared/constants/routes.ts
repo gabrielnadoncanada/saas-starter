@@ -19,7 +19,7 @@ export const routes = {
   app: {
     dashboard: "/dashboard",
     tasks: "/dashboard/tasks",
-    assistant: "/dashboard/assistant",
+    assistant: "/assistant",
   },
   admin: {
     dashboard: "/admin",

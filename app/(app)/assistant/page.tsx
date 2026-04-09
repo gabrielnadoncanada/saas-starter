@@ -24,11 +24,10 @@ export default async function AssistantPage({
     canUseAssistant && conversationId
       ? await getAssistantConversation(conversationId)
       : null;
-  const modelOptions =
-    entitlements && canUseAssistant ? [...aiModels] : [];
+  const modelOptions = entitlements && canUseAssistant ? [...aiModels] : [];
 
   return (
-    <Page fixed>
+    <Page className="pb-0">
       {!canUseAssistant ? (
         <UpgradeCard
           feature={"AI Assistant"}

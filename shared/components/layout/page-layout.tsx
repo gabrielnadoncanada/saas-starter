@@ -9,6 +9,7 @@ type PageProps = React.HTMLAttributes<HTMLElement> & {
 function Page({ fixed, className, fluid, ...props }: PageProps) {
   return (
     <div
+      data-layout={fixed ? "fixed" : undefined}
       className={cn(
         "p-6 flex flex-1 flex-col gap-4 sm:gap-6",
         fixed && "flex grow flex-col overflow-hidden max-h-dvh",

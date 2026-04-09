@@ -25,7 +25,7 @@ export function DashboardSidebar() {
   const { navGroups } = dashboardSidebarData;
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <DashboardSidebarUser />
       </SidebarHeader>

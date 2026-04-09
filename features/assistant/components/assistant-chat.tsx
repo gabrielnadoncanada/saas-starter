@@ -49,7 +49,8 @@ export function AssistantChat({
 }: AssistantChatProps) {
   const [modelId, setModelId] = useState<AiModelId>(defaultModelId);
   const selectedModelId =
-    modelOptions.find((model) => model.id === modelId)?.id ?? modelOptions[0]?.id;
+    modelOptions.find((model) => model.id === modelId)?.id ??
+    modelOptions[0]?.id;
 
   if (!selectedModelId) {
     throw new Error("AssistantChat requires at least one AI model option.");
@@ -61,7 +62,7 @@ export function AssistantChat({
     onConversationCreated,
     onConversationUpdated,
   });
-  const transportRef = useRef<DefaultChatTransport | null>(null);
+  const transportRef = useRef<DefaultChatTransport<UIMessage> | null>(null);
 
   const syncConversation = async (messages: UIMessage[]) => {
     const currentState = chatStateRef.current;
@@ -173,7 +174,7 @@ export function AssistantChat({
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="flex flex-1 flex-col">
       <Conversation>
         <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
           <AssistantChatMessageList
@@ -190,7 +191,7 @@ export function AssistantChat({
         <AssistantChatErrorState error={error} onDismiss={clearError} />
       ) : null}
 
-      <div className="mx-auto w-full max-w-3xl px-4 pb-4">
+      <div className="mx-auto w-full max-w-3xl px-4 pb-4 sticky bottom-0 bg-background">
         <AssistantChatComposer
           isLoading={isLoading}
           modelId={modelId}

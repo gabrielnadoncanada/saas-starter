@@ -10,26 +10,30 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarMenuButton,
+  SidebarGroup,
 } from "@/shared/components/ui/sidebar";
+
 import { routes } from "@/shared/constants/routes";
+import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";
 
 export function AdminSidebar() {
   const groups = adminSidebarData.navGroups;
 
   return (
-    <Sidebar collapsible="icon" variant="floating">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarMenuButton variant="ghost" asChild>
+        <SidebarMenuButton variant="ghost" asChild tooltip="Back">
           <Link
             href={routes.app.dashboard}
             className="justify-start whitespace-nowrap"
           >
             <ArrowLeftIcon className="size-4" />
-            Back to dashboard
+            Back
           </Link>
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarGroupSearch />
         {groups.map((group, index) => (
           <NavGroup key={`${group.title}-${index}`} {...group} />
         ))}

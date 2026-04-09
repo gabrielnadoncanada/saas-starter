@@ -56,7 +56,7 @@ export function DashboardSidebarUser() {
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton variant="outline" size="lg">
+              <SidebarMenuButton variant="outline" className="pl-0">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg">
                     {activeOrganization?.name?.charAt(0).toUpperCase() ?? "O"}
@@ -65,11 +65,6 @@ export function DashboardSidebarUser() {
                 <div className="grid flex-1 text-start text-sm leading-tight">
                   <span className="truncate font-semibold">
                     {activeOrganization?.name ?? "Organization"}
-                  </span>
-                  <span className="truncate text-xs">
-                    {accountFlags.enableTeamFeatures
-                      ? "Organization"
-                      : "Account"}
                   </span>
                 </div>
                 <ChevronsUpDown className="ms-auto size-4" />

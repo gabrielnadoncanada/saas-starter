@@ -80,9 +80,9 @@ export function SettingsSidebar() {
   const groups = settingsSidebarData.navGroups;
 
   return (
-    <Sidebar collapsible="icon" variant="floating">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarMenuButton variant="ghost" asChild>
+        <SidebarMenuButton variant="ghost" asChild tooltip="Back to dashboard">
           <Link
             href={routes.app.dashboard}
             className="justify-start whitespace-nowrap"
