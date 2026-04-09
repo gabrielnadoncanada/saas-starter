@@ -93,7 +93,7 @@ export default async function SettingsPage({ searchParams }: PageProps) {
   };
 
   return (
-    <Page fixed>
+    <Page>
       <PageHeader>
         <PageTitle>Account Settings</PageTitle>
         <PageDescription>

@@ -27,6 +27,7 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import {
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -44,31 +45,37 @@ export function NavGroup({ title, items }: SidebarNavGroup) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarGroupLabel>{title}</SidebarGroupLabel>
 
-      <SidebarMenu>
-        {items.map((item) => {
-          const key = item.url
-            ? `${item.title}-${item.url}`
-            : `${item.title}-group`;
+        <SidebarMenu>
+          {items.map((item) => {
+            const key = item.url
+              ? `${item.title}-${item.url}`
+              : `${item.title}-group`;
 
-          if (!item.items) {
-            return (
-              <SidebarMenuLink key={key} item={item} pathname={pathname} />
+            if (!item.items) {
+              return (
+                <SidebarMenuLink key={key} item={item} pathname={pathname} />
+              );
+            }
+
+            return isCollapsedDesktop ? (
+              <SidebarMenuCollapsedDropdown
+                key={key}
+                item={item}
+                pathname={pathname}
+              />
+            ) : (
+              <SidebarMenuCollapsible
+                key={key}
+                item={item}
+                pathname={pathname}
+              />
             );
-          }
-
-          return isCollapsedDesktop ? (
-            <SidebarMenuCollapsedDropdown
-              key={key}
-              item={item}
-              pathname={pathname}
-            />
-          ) : (
-            <SidebarMenuCollapsible key={key} item={item} pathname={pathname} />
-          );
-        })}
-      </SidebarMenu>
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
     </SidebarGroup>
   );
 }

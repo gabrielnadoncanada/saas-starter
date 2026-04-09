@@ -23,7 +23,7 @@ export default async function MembersPage() {
   );
 
   return (
-    <Page fixed>
+    <Page>
       <PageHeader>
         <PageTitle>Members</PageTitle>
         <PageDescription>

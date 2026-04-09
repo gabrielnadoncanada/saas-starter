@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, MessageSquarePlus, Sparkles } from "lucide-react";
+import { ChevronRight, HistoryIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "next/navigation";
@@ -22,7 +22,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/shared/components/ui/sidebar";
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/constants/routes";
 import { cn } from "@/shared/lib/utils";
 
@@ -92,28 +96,11 @@ export function AssistantSidebarNav() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              tooltip="AI Assistant"
-              isActive={isAssistantActive}
-            >
-              <Sparkles />
-              <span>AI Assistant</span>
-              <ChevronRight className="ms-auto transition-transform duration-200" />
+            <SidebarMenuButton tooltip="History" isActive={isAssistantActive}>
+              <HistoryIcon />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-72" side="right">
-            <DropdownMenuItem asChild>
-              <Link
-                href={routes.app.assistant}
-                onClick={() => setOpenMobile(false)}
-              >
-                <MessageSquarePlus />
-                <span>New Conversation</span>
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
             {conversations.length === 0 ? (
               <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
                 No conversations yet.
@@ -167,21 +154,6 @@ export function AssistantSidebarNav() {
 
   return (
     <>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          asChild
-          isActive={isAssistantActive && !activeConversationId}
-        >
-          <Link
-            href={routes.app.assistant}
-            onClick={() => setOpenMobile(false)}
-          >
-            <MessageSquarePlus />
-            <span>New Conversation</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-
       {conversations.map((conversation) => {
         const isDeleting = deletingConversationId === conversation.id;
 

@@ -1,6 +1,3 @@
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "public";
-
 -- CreateEnum
 CREATE TYPE "PlatformRole" AS ENUM ('USER', 'SUPER_ADMIN');
 
@@ -14,17 +11,18 @@ CREATE TYPE "TaskLabel" AS ENUM ('FEATURE', 'BUG', 'DOCUMENTATION');
 CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
 
 -- CreateTable
-CREATE TABLE "AssistantConversation" (
+CREATE TABLE "AiConversation" (
     "id" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "createdByUserId" TEXT NOT NULL,
+    "surface" VARCHAR(120) NOT NULL,
     "title" VARCHAR(120) NOT NULL,
     "messagesJson" JSONB NOT NULL,
     "lastMessageAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "AssistantConversation_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "AiConversation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -35,6 +33,12 @@ CREATE TABLE "User" (
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "image" TEXT,
     "platformRole" "PlatformRole" NOT NULL DEFAULT 'USER',
+    "role" TEXT DEFAULT 'user',
+    "preferredLocale" VARCHAR(5) NOT NULL DEFAULT 'en',
+    "twoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
+    "banned" BOOLEAN DEFAULT false,
+    "banReason" TEXT,
+    "banExpires" TIMESTAMP(3),
     "stripeCustomerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -74,6 +78,7 @@ CREATE TABLE "Session" (
     "userAgent" TEXT,
     "userId" TEXT NOT NULL,
     "activeOrganizationId" TEXT,
+    "impersonatedBy" TEXT,
 
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
@@ -113,6 +118,67 @@ CREATE TABLE "Subscription" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SubscriptionItem" (
+    "id" TEXT NOT NULL,
+    "subscriptionId" TEXT NOT NULL,
+    "itemType" VARCHAR(20) NOT NULL,
+    "itemKey" VARCHAR(100) NOT NULL,
+    "componentKey" VARCHAR(100) NOT NULL DEFAULT 'default',
+    "stripeSubscriptionItemId" TEXT,
+    "stripePriceId" VARCHAR(255) NOT NULL,
+    "billingInterval" VARCHAR(20),
+    "quantity" INTEGER,
+    "status" VARCHAR(30) NOT NULL DEFAULT 'active',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SubscriptionItem_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Purchase" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "purchaseType" VARCHAR(30) NOT NULL,
+    "itemKey" VARCHAR(100) NOT NULL,
+    "stripeCheckoutSessionId" TEXT,
+    "stripePaymentIntentId" TEXT,
+    "stripeCustomerId" TEXT,
+    "amount" INTEGER NOT NULL,
+    "currency" VARCHAR(10) NOT NULL DEFAULT 'usd',
+    "status" VARCHAR(30) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Purchase_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "StoredFile" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "uploadedByUserId" TEXT NOT NULL,
+    "storageKey" VARCHAR(255) NOT NULL,
+    "fileName" VARCHAR(255) NOT NULL,
+    "contentType" VARCHAR(120) NOT NULL,
+    "sizeBytes" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "StoredFile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TwoFactor" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "secret" TEXT NOT NULL,
+    "backupCodes" TEXT NOT NULL,
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
+
+    CONSTRAINT "TwoFactor_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -183,13 +249,13 @@ CREATE TABLE "UsageCounter" (
 );
 
 -- CreateIndex
-CREATE INDEX "AssistantConversation_organizationId_userId_lastMessageAt_idx" ON "AssistantConversation"("organizationId", "userId", "lastMessageAt" DESC);
+CREATE INDEX "AiConversation_organizationId_createdByUserId_surface_lastM_idx" ON "AiConversation"("organizationId", "createdByUserId", "surface", "lastMessageAt" DESC);
 
 -- CreateIndex
-CREATE INDEX "AssistantConversation_userId_idx" ON "AssistantConversation"("userId");
+CREATE INDEX "AiConversation_createdByUserId_idx" ON "AiConversation"("createdByUserId");
 
 -- CreateIndex
-CREATE INDEX "AssistantConversation_organizationId_idx" ON "AssistantConversation"("organizationId");
+CREATE INDEX "AiConversation_organizationId_idx" ON "AiConversation"("organizationId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
@@ -214,6 +280,36 @@ CREATE INDEX "Subscription_stripeCustomerId_idx" ON "Subscription"("stripeCustom
 
 -- CreateIndex
 CREATE INDEX "Subscription_stripeSubscriptionId_idx" ON "Subscription"("stripeSubscriptionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SubscriptionItem_stripeSubscriptionItemId_key" ON "SubscriptionItem"("stripeSubscriptionItemId");
+
+-- CreateIndex
+CREATE INDEX "SubscriptionItem_subscriptionId_idx" ON "SubscriptionItem"("subscriptionId");
+
+-- CreateIndex
+CREATE INDEX "SubscriptionItem_itemType_itemKey_idx" ON "SubscriptionItem"("itemType", "itemKey");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SubscriptionItem_subscriptionId_itemType_itemKey_componentK_key" ON "SubscriptionItem"("subscriptionId", "itemType", "itemKey", "componentKey");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Purchase_stripeCheckoutSessionId_key" ON "Purchase"("stripeCheckoutSessionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Purchase_stripePaymentIntentId_key" ON "Purchase"("stripePaymentIntentId");
+
+-- CreateIndex
+CREATE INDEX "Purchase_organizationId_purchaseType_itemKey_idx" ON "Purchase"("organizationId", "purchaseType", "itemKey");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "StoredFile_storageKey_key" ON "StoredFile"("storageKey");
+
+-- CreateIndex
+CREATE INDEX "StoredFile_organizationId_createdAt_idx" ON "StoredFile"("organizationId", "createdAt" DESC);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TwoFactor_userId_key" ON "TwoFactor"("userId");
 
 -- CreateIndex
 CREATE INDEX "Task_organizationId_idx" ON "Task"("organizationId");
@@ -264,16 +360,31 @@ CREATE INDEX "UsageCounter_organizationId_limitKey_idx" ON "UsageCounter"("organ
 CREATE UNIQUE INDEX "UsageCounter_organizationId_limitKey_periodStart_key" ON "UsageCounter"("organizationId", "limitKey", "periodStart");
 
 -- AddForeignKey
-ALTER TABLE "AssistantConversation" ADD CONSTRAINT "AssistantConversation_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "AiConversation" ADD CONSTRAINT "AiConversation_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AssistantConversation" ADD CONSTRAINT "AssistantConversation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "AiConversation" ADD CONSTRAINT "AiConversation_createdByUserId_fkey" FOREIGN KEY ("createdByUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SubscriptionItem" ADD CONSTRAINT "SubscriptionItem_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Purchase" ADD CONSTRAINT "Purchase_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StoredFile" ADD CONSTRAINT "StoredFile_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StoredFile" ADD CONSTRAINT "StoredFile_uploadedByUserId_fkey" FOREIGN KEY ("uploadedByUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TwoFactor" ADD CONSTRAINT "TwoFactor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

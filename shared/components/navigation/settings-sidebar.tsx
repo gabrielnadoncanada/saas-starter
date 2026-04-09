@@ -24,6 +24,7 @@ import {
 } from "@/shared/components/ui/sidebar";
 import { accountFlags } from "@/shared/config/account.config";
 import { routes } from "@/shared/constants/routes";
+import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";
 
 const workspaceItems: SidebarNavLink[] = [
   ...(accountFlags.enableTeamFeatures
@@ -93,6 +94,7 @@ export function SettingsSidebar() {
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarGroupSearch />
         {groups.map((group, index) => (
           <NavGroup key={`${group.title}-${index}`} {...group} />
         ))}

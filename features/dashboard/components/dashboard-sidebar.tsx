@@ -20,6 +20,7 @@ import {
   SidebarMenu,
   SidebarRail,
 } from "@/shared/components/ui/sidebar";
+import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";
 
 export function DashboardSidebar() {
   const { navGroups } = dashboardSidebarData;
@@ -30,24 +31,10 @@ export function DashboardSidebar() {
         <DashboardSidebarUser />
       </SidebarHeader>
       <SidebarContent>
+        <SidebarGroupSearch />
         {navGroups.map((group) => (
           <NavGroup key={group.title} {...group} />
         ))}
-        <SidebarGroup>
-          <Collapsible defaultOpen>
-            <SidebarGroupLabel>
-              <CollapsibleTrigger className="group/collapsible flex w-full items-center">
-                Assistant
-                <ChevronRight className="size-4 ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarMenu>
-                <AssistantSidebarNav />
-              </SidebarMenu>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

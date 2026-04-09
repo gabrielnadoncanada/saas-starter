@@ -22,7 +22,7 @@ export default async function SettingsPage() {
   const context = await getCurrentOrganizationContext();
 
   return (
-    <Page fixed>
+    <Page>
       <PageHeader>
         <PageTitle>Organization Settings</PageTitle>
         <PageDescription>

@@ -1,6 +1,12 @@
 "use client";
 
-import { ChevronsUpDown, Cog, LogOut, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ChevronsUpDown,
+  Cog,
+  LogOut,
+  ShieldCheck,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -56,12 +62,10 @@ export function DashboardSidebarUser() {
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton variant="outline" className="pl-0">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">
-                    {activeOrganization?.name?.charAt(0).toUpperCase() ?? "O"}
-                  </AvatarFallback>
-                </Avatar>
+              <SidebarMenuButton variant="ghost">
+                <div className="font-semibold flex items-center justify-center w-4 h-4 min-w-4">
+                  {activeOrganization?.name?.charAt(0).toUpperCase() ?? "O"}
+                </div>
                 <div className="grid flex-1 text-start text-sm leading-tight">
                   <span className="truncate font-semibold">
                     {activeOrganization?.name ?? "Organization"}
