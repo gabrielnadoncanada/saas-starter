@@ -39,12 +39,12 @@ export async function createTask(input: CreateTaskValues): Promise<Task> {
   assertCapability(entitlements, "task.create");
 
   return db.$transaction(async (tx) => {
-    await consumeMonthlyUsage(
-      entitlements.organizationId,
-      "tasksPerMonth",
+    await consumeMonthlyUsage({
+      organizationId: entitlements.organizationId,
+      limitKey: "tasksPerMonth",
       entitlements,
-      { db: tx },
-    );
+      db: tx,
+    });
 
     for (let attempt = 0; attempt < MAX_TASK_CODE_ATTEMPTS; attempt += 1) {
       const latestTask = await tx.task.findFirst({

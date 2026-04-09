@@ -4,7 +4,7 @@ import {
 } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
-import { LimitReachedError, getPlanLimit } from "../plan-guards";
+import { getPlanLimit,LimitReachedError } from "../plan-guards";
 
 function getPeriodStart(date = new Date()) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -15,48 +15,60 @@ type UsageDbClient = Pick<typeof db, "usageCounter">;
 /**
  * Atomically reserves one unit of monthly usage.
  */
-export async function consumeMonthlyUsage(
-  organizationId: string,
-  limitKey: LimitKey,
-  entitlements: OrganizationEntitlements,
-  deps: { db: UsageDbClient } = { db },
-) {
-  const periodStart = getPeriodStart();
-  const limit = getPlanLimit(entitlements, limitKey);
+export async function consumeMonthlyUsage(params: {
+  organizationId: string;
+  limitKey: LimitKey;
+  entitlements: OrganizationEntitlements;
+  amount?: number;
+  db?: UsageDbClient;
+}) {
+  const amount = params.amount ?? 1;
 
-  await deps.db.usageCounter.createMany({
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Usage amount must be a positive number.");
+  }
+
+  const periodStart = getPeriodStart();
+  const limit = getPlanLimit(params.entitlements, params.limitKey);
+  const usageDb = params.db ?? db;
+
+  await usageDb.usageCounter.createMany({
     data: {
-      organizationId,
-      limitKey,
+      organizationId: params.organizationId,
+      limitKey: params.limitKey,
       periodStart,
       count: 0,
     },
     skipDuplicates: true,
   });
 
-  const result = await deps.db.usageCounter.updateMany({
+  const result = await usageDb.usageCounter.updateMany({
     where: {
-      organizationId,
-      limitKey,
+      organizationId: params.organizationId,
+      limitKey: params.limitKey,
       periodStart,
       count: {
-        lt: limit,
+        lte: limit - amount,
       },
     },
     data: {
       count: {
-        increment: 1,
+        increment: amount,
       },
     },
   });
 
   if (result.count === 0) {
-    const currentUsage = await getMonthlyUsage(organizationId, limitKey, deps);
+    const currentUsage = await getMonthlyUsage(
+      params.organizationId,
+      params.limitKey,
+      { db: usageDb },
+    );
     throw new LimitReachedError(
-      limitKey,
+      params.limitKey,
       limit,
       currentUsage,
-      entitlements.planName,
+      params.entitlements.planName,
     );
   }
 }

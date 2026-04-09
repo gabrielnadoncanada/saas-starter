@@ -49,6 +49,7 @@ export async function getDashboardOverview() {
     taskCount,
     recentTasks,
     tasksUsage,
+    aiCreditsUsage,
     assistantConversationCount,
     recentTaskHistory,
   ] = organizationId
@@ -62,6 +63,7 @@ export async function getDashboardOverview() {
           take: 5,
         }),
         getMonthlyUsage(organizationId, "tasksPerMonth"),
+        getMonthlyUsage(organizationId, "aiCredits"),
         db.aiConversation.count({
           where: { organizationId },
         }),
@@ -77,7 +79,7 @@ export async function getDashboardOverview() {
           },
         }),
       ])
-    : [0, [], 0, 0, []];
+    : [0, [], 0, 0, 0, []];
 
   const taskLimit = entitlements
     ? checkLimit(entitlements, "tasksPerMonth", tasksUsage)
@@ -85,6 +87,10 @@ export async function getDashboardOverview() {
   const canUseAI = entitlements
     ? hasCapability(entitlements, "ai.assistant")
     : false;
+
+  const aiCreditsLimit = entitlements
+    ? checkLimit(entitlements, "aiCredits", aiCreditsUsage)
+    : { allowed: false, limit: 0, currentUsage: 0, remaining: 0 };
 
   const checklist = [
     {
@@ -119,6 +125,8 @@ export async function getDashboardOverview() {
     tasksUsage,
     assistantConversationCount,
     taskLimit,
+    aiCreditsUsage,
+    aiCreditsLimit,
     canUseAI,
     recentTasks,
     usageChart: buildUsageChart(recentTaskHistory),

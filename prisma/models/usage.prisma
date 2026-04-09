@@ -3,7 +3,7 @@ model UsageCounter {
   organizationId String
   limitKey       String   @db.VarChar(50)
   periodStart    DateTime
-  count          Int      @default(0)
+  count          Float    @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

@@ -1,19 +1,15 @@
-import {
-  ArrowRight,
-  ArrowUp,
-  CheckCircle2,
-  Sparkles,
-  Users,
-} from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-import { getPlanDisplayPrice } from "@/features/billing/catalog";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
-import { UsageMeter } from "@/features/billing/components/usage-meter";
 import { hasCapability } from "@/features/billing/plan-guards";
+import { DashboardCurrentPlanCard } from "@/features/dashboard/components/dashboard-current-plan-card";
+import { DashboardMembersCard } from "@/features/dashboard/components/dashboard-members-card";
 import { DashboardOnboardingChecklist } from "@/features/dashboard/components/dashboard-onboarding-checklist";
+import { DashboardPlanAiEntitlementsCard } from "@/features/dashboard/components/dashboard-plan-ai-entitlements-card";
 import { DashboardRecentTasks } from "@/features/dashboard/components/dashboard-recent-tasks";
 import { DashboardUsageChart } from "@/features/dashboard/components/dashboard-usage-chart";
+import { DashboardUsageLimitsCard } from "@/features/dashboard/components/dashboard-usage-limits-card";
 import { getDashboardOverview } from "@/features/dashboard/server/get-dashboard-overview";
 import {
   Page,
@@ -31,45 +27,23 @@ import {
 } from "@/shared/components/ui/card";
 import { routes } from "@/shared/constants/routes";
 
-function formatPlanPrice(unitAmount: number, locale: string) {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(unitAmount / 100);
-}
-
 export async function DashboardOverview() {
   const {
     organization,
     entitlements,
     planId,
     plan,
-    memberCount,
     tasksUsage,
     assistantConversationCount,
     taskLimit,
+    aiCreditsUsage,
+    aiCreditsLimit,
     canUseAI,
     recentTasks,
     usageChart,
     checklist,
   } = await getDashboardOverview();
 
-  const activeInterval =
-    organization?.billingInterval &&
-    getPlanDisplayPrice(plan.id, organization.billingInterval)
-      ? organization.billingInterval
-      : getPlanDisplayPrice(plan.id, "month")
-        ? "month"
-        : getPlanDisplayPrice(plan.id, "year")
-          ? "year"
-          : null;
-  const activePrice = activeInterval
-    ? getPlanDisplayPrice(plan.id, activeInterval)
-    : null;
-  const priceLabel = activePrice
-    ? formatPlanPrice(activePrice.unitAmount, "en")
-    : "Free";
   const organizationNameSuffix = organization?.name
     ? ` ${organization.name}`
     : "";
@@ -85,48 +59,24 @@ export async function DashboardOverview() {
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {plan.name}
-              <span className="ml-2 inline-flex items-center rounded-full border border-transparent px-2 py-1 text-xs text-green-500">
-                <ArrowUp className="mr-1 size-3" />
-                {planId}
-              </span>
-            </CardTitle>
-            <CardDescription>Current Plan</CardDescription>
-            <div className="font-heading text-2xl font-semibold">
-              {priceLabel}
-            </div>
-          </CardHeader>
-        </Card>
+        <DashboardCurrentPlanCard
+          billingInterval={organization?.billingInterval ?? null}
+          cancelAtPeriodEnd={organization?.cancelAtPeriodEnd ?? false}
+          periodEnd={organization?.periodEnd ?? null}
+          planId={planId}
+          planName={plan.name}
+          pricingModel={plan.pricingModel}
+          subscriptionStatus={organization?.subscriptionStatus ?? null}
+        />
 
-        <Card>
-          <CardHeader>
-            <CardDescription>Task creations this month</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <CheckCircle2 className="h-5 w-5 text-orange-500" />
-              {tasksUsage}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <UsageMeter
-              label={"Monthly quota"}
-              current={tasksUsage}
-              limit={taskLimit.limit}
-            />
-          </CardContent>
-        </Card>
+        <DashboardUsageLimitsCard
+          tasksUsage={tasksUsage}
+          taskLimit={taskLimit.limit}
+          aiCreditsUsage={aiCreditsUsage}
+          aiCreditsLimit={aiCreditsLimit.limit}
+        />
 
-        <Card>
-          <CardHeader>
-            <CardDescription>Organization Members</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <Users className="h-5 w-5 text-orange-500" />
-              {memberCount}
-            </CardTitle>
-          </CardHeader>
-        </Card>
+        <DashboardMembersCard members={organization?.members ?? []} />
 
         {canUseAI ? (
           <Card>
@@ -147,6 +97,14 @@ export async function DashboardOverview() {
           </Card>
         ) : null}
       </div>
+
+      <DashboardPlanAiEntitlementsCard
+        aiCreditsUsage={aiCreditsUsage}
+        aiCreditsLimit={aiCreditsLimit.limit}
+        entitlements={entitlements}
+        planName={plan.name}
+        taskLimit={taskLimit.limit}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <Card>

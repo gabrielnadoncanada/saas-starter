@@ -52,7 +52,9 @@ function mapCurrentOrganization(
     id: organization.id,
     name: organization.name,
     billingInterval: subscription.billingInterval,
+    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
     plan: subscription.plan,
+    periodEnd: toIsoString(subscription.periodEnd),
     pricingModel: subscription.pricingModel,
     stripeCustomerId:
       organization.stripeCustomerId ?? subscription.stripeCustomerId ?? null,

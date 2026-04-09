@@ -16,7 +16,7 @@ export const capabilities = [
   "ai.assistant",
 ] as const;
 
-export const limitKeys = ["tasksPerMonth", "teamMembers", "storageMb"] as const;
+export const limitKeys = ["tasksPerMonth", "teamMembers", "storageMb", "aiCredits"] as const;
 
 export type Capability = (typeof capabilities)[number];
 export type LimitKey = (typeof limitKeys)[number];
@@ -105,7 +105,7 @@ export const billingConfig = {
       pricingModel: "flat",
       features: ["Create tasks", "Billing portal access"],
       capabilities: ["task.create", "billing.portal"],
-      limits: { tasksPerMonth: 10, teamMembers: 1, storageMb: 100 },
+      limits: { tasksPerMonth: 10, teamMembers: 1, storageMb: 100, aiCredits: 0 },
       schedules: {},
     },
     {
@@ -122,7 +122,7 @@ export const billingConfig = {
         "billing.portal",
         "ai.assistant",
       ],
-      limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000 },
+      limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000, aiCredits: 1000 },
       schedules: {
         month: process.env.STRIPE_PRICE_PRO_MONTHLY
           ? {
@@ -175,7 +175,7 @@ export const billingConfig = {
         "billing.portal",
         "ai.assistant",
       ],
-      limits: { tasksPerMonth: 10000, teamMembers: 50, storageMb: 50000 },
+      limits: { tasksPerMonth: 10000, teamMembers: 50, storageMb: 50000, aiCredits: 10000 },
       schedules: {
         month: process.env.STRIPE_PRICE_TEAM_MONTHLY
           ? {

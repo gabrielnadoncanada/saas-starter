@@ -13,6 +13,7 @@ import {
   LimitReachedError,
   UpgradeRequiredError,
 } from "@/features/billing/plan-guards";
+import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 
@@ -96,6 +97,28 @@ export async function handleAssistantRequest(req: Request) {
     if (!conversation) {
       return new Response("Conversation not found", { status: 404 });
     }
+  }
+
+  try {
+    await consumeMonthlyUsage({
+      organizationId: entitlements.organizationId,
+      limitKey: "aiCredits",
+      entitlements,
+    });
+  } catch (error) {
+    if (error instanceof LimitReachedError) {
+      return Response.json(
+        {
+          error: error.message,
+          code: "LIMIT_REACHED",
+          limit: error.limit,
+          currentUsage: error.currentUsage,
+        },
+        { status: 429 },
+      );
+    }
+
+    throw error;
   }
 
   const modelMessages = await convertToModelMessages(messages);

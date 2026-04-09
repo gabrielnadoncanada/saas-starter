@@ -32,7 +32,9 @@ export type CurrentOrganizationView = {
   id: string;
   name: string;
   billingInterval: BillingInterval | null;
+  cancelAtPeriodEnd: boolean;
   plan: string | null;
+  periodEnd: string | null;
   pricingModel: PricingModel | null;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
