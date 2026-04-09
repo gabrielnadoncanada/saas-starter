@@ -1,6 +1,16 @@
 import { CheckCircle2, Circle } from "lucide-react";
 import Link from "next/link";
 
+import { Badge } from "@/shared/components/ui/badge";
+import {
+  Item,
+  ItemContent,
+  ItemGroup,
+  ItemHeader,
+  ItemMedia,
+  ItemTitle,
+} from "@/shared/components/ui/item";
+
 type ChecklistItem = {
   id: string;
   title: string;
@@ -14,21 +24,28 @@ export function DashboardOnboardingChecklist({
   items: ChecklistItem[];
 }) {
   return (
-    <div className="space-y-3">
+    <ItemGroup className="gap-3">
       {items.map((item) => (
-        <Link
-          key={item.id}
-          href={item.href}
-          className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/40"
-        >
-          {item.done ? (
-            <CheckCircle2 className="size-4 text-green-500" />
-          ) : (
-            <Circle className="size-4 text-muted-foreground" />
-          )}
-          <span className="text-sm font-medium">{item.title}</span>
-        </Link>
+        <Item key={item.id} asChild variant="outline" size="sm">
+          <Link href={item.href}>
+            <ItemMedia variant="icon">
+              {item.done ? (
+                <CheckCircle2 className="size-4 text-primary" />
+              ) : (
+                <Circle className="size-4 text-muted-foreground" />
+              )}
+            </ItemMedia>
+            <ItemContent>
+              <ItemHeader>
+                <ItemTitle>{item.title}</ItemTitle>
+                <Badge variant={item.done ? "secondary" : "outline"}>
+                  {item.done ? "Done" : "Open"}
+                </Badge>
+              </ItemHeader>
+            </ItemContent>
+          </Link>
+        </Item>
       ))}
-    </div>
+    </ItemGroup>
   );
 }

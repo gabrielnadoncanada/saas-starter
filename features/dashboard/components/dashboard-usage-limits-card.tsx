@@ -1,14 +1,18 @@
 import { ArrowRight, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
 import { Progress } from "@/shared/components/ui/progress";
+import { Separator } from "@/shared/components/ui/separator";
 import { routes } from "@/shared/constants/routes";
 
 type DashboardUsageLimitsCardProps = {
@@ -44,16 +48,19 @@ export function DashboardUsageLimitsCard({
   tasksUsage,
 }: DashboardUsageLimitsCardProps) {
   return (
-    <Card>
-      <CardHeader className="space-y-3">
+    <Card className="h-full">
+      <CardHeader>
         <CardDescription>Usage & Limits</CardDescription>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="size-5 text-orange-500" />
+        <CardAction>
+          <p className="text-sm text-muted-foreground">Current cycle</p>
+        </CardAction>
+        <CardTitle>
+          <BarChart3 className="size-5 text-primary" />
           Usage
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-5">
+      <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-sm font-medium">Tasks</p>
@@ -64,6 +71,8 @@ export function DashboardUsageLimitsCard({
           <Progress value={getProgressValue(tasksUsage, taskLimit)} />
         </div>
 
+        <Separator />
+
         <div className="space-y-2">
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-sm font-medium">AI Credits</p>
@@ -73,15 +82,16 @@ export function DashboardUsageLimitsCard({
           </div>
           <Progress value={getProgressValue(aiCreditsUsage, aiCreditsLimit)} />
         </div>
-
-        <Link
-          href={routes.settings.billing}
-          className="inline-flex items-center gap-2 text-sm font-medium text-primary"
-        >
-          View usage details
-          <ArrowRight className="size-4" />
-        </Link>
       </CardContent>
+
+      <CardFooter>
+        <Button asChild variant="outline" className="w-full justify-between">
+          <Link href={routes.settings.billing}>
+            View usage details
+            <ArrowRight />
+          </Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

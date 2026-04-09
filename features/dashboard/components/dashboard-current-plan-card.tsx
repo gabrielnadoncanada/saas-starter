@@ -8,11 +8,14 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import { Separator } from "@/shared/components/ui/separator";
 import type {
   BillingInterval,
   PricingModel,
@@ -37,10 +40,7 @@ function formatPlanPrice(unitAmount: number) {
   }).format(unitAmount / 100);
 }
 
-function getPriceSuffix(
-  interval: BillingInterval,
-  pricingModel: PricingModel,
-) {
+function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
   if (pricingModel === "per_seat") {
     return interval === "year" ? "/ seat / year" : "/ seat / month";
   }
@@ -98,7 +98,8 @@ export function DashboardCurrentPlanCard({
   const activePrice = activeInterval
     ? getPlanDisplayPrice(planId, activeInterval)
     : null;
-  const hasStripeSubscription = hasCurrentStripeSubscription(subscriptionStatus);
+  const hasStripeSubscription =
+    hasCurrentStripeSubscription(subscriptionStatus);
   const renewalText = getRenewalText({
     cancelAtPeriodEnd,
     hasStripeSubscription,
@@ -106,13 +107,15 @@ export function DashboardCurrentPlanCard({
   });
 
   return (
-    <Card>
-      <CardHeader className="space-y-3">
+    <Card className="h-full">
+      <CardHeader>
         <CardDescription>Current Plan</CardDescription>
-        <div className="flex flex-wrap items-center gap-2">
-          <CardTitle>{planName}</CardTitle>
-          <Badge variant="secondary">{getStatusLabel(planId, subscriptionStatus)}</Badge>
-        </div>
+        <CardAction>
+          <Badge variant="secondary">
+            {getStatusLabel(planId, subscriptionStatus)}
+          </Badge>
+        </CardAction>
+        <CardTitle>{planName}</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -130,14 +133,27 @@ export function DashboardCurrentPlanCard({
             <p className="text-sm text-muted-foreground">{renewalText}</p>
           ) : null}
         </div>
+        <Separator />
+        <div className="rounded-lg border bg-muted/30 p-4">
+          <p className="text-sm font-medium">Billing cadence</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {activeInterval
+              ? activeInterval === "year"
+                ? "Yearly plan billing"
+                : "Monthly plan billing"
+              : "No recurring billing"}
+          </p>
+        </div>
+      </CardContent>
 
+      <CardFooter>
         <Button asChild variant="outline" className="w-full justify-between">
           <Link href={routes.settings.billing}>
             Manage billing
             <ArrowRight />
           </Link>
         </Button>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }

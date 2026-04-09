@@ -1,14 +1,25 @@
-import { Check, Crown, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 import { hasCapability } from "@/features/billing/plan-guards";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import {
+  Item,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/shared/components/ui/item";
 import { Progress } from "@/shared/components/ui/progress";
 import type { OrganizationEntitlements } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
@@ -83,32 +94,39 @@ export function DashboardPlanAiEntitlementsCard({
 
   return (
     <Card>
-      <CardHeader className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Crown className="size-5 text-orange-500" />
-          <CardTitle>Plan & AI Entitlements</CardTitle>
-        </div>
+      <CardHeader>
+        <CardAction>
+          <Badge variant="secondary">{planName}</Badge>
+        </CardAction>
+        <CardTitle>
+          <Crown className="size-5 text-primary" />
+          Plan & AI Entitlements
+        </CardTitle>
         <CardDescription>
           {`What's included in your ${planName} plan.`}
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+      <CardContent className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-3">
           <p className="text-sm font-medium">Your entitlements</p>
-          <div className="space-y-2">
+          <ItemGroup className="gap-2">
             {highlights.map((highlight) => (
-              <div key={highlight} className="flex items-start gap-2 text-sm">
-                <Check className="mt-0.5 size-4 text-green-600" />
-                <span>{highlight}</span>
-              </div>
+              <Item key={highlight} variant="outline" size="sm">
+                <ItemMedia variant="icon">
+                  <Check className="size-4 text-primary" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>{highlight}</ItemTitle>
+                </ItemContent>
+              </Item>
             ))}
-          </div>
+          </ItemGroup>
         </div>
 
         <div className="space-y-4 rounded-lg border p-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-orange-500" />
+            <Sparkles className="size-4 text-primary" />
             <p className="text-sm font-medium">AI usage this month</p>
           </div>
 
@@ -122,7 +140,9 @@ export function DashboardPlanAiEntitlementsCard({
               </div>
 
               <div className="text-right text-sm">
-                <p className="font-medium">{formatNumber(aiCreditsUsage)} used</p>
+                <p className="font-medium">
+                  {formatNumber(aiCreditsUsage)} used
+                </p>
                 <p className="text-muted-foreground">
                   {formatNumber(aiCreditsLimit)} total
                 </p>
@@ -132,14 +152,16 @@ export function DashboardPlanAiEntitlementsCard({
             <Progress value={usagePercent} />
           </div>
         </div>
-
-        <Link
-          href={routes.settings.billing}
-          className="text-sm font-medium text-primary lg:col-span-2"
-        >
-          Manage billing & limits
-        </Link>
       </CardContent>
+
+      <CardFooter>
+        <Button asChild variant="outline" className="w-full justify-between">
+          <Link href={routes.settings.billing}>
+            Manage billing & limits
+            <ArrowRight />
+          </Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import { UserPlus, Users } from "lucide-react";
+import { ArrowRight, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
 
 import type { OrganizationMemberView } from "@/features/organizations/types";
@@ -9,11 +9,14 @@ import {
   AvatarGroupCount,
   AvatarImage,
 } from "@/shared/components/ui/avatar";
+import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
@@ -37,19 +40,21 @@ function getMemberInitials(member: OrganizationMemberView) {
     .join("");
 }
 
-export function DashboardMembersCard({
-  members,
-}: DashboardMembersCardProps) {
+export function DashboardMembersCard({ members }: DashboardMembersCardProps) {
   const visibleMembers = members.slice(0, 3);
   const extraMemberCount = Math.max(0, members.length - visibleMembers.length);
   const memberLabel = members.length === 1 ? "member" : "members";
+  const leadMember = members[0];
 
   return (
-    <Card>
-      <CardHeader className="space-y-3">
+    <Card className="h-full">
+      <CardHeader>
         <CardDescription>Workspace & Members</CardDescription>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="size-5 text-orange-500" />
+        <CardAction>
+          <Badge variant="secondary">{`${members.length} ${memberLabel}`}</Badge>
+        </CardAction>
+        <CardTitle>
+          <Users className="size-5 text-primary" />
           Members
         </CardTitle>
       </CardHeader>
@@ -70,9 +75,7 @@ export function DashboardMembersCard({
                   src={member.user.image ?? undefined}
                   alt={member.user.name ?? member.user.email}
                 />
-                <AvatarFallback>
-                  {getMemberInitials(member)}
-                </AvatarFallback>
+                <AvatarFallback>{getMemberInitials(member)}</AvatarFallback>
               </Avatar>
             ))}
 
@@ -80,15 +83,31 @@ export function DashboardMembersCard({
               <AvatarGroupCount>+{extraMemberCount}</AvatarGroupCount>
             ) : null}
           </AvatarGroup>
+        </div>
 
-          <Button asChild variant="outline" size="sm">
-            <Link href={routes.settings.members}>
-              <UserPlus />
-              Invite member
-            </Link>
-          </Button>
+        <div className="rounded-lg border bg-muted/30 p-4">
+          <p className="text-sm font-medium">
+            {leadMember ? "Workspace owner" : "Team status"}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {leadMember
+              ? (leadMember.user.name ?? leadMember.user.email)
+              : "Invite teammates to collaborate here."}
+          </p>
         </div>
       </CardContent>
+
+      <CardFooter>
+        <Button asChild variant="outline" className="w-full justify-between">
+          <Link href={routes.settings.members}>
+            <span className="flex items-center gap-2">
+              <UserPlus />
+              Invite member
+            </span>
+            <ArrowRight />
+          </Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
