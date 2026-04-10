@@ -38,21 +38,18 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 ## Quick start
 
 ```bash
-# 1. Install dependencies
 pnpm install
+pnpm setup   # interactive: writes .env, runs migrations, seeds demo data
+pnpm dev
+```
 
-# 2. Set up environment variables
-cp .env.example .env
-# Fill in your Postgres URL, Stripe keys, auth secrets, and OAuth credentials
+`pnpm setup` walks you through Postgres (local Docker or remote), Stripe keys, optional Stripe CLI webhook setup, then runs `db:migrate` and `db:seed`. If you prefer to configure everything by hand, skip it and run each step manually:
 
-# 3. Start the database (or use an existing Postgres instance)
-docker compose up -d
-
-# 4. Run migrations and seed demo data
+```bash
+cp .env.example .env   # fill in Postgres, Stripe, auth secrets, OAuth creds
+docker compose up -d   # or point POSTGRES_URL at your own instance
 pnpm db:migrate
 pnpm db:seed
-
-# 5. Start the dev server
 pnpm dev
 ```
 
@@ -146,16 +143,17 @@ Full documentation is available at `/docs` when the app is running, or browse `c
 
 ## Scripts
 
-| Command           | Purpose                         |
-| ----------------- | ------------------------------- |
-| `pnpm dev`        | Start dev server with Turbopack |
-| `pnpm build`      | Production build                |
-| `pnpm test`       | Run tests                       |
-| `pnpm test:watch` | Tests in watch mode             |
-| `pnpm db:migrate` | Run database migrations         |
-| `pnpm db:seed`    | Seed demo data                  |
-| `pnpm db:studio`  | Open Prisma Studio              |
-| `pnpm email:dev`  | Preview email templates         |
+| Command           | Purpose                                                    |
+| ----------------- | ---------------------------------------------------------- |
+| `pnpm setup`      | One-command install: .env, migrations, seed                |
+| `pnpm dev`        | Start dev server with Turbopack                            |
+| `pnpm build`      | Production build                                           |
+| `pnpm test`       | Run tests                                                  |
+| `pnpm test:watch` | Tests in watch mode                                        |
+| `pnpm db:migrate` | Run database migrations                                    |
+| `pnpm db:seed`    | Seed demo data                                             |
+| `pnpm db:studio`  | Open Prisma Studio                                         |
+| `pnpm email:dev`  | Preview email templates                                    |
 
 ## License
 

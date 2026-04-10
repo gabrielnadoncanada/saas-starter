@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 
+import { logActivity } from "@/features/activity/server/log-activity";
 import { assertCapability, assertLimit } from "@/features/billing/plans";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import {
@@ -52,22 +53,15 @@ export type RemoveOrganizationMemberActionState =
 export const inviteOrganizationMemberAction = validatedAuthenticatedAction<
   typeof inviteOrganizationMemberSchema,
   { refreshKey?: number }
->(inviteOrganizationMemberSchema, async ({ email, role }) => {
-  const membershipStep = await withBillingErrors(() =>
-    requireActiveOrganizationRole(["owner"]),
-  );
-  if ("error" in membershipStep) {
-    return membershipStep;
-  }
-  const { organizationId } = membershipStep;
+>(inviteOrganizationMemberSchema, async ({ email, role }, _formData, user) => {
+  return withBillingErrors(async () => {
+    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
 
-  const entitlements = await getCurrentOrganizationEntitlements();
+    const entitlements = await getCurrentOrganizationEntitlements();
+    if (!entitlements) {
+      return { error: "Unable to determine organization plan" };
+    }
 
-  if (!entitlements) {
-    return { error: "Unable to determine organization plan" };
-  }
-
-  const limitsStep = await withBillingErrors(async () => {
     assertCapability(entitlements, "team.invite");
 
     const requestHeaders = await headers();
@@ -88,106 +82,116 @@ export const inviteOrganizationMemberAction = validatedAuthenticatedAction<
     ).length;
 
     assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
-    return {};
-  });
-  if ("error" in limitsStep) {
-    return limitsStep;
-  }
 
-  try {
-    await inviteOrganizationMember({
+    try {
+      await inviteOrganizationMember({ organizationId, email, role });
+    } catch (error) {
+      return {
+        error:
+          error instanceof Error ? error.message : "Failed to send invitation",
+      };
+    }
+
+    await logActivity({
+      action: "member.invited",
       organizationId,
-      email,
-      role,
+      actorUserId: user.id,
+      targetType: "invitation",
+      metadata: { email, role },
     });
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error ? error.message : "Failed to send invitation",
-    };
-  }
 
-  return { success: "Invitation sent successfully", refreshKey: Date.now() };
+    return { success: "Invitation sent successfully", refreshKey: Date.now() };
+  });
 });
 
 export const cancelOrganizationInvitationAction = validatedAuthenticatedAction<
   typeof invitationIdSchema,
   { refreshKey?: number }
->(invitationIdSchema, async ({ invitationId }) => {
-  const guard = await withBillingErrors(() =>
-    requireActiveOrganizationRole(["owner"]),
-  );
-  if ("error" in guard) {
-    return guard;
-  }
+>(invitationIdSchema, async ({ invitationId }, _formData, user) => {
+  return withBillingErrors(async () => {
+    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
 
-  try {
-    await cancelOrganizationInvitation({ invitationId });
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error ? error.message : "Failed to cancel invitation",
-    };
-  }
+    try {
+      await cancelOrganizationInvitation({ invitationId });
+    } catch (error) {
+      return {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to cancel invitation",
+      };
+    }
 
-  return {
-    success: "Invitation canceled",
-    refreshKey: Date.now(),
-  };
+    await logActivity({
+      action: "invitation.cancelled",
+      organizationId,
+      actorUserId: user.id,
+      targetType: "invitation",
+      targetId: invitationId,
+    });
+
+    return { success: "Invitation canceled", refreshKey: Date.now() };
+  });
 });
 
 export const resendOrganizationInvitationAction = validatedAuthenticatedAction<
   typeof invitationIdSchema,
   { refreshKey?: number }
->(invitationIdSchema, async ({ invitationId }) => {
-  const membershipStep = await withBillingErrors(() =>
-    requireActiveOrganizationRole(["owner"]),
-  );
-  if ("error" in membershipStep) {
-    return membershipStep;
-  }
-  const { organizationId } = membershipStep;
+>(invitationIdSchema, async ({ invitationId }, _formData, user) => {
+  return withBillingErrors(async () => {
+    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
 
-  const result = await resendOrganizationInvitation({
-    invitationId,
-    organizationId,
+    const result = await resendOrganizationInvitation({
+      invitationId,
+      organizationId,
+    });
+
+    if (result.error) {
+      return result;
+    }
+
+    await logActivity({
+      action: "invitation.resent",
+      organizationId,
+      actorUserId: user.id,
+      targetType: "invitation",
+      targetId: invitationId,
+    });
+
+    return { ...result, refreshKey: Date.now() };
   });
-
-  if (result.error) {
-    return result;
-  }
-
-  return { ...result, refreshKey: Date.now() };
 });
 
 export const removeOrganizationMemberAction = validatedAuthenticatedAction<
   typeof removeOrganizationMemberSchema,
   { refreshKey?: number }
->(removeOrganizationMemberSchema, async ({ memberId }) => {
-  const membershipStep = await withBillingErrors(() =>
-    requireActiveOrganizationRole(["owner"]),
-  );
-  if ("error" in membershipStep) {
-    return membershipStep;
-  }
-  const { organizationId } = membershipStep;
+>(removeOrganizationMemberSchema, async ({ memberId }, _formData, user) => {
+  return withBillingErrors(async () => {
+    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
 
-  try {
-    await auth.api.removeMember({
-      headers: await headers(),
-      body: {
-        memberIdOrEmail: memberId,
-        organizationId,
-      },
+    try {
+      await auth.api.removeMember({
+        headers: await headers(),
+        body: { memberIdOrEmail: memberId, organizationId },
+      });
+    } catch (error) {
+      return {
+        error:
+          error instanceof Error ? error.message : "Failed to remove member",
+      };
+    }
+
+    await logActivity({
+      action: "member.removed",
+      organizationId,
+      actorUserId: user.id,
+      targetType: "member",
+      targetId: memberId,
     });
-  } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : "Failed to remove member",
-    };
-  }
 
-  return {
-    success: "Organization member removed successfully",
-    refreshKey: Date.now(),
-  };
+    return {
+      success: "Organization member removed successfully",
+      refreshKey: Date.now(),
+    };
+  });
 });

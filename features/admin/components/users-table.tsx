@@ -1,50 +1,47 @@
 "use client";
 
-import { format } from "date-fns";
-import { Copy, Search } from "lucide-react";
-import { useState, useTransition } from "react";
+import { Search } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import {
+  type AdminUsersTableSearchParams,
+  buildAdminUsersTableHref,
+  ADMIN_USERS_TABLE_PAGE_SIZES,
+} from "@/features/admin/admin-users-table-search-params";
+import {
   banUserAction,
   getAdminUserDetailAction,
-  listAdminUsersAction,
   removeUserAction,
   revokeAllUserSessionsAction,
   setUserRoleAction,
   unbanUserAction,
 } from "@/features/admin/actions/users.actions";
+import { getAdminUsersColumns } from "@/features/admin/components/admin-users-table-columns";
 import type {
   AdminApiSession,
   AdminApiUser,
 } from "@/shared/lib/auth/better-auth-inferred-types";
-import { AdminTablePagination } from "@/features/admin/components/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+  DataTableContent,
+  DataTablePagination,
+} from "@/shared/components/data-table";
 import { Input } from "@/shared/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/components/ui/table";
+import { useServerTable } from "@/shared/hooks/use-server-table";
 
 import { UserDetailSheet } from "./user-detail-sheet";
-import { UserRowActions } from "./user-row-actions";
+
+type AdminUsersPageData = AdminUsersTableSearchParams & {
+  rows: AdminApiUser[];
+  rowCount: number;
+  pageCount: number;
+};
 
 type AdminUsersTableProps = {
   currentUserId: string;
-  initialTotal: number;
-  initialUsers: AdminApiUser[];
-  pageSize: number;
+  usersPage: AdminUsersPageData;
 };
 
 type ConfirmState = {
@@ -61,46 +58,27 @@ const emptyConfirmState: ConfirmState = {
   action: async () => {},
 };
 
+const sortableColumns = ["email", "createdAt"];
+
 export function AdminUsersTable({
   currentUserId,
-  initialTotal,
-  initialUsers,
-  pageSize,
+  usersPage,
 }: AdminUsersTableProps) {
-  const [users, setUsers] = useState(initialUsers);
-  const [total, setTotal] = useState(initialTotal);
-  const [offset, setOffset] = useState(0);
-  const [search, setSearch] = useState("");
+  const { rows, rowCount, pageCount, ...tableParams } = usersPage;
+  const router = useRouter();
+  const pathname = usePathname();
+  const [, startTransition] = useTransition();
+
   const [selectedUser, setSelectedUser] = useState<AdminApiUser | null>(null);
   const [sessions, setSessions] = useState<AdminApiSession[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(emptyConfirmState);
-  const [isPending, startTransition] = useTransition();
+  const [searchInput, setSearchInput] = useState(tableParams.q ?? "");
 
-  async function loadUsers(nextOffset: number, nextSearch = search) {
-    try {
-      const result = await listAdminUsersAction({
-        limit: pageSize,
-        offset: nextOffset,
-        ...(nextSearch
-          ? {
-              searchField: "email" as const,
-              searchOperator: "contains" as const,
-              searchValue: nextSearch,
-            }
-          : {}),
-      });
-      setUsers(result.users);
-      setTotal(result.total);
-      setOffset(nextOffset);
-    } catch {
-      toast.error("Failed to fetch users");
-    }
-  }
-
-  function runTableRefresh(nextOffset: number, nextSearch = search) {
-    startTransition(async () => void (await loadUsers(nextOffset, nextSearch)));
+  function copyToClipboard(value: string) {
+    void navigator.clipboard.writeText(value);
+    toast.success("Copied to clipboard");
   }
 
   function openConfirmation(
@@ -109,6 +87,15 @@ export function AdminUsersTable({
     action: () => Promise<void>,
   ) {
     setConfirmDialog({ open: true, title, description, action });
+  }
+
+  function refreshPage() {
+    startTransition(() => router.refresh());
+  }
+
+  function closeUserDetailAndRefresh() {
+    setIsSheetOpen(false);
+    refreshPage();
   }
 
   async function openUserDetail(user: AdminApiUser) {
@@ -132,63 +119,66 @@ export function AdminUsersTable({
     }
   }
 
-  function copyToClipboard(value: string) {
-    void navigator.clipboard.writeText(value);
-    toast.success("Copied to clipboard");
-  }
+  const columns = useMemo(
+    () =>
+      getAdminUsersColumns({
+        currentUserId,
+        onCopyEmail: copyToClipboard,
+        onSetRole: (userId, role) =>
+          openConfirmation(
+            `Set role to "${role}"`,
+            `Are you sure you want to change this user's role to "${role}"?`,
+            async () => {
+              await setUserRoleAction(userId, role);
+              toast.success("Role updated");
+              closeUserDetailAndRefresh();
+            },
+          ),
+        onBan: (userId) =>
+          openConfirmation(
+            "Ban user",
+            "This will ban the user and revoke all their sessions. Are you sure?",
+            async () => {
+              await banUserAction(userId);
+              toast.success("User banned");
+              closeUserDetailAndRefresh();
+            },
+          ),
+        onUnban: (userId) =>
+          openConfirmation(
+            "Unban user",
+            "This will unban the user and allow them to sign in again.",
+            async () => {
+              await unbanUserAction(userId);
+              toast.success("User unbanned");
+              closeUserDetailAndRefresh();
+            },
+          ),
+        onRemove: (userId) =>
+          openConfirmation(
+            "Delete user",
+            "This will permanently delete this user and all their data. This cannot be undone.",
+            async () => {
+              await removeUserAction(userId);
+              toast.success("User deleted");
+              closeUserDetailAndRefresh();
+            },
+          ),
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentUserId],
+  );
 
-  function closeUserDetailAndRefresh() {
-    setIsSheetOpen(false);
-    runTableRefresh(offset);
-  }
-
-  function confirmBanUser(userId: string) {
-    openConfirmation(
-      "Ban user",
-      "This will ban the user and revoke all their sessions. Are you sure?",
-      async () => {
-        await banUserAction(userId);
-        toast.success("User banned");
-        closeUserDetailAndRefresh();
-      },
-    );
-  }
-
-  function confirmDeleteUser(userId: string) {
-    openConfirmation(
-      "Delete user",
-      "This will permanently delete this user and all their data. This cannot be undone.",
-      async () => {
-        await removeUserAction(userId);
-        toast.success("User deleted");
-        closeUserDetailAndRefresh();
-      },
-    );
-  }
-
-  function confirmSetUserRole(userId: string, role: "user" | "admin") {
-    openConfirmation(
-      `Set role to "${role}"`,
-      `Are you sure you want to change this user's role to "${role}"?`,
-      async () => {
-        await setUserRoleAction(userId, role);
-        toast.success("Role updated");
-        closeUserDetailAndRefresh();
-      },
-    );
-  }
-
-  function confirmUnbanUser(userId: string) {
-    openConfirmation(
-      "Unban user",
-      "This will unban the user and allow them to sign in again.",
-      async () => {
-        await unbanUserAction(userId);
-        toast.success("User unbanned");
-        closeUserDetailAndRefresh();
-      },
-    );
-  }
+  const table = useServerTable({
+    data: rows,
+    columns,
+    pageCount,
+    params: tableParams,
+    buildHref: buildAdminUsersTableHref,
+    sortableColumns,
+    pageSizes: ADMIN_USERS_TABLE_PAGE_SIZES,
+    getRowId: (user) => user.id,
+  });
 
   function confirmRevokeAllSessions(userId: string) {
     openConfirmation(
@@ -203,116 +193,42 @@ export function AdminUsersTable({
   }
 
   return (
-    <>
+    <div className="flex flex-1 flex-col gap-4">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           className="pl-9"
-          placeholder="Search users..."
-          value={search}
+          placeholder="Search users by email..."
+          value={searchInput}
           onChange={(event) => {
             const value = event.target.value;
-            setSearch(value);
-            runTableRefresh(0, value);
+            setSearchInput(value);
+            startTransition(() =>
+              router.replace(
+                buildAdminUsersTableHref(pathname, {
+                  ...tableParams,
+                  page: 1,
+                  q: value || undefined,
+                }),
+                { scroll: false },
+              ),
+            );
           }}
         />
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-12" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  No users found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              users.map((user) => (
-                <TableRow
-                  key={user.id}
-                  className={isPending ? "opacity-50" : "cursor-pointer"}
-                  onClick={() => openUserDetail(user)}
-                >
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage
-                          src={user.image ?? undefined}
-                          alt={user.name ?? user.email}
-                        />
-                        <AvatarFallback>
-                          {(user.name || user.email)[0].toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="truncate font-medium">
-                          {user.name || "No name"}
-                        </p>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <span className="truncate">{user.email}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-5"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              copyToClipboard(user.email);
-                            }}
-                          >
-                            <Copy className="size-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{user.role ?? "user"}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.banned ? "destructive" : "secondary"}>
-                      {user.banned ? "Banned" : "Active"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {format(new Date(user.createdAt), "MMM d, yyyy")}
-                  </TableCell>
-                  <TableCell>
-                    {user.id !== currentUserId ? (
-                      <div onClick={(event) => event.stopPropagation()}>
-                        <UserRowActions
-                          user={user}
-                          onSetRole={confirmSetUserRole}
-                          onBan={confirmBanUser}
-                          onUnban={confirmUnbanUser}
-                          onRemove={confirmDeleteUser}
-                        />
-                      </div>
-                    ) : null}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <AdminTablePagination
-        currentPage={Math.floor(offset / pageSize) + 1}
-        disabled={isPending}
-        offset={offset}
-        onChange={(nextOffset) => runTableRefresh(nextOffset)}
-        pageSize={pageSize}
-        total={total}
-        totalPages={Math.ceil(total / pageSize)}
+
+      <DataTableContent
+        table={table}
+        onRowClick={(row) => openUserDetail(row.original)}
       />
+
+      <div className="flex items-center justify-between gap-4">
+        <p className="whitespace-nowrap text-sm text-muted-foreground">
+          {rowCount === 1 ? "1 user" : `${rowCount} users`}
+        </p>
+        <DataTablePagination table={table} className="mt-auto w-full px-0" />
+      </div>
+
       <UserDetailSheet
         copyToClipboard={copyToClipboard}
         currentUserId={currentUserId}
@@ -336,6 +252,6 @@ export function AdminUsersTable({
         open={confirmDialog.open}
         title={confirmDialog.title}
       />
-    </>
+    </div>
   );
 }

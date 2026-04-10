@@ -33,5 +33,6 @@ export const routes = {
     billing: "/settings/billing",
     organization: "/settings/organization",
     members: "/settings/members",
+    activity: "/settings/activity",
   },
 } as const;

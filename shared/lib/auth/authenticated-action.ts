@@ -41,6 +41,30 @@ function billingErrorFrom(error: unknown): BillingActionError | null {
 /**
  * Runs an async action and converts known billing / org-context errors into
  * {@link BillingActionError}; other errors are rethrown.
+ *
+ * Catches:
+ * - {@link UpgradeRequiredError} → `{ error, errorCode: "UPGRADE_REQUIRED" }`
+ * - {@link LimitReachedError}    → `{ error, errorCode: "LIMIT_REACHED" }`
+ * - `OrganizationMembershipError` and `"Organization not found"` errors
+ *   → `{ error }` without an errorCode.
+ *
+ * Wrap the body of any server action that can hit a billing guard. The
+ * returned shape is assignable to `FormActionState<T>`, so the client form
+ * will render the right banner automatically.
+ *
+ * @example
+ * ```ts
+ * export const createInvoiceAction = validatedAuthenticatedAction(
+ *   createInvoiceSchema,
+ *   async (data) => {
+ *     return withBillingErrors(async () => {
+ *       const invoice = await createInvoice(data);
+ *       revalidatePath(routes.app.invoices);
+ *       return { success: "Invoice created", invoice };
+ *     });
+ *   },
+ * );
+ * ```
  */
 export async function withBillingErrors<T>(
   fn: () => Promise<T>,
@@ -134,13 +158,57 @@ export function validatedPublicAction<
 }
 
 /**
- * Wraps a server action with authentication + zod validation.
+ * Wraps a server action with authentication + zod validation and produces a
+ * function that plugs directly into React's `useActionState`.
  *
- * Usage:
- *   export const myAction = validatedAuthenticatedAction(mySchema, async (data, formData, user) => {
- *     // data is already validated, user is guaranteed non-null
- *     return { success: "Done" };
+ * The wrapper:
+ * 1. Calls {@link getCurrentUser}. If the user is not signed in it either
+ *    returns `{ error: "You are not signed in." }` or delegates to
+ *    `options.onUnauthenticated` if provided.
+ * 2. Parses `FormData` through the Zod `schema`. On failure it returns a
+ *    {@link FormActionState} with `values` (sticky) and per-field errors that
+ *    `<FormField />` renders inline.
+ * 3. Invokes `handler(data, formData, user)` with a fully typed, validated
+ *    payload and a guaranteed non-null user.
+ *
+ * The returned action supports both `useActionState` (prev + formData) and
+ * bare `action={fn}` form submissions.
+ *
+ * @example Basic usage
+ * ```ts
+ * export const updateProfileAction = validatedAuthenticatedAction(
+ *   updateProfileSchema,
+ *   async (data, _formData, user) => {
+ *     await prisma.user.update({ where: { id: user.id }, data });
+ *     return { success: "Profile updated" };
+ *   },
+ * );
+ * ```
+ *
+ * @example With billing guards
+ * ```ts
+ * export const createTaskAction = validatedAuthenticatedAction<
+ *   typeof createTaskSchema,
+ *   { task?: Task }
+ * >(createTaskSchema, async (data) => {
+ *   return withBillingErrors(async () => {
+ *     const task = await createTask(data);
+ *     revalidatePath(routes.app.tasks);
+ *     return { success: "Task created", task };
  *   });
+ * });
+ * ```
+ *
+ * @example Redirecting unauthenticated users to sign in
+ * ```ts
+ * export const commentAction = validatedAuthenticatedAction(
+ *   commentSchema,
+ *   async (data, _formData, user) => { ... },
+ *   {
+ *     onUnauthenticated: () => ({ error: "Sign in to comment." }),
+ *   },
+ * );
+ * ```
  */
 export function validatedAuthenticatedAction<
   Schema extends z.ZodTypeAny,

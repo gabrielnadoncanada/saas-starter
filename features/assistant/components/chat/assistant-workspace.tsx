@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { AssistantChat } from "@/features/assistant/components/assistant-chat";
+import { AssistantChat } from "@/features/assistant/components/chat/assistant-chat";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
 import { routes } from "@/shared/constants/routes";
 import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 import { DashboardSidebar } from "@/features/dashboard/components/dashboard-sidebar";
-import { ensureActiveOrganization } from "@/features/organizations/server/organizations";
+import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { AppShell } from "@/shared/components/layout/shell/app-shell";
 import { ActiveOrganizationProvider } from "@/shared/components/providers/active-organization-provider";
 import { UserProvider } from "@/shared/components/providers/user-provider";
@@ -18,15 +18,15 @@ export default async function DashboardLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
 
-  const [user, activeOrgId] = await Promise.all([
+  const [user, organization] = await Promise.all([
     getCurrentUser(),
-    ensureActiveOrganization(),
+    getCurrentOrganization(),
   ]);
 
   if (!user) return null;
 
   return (
-    <ActiveOrganizationProvider organizationId={activeOrgId}>
+    <ActiveOrganizationProvider organizationId={organization?.id ?? null}>
       <UserProvider user={toSidebarUser(user)}>
         <AppShell defaultOpen={defaultOpen} sidebar={<DashboardSidebar />}>
           {children}

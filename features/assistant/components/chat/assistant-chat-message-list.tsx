@@ -3,8 +3,8 @@
 import type { UIMessage } from "ai";
 
 import { AssistantChartArtifact } from "@/features/assistant/components/artifacts/chart-artifact";
-import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
-import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
+import { AssistantChatEmptyState } from "@/features/assistant/components/chat/assistant-chat-empty-state";
+import { AssistantToolResult } from "@/features/assistant/components/tools/assistant-tool-result";
 import type {
   ChartSpec,
   GenerateChartToolResult,

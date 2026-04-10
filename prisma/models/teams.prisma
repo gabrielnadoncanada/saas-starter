@@ -16,6 +16,7 @@ model Organization {
   purchases       Purchase[]
   aiConversations AiConversation[]
   storedFiles     StoredFile[]
+  activityEvents  ActivityEvent[]
 }
 
 model Member {

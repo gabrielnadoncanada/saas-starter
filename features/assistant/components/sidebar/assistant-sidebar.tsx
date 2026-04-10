@@ -22,7 +22,7 @@ import {
   CollapsibleTrigger,
 } from "@/shared/components/ui/collapsible";
 
-import { AssistantSidebarNav } from "@/features/assistant/components/assistant-sidebar-nav";
+import { AssistantSidebarNav } from "@/features/assistant/components/sidebar/assistant-sidebar-nav";
 
 import { routes } from "@/shared/constants/routes";
 import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";

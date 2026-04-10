@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 
+import { logActivity } from "@/features/activity/server/log-activity";
 import { deleteAccountSchema } from "@/features/account/schemas/account.schema";
 import { deleteAccount } from "@/features/account/server/delete-account";
 import { auth } from "@/shared/lib/auth/auth-config";
@@ -12,6 +13,14 @@ export const deleteAccountAction = validatedAuthenticatedAction<
   {}
 >(deleteAccountSchema, async (_, __, user) => {
   const requestHeaders = await headers();
+
+  await logActivity({
+    action: "user.deleted",
+    actorUserId: user.id,
+    targetType: "user",
+    targetId: user.id,
+    metadata: { email: user.email },
+  });
 
   const result = await deleteAccount({
     userId: user.id,

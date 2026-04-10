@@ -11,7 +11,7 @@ import {
   deleteAssistantConversationRequest,
   listAssistantConversationsRequest,
 } from "@/features/assistant/client/assistant-conversations-api";
-import { AssistantConversationActionsMenu } from "@/features/assistant/components/assistant-conversation-actions-menu";
+import { AssistantConversationActionsMenu } from "@/features/assistant/components/sidebar/assistant-conversation-actions-menu";
 import type { AssistantConversationListItem } from "@/features/assistant/schemas/conversation-api.schema";
 import { Button } from "@/shared/components/ui/button";
 import {

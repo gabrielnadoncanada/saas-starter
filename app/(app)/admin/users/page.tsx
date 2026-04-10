@@ -1,5 +1,6 @@
+import { parseAdminUsersTableSearchParams } from "@/features/admin/admin-users-table-search-params";
 import { AdminUsersTable } from "@/features/admin/components/users-table";
-import { listAdminUsers } from "@/features/admin/server/users";
+import { getAdminUsersPage } from "@/features/admin/server/get-admin-users-page";
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import {
   Page,
@@ -8,16 +9,16 @@ import {
   PageTitle,
 } from "@/shared/components/layout/page-layout";
 
-const PAGE_SIZE = 25;
+type AdminUsersPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: AdminUsersPageProps) {
   const currentUser = await requireAdmin();
-  const result = await listAdminUsers({
-    limit: PAGE_SIZE,
-    offset: 0,
-    sortBy: "createdAt",
-    sortDirection: "desc",
-  });
+  const params = parseAdminUsersTableSearchParams(await searchParams);
+  const page = await getAdminUsersPage(params);
 
   return (
     <Page>
@@ -30,9 +31,7 @@ export default async function AdminUsersPage() {
 
       <AdminUsersTable
         currentUserId={currentUser.id}
-        initialTotal={result.total}
-        initialUsers={result.users}
-        pageSize={PAGE_SIZE}
+        usersPage={{ ...params, ...page }}
       />
     </Page>
   );

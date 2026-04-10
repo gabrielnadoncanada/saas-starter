@@ -29,6 +29,20 @@ async function getOrganizationId() {
   return membership.organizationId;
 }
 
+async function generateNextTaskCode(
+  tx: Prisma.TransactionClient,
+  organizationId: string,
+): Promise<string> {
+  const latestTask = await tx.task.findFirst({
+    where: { organizationId },
+    orderBy: { id: "desc" },
+    select: { code: true },
+  });
+
+  const latestNumber = Number(latestTask?.code?.replace("TASK-", "")) || 0;
+  return `TASK-${latestNumber + 1}`;
+}
+
 export async function createTask(input: CreateTaskValues): Promise<Task> {
   const entitlements = await getCurrentOrganizationEntitlements();
 
@@ -47,27 +61,13 @@ export async function createTask(input: CreateTaskValues): Promise<Task> {
     });
 
     for (let attempt = 0; attempt < MAX_TASK_CODE_ATTEMPTS; attempt += 1) {
-      const latestTask = await tx.task.findFirst({
-        where: {
-          organizationId: entitlements.organizationId,
-        },
-        orderBy: {
-          id: "desc",
-        },
-        select: {
-          code: true,
-        },
-      });
-
-      const latestCode = latestTask?.code ?? "TASK-0";
-      const latestNumber = Number(latestCode.replace("TASK-", "")) || 0;
-      const nextCode = `TASK-${latestNumber + 1}`;
+      const code = await generateNextTaskCode(tx, entitlements.organizationId);
 
       try {
         return await tx.task.create({
           data: {
             organizationId: entitlements.organizationId,
-            code: nextCode,
+            code,
             title: input.title,
             description: input.description ?? null,
             label: input.label,

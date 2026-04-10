@@ -6,17 +6,19 @@ import { useState } from "react";
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import { customerPortalAction } from "@/features/billing/actions/customer-portal.actions";
 import { updateSubscriptionConfigurationAction } from "@/features/billing/actions/subscription-configuration.actions";
+import { BillingIntervalSelector } from "@/features/billing/components/billing-interval-selector";
+import {
+  BillingPlanCard,
+  type BillingPlanOption,
+  getPlanPrice,
+} from "@/features/billing/components/billing-plan-card";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/shared/components/ui/card";
 import {
-  Field,
-  FieldContent,
-  FieldDescription,
   FieldLabel,
   FieldLegend,
   FieldSet,
-  FieldTitle,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import {
@@ -25,184 +27,26 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/shared/components/ui/item";
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+import { RadioGroup } from "@/shared/components/ui/radio-group";
 import type {
   BillingInterval,
-  BillingPrice,
   PlanId,
-  PricingModel,
 } from "@/shared/config/billing.config";
 
-type BillingPlanOption = {
-  id: string;
-  name: string;
-  description: string;
-  features: string[];
-  pricingModel: PricingModel;
-  monthly: BillingPrice | null;
-  yearly: BillingPrice | null;
-};
+export type { BillingPlanOption } from "@/features/billing/components/billing-plan-card";
 
-// --- Price helpers ---
-
-const PRICE_LOCALE = "en-US";
-
-function formatPrice(unitAmount: number, locale: string) {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(unitAmount / 100);
-}
-
-function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
-  if (pricingModel === "per_seat") {
-    return interval === "year" ? "per seat / yr" : "per seat / mo";
-  }
-
-  return interval === "year" ? "/ yr" : "/ mo";
-}
-
-export function getPlanPrice(
-  plan: BillingPlanOption,
-  interval: BillingInterval,
-) {
-  return interval === "year" ? plan.yearly : plan.monthly;
-}
-
-function isBillingInterval(value: string): value is BillingInterval {
-  return value === "month" || value === "year";
-}
-
-// --- Subcomponents ---
-
-function BillingPlanPrice({
-  price,
-  interval,
-  pricingModel,
-}: {
-  price: BillingPrice | null;
-  interval: BillingInterval;
-  pricingModel: PricingModel;
-}) {
-  return (
-    <div className="space-y-1 md:text-right">
-      <div className="text-xl font-semibold tracking-tight">
-        {price ? formatPrice(price.unitAmount, PRICE_LOCALE) : "Unavailable"}
-      </div>
-
-      {price ? (
-        <FieldDescription>
-          {getPriceSuffix(interval, pricingModel)}
-        </FieldDescription>
-      ) : null}
-    </div>
-  );
-}
-
-function BillingPlanCard({
-  plan,
-  currentBillingInterval,
-  currentPlanId,
-  interval,
-}: {
-  plan: BillingPlanOption;
+type BillingPlanSelectorProps = {
+  canManageBilling: boolean;
+  canManagePortal: boolean;
+  canUpdateSubscription: boolean;
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
-  interval: BillingInterval;
-}) {
-  const price = getPlanPrice(plan, interval);
-  const isCurrentSelection =
-    plan.id === currentPlanId &&
-    currentPlanId !== "free" &&
-    currentBillingInterval === interval;
+  currentSeatQuantity: number;
+  hasCurrentSubscription: boolean;
+  plans: BillingPlanOption[];
+};
 
-  return (
-    <Field orientation="horizontal" className="items-start gap-4">
-      <RadioGroupItem
-        value={plan.id}
-        id={`billing-plan-${plan.id}`}
-        className="mt-1"
-      />
-
-      <FieldContent className="gap-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <FieldTitle>{plan.name}</FieldTitle>
-
-              {isCurrentSelection ? (
-                <Badge variant="secondary">Current selection</Badge>
-              ) : null}
-            </div>
-
-            <FieldDescription>{plan.description}</FieldDescription>
-          </div>
-
-          <BillingPlanPrice
-            price={price}
-            interval={interval}
-            pricingModel={plan.pricingModel}
-          />
-        </div>
-      </FieldContent>
-    </Field>
-  );
-}
-
-export function BillingIntervalSelector({
-  interval,
-  annualEnabled,
-  onValueChange,
-}: {
-  interval: BillingInterval;
-  annualEnabled: boolean;
-  onValueChange: (value: BillingInterval) => void;
-}) {
-  return (
-    <FieldSet className="gap-3">
-      <FieldLegend variant="label">Billing frequency</FieldLegend>
-
-      <RadioGroup
-        value={interval}
-        onValueChange={(value) => {
-          if (isBillingInterval(value)) {
-            onValueChange(value);
-          }
-        }}
-        className="grid gap-3 md:grid-cols-2"
-      >
-        <FieldLabel htmlFor="billing-interval-month">
-          <Field orientation="horizontal">
-            <RadioGroupItem value="month" id="billing-interval-month" />
-            <FieldContent>
-              <FieldTitle>Monthly</FieldTitle>
-              <FieldDescription>Pay every month.</FieldDescription>
-            </FieldContent>
-          </Field>
-        </FieldLabel>
-
-        <FieldLabel htmlFor="billing-interval-year">
-          <Field orientation="horizontal">
-            <RadioGroupItem
-              value="year"
-              id="billing-interval-year"
-              disabled={!annualEnabled}
-            />
-            <FieldContent>
-              <FieldTitle>Yearly</FieldTitle>
-              <FieldDescription>
-                {annualEnabled ? "Pay annually." : "No yearly price available."}
-              </FieldDescription>
-            </FieldContent>
-          </Field>
-        </FieldLabel>
-      </RadioGroup>
-    </FieldSet>
-  );
-}
-
-export function BillingPlanRadioGroup({
+function BillingPlanRadioGroup({
   plans,
   currentBillingInterval,
   currentPlanId,
@@ -232,35 +76,20 @@ export function BillingPlanRadioGroup({
         }}
         className="gap-3"
       >
-        {plans.map((plan) => {
-          return (
-            <FieldLabel key={plan.id} htmlFor={`billing-plan-${plan.id}`}>
-              <BillingPlanCard
-                plan={plan}
-                currentBillingInterval={currentBillingInterval}
-                currentPlanId={currentPlanId}
-                interval={interval}
-              />
-            </FieldLabel>
-          );
-        })}
+        {plans.map((plan) => (
+          <FieldLabel key={plan.id} htmlFor={`billing-plan-${plan.id}`}>
+            <BillingPlanCard
+              plan={plan}
+              currentBillingInterval={currentBillingInterval}
+              currentPlanId={currentPlanId}
+              interval={interval}
+            />
+          </FieldLabel>
+        ))}
       </RadioGroup>
     </FieldSet>
   );
 }
-
-// --- Main component ---
-
-type BillingPlanSelectorProps = {
-  canManageBilling: boolean;
-  canManagePortal: boolean;
-  canUpdateSubscription: boolean;
-  currentBillingInterval: BillingInterval | null;
-  currentPlanId: PlanId;
-  currentSeatQuantity: number;
-  hasCurrentSubscription: boolean;
-  plans: BillingPlanOption[];
-};
 
 export function BillingPlanSelector({
   plans,

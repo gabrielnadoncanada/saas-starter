@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 
+import { logActivity } from "@/features/activity/server/log-activity";
 import {
   findCatalogRecurringPriceByPriceId,
   isPlanId,
@@ -147,6 +148,28 @@ async function handleCustomerDeleted(customer: Stripe.Customer) {
   await clearStripeCustomerBillingState(customer.id);
 }
 
+async function logSubscriptionActivity(
+  event: Stripe.Event,
+  subscription: Stripe.Subscription,
+) {
+  const organizationId = await resolveReferenceId(subscription);
+  if (!organizationId) return;
+
+  const planId = resolvePlanId(subscription);
+  const action =
+    event.type === "customer.subscription.created"
+      ? "subscription.created"
+      : "subscription.cancelled";
+
+  await logActivity({
+    action,
+    organizationId,
+    targetType: "subscription",
+    targetId: subscription.id,
+    metadata: { planId, status: subscription.status },
+  });
+}
+
 export async function handleStripeWebhookEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
@@ -158,8 +181,13 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
       await handleCustomerDeleted(event.data.object as Stripe.Customer);
       return;
     case "customer.subscription.created":
+    case "customer.subscription.deleted": {
+      const subscription = event.data.object as Stripe.Subscription;
+      await syncSubscription(subscription);
+      await logSubscriptionActivity(event, subscription);
+      return;
+    }
     case "customer.subscription.updated":
-    case "customer.subscription.deleted":
       await syncSubscription(event.data.object as Stripe.Subscription);
       return;
     default:

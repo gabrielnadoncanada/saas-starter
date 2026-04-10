@@ -246,6 +246,18 @@ export class UpgradeRequiredError extends Error {
   }
 }
 
+/**
+ * Non-throwing capability check. Use this in UI to decide whether to render a
+ * feature, or on the server when you want to branch without throwing.
+ *
+ * @example
+ * ```tsx
+ * const entitlements = await getCurrentOrganizationEntitlements();
+ * if (!hasCapability(entitlements, "ai.assistant")) {
+ *   return <UpgradeCard feature="AI Assistant" />;
+ * }
+ * ```
+ */
 export function hasCapability(
   entitlements: OrganizationEntitlements,
   capability: Capability,
@@ -260,6 +272,23 @@ export function getPlanLimit(
   return entitlements.limits[limitKey];
 }
 
+/**
+ * Throws {@link UpgradeRequiredError} if the organization's plan does not
+ * include the given capability. Use this inside server mutations to make a
+ * feature unreachable on plans that shouldn't have it — `withBillingErrors`
+ * in the action wrapper will translate the error into a friendly upgrade
+ * prompt on the client.
+ *
+ * @example
+ * ```ts
+ * // features/assistant/server/assistant-ai.ts
+ * export async function streamAssistantReply(input: AssistantInput) {
+ *   const entitlements = await getCurrentOrganizationEntitlements();
+ *   assertCapability(entitlements, "ai.assistant");
+ *   // ... call the model
+ * }
+ * ```
+ */
 export function assertCapability(
   entitlements: OrganizationEntitlements,
   capability: Capability,
@@ -269,6 +298,24 @@ export function assertCapability(
   }
 }
 
+/**
+ * Throws {@link LimitReachedError} when `currentUsage` has met or exceeded the
+ * plan's limit for `limitKey`. You supply the current usage count — typically
+ * from a Prisma `count()` inside the same transaction so the check is
+ * race-safe.
+ *
+ * For monthly-reset metered limits prefer {@link consumeMonthlyUsage} which
+ * handles the counter atomically.
+ *
+ * @example
+ * ```ts
+ * // Seat limit on organization invites
+ * const memberCount = await tx.organizationMember.count({
+ *   where: { organizationId },
+ * });
+ * assertLimit(entitlements, "organization.seats", memberCount);
+ * ```
+ */
 export function assertLimit(
   entitlements: OrganizationEntitlements,
   limitKey: LimitKey,

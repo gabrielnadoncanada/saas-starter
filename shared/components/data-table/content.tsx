@@ -1,6 +1,10 @@
 "use client";
 
-import { flexRender, type Table as TableInstance } from "@tanstack/react-table";
+import {
+  flexRender,
+  type Row,
+  type Table as TableInstance,
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -22,12 +26,14 @@ type DataTableContentProps<TData> = {
   table: TableInstance<TData>;
   className?: string;
   tableClassName?: string;
+  onRowClick?: (row: Row<TData>) => void;
 };
 
 export function DataTableContent<TData>({
   table,
   className,
   tableClassName,
+  onRowClick,
 }: DataTableContentProps<TData>) {
   return (
     <div className={cn("overflow-hidden rounded-md border", className)}>
@@ -63,6 +69,8 @@ export function DataTableContent<TData>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className={onRowClick ? "cursor-pointer" : undefined}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {row.getVisibleCells().map((cell) => {
                   const meta = cell.column.columnDef.meta as

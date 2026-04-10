@@ -37,8 +37,11 @@ export class OrganizationMembershipError extends Error {
   }
 }
 
-/** Resolve the active organization id (auto-selects the first org if none is set). Use in layouts only. */
-export async function ensureActiveOrganization(): Promise<string | null> {
+/**
+ * Returns the active organization id from the session, auto-selecting the
+ * user's first org if none is set. Used internally by `getCurrentOrganization`.
+ */
+async function resolveActiveOrganizationId(): Promise<string | null> {
   const session = await getAuthSession();
 
   if (!session?.user) {
@@ -189,22 +192,22 @@ function mapCurrentOrganization(
   };
 }
 
-/** Fetch the active organization with members and subscription snapshot. Use in pages/layouts that render org data. */
+/**
+ * Fetch the current organization (members + subscription snapshot) for the
+ * active session. Auto-selects the user's first org if the session has none.
+ * Cached per-request. Returns `null` if the user is signed out or has no orgs.
+ *
+ * Use this in layouts and any page that only needs the organization.
+ */
 export const getCurrentOrganization = cache(
   async (): Promise<CurrentOrganizationView | null> => {
-    const session = await getAuthSession();
-
-    if (!session?.user) {
-      return null;
-    }
-
-    const reqHeaders = await headers();
-    const orgId = session.session.activeOrganizationId ?? null;
+    const orgId = await resolveActiveOrganizationId();
 
     if (!orgId) {
       return null;
     }
 
+    const reqHeaders = await headers();
     const [organization, subscription] = await Promise.all([
       auth.api.getFullOrganization({
         query: { organizationId: orgId },
@@ -221,7 +224,14 @@ export const getCurrentOrganization = cache(
   },
 );
 
-/** Full page context: organization + current user + roles + isOwner. Use in settings/org pages that need the viewer's membership. */
+/**
+ * Fetch the current organization together with the signed-in user and their
+ * owner flag. Returns `null` if the user is signed out, has no org, or is
+ * not a member of the active org.
+ *
+ * Use this in settings/org pages that need to render viewer-specific UI
+ * (e.g. owner-only buttons).
+ */
 export async function getCurrentOrganizationContext(): Promise<CurrentOrganizationContext | null> {
   const [user, organization] = await Promise.all([
     getCurrentUser(),

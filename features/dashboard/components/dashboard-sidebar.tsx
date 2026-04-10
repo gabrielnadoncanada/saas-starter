@@ -2,7 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 
-import { AssistantSidebarNav } from "@/features/assistant/components/assistant-sidebar-nav";
+import { AssistantSidebarNav } from "@/features/assistant/components/sidebar/assistant-sidebar-nav";
 import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
 import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
 import { NavGroup } from "@/shared/components/navigation/nav-group";

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Activity,
   Building2,
   CreditCard,
   ArrowLeftIcon,
@@ -38,6 +39,11 @@ const workspaceItems: SidebarNavLink[] = [
           title: "Members",
           url: routes.settings.members,
           icon: Users,
+        },
+        {
+          title: "Activity",
+          url: routes.settings.activity,
+          icon: Activity,
         },
       ]
     : []),

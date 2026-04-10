@@ -28,6 +28,7 @@ model User {
   aiConversations     AiConversation[] @relation("AiConversationToUser")
   storedFilesUploaded StoredFile[]
   twoFactor           TwoFactor?
+  activityEvents      ActivityEvent[]  @relation("ActivityActor")
 }
 
 model Account {
