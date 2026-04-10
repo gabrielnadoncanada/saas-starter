@@ -1,20 +1,40 @@
 "use client";
 
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, Building2, LayoutDashboard, Users } from "lucide-react";
 import Link from "next/link";
 
-import { adminSidebarData } from "@/features/admin/config/admin-navigation";
 import { NavGroup } from "@/shared/components/navigation/nav-group";
+import type { SidebarData } from "@/shared/components/navigation/sidebar-types";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenuButton,
-  SidebarGroup,
 } from "@/shared/components/ui/sidebar";
 
 import { routes } from "@/shared/constants/routes";
 import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";
+
+const adminSidebarData: SidebarData = {
+  navGroups: [
+    {
+      title: "Administration",
+      items: [
+        {
+          title: "Overview",
+          url: routes.admin.dashboard,
+          icon: LayoutDashboard,
+        },
+        { title: "Users", url: routes.admin.users, icon: Users },
+        {
+          title: "Organizations",
+          url: routes.admin.organizations,
+          icon: Building2,
+        },
+      ],
+    },
+  ],
+};
 
 export function AdminSidebar() {
   const groups = adminSidebarData.navGroups;

@@ -6,7 +6,7 @@ vi.mock("@/shared/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@/features/organizations/server/current-organization", () => ({
+vi.mock("@/features/organizations/server/organizations", () => ({
   getCurrentOrganization: vi.fn(),
 }));
 
@@ -24,7 +24,7 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
 const { getCurrentOrganization } =
-  await import("@/features/organizations/server/current-organization");
+  await import("@/features/organizations/server/organizations");
 const { assistantConversationSurface } =
   await import("@/features/assistant/types");
 const {

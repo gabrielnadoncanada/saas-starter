@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 import {
   bulkDeleteTasks,
   bulkUpdateTaskStatus,

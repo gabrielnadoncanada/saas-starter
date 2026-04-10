@@ -1,4 +1,4 @@
-import { getPlanDisplayPrice } from "@/features/billing/catalog";
+import { getPlanDisplayPrice } from "@/features/billing/plans";
 import { createOrganizationSubscriptionCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
 import {
   type BillingInterval,

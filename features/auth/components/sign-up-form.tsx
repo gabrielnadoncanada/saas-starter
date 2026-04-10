@@ -1,35 +1,24 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import {
-  buildCheckEmailHref,
-  sendMagicLink,
-  signInWithOAuth,
-  signUpWithEmail,
-} from "@/features/auth/client/auth-api-client";
-import { AuthEmailStep } from "@/features/auth/components/auth-email-step";
-import { AuthPasswordStep } from "@/features/auth/components/auth-password-step";
+  signUpAction,
+  type SignUpActionState,
+} from "@/features/auth/actions/public-auth.actions";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
-import {
-  emailDefaultValues,
-  emailSchema,
-  type EmailValues,
-  signUpPasswordDefaultValues,
-  signUpPasswordSchema,
-  type SignUpPasswordValues,
-} from "@/features/auth/schemas/auth-forms.schema";
+import { emailSchema } from "@/features/auth/schemas/auth-forms.schema";
 import { PasswordInput } from "@/shared/components/forms/password-input";
+import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
-import { routes } from "@/shared/constants/routes";
+import { Input } from "@/shared/components/ui/input";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
+import { authClient } from "@/shared/lib/auth/auth-client";
+import { buildCheckEmailHref } from "@/shared/lib/auth/callback-url";
 import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
+import { getFieldState } from "@/shared/lib/get-field-state";
 
 type SignUpFormProps = {
   oauthProviders?: OAuthProviderId[];
@@ -42,91 +31,73 @@ export function SignUpForm({
   allowMagicLink = false,
   callbackUrl = "/post-sign-in",
 }: SignUpFormProps) {
-  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const lastRedirectRef = useRef<string | null>(null);
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-  const [showPasswordStep, setShowPasswordStep] = useState(false);
-  const [submittedEmail, setSubmittedEmail] = useState("");
   const [pendingProvider, setPendingProvider] =
     useState<OAuthProviderId | null>(null);
   const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
-  const emailForm = useForm<EmailValues>({
-    resolver: zodResolver(emailSchema),
-    defaultValues: emailDefaultValues,
-  });
-  const passwordForm = useForm<SignUpPasswordValues>({
-    resolver: zodResolver(signUpPasswordSchema),
-    defaultValues: signUpPasswordDefaultValues,
-  });
-  const {
-    clearErrors,
-    formState: { errors },
-    getValues,
-    register,
-    setError,
-    setValue,
-    trigger,
-  } = emailForm;
-
-  const emailField = register("email", {
-    onChange: () => {
-      clearErrors();
-    },
-  });
-  const passwordField = passwordForm.register("password", {
-    onChange: () => passwordForm.clearErrors(),
-  });
-  const confirmPasswordField = passwordForm.register("confirmPassword", {
-    onChange: () => passwordForm.clearErrors(),
-  });
+  const [emailClientError, setEmailClientError] = useState<string>();
+  const [state, formAction, isPending] = useActionState<
+    SignUpActionState,
+    FormData
+  >(signUpAction, {});
   const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
-  const successHref = buildCallbackURL(
-    routes.auth.verifyEmailSent,
-    nextCallbackUrl,
-  );
+
+  const emailField = getFieldState(state, "email");
+  const passwordField = getFieldState(state, "password");
+  const confirmPasswordField = getFieldState(state, "confirmPassword");
   const oauthErrorMessage = error
     ? error === "OAuthAccountNotLinked"
       ? "Unable to continue with this provider. Try a different sign-up method."
       : "Unable to continue. Please try again."
     : null;
-  const passwordErrors = passwordForm.formState.errors;
-  const isSubmitting = passwordForm.formState.isSubmitting;
+  const formError = state.error && !state.fieldErrors ? state.error : null;
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });
 
-  async function validateEmail() {
-    if (!(await trigger("email"))) {
-      return null;
-    }
-
-    const email = getValues("email").trim().toLowerCase();
-    setValue("email", email, { shouldDirty: true, shouldValidate: true });
-    clearErrors();
-    return email;
-  }
-
-  async function handleContinue() {
-    const email = await validateEmail();
-
-    if (!email) {
+  useEffect(() => {
+    if (!state.redirectTo || lastRedirectRef.current === state.redirectTo) {
       return;
     }
 
-    setSubmittedEmail(email);
-    setShowPasswordStep(true);
-  }
+    lastRedirectRef.current = state.redirectTo;
+    window.location.assign(state.redirectTo);
+  }, [state.redirectTo]);
 
   async function handleMagicLink() {
-    const email = await validateEmail();
-
-    if (!email) {
+    if (!formRef.current) {
       return;
     }
 
+    const parsed = emailSchema.safeParse(
+      Object.fromEntries(new FormData(formRef.current)),
+    );
+
+    if (!parsed.success) {
+      setEmailClientError(parsed.error.flatten().fieldErrors.email?.[0]);
+      return;
+    }
+
+    const email = parsed.data.email.trim().toLowerCase();
+
+    setEmailClientError(undefined);
+    setIsSendingMagicLink(true);
+
     try {
-      setIsSendingMagicLink(true);
-      await sendMagicLink(email, nextCallbackUrl);
-      router.push(buildCheckEmailHref(email, nextCallbackUrl));
+      const { error: authError } = await authClient.signIn.magicLink({
+        email,
+        callbackURL: nextCallbackUrl,
+      });
+
+      if (authError) {
+        throw new Error(
+          authError.message || "Unable to send the sign-up link.",
+        );
+      }
+
+      window.location.assign(buildCheckEmailHref(email, nextCallbackUrl));
     } catch {
       toast.error("Unable to send the sign-up link. Please try again.");
     } finally {
@@ -137,7 +108,15 @@ export function SignUpForm({
   async function handleOAuthSignIn(provider: OAuthProviderId) {
     try {
       setPendingProvider(provider);
-      await signInWithOAuth(provider, nextCallbackUrl);
+
+      const { error: authError } = await authClient.signIn.social({
+        provider,
+        callbackURL: nextCallbackUrl,
+      });
+
+      if (authError) {
+        throw new Error(authError.message || "Unable to continue.");
+      }
     } catch {
       toast.error("Unable to continue. Please try again.");
     } finally {
@@ -145,92 +124,61 @@ export function SignUpForm({
     }
   }
 
-  const handlePasswordSubmit = passwordForm.handleSubmit(
-    async ({ password }) => {
-      passwordForm.clearErrors();
-
-      try {
-        const result = await signUpWithEmail(
-          submittedEmail,
-          password,
-          nextCallbackUrl,
-        );
-
-        if (result.status !== "success") {
-          if (result.status === "email_taken") {
-            setShowPasswordStep(false);
-            setError("email", { type: "server", message: result.message });
-            return;
-          }
-
-          passwordForm.setError("root", {
-            type: "server",
-            message: result.message,
-          });
-          return;
-        }
-
-        router.push(successHref);
-      } catch {
-        passwordForm.setError("root", {
-          type: "server",
-          message: "Unable to create account. Please try again.",
-        });
-      }
-    },
-  );
-
   return (
-    <>
-      {showPasswordStep ? (
-        <AuthPasswordStep
-          email={submittedEmail}
-          errorMessage={passwordErrors.root?.message}
-          isSubmitting={isSubmitting}
-          pendingLabel={"Creating account..."}
-          submitLabel={"Create account"}
-          onChangeEmail={() => setShowPasswordStep(false)}
-          onSubmit={handlePasswordSubmit}
-        >
-          <Field data-invalid={Boolean(passwordErrors.password)}>
-            <FieldLabel htmlFor="sign-up-password">Password</FieldLabel>
-            <PasswordInput
-              id="sign-up-password"
-              autoComplete="new-password"
-              aria-invalid={Boolean(passwordErrors.password)}
-              required
-              {...passwordField}
-            />
-            <FieldError>{passwordErrors.password?.message}</FieldError>
-          </Field>
+    <div className="space-y-4">
+      <form ref={formRef} action={formAction} className="space-y-4">
+        <input type="hidden" name="callbackUrl" value={nextCallbackUrl} />
 
-          <Field data-invalid={Boolean(passwordErrors.confirmPassword)}>
-            <FieldLabel htmlFor="sign-up-confirm-password">
-              Confirm new password
-            </FieldLabel>
-            <PasswordInput
-              id="sign-up-confirm-password"
-              autoComplete="new-password"
-              aria-invalid={Boolean(passwordErrors.confirmPassword)}
-              required
-              {...confirmPasswordField}
-            />
-            <FieldError>{passwordErrors.confirmPassword?.message}</FieldError>
-          </Field>
-        </AuthPasswordStep>
-      ) : (
-        <AuthEmailStep
-          formId="sign-up-email"
-          label={"Email"}
-          submitLabel={"Continue"}
-          emailField={emailField}
-          emailError={errors.email?.message}
-          onSubmit={(event) => {
-            event.preventDefault();
-            void handleContinue();
-          }}
-        />
-      )}
+        <Field data-invalid={Boolean(emailClientError) || emailField.invalid}>
+          <FieldLabel htmlFor="sign-up-email">Email</FieldLabel>
+          <Input
+            id="sign-up-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder={"Enter your email address..."}
+            defaultValue={emailField.value}
+            aria-invalid={Boolean(emailClientError) || emailField.invalid}
+            onChange={() => setEmailClientError(undefined)}
+            required
+          />
+          <FieldError>{emailClientError ?? emailField.error}</FieldError>
+        </Field>
+
+        <Field data-invalid={passwordField.invalid}>
+          <FieldLabel htmlFor="sign-up-password">Password</FieldLabel>
+          <PasswordInput
+            id="sign-up-password"
+            name="password"
+            autoComplete="new-password"
+            aria-invalid={passwordField.invalid}
+            required
+          />
+          <FieldError>{passwordField.error}</FieldError>
+        </Field>
+
+        <Field data-invalid={confirmPasswordField.invalid}>
+          <FieldLabel htmlFor="sign-up-confirm-password">
+            Confirm password
+          </FieldLabel>
+          <PasswordInput
+            id="sign-up-confirm-password"
+            name="confirmPassword"
+            autoComplete="new-password"
+            aria-invalid={confirmPasswordField.invalid}
+            required
+          />
+          <FieldError>{confirmPasswordField.error}</FieldError>
+        </Field>
+
+        {formError ? (
+          <p className="text-sm text-destructive">{formError}</p>
+        ) : null}
+
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "Creating account..." : "Create account"}
+        </Button>
+      </form>
 
       <AuthSecondaryActions
         allowMagicLink={allowMagicLink}
@@ -240,6 +188,6 @@ export function SignUpForm({
         onMagicLink={() => void handleMagicLink()}
         onProviderClick={(provider) => void handleOAuthSignIn(provider)}
       />
-    </>
+    </div>
   );
 }

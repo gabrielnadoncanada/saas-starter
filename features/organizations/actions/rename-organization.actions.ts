@@ -6,7 +6,7 @@ import { renameOrganizationSchema } from "@/features/organizations/schemas/organ
 import {
   OrganizationMembershipError,
   requireActiveOrganizationRole,
-} from "@/features/organizations/server/organization-membership";
+} from "@/features/organizations/server/organizations";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import { auth } from "@/shared/lib/auth/auth-config";
 

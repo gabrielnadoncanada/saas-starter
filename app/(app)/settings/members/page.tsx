@@ -1,7 +1,7 @@
 import { InviteOrganizationMemberDialog } from "@/features/organizations/components/invite-organization-member-dialog";
 import { OrganizationInvitationsTable } from "@/features/organizations/components/organization-invitations-table";
 import { OrganizationMembersTable } from "@/features/organizations/components/organization-members-table";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/organizations";
 import { listPendingOrganizationInvitations } from "@/features/organizations/server/organization-invitations";
 import {
   Page,

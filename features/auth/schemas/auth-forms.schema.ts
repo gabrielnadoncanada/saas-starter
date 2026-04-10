@@ -14,44 +14,55 @@ export const emailSchema = z.object({
     .email("Enter a valid email address."),
 });
 
-export type EmailValues = z.infer<typeof emailSchema>;
-
-export const emailDefaultValues: EmailValues = {
-  email: "",
-};
-
 export const signInPasswordSchema = z.object({
   password: z.string().min(1, "Enter your password."),
 });
 
-export type SignInPasswordValues = z.infer<typeof signInPasswordSchema>;
+export const signInFormSchema = z.object({
+  email: emailSchema.shape.email,
+  password: signInPasswordSchema.shape.password,
+  callbackUrl: z.string().optional(),
+});
 
-export const signInPasswordDefaultValues: SignInPasswordValues = {
-  password: "",
-};
+export type SignInFormValues = z.infer<typeof signInFormSchema>;
 
 export function confirmPasswordField(emptyMessage: string) {
   return z.string().min(1, emptyMessage);
 }
 
-export const signUpPasswordSchema = z
-  .object({
-    password: authPasswordSchema,
-    confirmPassword: confirmPasswordField("Confirm your password."),
-  })
-  .superRefine((values, ctx) => {
-    if (values.password !== values.confirmPassword) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["confirmPassword"],
-        message: "Passwords do not match.",
-      });
-    }
-  });
-
-export type SignUpPasswordValues = z.infer<typeof signUpPasswordSchema>;
-
-export const signUpPasswordDefaultValues: SignUpPasswordValues = {
-  password: "",
-  confirmPassword: "",
+const signUpPasswordFields = {
+  password: authPasswordSchema,
+  confirmPassword: confirmPasswordField("Confirm your password."),
 };
+
+function validatePasswordConfirmation(
+  values: { password: string; confirmPassword: string },
+  ctx: z.RefinementCtx,
+) {
+  if (values.password !== values.confirmPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["confirmPassword"],
+      message: "Passwords do not match.",
+    });
+  }
+}
+
+export const signUpFormSchema = z
+  .object({
+    email: emailSchema.shape.email,
+    ...signUpPasswordFields,
+    callbackUrl: z.string().optional(),
+  })
+  .superRefine(validatePasswordConfirmation);
+
+export type SignUpFormValues = z.infer<typeof signUpFormSchema>;
+
+export const resendVerificationEmailSchema = z.object({
+  email: emailSchema.shape.email,
+  callbackUrl: z.string().optional(),
+});
+
+export type ResendVerificationEmailValues = z.infer<
+  typeof resendVerificationEmailSchema
+>;

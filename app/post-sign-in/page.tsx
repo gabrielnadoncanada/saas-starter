@@ -5,7 +5,7 @@ import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
 import {
   isBillingInterval,
   isPlanId,
-} from "@/features/billing/catalog";
+} from "@/features/billing/plans";
 import { resumeCheckoutAfterSignIn } from "@/features/billing/server/resume-checkout-after-sign-in";
 import { routes } from "@/shared/constants/routes";
 import { getCallbackURL } from "@/shared/lib/auth/callback-url";

@@ -4,8 +4,10 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-customers";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
-import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
+import {
+  getCurrentOrganization,
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 

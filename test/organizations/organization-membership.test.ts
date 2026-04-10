@@ -22,7 +22,7 @@ const {
   OrganizationMembershipError,
   requireActiveOrganizationMembership,
   requireActiveOrganizationRole,
-} = await import("@/features/organizations/server/organization-membership");
+} = await import("@/features/organizations/server/organizations");
 
 describe("organization membership", () => {
   beforeEach(() => {

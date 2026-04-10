@@ -1,17 +1,12 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useActionState } from "react";
 
-import { resetPassword } from "@/features/auth/client/auth-api-client";
 import {
-  resetPasswordDefaultValues,
-  resetPasswordSchema,
-  type ResetPasswordValues,
-} from "@/features/auth/schemas/password-change.schema";
+  resetPasswordAction,
+  type ResetPasswordActionState,
+} from "@/features/auth/actions/public-auth.actions";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -21,81 +16,57 @@ import {
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { routes } from "@/shared/constants/routes";
+import { getFieldState } from "@/shared/lib/get-field-state";
 
 type ResetPasswordFormProps = {
   token: string;
 };
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
-  const [success, setSuccess] = useState("");
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useForm<ResetPasswordValues>({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: resetPasswordDefaultValues,
-  });
-
-  const onSubmit = handleSubmit(async ({ newPassword }) => {
-    try {
-      const result = await resetPassword(token, newPassword);
-
-      if (result.status !== "success") {
-        setError("root", {
-          type: "server",
-          message: result.message,
-        });
-        return;
-      }
-
-      reset(resetPasswordDefaultValues);
-      setSuccess("Your password has been updated. You can now sign in.");
-    } catch {
-      setError("root", {
-        type: "server",
-        message: "Unable to reset password. Please try again.",
-      });
-    }
-  });
+  const [state, formAction, isPending] = useActionState<
+    ResetPasswordActionState,
+    FormData
+  >(resetPasswordAction, {});
+  const newPasswordField = getFieldState(state, "newPassword");
+  const confirmPasswordField = getFieldState(state, "confirmPassword");
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="token" value={token} />
+
       <FieldGroup className="space-y-4">
-        <Field data-invalid={Boolean(errors.newPassword)}>
+        <Field data-invalid={newPasswordField.invalid}>
           <FieldLabel htmlFor="reset-password">New password</FieldLabel>
           <PasswordInput
             id="reset-password"
-            aria-invalid={Boolean(errors.newPassword)}
+            name="newPassword"
+            aria-invalid={newPasswordField.invalid}
             required
-            {...register("newPassword")}
           />
-          <FieldError>{errors.newPassword?.message}</FieldError>
+          <FieldError>{newPasswordField.error}</FieldError>
         </Field>
 
-        <Field data-invalid={Boolean(errors.confirmPassword)}>
+        <Field data-invalid={confirmPasswordField.invalid}>
           <FieldLabel htmlFor="reset-confirm-password">
             Confirm new password
           </FieldLabel>
           <PasswordInput
             id="reset-confirm-password"
-            aria-invalid={Boolean(errors.confirmPassword)}
+            name="confirmPassword"
+            aria-invalid={confirmPasswordField.invalid}
             required
-            {...register("confirmPassword")}
           />
-          <FieldError>{errors.confirmPassword?.message}</FieldError>
+          <FieldError>{confirmPasswordField.error}</FieldError>
         </Field>
       </FieldGroup>
 
-      {errors.root?.message ? (
-        <p className="text-sm text-destructive">{errors.root.message}</p>
+      {state.error ? (
+        <p className="text-sm text-destructive">{state.error}</p>
       ) : null}
 
-      {success ? (
+      {state.success ? (
         <p className="text-sm text-emerald-600">
-          {success}
+          {state.success}{" "}
           <Link
             href={routes.auth.login}
             className="underline underline-offset-4"
@@ -108,16 +79,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       <Button
         type="submit"
         className="w-full"
-        disabled={isSubmitting || Boolean(success)}
+        disabled={isPending || Boolean(state.success)}
       >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Updating password...
-          </>
-        ) : (
-          "Update password"
-        )}
+        {isPending ? "Updating password..." : "Update password"}
       </Button>
     </form>
   );

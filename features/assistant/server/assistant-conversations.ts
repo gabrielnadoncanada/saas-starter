@@ -10,7 +10,7 @@ import {
   toConversationListItem,
 } from "@/features/assistant/server/assistant-conversation-messages";
 import { assistantConversationSurface } from "@/features/assistant/types";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
 import { db } from "@/shared/lib/db/prisma";
 

@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { getPlan } from "@/features/billing/catalog";
-import { LimitReachedError } from "@/features/billing/plan-guards";
+import { getPlan, LimitReachedError } from "@/features/billing/plans";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import type { OrganizationEntitlements } from "@/shared/config/billing.config";
 

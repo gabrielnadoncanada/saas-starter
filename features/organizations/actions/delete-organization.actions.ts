@@ -7,7 +7,7 @@ import { deleteOrganizationSchema } from "@/features/organizations/schemas/organ
 import {
   OrganizationMembershipError,
   requireActiveOrganizationRole,
-} from "@/features/organizations/server/organization-membership";
+} from "@/features/organizations/server/organizations";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import { routes } from "@/shared/constants/routes";

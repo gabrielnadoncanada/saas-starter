@@ -37,3 +37,16 @@ export function buildCallbackURL(
 
   return `${pathname}?${new URLSearchParams({ callbackUrl: nextCallbackUrl }).toString()}`;
 }
+
+export function buildCheckEmailHref(
+  email: string,
+  callbackUrl: string | null | undefined,
+) {
+  const baseHref = buildCallbackURL(routes.auth.checkEmail, callbackUrl);
+  const separator = baseHref.includes("?") ? "&" : "?";
+  const query = new URLSearchParams({
+    email: email.trim().toLowerCase(),
+  });
+
+  return `${baseHref}${separator}${query.toString()}`;
+}

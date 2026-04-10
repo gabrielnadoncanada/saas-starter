@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError } from "@/features/billing/plan-guards";
+import { LimitReachedError } from "@/features/billing/plans";
 
 const {
   headersMock,
@@ -44,7 +44,7 @@ vi.mock("@/shared/lib/auth/authenticated-action", () => ({
   },
 }));
 
-vi.mock("@/features/organizations/server/organization-membership", () => ({
+vi.mock("@/features/organizations/server/organizations", () => ({
   requireActiveOrganizationRole: requireActiveOrganizationRoleMock,
   OrganizationMembershipError: class extends Error {
     name = "OrganizationMembershipError";
@@ -55,9 +55,9 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: getCurrentOrganizationEntitlementsMock,
 }));
 
-vi.mock("@/features/billing/plan-guards", async (importOriginal) => {
+vi.mock("@/features/billing/plans", async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import("@/features/billing/plan-guards")>();
+    await importOriginal<typeof import("@/features/billing/plans")>();
   return {
     ...actual,
     assertCapability: assertCapabilityMock,

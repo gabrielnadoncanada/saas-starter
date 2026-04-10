@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-vi.mock("@/features/organizations/server/current-organization", () => ({
+vi.mock("@/features/organizations/server/organizations", () => ({
   getCurrentOrganization: vi.fn(),
 }));
 
@@ -10,18 +10,15 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
-vi.mock("@/features/billing/catalog", () => ({
-  getPlan: vi.fn(() => ({
-    id: "pro",
-    name: "Pro",
-  })),
-}));
-
 vi.mock("@/features/billing/server/usage-service", () => ({
   getMonthlyUsage: vi.fn(),
 }));
 
-vi.mock("@/features/billing/plan-guards", () => ({
+vi.mock("@/features/billing/plans", () => ({
+  getPlan: vi.fn(() => ({
+    id: "pro",
+    name: "Pro",
+  })),
   checkLimit: vi.fn(() => ({
     allowed: true,
     limit: 100,
@@ -44,7 +41,7 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 }));
 
 const { getCurrentOrganization } =
-  await import("@/features/organizations/server/current-organization");
+  await import("@/features/organizations/server/organizations");
 const { getCurrentOrganizationEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { getMonthlyUsage } =

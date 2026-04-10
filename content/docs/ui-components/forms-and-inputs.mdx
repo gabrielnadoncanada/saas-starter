@@ -1,45 +1,35 @@
 ---
 title: Forms and inputs
-description: Text fields, selects, checkboxes, switches, and form helpers in shared/components/ui.
+description: Text fields, selects, checkboxes, switches, and field primitives in shared/components/ui.
 ---
 
 ## Overview
 
-Form-related UI lives under `shared/components/ui/`. Low-level controls include `Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `RadioGroup`, and `NativeSelect`. For labels use `Label`. For react-hook-form integration use `Form*` from `form.tsx`. For layout-oriented field groups use `Field*` from `field.tsx`. For grouped inputs with addons use `InputGroup*` from `input-group.tsx`.
+Form UI lives under `shared/components/ui/`. Use low-level controls like `Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `RadioGroup`, and `NativeSelect`. For field layout, labels, descriptions, and errors, use the `Field*` primitives from `field.tsx`.
 
-> **Note:** `Select`, `Checkbox`, `Switch`, `RadioGroup`, `Form`, `Field`, and `InputGroup` parts are client components (`"use client"`). Use them from client components or pass serialized props from Server Components.
+> **Note:** `Select`, `Checkbox`, `Switch`, `RadioGroup`, `Field`, and `InputGroup` parts are client components.
 
 ## Basic inputs
-
-### Input
 
 ```tsx
 import { Input } from "@/shared/components/ui/input";
 
-<Input type="email" name="email" placeholder="you@example.com" />
+<Input type="email" name="email" placeholder="you@example.com" />;
 ```
-
-Set `aria-invalid` when validation fails so focus/error styles apply.
-
-### Textarea
 
 ```tsx
 import { Textarea } from "@/shared/components/ui/textarea";
 
-<Textarea name="bio" rows={4} placeholder="Tell us about yourself" />
+<Textarea name="bio" rows={4} placeholder="Tell us about yourself" />;
 ```
-
-### Label
 
 ```tsx
 import { Label } from "@/shared/components/ui/label";
 
-<Label htmlFor="email">Email</Label>
+<Label htmlFor="email">Email</Label>;
 ```
 
 ## Select
-
-Radix-based combobox-style select (`Select` from `radix-ui`):
 
 ```tsx
 "use client";
@@ -60,112 +50,30 @@ import {
     <SelectItem value="one">One</SelectItem>
     <SelectItem value="two">Two</SelectItem>
   </SelectContent>
-</Select>
+</Select>;
 ```
 
-`SelectTrigger` accepts `size?: "sm" | "default"`.
+## Field primitives
 
-### Native select
-
-Styled `<select>` for simple cases:
+Use `Field`, `FieldLabel`, `FieldDescription`, and `FieldError` for form layout without adding another abstraction layer:
 
 ```tsx
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/shared/components/ui/native-select";
-
-<NativeSelect name="role" defaultValue="user" size="sm">
-  <NativeSelectOption value="user">User</NativeSelectOption>
-  <NativeSelectOption value="admin">Admin</NativeSelectOption>
-</NativeSelect>
+<Field data-invalid={emailField.invalid}>
+  <FieldLabel htmlFor="email">Email</FieldLabel>
+  <Input
+    id="email"
+    name="email"
+    defaultValue={emailField.value}
+    aria-invalid={emailField.invalid}
+    required
+  />
+  <FieldError>{emailField.error}</FieldError>
+</Field>
 ```
 
-## Checkbox and switch
-
-```tsx
-"use client";
-
-import { Checkbox } from "@/shared/components/ui/checkbox";
-
-<Checkbox id="terms" />
-```
-
-```tsx
-"use client";
-
-import { Switch } from "@/shared/components/ui/switch";
-
-<Switch id="notifications" />
-<Switch size="sm" />
-```
-
-## Radio group
-
-```tsx
-"use client";
-
-import { Label } from "@/shared/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
-
-<RadioGroup defaultValue="a">
-  <div className="flex items-center gap-2">
-    <RadioGroupItem value="a" id="a" />
-    <Label htmlFor="a">Option A</Label>
-  </div>
-</RadioGroup>
-```
-
-## React Hook Form (`Form`)
-
-Wrap with `Form` (`FormProvider`), then `FormField` + `FormItem` + `FormLabel` + `FormControl` + `FormMessage`:
-
-```tsx
-"use client";
-
-import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
-
-const form = useForm({ defaultValues: { title: "" } });
-
-function onSubmit(values: { title: string }) {
-  console.log(values);
-}
-
-<Form {...form}>
-  <form onSubmit={form.handleSubmit(onSubmit)}>
-    <FormField
-      control={form.control}
-      name="title"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Title</FormLabel>
-          <FormControl>
-            <Input {...field} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  </form>
-</Form>
-```
-
-## Field primitives (`Field`)
-
-Use for accessible field layout without tying to react-hook-form: `FieldSet`, `FieldLegend`, `FieldGroup`, `Field`, `FieldLabel`, `FieldContent`, `FieldDescription`, `FieldError`, `FieldSeparator`, etc. `Field` supports `orientation`: `"vertical" | "horizontal" | "responsive"`.
+`Field` also supports grouped layouts like `FieldGroup`, `FieldSet`, and `FieldLegend`.
 
 ## Input group
-
-Combine addons, text, and controls in one bordered control:
 
 ```tsx
 "use client";
@@ -179,7 +87,5 @@ import {
 <InputGroup>
   <InputGroupAddon>https://</InputGroupAddon>
   <InputGroupInput placeholder="yoursite.com" />
-</InputGroup>
+</InputGroup>;
 ```
-
-Also available: `InputGroupButton`, `InputGroupText`, `InputGroupTextarea`. Set `data-align` on addons: `inline-start`, `inline-end`, `block-start`, `block-end`.

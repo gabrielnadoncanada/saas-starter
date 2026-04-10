@@ -5,7 +5,7 @@ import {
   getPlanDisplayPrice,
   isBillingInterval,
   isPlanId,
-} from "@/features/billing/catalog";
+} from "@/features/billing/plans";
 import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
 
 const paidPlanIdSchema = z

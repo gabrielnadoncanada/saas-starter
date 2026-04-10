@@ -1,19 +1,13 @@
 "use client";
 
-import { CFileUpload } from "@/shared/components/ui/c-file-upload";
 import { Loader2, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  startTransition,
-  type FormEvent,
-  useActionState,
-  useEffect,
-  useState,
-} from "react";
+import { useActionState, useEffect, useState } from "react";
 
 import { updateAccountAction } from "@/features/account/actions/update-account.actions";
 import type { UpdateAccountInput } from "@/features/account/schemas/account.schema";
 import { Button } from "@/shared/components/ui/button";
+import { CFileUpload } from "@/shared/components/ui/c-file-upload";
 import {
   Dialog,
   DialogClose,
@@ -26,13 +20,12 @@ import {
 } from "@/shared/components/ui/dialog";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import type { FileWithPreview } from "@/shared/hooks/use-file-upload";
+import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
@@ -87,26 +80,6 @@ export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
     }
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-
-    if (avatar?.file instanceof File) {
-      formData.set("avatar", avatar.file);
-      formData.delete("removeAvatar");
-    } else {
-      formData.delete("avatar");
-      if (removeExistingAvatar) {
-        formData.set("removeAvatar", "true");
-      } else {
-        formData.delete("removeAvatar");
-      }
-    }
-
-    startTransition(() => formAction(formData));
-  }
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -121,10 +94,17 @@ export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
           <DialogDescription>Update your profile.</DialogDescription>
         </DialogHeader>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" action={formAction}>
+          <input
+            type="hidden"
+            name="removeAvatar"
+            value={removeExistingAvatar ? "true" : "false"}
+          />
+
           <Field>
             <FieldLabel>Profile image</FieldLabel>
             <CFileUpload
+              inputName="avatar"
               defaultAvatar={image ?? undefined}
               onFileChange={handleAvatarChange}
               onExistingAvatarClear={() => setRemoveExistingAvatar(true)}

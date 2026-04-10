@@ -7,8 +7,7 @@ import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
-import { getAdminUserDetail } from "../server/get-user-detail";
-import { listAdminUsers } from "../server/list-users";
+import { getAdminUserDetail, listAdminUsers } from "../server/users";
 
 function revalidateAdminUsersPage() {
   revalidatePath("/admin");

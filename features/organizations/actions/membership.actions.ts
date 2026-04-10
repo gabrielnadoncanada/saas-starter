@@ -4,10 +4,11 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 import {
+  assertCapability,
+  assertLimit,
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plan-guards";
-import { assertCapability, assertLimit } from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import {
   invitationIdSchema,
@@ -22,7 +23,7 @@ import {
 import {
   OrganizationMembershipError,
   requireActiveOrganizationRole,
-} from "@/features/organizations/server/organization-membership";
+} from "@/features/organizations/server/organizations";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   hasCurrentStripeSubscription,
   hasPlanAccess,
-} from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 import { applyOneTimePurchaseLimits } from "@/features/billing/server/organization-entitlements";
 
 describe("subscription status gating", () => {

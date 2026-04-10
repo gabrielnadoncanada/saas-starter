@@ -1,19 +1,24 @@
 "use client";
 
-import {
-  formatBytes,
-  useFileUpload,
-  type FileWithPreview,
-} from "@/shared/hooks/use-file-upload";
-import { Alert, AlertDescription, AlertTitle } from "@/components/reui/alert";
 import { CircleAlertIcon, UserIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/shared/components/ui/alert";
 import { Button } from "@/shared/components/ui/button";
+import {
+  type FileWithPreview,
+  formatBytes,
+  useFileUpload,
+} from "@/shared/hooks/use-file-upload";
 import { cn } from "@/shared/lib/utils";
 interface AvatarUploadProps {
   maxSize?: number;
   className?: string;
+  inputName?: string;
   onFileChange?: (file: FileWithPreview | null) => void;
   /** Shown when the user already has a saved avatar (URL). */
   defaultAvatar?: string;
@@ -24,6 +29,7 @@ interface AvatarUploadProps {
 export function CFileUpload({
   maxSize = 2 * 1024 * 1024, // 2MB
   className,
+  inputName,
   onFileChange,
   defaultAvatar,
   onExistingAvatarClear,
@@ -50,8 +56,7 @@ export function CFileUpload({
 
   const currentFile = files[0];
   const previewUrl =
-    currentFile?.preview ||
-    (clearedDefaultAvatar ? undefined : defaultAvatar);
+    currentFile?.preview || (clearedDefaultAvatar ? undefined : defaultAvatar);
 
   useEffect(() => {
     setClearedDefaultAvatar(false);
@@ -62,8 +67,7 @@ export function CFileUpload({
   }, [currentFile, onFileChange]);
 
   const showRemove =
-    Boolean(currentFile) ||
-    (Boolean(defaultAvatar) && !clearedDefaultAvatar);
+    Boolean(currentFile) || (Boolean(defaultAvatar) && !clearedDefaultAvatar);
 
   const handleRemove = () => {
     if (currentFile) {
@@ -94,7 +98,7 @@ export function CFileUpload({
           onDrop={handleDrop}
           onClick={openFileDialog}
         >
-          <input {...getInputProps()} className="sr-only" />
+          <input {...getInputProps({ name: inputName })} className="sr-only" />
 
           {previewUrl ? (
             <img

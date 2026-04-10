@@ -1,6 +1,7 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { format } from "date-fns";
+import { Copy, Search } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -19,16 +20,25 @@ import type {
 } from "@/shared/lib/auth/better-auth-inferred-types";
 import { AdminTablePagination } from "@/features/admin/components/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/shared/components/ui/avatar";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import {
   Table,
+  TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
 
 import { UserDetailSheet } from "./user-detail-sheet";
-import { UsersTableRows } from "./users-table-rows";
+import { UserRowActions } from "./user-row-actions";
 
 type AdminUsersTableProps = {
   currentUserId: string;
@@ -218,17 +228,80 @@ export function AdminUsersTable({
               <TableHead className="w-12" />
             </TableRow>
           </TableHeader>
-          <UsersTableRows
-            currentUserId={currentUserId}
-            isPending={isPending}
-            onBan={confirmBanUser}
-            onCopy={copyToClipboard}
-            onOpen={openUserDetail}
-            onRemove={confirmDeleteUser}
-            onSetRole={confirmSetUserRole}
-            onUnban={confirmUnbanUser}
-            users={users}
-          />
+          <TableBody>
+            {users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  No users found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              users.map((user) => (
+                <TableRow
+                  key={user.id}
+                  className={isPending ? "opacity-50" : "cursor-pointer"}
+                  onClick={() => openUserDetail(user)}
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarImage
+                          src={user.image ?? undefined}
+                          alt={user.name ?? user.email}
+                        />
+                        <AvatarFallback>
+                          {(user.name || user.email)[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">
+                          {user.name || "No name"}
+                        </p>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <span className="truncate">{user.email}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-5"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              copyToClipboard(user.email);
+                            }}
+                          >
+                            <Copy className="size-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{user.role ?? "user"}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={user.banned ? "destructive" : "secondary"}>
+                      {user.banned ? "Banned" : "Active"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {format(new Date(user.createdAt), "MMM d, yyyy")}
+                  </TableCell>
+                  <TableCell>
+                    {user.id !== currentUserId ? (
+                      <div onClick={(event) => event.stopPropagation()}>
+                        <UserRowActions
+                          user={user}
+                          onSetRole={confirmSetUserRole}
+                          onBan={confirmBanUser}
+                          onUnban={confirmUnbanUser}
+                          onRemove={confirmDeleteUser}
+                        />
+                      </div>
+                    ) : null}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
         </Table>
       </div>
       <AdminTablePagination

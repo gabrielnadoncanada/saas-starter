@@ -2,8 +2,10 @@ import { format } from "date-fns";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import { getPlanDisplayPrice } from "@/features/billing/catalog";
-import { hasCurrentStripeSubscription } from "@/features/billing/plan-guards";
+import {
+  getPlanDisplayPrice,
+  hasCurrentStripeSubscription,
+} from "@/features/billing/plans";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {

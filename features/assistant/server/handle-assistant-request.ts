@@ -19,7 +19,7 @@ import { assistantTools } from "@/features/assistant/server/tools";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";

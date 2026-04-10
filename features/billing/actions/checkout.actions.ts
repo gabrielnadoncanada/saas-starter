@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
-import { isBillingInterval, isPlanId } from "@/features/billing/catalog";
+import { isBillingInterval, isPlanId } from "@/features/billing/plans";
 import {
   oneTimeCheckoutSchema,
   subscriptionCheckoutSchema,
@@ -12,8 +12,10 @@ import {
   createOrganizationOneTimeCheckoutSession,
   createOrganizationSubscriptionCheckoutSession,
 } from "@/features/billing/server/stripe/stripe-checkout";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
-import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
+import {
+  getCurrentOrganization,
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";

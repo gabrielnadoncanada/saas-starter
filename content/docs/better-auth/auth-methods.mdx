@@ -1,91 +1,37 @@
 ---
 title: Auth methods
-description: Email and password, magic link, and related client helpers in this starter.
+description: Email/password, magic link, OAuth, and the app-facing Better Auth entry points.
 ---
 
-## Email and password (server)
+## Email and password
 
 Configured in `shared/lib/auth/auth-config.ts`:
 
 ```ts title="shared/lib/auth/auth-config.ts"
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: true,
-    minPasswordLength: 8,
-    sendResetPassword: async ({ user, url }) => {
-      await sendEmail({
-        to: [user.email],
-        subject: "Reset your password",
-        react: createElement(ResetPasswordTemplate, { resetUrl: url }),
-        text: `Reset your password: ${url}`,
-        tags: [{ name: "email_type", value: "reset_password" }],
-      });
-    },
+emailAndPassword: {
+  enabled: true,
+  requireEmailVerification: true,
+  minPasswordLength: 8,
+  sendResetPassword: async ({ user, url }) => {
+    // send email
   },
+},
 ```
 
-Sign-in and sign-up from the UI use `authClient` via `features/auth/client/auth-api-client.ts`:
+The UI no longer uses a client-side auth wrapper. Public auth forms call server actions in `features/auth/actions/public-auth.actions.ts`, and those actions call Better Auth server APIs directly:
 
-- **Sign in:** `authClient.signIn.email({ email, password })` — handles `EMAIL_NOT_VERIFIED` and invalid credentials with normalized messages.
-- **Sign up:** `authClient.signUp.email({ email, password, name, callbackURL })`.
-- **Reset:** `requestPasswordReset` / `resetPassword` wrapping `authClient.requestPasswordReset` and `authClient.resetPassword`.
-- **Change password:** `changePassword` or `set-password` fetch for OAuth-only users — see `savePassword` in the same file.
+- `auth.api.signInEmail`
+- `auth.api.signUpEmail`
+- `auth.api.requestPasswordReset`
+- `auth.api.resetPassword`
+- `auth.api.sendVerificationEmail`
 
-```ts title="features/auth/client/auth-api-client.ts"
-export async function signInWithPassword(
-  email: string,
-  password: string,
-): Promise<SignInWithPasswordResult> {
-  const { error } = await authClient.signIn.email({
-    email: email.trim().toLowerCase(),
-    password,
-  });
-
-  if (!error) {
-    return { status: "success" };
-  }
-
-  const code = getAuthErrorCode(error);
-  const message = getAuthErrorMessage(
-    error,
-    "Unable to sign in. Please try again.",
-  );
-
-  if (code === "EMAIL_NOT_VERIFIED") {
-    return {
-      status: "verification_required",
-      message: "Verify your email before signing in.",
-    };
-  }
-
-  if (code === "INVALID_EMAIL_OR_PASSWORD" || error.status === 401) {
-    return {
-      status: "invalid_credentials",
-      message: "Invalid email or password.",
-    };
-  }
-
-  return { status: "error", message };
-}
-```
+Signed-in password changes still use `savePasswordAction`, which calls `auth.api.changePassword` or `auth.api.setPassword`.
 
 ## Magic link
 
-The server registers the `magicLink` plugin with `sendMagicLink` sending email via Resend (`auth-config.ts`). The client exposes `authClient.signIn.magicLink` through `magicLinkClient()` in `auth-client.ts`.
+The `magicLink` plugin is registered in `auth-config.ts`. The sign-in and sign-up pages call `authClient.signIn.magicLink` from the client for the secondary "email link" button, then redirect to `/check-email`.
 
-`features/auth/client/auth-api-client.ts` wraps sending:
+## OAuth
 
-```ts title="features/auth/client/auth-api-client.ts"
-export async function sendMagicLink(email: string, callbackUrl: string) {
-  const { error } = await authClient.signIn.magicLink({
-    email: email.trim().toLowerCase(),
-    callbackURL: callbackUrl,
-  });
-
-  if (error) {
-    throw new Error(error.message || "Unable to send magic link.");
-  }
-}
-```
-
-> **Note:** `hasMagicLinkProvider()` in `shared/lib/auth/oauth-config.ts` returns true only when **`RESEND_API_KEY` and `EMAIL_FROM`** are both set. Without email, magic link cannot be delivered.
+OAuth buttons call `authClient.signIn.social` directly from the sign-in and sign-up forms. Provider enablement and labels stay in `shared/lib/auth/oauth-config.ts`.

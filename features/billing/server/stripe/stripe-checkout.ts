@@ -1,9 +1,9 @@
 import {
   buildPlanCheckoutLineItems,
+  CURRENT_SUBSCRIPTION_STATUSES,
   getOneTimeProduct,
   getPlan,
-} from "@/features/billing/catalog";
-import { CURRENT_SUBSCRIPTION_STATUSES } from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { assertCapability } from "@/features/billing/plan-guards";
+import { assertCapability } from "@/features/billing/plans";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 
 export async function assertOrganizationAiAccess() {

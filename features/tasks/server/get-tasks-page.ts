@@ -2,7 +2,7 @@ import "server-only";
 
 import { Prisma } from "@prisma/client";
 
-import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
+import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
 import type { TaskTableSearchParams } from "@/features/tasks/task-table-search-params";
 import { db } from "@/shared/lib/db/prisma";
 

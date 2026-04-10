@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { sendMagicLink } from "@/features/auth/client/auth-api-client";
+import { authClient } from "@/shared/lib/auth/auth-client";
 
 type ResendMagicLinkButtonProps = {
   email: string;
@@ -21,7 +21,15 @@ export function ResendMagicLinkButton({
   async function handleResend() {
     try {
       setIsPending(true);
-      await sendMagicLink(email, nextCallbackUrl);
+      const { error } = await authClient.signIn.magicLink({
+        email: email.trim().toLowerCase(),
+        callbackURL: nextCallbackUrl,
+      });
+
+      if (error) {
+        throw new Error(error.message || "Unable to send a new sign-in link.");
+      }
+
       toast.success("A new sign-in link has been sent.");
     } catch {
       toast.error("Unable to send a new sign-in link. Please try again.");

@@ -1,6 +1,6 @@
 ---
 title: Server actions
-description: Patterns for server actions, revalidation, and Zod-validated authenticated forms.
+description: Patterns for server actions, revalidation, and Zod-validated form actions.
 ---
 
 ## Declaring server actions
@@ -43,33 +43,52 @@ Task actions wrap this helper:
 export const createTaskAction = validatedAuthenticatedAction<
   typeof createTaskSchema,
   { task?: Task }
->(
-  createTaskSchema,
-  async (data) => {
-    try {
-      const task = await createTask(data);
+>(createTaskSchema, async (data) => {
+  try {
+    const task = await createTask(data);
 
-      revalidatePath(routes.app.tasks);
+    revalidatePath(routes.app.tasks);
 
-      return {
-        success: "Task created",
-        task,
-      };
-    } catch (error) {
-      if (
-        error instanceof UpgradeRequiredError ||
-        error instanceof LimitReachedError ||
-        (error instanceof Error && error.message === "Organization not found")
-      ) {
-        return { error: error.message };
-      }
-
-      throw error;
+    return {
+      success: "Task created",
+      task,
+    };
+  } catch (error) {
+    if (
+      error instanceof UpgradeRequiredError ||
+      error instanceof LimitReachedError ||
+      (error instanceof Error && error.message === "Organization not found")
+    ) {
+      return { error: error.message };
     }
-  },
-);
+
+    throw error;
+  }
+});
 ```
 
 Business logic stays in `features/tasks/server/task-mutations.ts`; the action layer handles HTTP-ish concerns (revalidate, user-visible errors).
+
+## Public actions with Zod
+
+For auth pages and other unauthenticated form posts, use `validatedPublicAction` from the same file. It keeps the same `FormActionState` contract without requiring a session first.
+
+```ts title="features/auth/actions/public-auth.actions.ts"
+export const signInAction = validatedPublicAction(
+  signInFormSchema,
+  async ({ email, password, callbackUrl }) => {
+    await auth.api.signInEmail({
+      headers: await headers(),
+      body: {
+        email: email.trim().toLowerCase(),
+        password,
+        callbackURL: callbackUrl,
+      },
+    });
+
+    return { redirectTo: callbackUrl ?? routes.auth.postSignIn };
+  },
+);
+```
 
 > **Note:** Admin actions use `requireAdminAction()` instead of `validatedAuthenticatedAction` because they are invoked programmatically from admin UI, not always via a single `FormData` shape.

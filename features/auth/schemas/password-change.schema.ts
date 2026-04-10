@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   authPasswordSchema,
   confirmPasswordField,
+  emailSchema,
 } from "@/features/auth/schemas/auth-forms.schema";
 
 const passwordChangeBaseSchema = z.object({
@@ -17,16 +18,14 @@ export type ResetPasswordValues = Pick<
   "newPassword" | "confirmPassword"
 >;
 
-export const passwordFormDefaultValues: PasswordFormValues = {
-  currentPassword: "",
-  newPassword: "",
-  confirmPassword: "",
-};
+export const requestPasswordResetSchema = z.object({
+  email: emailSchema.shape.email,
+  callbackUrl: z.string().optional(),
+});
 
-export const resetPasswordDefaultValues: ResetPasswordValues = {
-  newPassword: "",
-  confirmPassword: "",
-};
+export type RequestPasswordResetValues = z.infer<
+  typeof requestPasswordResetSchema
+>;
 
 function applyPasswordConfirmation(
   values: ResetPasswordValues,

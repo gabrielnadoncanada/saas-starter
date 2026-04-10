@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 
 vi.mock("server-only", () => ({}));
 
@@ -21,9 +21,9 @@ vi.mock("@/features/billing/server/organization-entitlements", () => ({
   getCurrentOrganizationEntitlements: vi.fn(),
 }));
 
-vi.mock("@/features/billing/plan-guards", async (importOriginal) => {
+vi.mock("@/features/billing/plans", async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import("@/features/billing/plan-guards")>();
+    await importOriginal<typeof import("@/features/billing/plans")>();
   return {
     ...actual,
     assertCapability: vi.fn(),
@@ -38,7 +38,7 @@ const { db } = await import("@/shared/lib/db/prisma");
 const { getCurrentOrganizationEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { assertCapability } =
-  await import("@/features/billing/plan-guards");
+  await import("@/features/billing/plans");
 const { consumeMonthlyUsage } =
   await import("@/features/billing/server/usage-service");
 const { createTask } = await import("@/features/tasks/server/task-mutations");

@@ -2,14 +2,14 @@ import "server-only";
 
 import { subDays } from "date-fns";
 
-import { getPlan } from "@/features/billing/catalog";
 import {
   checkLimit,
+  getPlan,
   hasCapability,
-} from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { getMonthlyUsage } from "@/features/billing/server/usage-service";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 

@@ -11,7 +11,7 @@ Next.js SaaS boilerplate with multi-tenant organizations, billing, AI assistant,
 - Payments: Stripe via @better-auth/stripe
 - AI: Vercel AI SDK with Google, OpenAI, Groq providers
 - UI: shadcn/ui (Radix), Tailwind CSS v4, ai-elements
-- Forms: react-hook-form + zod
+- Forms: useActionState + server actions + zod
 - Email: Resend + react-email
 - Testing: Vitest
 - Package manager: pnpm

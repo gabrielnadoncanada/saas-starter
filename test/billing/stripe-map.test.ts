@@ -7,7 +7,7 @@ process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
 const { billingConfig } = await import("@/shared/config/billing.config");
 const { findCatalogRecurringPriceByPriceId, getPlan, getPlanDisplayPrice } =
-  await import("@/features/billing/catalog");
+  await import("@/features/billing/plans");
 
 describe("billing catalog price mapping", () => {
   it("keeps Stripe prices in the recurring catalog", () => {

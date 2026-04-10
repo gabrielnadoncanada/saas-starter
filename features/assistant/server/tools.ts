@@ -14,7 +14,7 @@ import type {
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plan-guards";
+} from "@/features/billing/plans";
 import {
   createTask,
   updateTask,
@@ -23,7 +23,7 @@ import {
   createTaskSchema,
   type CreateTaskValues,
 } from "@/features/tasks/task.schema";
-import { requireActiveOrganizationMembership } from "@/features/organizations/server/organization-membership";
+import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
 import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 

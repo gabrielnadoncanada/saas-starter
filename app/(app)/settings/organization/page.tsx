@@ -2,7 +2,7 @@ import { Trash } from "lucide-react";
 
 import { DeleteOrganizationDialog } from "@/features/organizations/components/delete-organization-panel";
 import { RenameOrganizationPanel } from "@/features/organizations/components/rename-organization-panel";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/organizations";
 import {
   Page,
   PageDescription,

@@ -3,7 +3,6 @@
 import { ArrowLeftIcon, MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
 
-import { adminSidebarData } from "@/features/admin/config/admin-navigation";
 import {
   NavGroup,
   SidebarMenuLink,
@@ -32,8 +31,6 @@ import { ChevronRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export function AssistantSidebar() {
-  const groups = adminSidebarData.navGroups;
-
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>

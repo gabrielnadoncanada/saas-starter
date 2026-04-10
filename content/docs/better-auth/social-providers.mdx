@@ -64,6 +64,6 @@ const oauthProviders = [
 ] as const;
 ```
 
-`getEnabledOAuthProviderIds()` returns only providers with credentials. Sign-in uses `authClient.signIn.social` via `signInWithOAuth` in `features/auth/client/auth-api-client.ts`.
+`getEnabledOAuthProviderIds()` returns only providers with credentials. The sign-in and sign-up forms call `authClient.signIn.social` directly.
 
 > **Warning:** OAuth apps must use redirect URLs that match your deployment `BASE_URL` and Better Auth’s `/api/auth` callback paths. Configure that in the Google Cloud and GitHub OAuth app settings.

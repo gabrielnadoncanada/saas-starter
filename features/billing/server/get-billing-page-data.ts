@@ -3,11 +3,11 @@ import "server-only";
 import {
   getPlanDisplayPrice,
   getPricingPlans,
+  hasCurrentStripeSubscription,
   listOneTimeProducts,
-} from "@/features/billing/catalog";
+} from "@/features/billing/plans";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
-import { hasCurrentStripeSubscription } from "@/features/billing/plan-guards";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/current-organization";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/organizations";
 
 export async function getBillingPageData() {
   const [context, entitlements] = await Promise.all([

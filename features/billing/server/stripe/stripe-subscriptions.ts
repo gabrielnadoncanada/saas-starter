@@ -5,7 +5,7 @@ import {
   findCatalogRecurringPriceByPriceId,
   getPlan,
   isPlanId,
-} from "@/features/billing/catalog";
+} from "@/features/billing/plans";
 import type {
   BillingInterval,
   PlanId,

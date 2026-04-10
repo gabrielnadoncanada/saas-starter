@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { AdminSidebar } from "@/features/admin/components/sidebar";
+import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import { AppShell } from "@/shared/components/layout/shell/app-shell";
 

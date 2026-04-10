@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { AssistantSidebar } from "@/features/assistant/components/sidebar";
+import { AssistantSidebar } from "@/features/assistant/components/assistant-sidebar";
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import { AppShell } from "@/shared/components/layout/shell/app-shell";
 

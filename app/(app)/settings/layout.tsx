@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { ensureActiveOrganization } from "@/features/organizations/server/organization-membership";
+import { ensureActiveOrganization } from "@/features/organizations/server/organizations";
 import { SettingsSidebar } from "@/shared/components/navigation/settings-sidebar";
 import { AppShell } from "@/shared/components/layout/shell/app-shell";
 import { ActiveOrganizationProvider } from "@/shared/components/providers/active-organization-provider";

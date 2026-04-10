@@ -4,10 +4,10 @@ import {
   getDefaultEntitlements,
   getOneTimeProduct,
   getPlan,
+  hasPlanAccess,
   isPlanId,
-} from "@/features/billing/catalog";
-import { hasPlanAccess } from "@/features/billing/plan-guards";
-import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
+} from "@/features/billing/plans";
+import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import type {
   LimitKey,
   OrganizationEntitlements,
