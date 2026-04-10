@@ -25,18 +25,30 @@ export function validatedAuthenticatedAction<
     formData: FormData,
     user: CurrentUser,
   ) => Promise<FormActionState<z.infer<Schema>> & Result>,
+  options?: {
+    onUnauthenticated?: (
+      formData: FormData,
+      rawValues: Record<string, unknown>,
+    ) =>
+      | Promise<FormActionState<z.infer<Schema>> & Result>
+      | (FormActionState<z.infer<Schema>> & Result);
+  },
 ) {
   type Values = z.infer<Schema>;
   type State = FormActionState<Values> & Result;
 
-  return async (_prevState: State, formData: FormData): Promise<State> => {
+  async function runAction(formData: FormData): Promise<State> {
+    const rawValues = Object.fromEntries(formData) as Record<string, unknown>;
     const user = await getCurrentUser();
 
     if (!user) {
+      if (options?.onUnauthenticated) {
+        return options.onUnauthenticated(formData, rawValues) as Promise<State>;
+      }
+
       return { error: "You are not signed in." } as State;
     }
 
-    const rawValues = Object.fromEntries(formData) as Record<string, unknown>;
     const parsed = schema.safeParse(rawValues);
 
     if (!parsed.success) {
@@ -50,5 +62,21 @@ export function validatedAuthenticatedAction<
     }
 
     return handler(parsed.data, formData, user);
-  };
+  }
+
+  async function action(formData: FormData): Promise<void>;
+  async function action(_prevState: State, formData: FormData): Promise<State>;
+  async function action(
+    firstArg: FormData | State,
+    secondArg?: FormData,
+  ): Promise<void | State> {
+    if (firstArg instanceof FormData) {
+      await runAction(firstArg);
+      return;
+    }
+
+    return runAction(secondArg as FormData);
+  }
+
+  return action;
 }

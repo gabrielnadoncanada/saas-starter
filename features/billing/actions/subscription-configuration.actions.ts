@@ -2,39 +2,38 @@
 
 import { redirect } from "next/navigation";
 
-import { parseSubscriptionForm } from "@/features/billing/catalog";
+import { subscriptionCheckoutSchema } from "@/features/billing/schemas/checkout.schema";
 import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscriptions";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
-export async function updateSubscriptionConfigurationAction(
-  formData: FormData,
-) {
-  const user = await getCurrentUser();
+export const updateSubscriptionConfigurationAction =
+  validatedAuthenticatedAction<typeof subscriptionCheckoutSchema>(
+    subscriptionCheckoutSchema,
+    async ({ billingInterval, planId, seatQuantity }) => {
+      await requireActiveOrganizationRole(["owner"], {
+        redirectTo: routes.settings.members,
+      });
 
-  if (!user) {
-    redirect(routes.auth.login);
-  }
+      const organization = await getCurrentOrganization();
+      if (!organization) {
+        throw new Error("Organization not found");
+      }
 
-  await requireActiveOrganizationRole(["owner"], {
-    redirectTo: routes.settings.members,
-  });
+      await updateOrganizationSubscriptionConfiguration({
+        billingInterval,
+        organizationId: organization.id,
+        planId,
+        seatQuantity: seatQuantity ?? organization.members.length,
+      });
 
-  const organization = await getCurrentOrganization();
-  if (!organization) {
-    throw new Error("Organization not found");
-  }
-
-  const selection = parseSubscriptionForm(formData);
-
-  await updateOrganizationSubscriptionConfiguration({
-    billingInterval: selection.billingInterval,
-    organizationId: organization.id,
-    planId: selection.planId,
-    seatQuantity: selection.seatQuantity ?? organization.members.length,
-  });
-
-  redirect(routes.settings.billing);
-}
+      redirect(routes.settings.billing);
+    },
+    {
+      onUnauthenticated: () => {
+        redirect(routes.auth.login);
+      },
+    },
+  );

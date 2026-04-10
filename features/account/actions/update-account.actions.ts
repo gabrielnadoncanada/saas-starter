@@ -3,47 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-import {
-  type UpdateAccountInput,
-  updateAccountSchema,
-} from "@/features/account/schemas/account.schema";
+import { updateAccountSchema } from "@/features/account/schemas/account.schema";
 import {
   deleteUserAvatar,
   saveUserAvatar,
   shouldSaveAvatar,
 } from "@/features/account/server/profile-image";
-import { auth } from "@/shared/lib/auth/auth-config";
 import { routes } from "@/shared/constants/routes";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import type { FormActionState } from "@/shared/types/form-action-state";
+import { auth } from "@/shared/lib/auth/auth-config";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
-export async function updateAccountAction(
-  _prevState: FormActionState<UpdateAccountInput>,
-  formData: FormData,
-): Promise<FormActionState<UpdateAccountInput>> {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return { error: "You are not signed in." };
-  }
-
-  const parsed = updateAccountSchema.safeParse({
-    name: formData.get("name"),
-  });
-
-  if (!parsed.success) {
-    const flat = parsed.error.flatten();
-
-    return {
-      error: "Please fix the highlighted fields.",
-      values: {
-        name: String(formData.get("name") ?? ""),
-      },
-      fieldErrors: flat.fieldErrors,
-    };
-  }
-
-  const { name } = parsed.data;
+export const updateAccountAction = validatedAuthenticatedAction<
+  typeof updateAccountSchema
+>(updateAccountSchema, async ({ name }, formData, user) => {
   const removeAvatar = formData.get("removeAvatar") === "true";
   const avatarFile = formData.get("avatar");
   const avatar =
@@ -101,4 +73,4 @@ export async function updateAccountAction(
       },
     };
   }
-}
+});

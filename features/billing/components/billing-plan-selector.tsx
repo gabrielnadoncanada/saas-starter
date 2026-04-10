@@ -63,7 +63,10 @@ function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
   return interval === "year" ? "/ yr" : "/ mo";
 }
 
-export function getPlanPrice(plan: BillingPlanOption, interval: BillingInterval) {
+export function getPlanPrice(
+  plan: BillingPlanOption,
+  interval: BillingInterval,
+) {
   return interval === "year" ? plan.yearly : plan.monthly;
 }
 
@@ -211,8 +214,8 @@ export function BillingPlanRadioGroup({
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   interval: BillingInterval;
-  selectedPlanId: PlanId;
-  onValueChange: (value: PlanId) => void;
+  selectedPlanId: string;
+  onValueChange: (value: string) => void;
 }) {
   return (
     <FieldSet className="gap-3">
@@ -271,7 +274,7 @@ export function BillingPlanSelector({
 }: BillingPlanSelectorProps) {
   const defaultPlan =
     plans.find((plan) => plan.id === currentPlanId) ?? plans[0] ?? null;
-  const [selectedPlanId, setSelectedPlanId] = useState<PlanId | undefined>(
+  const [selectedPlanId, setSelectedPlanId] = useState<string | undefined>(
     defaultPlan?.id,
   );
   const [interval, setInterval] = useState<BillingInterval>(
