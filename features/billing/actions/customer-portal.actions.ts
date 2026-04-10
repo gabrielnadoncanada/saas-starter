@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-portal";
+import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-customers";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";

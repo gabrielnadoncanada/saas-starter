@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { getPlanDisplayPrice } from "@/features/billing/catalog";
-import { hasCurrentStripeSubscription } from "@/features/billing/subscription-status";
+import { hasCurrentStripeSubscription } from "@/features/billing/plan-guards";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {

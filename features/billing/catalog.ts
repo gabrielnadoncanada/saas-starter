@@ -1,8 +1,11 @@
 // Billing catalog: resolves billing.config.ts definitions into lookups and checkout helpers.
 //
-// Mental model:
-//   Plan (free/pro/team) → Schedule (month/year) → Line Items → Prices
-//   One-time products (storage boost, etc.) have a single price each.
+// HOW TO ADD A NEW PLAN:
+//   1. Create a product + prices in Stripe Dashboard (monthly and/or yearly).
+//   2. Add STRIPE_PRICE_<NAME>_MONTHLY / STRIPE_PRICE_<NAME>_YEARLY to .env.
+//   3. Add a new entry in the `plans` array in shared/config/billing.config.ts.
+//      Copy the "pro" block and change: id, name, description, features, capabilities, limits, price env vars.
+//   4. Done — the pricing page, checkout, and entitlements will pick it up automatically.
 //
 // Main entry points:
 //   getPricingPlans()              → plans with at least one configured price
@@ -16,21 +19,10 @@ import {
   type BillingPlan,
   type BillingPlanDefinition,
   type BillingPlanSchedule,
-  type BillingPrice,
-  type BillingRecurringLineItem,
   type OneTimeProductDefinition,
   type OrganizationEntitlements,
   type PlanId,
 } from "@/shared/config/billing.config";
-
-export type BillingPlanOption = Pick<
-  BillingPlanDefinition,
-  "name" | "description" | "features" | "pricingModel"
-> & {
-  id: PlanId;
-  monthly: BillingPrice | null;
-  yearly: BillingPrice | null;
-};
 
 export type RecurringCatalogPrice = {
   billingInterval: BillingInterval;
@@ -41,36 +33,25 @@ export type RecurringCatalogPrice = {
   price: BillingPrice;
 };
 
-const recurringPrices = billingConfig.plans.flatMap((plan) =>
-  Object.entries(plan.schedules).flatMap(([billingInterval, schedule]) =>
-    (schedule?.lineItems ?? []).map(
-      (lineItem: BillingRecurringLineItem): RecurringCatalogPrice => ({
-        billingInterval: billingInterval as BillingInterval,
-        componentKey: lineItem.id,
-        itemKey: plan.id,
-        itemType: "plan",
-        plan,
-        price: lineItem.price,
-      }),
-    ),
-  ),
-);
-
-const recurringPricesById = new Map<string, RecurringCatalogPrice>(
-  recurringPrices.map((entry) => [entry.price.priceId, entry]),
-);
-
 export function findCatalogRecurringPriceByPriceId(priceId: string) {
-  return recurringPricesById.get(priceId) ?? null;
+  for (const plan of billingConfig.plans) {
+    for (const [interval, schedule] of Object.entries(plan.schedules)) {
+      for (const lineItem of schedule?.lineItems ?? []) {
+        if (lineItem.price.priceId === priceId) {
+          return {
+            billingInterval: interval as BillingInterval,
+            componentKey: lineItem.id,
+            itemKey: plan.id,
+            itemType: "plan" as const,
+            plan,
+            price: lineItem.price,
+          };
+        }
+      }
+    }
+  }
+  return null;
 }
-
-const plansById = new Map<string, BillingPlan>(
-  billingConfig.plans.map((plan) => [plan.id, plan]),
-);
-
-const oneTimeProductsById = new Map<string, OneTimeProductDefinition>(
-  billingConfig.oneTimeProducts.map((product) => [product.id, product]),
-);
 
 function getPlanSchedule(
   plan: BillingPlan,
@@ -84,15 +65,15 @@ function getPlanSchedule(
 }
 
 export function isPlanId(value: string): value is PlanId {
-  return plansById.has(value);
+  return billingConfig.plans.some((plan) => plan.id === value);
 }
 
 export function getPlan(planId: PlanId): BillingPlan {
-  return plansById.get(planId) ?? plansById.get("free")!;
+  return billingConfig.plans.find((p) => p.id === planId) ?? billingConfig.plans[0];
 }
 
 export function getOneTimeProduct(productId: string) {
-  return oneTimeProductsById.get(productId) ?? null;
+  return billingConfig.oneTimeProducts.find((p) => p.id === productId) ?? null;
 }
 
 export function isBillingInterval(value: string): value is BillingInterval {
@@ -127,18 +108,6 @@ export function listOneTimeProducts(): OneTimeProductDefinition[] {
   return billingConfig.oneTimeProducts.filter((product) =>
     Boolean(product.price),
   ) as OneTimeProductDefinition[];
-}
-
-export function toBillingPlanOption(plan: BillingPlanDefinition): BillingPlanOption {
-  return {
-    id: plan.id as PlanId,
-    name: plan.name,
-    description: plan.description,
-    features: plan.features,
-    pricingModel: plan.pricingModel,
-    monthly: getPlanDisplayPrice(plan.id, "month"),
-    yearly: getPlanDisplayPrice(plan.id, "year"),
-  };
 }
 
 export function buildPlanCheckoutLineItems(params: {

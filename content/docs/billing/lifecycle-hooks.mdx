@@ -48,4 +48,4 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
 
 `clearStripeCustomerBillingState` clears `stripeCustomerId` on affected organizations and deletes related subscription rows for that customer id.
 
-> **Note:** Plan access for entitlements treats **`active`** and **`trialing`** Stripe statuses as having access (`hasPlanAccess` in `subscription-status.ts`); other statuses are handled for “current subscription” UI vs terminal states.
+> **Note:** Plan access for entitlements treats **`active`** and **`trialing`** Stripe statuses as having access (`hasPlanAccess` in `plan-guards.ts`); other statuses are handled for “current subscription” UI vs terminal states.

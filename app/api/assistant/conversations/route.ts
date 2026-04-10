@@ -7,7 +7,7 @@ import {
   listAssistantConversations,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/assistant-conversations";
-import { parseAssistantMessagesBody } from "@/features/assistant/server/parse-assistant-messages-body";
+import { parseAssistantMessagesBody } from "@/features/assistant/server/handle-assistant-request";
 
 export async function GET() {
   const scope = await resolveAssistantConversationScope();

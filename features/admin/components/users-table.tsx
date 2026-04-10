@@ -17,7 +17,7 @@ import type {
   AdminApiSession,
   AdminApiUser,
 } from "@/shared/lib/auth/better-auth-inferred-types";
-import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
+import { AdminTablePagination } from "@/features/admin/components/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Input } from "@/shared/components/ui/input";
 import {

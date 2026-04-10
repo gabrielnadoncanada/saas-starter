@@ -85,16 +85,6 @@ export type OrganizationEntitlements = {
   subscriptionStatus: string | null;
 };
 
-function price(
-  priceId: string | undefined,
-  unitAmount: number,
-  trialDays?: number,
-) {
-  return priceId
-    ? { priceId, unitAmount, currency: "usd" as const, trialDays }
-    : undefined;
-}
-
 export const billingConfig = {
   currency: "USD",
   plans: [
@@ -130,11 +120,12 @@ export const billingConfig = {
                 {
                   id: "base",
                   kind: "flat",
-                  price: price(
-                    process.env.STRIPE_PRICE_PRO_MONTHLY,
-                    1900,
-                    7,
-                  )!,
+                  price: {
+                    priceId: process.env.STRIPE_PRICE_PRO_MONTHLY!,
+                    unitAmount: 1900,
+                    currency: "usd",
+                    trialDays: 7,
+                  },
                 },
               ],
             }
@@ -145,11 +136,12 @@ export const billingConfig = {
                 {
                   id: "base",
                   kind: "flat",
-                  price: price(
-                    process.env.STRIPE_PRICE_PRO_YEARLY,
-                    19000,
-                    7,
-                  )!,
+                  price: {
+                    priceId: process.env.STRIPE_PRICE_PRO_YEARLY!,
+                    unitAmount: 19000,
+                    currency: "usd",
+                    trialDays: 7,
+                  },
                 },
               ],
             }
@@ -183,11 +175,12 @@ export const billingConfig = {
                 {
                   id: "seat",
                   kind: "seat",
-                  price: price(
-                    process.env.STRIPE_PRICE_TEAM_MONTHLY,
-                    4900,
-                    7,
-                  )!,
+                  price: {
+                    priceId: process.env.STRIPE_PRICE_TEAM_MONTHLY!,
+                    unitAmount: 4900,
+                    currency: "usd",
+                    trialDays: 7,
+                  },
                   unitLabel: "seat",
                 },
               ],
@@ -199,11 +192,12 @@ export const billingConfig = {
                 {
                   id: "seat",
                   kind: "seat",
-                  price: price(
-                    process.env.STRIPE_PRICE_TEAM_YEARLY,
-                    49000,
-                    7,
-                  )!,
+                  price: {
+                    priceId: process.env.STRIPE_PRICE_TEAM_YEARLY!,
+                    unitAmount: 49000,
+                    currency: "usd",
+                    trialDays: 7,
+                  },
                   unitLabel: "seat",
                 },
               ],
@@ -218,7 +212,13 @@ export const billingConfig = {
       name: "Storage Boost",
       description: "Add 10 GB of storage to this workspace.",
       features: ["10 GB extra storage"],
-      price: price(process.env.STRIPE_PRICE_STORAGE_BOOST, 7900),
+      price: process.env.STRIPE_PRICE_STORAGE_BOOST
+        ? {
+            priceId: process.env.STRIPE_PRICE_STORAGE_BOOST,
+            unitAmount: 7900,
+            currency: "usd",
+          }
+        : undefined,
       limitEffect: { storageMb: 10_000 },
     },
   ],

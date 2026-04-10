@@ -19,11 +19,6 @@ vi.mock(
   }),
 );
 
-vi.mock("@/features/billing/components/billing-plan-selector-fields", () => ({
-  BillingIntervalSelector: () => React.createElement("div", null, "Interval"),
-  BillingPlanRadioGroup: () => React.createElement("div", null, "Plans"),
-}));
-
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 
 const plans = [

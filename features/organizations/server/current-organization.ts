@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { cache } from "react";
 
-import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscription-snapshot";
+import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
 import type {
   CurrentOrganizationView,
   OrganizationMemberView,

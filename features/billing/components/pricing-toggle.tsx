@@ -1,10 +1,10 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
-import { SubmitPricingButton } from "@/features/billing/components/submit-pricing-button";
 import { Button } from "@/shared/components/ui/button";
 import type {
   BillingInterval,
@@ -52,6 +52,31 @@ function getIntervalLabel(
   }
 
   return interval === "year" ? "/ year" : "/ month";
+}
+
+function SubmitPricingButton({ label = "Get Started" }: { label?: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      variant="outline"
+      className="w-full rounded-full"
+    >
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Loading...
+        </>
+      ) : (
+        <>
+          {label}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </>
+      )}
+    </Button>
+  );
 }
 
 function PricingCard({

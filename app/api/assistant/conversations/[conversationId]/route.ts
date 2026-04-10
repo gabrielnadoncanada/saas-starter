@@ -8,7 +8,7 @@ import {
   replaceAssistantConversation,
   resolveAssistantConversationScope,
 } from "@/features/assistant/server/assistant-conversations";
-import { parseAssistantMessagesBody } from "@/features/assistant/server/parse-assistant-messages-body";
+import { parseAssistantMessagesBody } from "@/features/assistant/server/handle-assistant-request";
 
 type RouteContext = {
   params: Promise<{

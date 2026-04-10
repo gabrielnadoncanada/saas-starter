@@ -13,7 +13,7 @@ import type {
   AdminOrganization,
   OrgSubscription,
 } from "@/features/admin/types/organizations.types";
-import { AdminTablePagination } from "@/shared/components/app/admin-table-pagination";
+import { AdminTablePagination } from "@/features/admin/components/admin-table-pagination";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Input } from "@/shared/components/ui/input";
 

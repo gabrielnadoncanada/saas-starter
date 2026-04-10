@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { parseSubscriptionForm } from "@/features/billing/catalog";
-import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscription-items";
+import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscriptions";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import { requireActiveOrganizationRole } from "@/features/organizations/server/organization-membership";
 import { routes } from "@/shared/constants/routes";

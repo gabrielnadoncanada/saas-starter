@@ -4,7 +4,7 @@ import {
   findCatalogRecurringPriceByPriceId,
   isPlanId,
 } from "@/features/billing/catalog";
-import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscription-items";
+import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscriptions";
 import type { BillingInterval } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 

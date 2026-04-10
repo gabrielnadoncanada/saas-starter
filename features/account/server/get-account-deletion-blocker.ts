@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscription-snapshot";
+import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { hasOrgRole } from "@/shared/lib/db/enums";
 

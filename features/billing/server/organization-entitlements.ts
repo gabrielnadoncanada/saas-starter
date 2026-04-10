@@ -6,7 +6,7 @@ import {
   getPlan,
   isPlanId,
 } from "@/features/billing/catalog";
-import { hasPlanAccess } from "@/features/billing/subscription-status";
+import { hasPlanAccess } from "@/features/billing/plan-guards";
 import { getCurrentOrganization } from "@/features/organizations/server/current-organization";
 import type {
   LimitKey,
