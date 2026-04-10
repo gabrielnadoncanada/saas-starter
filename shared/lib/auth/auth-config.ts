@@ -29,11 +29,6 @@ export const auth = betterAuth({
         required: false,
         returned: true,
       },
-      phoneNumber: {
-        type: "string",
-        required: false,
-        returned: true,
-      },
       twoFactorEnabled: {
         type: "boolean",
         required: false,

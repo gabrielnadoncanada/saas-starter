@@ -62,4 +62,3 @@ model Purchase {
 
   @@index([organizationId, purchaseType, itemKey])
 }
-

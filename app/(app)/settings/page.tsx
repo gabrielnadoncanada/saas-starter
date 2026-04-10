@@ -1,4 +1,4 @@
-import { KeyRound, Link2, Pencil, Trash, UserIcon } from "lucide-react";
+import { KeyRound, Link2, Trash, UserIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
@@ -17,7 +17,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/shared/components/ui/avatar";
-import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardAction,
@@ -125,15 +124,7 @@ export default async function SettingsPage({ searchParams }: PageProps) {
               <p className="text-xs text-muted-foreground">{user.email}</p>
             </div>
 
-            <EditProfileDialog
-              name={user.name}
-              phoneNumber={user.phoneNumber ?? ""}
-            >
-              <Button variant="outline" size="sm" className="ml-auto">
-                <Pencil className="mr-2 h-3.5 w-3.5" />
-                Edit Profile
-              </Button>
-            </EditProfileDialog>
+            <EditProfileDialog image={user.image ?? null} name={user.name} />
           </div>
         </CardContent>
       </Card>
@@ -162,12 +153,7 @@ export default async function SettingsPage({ searchParams }: PageProps) {
           </CardTitle>
           <CardDescription>Change your account password</CardDescription>
           <CardAction>
-            <EditPasswordDialog hasPassword={linkedAccounts.hasPassword}>
-              <Button variant="outline" size="sm">
-                <KeyRound className="mr-2 h-3.5 w-3.5" />
-                Change Password
-              </Button>
-            </EditPasswordDialog>
+            <EditPasswordDialog hasPassword={linkedAccounts.hasPassword} />
           </CardAction>
         </CardHeader>
       </Card>
@@ -181,12 +167,7 @@ export default async function SettingsPage({ searchParams }: PageProps) {
             Delete your account and all your data
           </CardDescription>
           <CardAction>
-            <DeleteAccountDialog>
-              <Button variant="destructive" size="sm">
-                <KeyRound className="mr-2 h-3.5 w-3.5" />
-                Delete Account
-              </Button>
-            </DeleteAccountDialog>
+            <DeleteAccountDialog />
           </CardAction>
         </CardHeader>
       </Card>

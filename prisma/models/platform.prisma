@@ -9,7 +9,7 @@ model StoredFile {
   createdAt        DateTime @default(now())
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  uploadedBy     User         @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  uploadedBy   User         @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, createdAt(sort: Desc)])
 }

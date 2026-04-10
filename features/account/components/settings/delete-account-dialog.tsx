@@ -1,5 +1,6 @@
 "use client";
 
+import { KeyRound } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 
 import { deleteAccountAction } from "@/features/account/actions/delete-account.actions";
@@ -24,11 +25,7 @@ import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
-type DeleteAccountDialogProps = {
-  children: React.ReactNode;
-};
-
-export function DeleteAccountDialog({ children }: DeleteAccountDialogProps) {
+export function DeleteAccountDialog() {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
     FormActionState<DeleteAccountInput>,
@@ -52,7 +49,12 @@ export function DeleteAccountDialog({ children }: DeleteAccountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button variant="destructive" size="sm">
+          <KeyRound className="mr-2 h-3.5 w-3.5" />
+          Delete Account
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete account</DialogTitle>

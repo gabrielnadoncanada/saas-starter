@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { KeyRound, Loader2 } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 
 import { savePasswordAction } from "@/features/auth/actions/save-password.actions";
@@ -24,13 +24,9 @@ import type { FormActionState } from "@/shared/types/form-action-state";
 
 type EditPasswordDialogProps = {
   hasPassword: boolean;
-  children: React.ReactNode;
 };
 
-export function EditPasswordDialog({
-  hasPassword,
-  children,
-}: EditPasswordDialogProps) {
+export function EditPasswordDialog({ hasPassword }: EditPasswordDialogProps) {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState<
     FormActionState<PasswordFormValues>,
@@ -56,7 +52,12 @@ export function EditPasswordDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <KeyRound className="mr-2 h-3.5 w-3.5" />
+          Change Password
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

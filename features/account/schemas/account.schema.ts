@@ -12,17 +12,6 @@ export const deleteAccountSchema = z.object({
 
 export const updateAccountSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  phoneNumber: z
-    .string()
-    .trim()
-    .max(30, "Phone number is too long")
-    .transform((phoneNumber) => {
-      if (!phoneNumber.length) {
-        return null;
-      }
-
-      return phoneNumber.replace(/[\s\-().]/g, "");
-    }),
 });
 
 export const unlinkAuthProviderSchema = z.object({

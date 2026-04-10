@@ -43,7 +43,6 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
-    "phone_number" VARCHAR(30),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

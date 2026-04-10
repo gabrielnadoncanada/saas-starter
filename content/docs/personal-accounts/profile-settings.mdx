@@ -12,10 +12,20 @@ Personal account settings live at **`/settings`** (`routes.settings.profile`). T
 The profile section shows avatar, name, and email. **Edit Profile** opens `EditProfileDialog`, a client dialog that posts to the `updateAccountAction` server action with:
 
 - **Name** — required text field.
-- **Phone number** — `PhoneInput` component, validated via the account schema.
+- **Profile image** — optional avatar upload.
 
 ```tsx title="features/account/components/settings/edit-profile-dialog.tsx"
-        <form className="space-y-4" action={formAction}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <Field>
+            <FieldLabel>Profile image</FieldLabel>
+            <CFileUpload
+              defaultAvatar={image ?? undefined}
+              onFileChange={setAvatar}
+              className="items-start"
+            />
+            <FieldDescription>PNG, JPG, or WebP up to 2 MB.</FieldDescription>
+          </Field>
+
           <Field data-invalid={nameField.invalid}>
             <FieldLabel htmlFor="name">Name</FieldLabel>
             <Input
@@ -27,19 +37,6 @@ The profile section shows avatar, name, and email. **Edit Profile** opens `EditP
               required
             />
             <FieldError>{nameField.error}</FieldError>
-          </Field>
-
-          <Field data-invalid={phoneNumberField.invalid}>
-            <FieldLabel htmlFor="phoneNumber">Phone number</FieldLabel>
-            <PhoneInput
-              id="phoneNumber"
-              name="phoneNumber"
-              placeholder={"Enter your phone number"}
-              value={phoneNumberValue}
-              onChange={(value) => setPhoneNumberValue(value ?? "")}
-              aria-invalid={phoneNumberField.invalid}
-            />
-            <FieldError>{phoneNumberField.error}</FieldError>
           </Field>
 ```
 

@@ -1,11 +1,18 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import { CFileUpload } from "@/shared/components/ui/c-file-upload";
+import { Loader2, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  startTransition,
+  type FormEvent,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
 
 import { updateAccountAction } from "@/features/account/actions/update-account.actions";
 import type { UpdateAccountInput } from "@/features/account/schemas/account.schema";
-import { PhoneInput } from "@/shared/components/forms/phone-input";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -17,42 +24,45 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
+import type { FileWithPreview } from "@/shared/hooks/use-file-upload";
 import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
 type EditProfileDialogProps = {
+  image: string | null;
   name: string;
-  phoneNumber: string;
-  children: React.ReactNode;
 };
 
-export function EditProfileDialog({
-  name,
-  phoneNumber,
-  children,
-}: EditProfileDialogProps) {
+export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [avatar, setAvatar] = useState<FileWithPreview | null>(null);
+  const [removeExistingAvatar, setRemoveExistingAvatar] = useState(false);
   const [state, formAction, isPending] = useActionState<
     FormActionState<UpdateAccountInput>,
     FormData
   >(updateAccountAction, {});
 
   const nameField = getFieldState(state, "name", name);
-  const phoneNumberField = getFieldState(state, "phoneNumber", phoneNumber);
-  const [phoneNumberValue, setPhoneNumberValue] = useState(phoneNumberField.value);
 
   useEffect(() => {
-    setPhoneNumberValue(phoneNumberField.value);
-  }, [phoneNumberField.value]);
-
-  useEffect(() => {
-    if (state.success) {
-      setOpen(false);
+    if (!state.success) {
+      return;
     }
-  }, [state]);
+
+    setOpen(false);
+    setAvatar(null);
+    setRemoveExistingAvatar(false);
+    router.refresh();
+  }, [router, state]);
 
   useToastMessage(state.error, {
     kind: "error",
@@ -61,18 +71,67 @@ export function EditProfileDialog({
   });
   useToastMessage(state.success, { kind: "success", trigger: state });
 
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      setAvatar(null);
+      setRemoveExistingAvatar(false);
+    }
+  }
+
+  function handleAvatarChange(next: FileWithPreview | null) {
+    setAvatar(next);
+    if (next?.file instanceof File) {
+      setRemoveExistingAvatar(false);
+    }
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    if (avatar?.file instanceof File) {
+      formData.set("avatar", avatar.file);
+      formData.delete("removeAvatar");
+    } else {
+      formData.delete("avatar");
+      if (removeExistingAvatar) {
+        formData.set("removeAvatar", "true");
+      } else {
+        formData.delete("removeAvatar");
+      }
+    }
+
+    startTransition(() => formAction(formData));
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="ml-auto">
+          <Pencil className="mr-2 h-3.5 w-3.5" />
+          Edit Profile
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>
-            Update your name and phone number.
-          </DialogDescription>
+          <DialogDescription>Update your profile.</DialogDescription>
         </DialogHeader>
 
-        <form className="space-y-4" action={formAction}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <Field>
+            <FieldLabel>Profile image</FieldLabel>
+            <CFileUpload
+              defaultAvatar={image ?? undefined}
+              onFileChange={handleAvatarChange}
+              onExistingAvatarClear={() => setRemoveExistingAvatar(true)}
+              className="items-center flex-row"
+            />
+          </Field>
+
           <Field data-invalid={nameField.invalid}>
             <FieldLabel htmlFor="name">Name</FieldLabel>
             <Input
@@ -84,19 +143,6 @@ export function EditProfileDialog({
               required
             />
             <FieldError>{nameField.error}</FieldError>
-          </Field>
-
-          <Field data-invalid={phoneNumberField.invalid}>
-            <FieldLabel htmlFor="phoneNumber">Phone number</FieldLabel>
-            <PhoneInput
-              id="phoneNumber"
-              name="phoneNumber"
-              placeholder={"Enter your phone number"}
-              value={phoneNumberValue}
-              onChange={(value) => setPhoneNumberValue(value ?? "")}
-              aria-invalid={phoneNumberField.invalid}
-            />
-            <FieldError>{phoneNumberField.error}</FieldError>
           </Field>
 
           <DialogFooter>

@@ -1,4 +1,5 @@
 import { getAccountDeletionBlocker } from "@/features/account/server/get-account-deletion-blocker";
+import { deleteUserAvatar } from "@/features/account/server/profile-image";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { db } from "@/shared/lib/db/prisma";
 
@@ -31,6 +32,8 @@ export async function deleteAccount({
       },
     });
   }
+
+  await deleteUserAvatar(userId);
 
   await db.$transaction(async (tx) => {
     await tx.user.update({
