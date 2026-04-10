@@ -1,10 +1,60 @@
 import { z } from "zod";
 
 import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/plans";
+import { OrganizationMembershipError } from "@/features/organizations/server/organizations";
+import {
   type CurrentUser,
   getCurrentUser,
 } from "@/shared/lib/auth/get-current-user";
 import type { FormActionState } from "@/shared/types/form-action-state";
+
+const ORGANIZATION_NOT_FOUND_MESSAGE = "Organization not found";
+
+export type BillingActionError = Required<
+  Pick<FormActionState, "error">
+> & {
+  errorCode?: FormActionState["errorCode"];
+};
+
+function billingErrorFrom(error: unknown): BillingActionError | null {
+  if (error instanceof UpgradeRequiredError) {
+    return { error: error.message, errorCode: "UPGRADE_REQUIRED" };
+  }
+  if (error instanceof LimitReachedError) {
+    return { error: error.message, errorCode: "LIMIT_REACHED" };
+  }
+  if (error instanceof OrganizationMembershipError) {
+    return { error: error.message };
+  }
+  if (
+    error instanceof Error &&
+    error.message === ORGANIZATION_NOT_FOUND_MESSAGE
+  ) {
+    return { error: error.message };
+  }
+  return null;
+}
+
+/**
+ * Runs an async action and converts known billing / org-context errors into
+ * {@link BillingActionError}; other errors are rethrown.
+ */
+export async function withBillingErrors<T>(
+  fn: () => Promise<T>,
+): Promise<T | BillingActionError> {
+  try {
+    return await fn();
+  } catch (error) {
+    const mapped = billingErrorFrom(error);
+    if (mapped) {
+      return mapped;
+    }
+    throw error;
+  }
+}
 
 type ActionState<
   Schema extends z.ZodTypeAny,

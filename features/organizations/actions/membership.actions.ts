@@ -3,12 +3,7 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import {
-  assertCapability,
-  assertLimit,
-  LimitReachedError,
-  UpgradeRequiredError,
-} from "@/features/billing/plans";
+import { assertCapability, assertLimit } from "@/features/billing/plans";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import {
   invitationIdSchema,
@@ -20,12 +15,12 @@ import {
   inviteOrganizationMember,
   resendOrganizationInvitation,
 } from "@/features/organizations/server/organization-invitations";
-import {
-  OrganizationMembershipError,
-  requireActiveOrganizationRole,
-} from "@/features/organizations/server/organizations";
+import { requireActiveOrganizationRole } from "@/features/organizations/server/organizations";
 import { auth } from "@/shared/lib/auth/auth-config";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import {
+  validatedAuthenticatedAction,
+  withBillingErrors,
+} from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
 type RefreshableActionState<
@@ -58,18 +53,13 @@ export const inviteOrganizationMemberAction = validatedAuthenticatedAction<
   typeof inviteOrganizationMemberSchema,
   { refreshKey?: number }
 >(inviteOrganizationMemberSchema, async ({ email, role }) => {
-  let organizationId: string;
-
-  try {
-    const membership = await requireActiveOrganizationRole(["owner"]);
-    organizationId = membership.organizationId;
-  } catch (error) {
-    if (error instanceof OrganizationMembershipError) {
-      return { error: error.message };
-    }
-
-    throw error;
+  const membershipStep = await withBillingErrors(() =>
+    requireActiveOrganizationRole(["owner"]),
+  );
+  if ("error" in membershipStep) {
+    return membershipStep;
   }
+  const { organizationId } = membershipStep;
 
   const entitlements = await getCurrentOrganizationEntitlements();
 
@@ -77,7 +67,7 @@ export const inviteOrganizationMemberAction = validatedAuthenticatedAction<
     return { error: "Unable to determine organization plan" };
   }
 
-  try {
+  const limitsStep = await withBillingErrors(async () => {
     assertCapability(entitlements, "team.invite");
 
     const requestHeaders = await headers();
@@ -98,15 +88,10 @@ export const inviteOrganizationMemberAction = validatedAuthenticatedAction<
     ).length;
 
     assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
-  } catch (error) {
-    if (error instanceof UpgradeRequiredError) {
-      return { error: error.message, errorCode: "UPGRADE_REQUIRED" as const };
-    }
-    if (error instanceof LimitReachedError) {
-      return { error: error.message, errorCode: "LIMIT_REACHED" as const };
-    }
-
-    throw error;
+    return {};
+  });
+  if ("error" in limitsStep) {
+    return limitsStep;
   }
 
   try {
@@ -129,14 +114,11 @@ export const cancelOrganizationInvitationAction = validatedAuthenticatedAction<
   typeof invitationIdSchema,
   { refreshKey?: number }
 >(invitationIdSchema, async ({ invitationId }) => {
-  try {
-    await requireActiveOrganizationRole(["owner"]);
-  } catch (error) {
-    if (error instanceof OrganizationMembershipError) {
-      return { error: error.message };
-    }
-
-    throw error;
+  const guard = await withBillingErrors(() =>
+    requireActiveOrganizationRole(["owner"]),
+  );
+  if ("error" in guard) {
+    return guard;
   }
 
   try {
@@ -158,18 +140,13 @@ export const resendOrganizationInvitationAction = validatedAuthenticatedAction<
   typeof invitationIdSchema,
   { refreshKey?: number }
 >(invitationIdSchema, async ({ invitationId }) => {
-  let organizationId: string;
-
-  try {
-    const membership = await requireActiveOrganizationRole(["owner"]);
-    organizationId = membership.organizationId;
-  } catch (error) {
-    if (error instanceof OrganizationMembershipError) {
-      return { error: error.message };
-    }
-
-    throw error;
+  const membershipStep = await withBillingErrors(() =>
+    requireActiveOrganizationRole(["owner"]),
+  );
+  if ("error" in membershipStep) {
+    return membershipStep;
   }
+  const { organizationId } = membershipStep;
 
   const result = await resendOrganizationInvitation({
     invitationId,
@@ -187,18 +164,13 @@ export const removeOrganizationMemberAction = validatedAuthenticatedAction<
   typeof removeOrganizationMemberSchema,
   { refreshKey?: number }
 >(removeOrganizationMemberSchema, async ({ memberId }) => {
-  let organizationId: string;
-
-  try {
-    const membership = await requireActiveOrganizationRole(["owner"]);
-    organizationId = membership.organizationId;
-  } catch (error) {
-    if (error instanceof OrganizationMembershipError) {
-      return { error: error.message };
-    }
-
-    throw error;
+  const membershipStep = await withBillingErrors(() =>
+    requireActiveOrganizationRole(["owner"]),
+  );
+  if ("error" in membershipStep) {
+    return membershipStep;
   }
+  const { organizationId } = membershipStep;
 
   try {
     await auth.api.removeMember({

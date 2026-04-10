@@ -4,10 +4,6 @@ import type { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import {
-  LimitReachedError,
-  UpgradeRequiredError,
-} from "@/features/billing/plans";
-import {
   bulkDeleteTasks,
   bulkUpdateTaskStatus,
   createTask,
@@ -27,7 +23,10 @@ import {
   updateTaskStatusSchema,
 } from "@/features/tasks/task.schema";
 import { routes } from "@/shared/constants/routes";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import {
+  validatedAuthenticatedAction,
+  withBillingErrors,
+} from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
 export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
@@ -51,7 +50,7 @@ export const createTaskAction = validatedAuthenticatedAction<
 >(
   createTaskSchema,
   async (data) => {
-    try {
+    return withBillingErrors(async () => {
       const task = await createTask(data);
 
       revalidatePath(routes.app.tasks);
@@ -60,19 +59,7 @@ export const createTaskAction = validatedAuthenticatedAction<
         success: "Task created",
         task,
       };
-    } catch (error) {
-      if (error instanceof UpgradeRequiredError) {
-        return { error: error.message, errorCode: "UPGRADE_REQUIRED" };
-      }
-      if (error instanceof LimitReachedError) {
-        return { error: error.message, errorCode: "LIMIT_REACHED" };
-      }
-      if (error instanceof Error && error.message === "Organization not found") {
-        return { error: error.message };
-      }
-
-      throw error;
-    }
+    });
   },
 );
 
