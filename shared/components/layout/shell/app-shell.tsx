@@ -3,7 +3,6 @@
 import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
 import { SearchProvider } from "@/shared/components/command/search-provider";
 import { Header } from "@/shared/components/layout/shell/header";
-import { Search } from "@/shared/components/navigation/sidebar-group-search";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";

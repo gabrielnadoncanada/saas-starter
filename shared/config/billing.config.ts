@@ -5,7 +5,7 @@ import "server-only";
 // 2. Copy each price ID into the matching STRIPE_PRICE_* variable in .env.
 // 3. Edit the `plans` array below: change names, features, capabilities, and limits.
 // 4. Capabilities control feature access (e.g. "ai.assistant"). Limits control quotas (e.g. tasksPerMonth).
-// 5. One-time products (like storage boosts) go in the `oneTimeProducts` array.
+// 5. One-time products (like AI credit boosts) go in the `oneTimeProducts` array.
 
 export const capabilities = [
   "task.create",
@@ -209,18 +209,18 @@ export const billingConfig = {
   ],
   oneTimeProducts: [
     {
-      id: "storage_boost",
-      name: "Storage Boost",
-      description: "Add 10 GB of storage to this workspace.",
-      features: ["10 GB extra storage"],
-      price: process.env.STRIPE_PRICE_STORAGE_BOOST
+      id: "ai_credit_boost",
+      name: "AI Credit Boost",
+      description: "Add 10,000 AI credits per month to this workspace.",
+      features: ["10,000 extra AI credits per month"],
+      price: process.env.STRIPE_PRICE_AI_CREDIT_BOOST
         ? {
-            priceId: process.env.STRIPE_PRICE_STORAGE_BOOST,
+            priceId: process.env.STRIPE_PRICE_AI_CREDIT_BOOST,
             unitAmount: 7900,
             currency: "usd",
           }
         : undefined,
-      limitEffect: { storageMb: 10_000 },
+      limitEffect: { aiCredits: 10_000 },
     },
   ],
 } as const satisfies BillingCatalog;

@@ -56,6 +56,7 @@ vi.mock("@/features/assistant/components/assistant-chat", () => ({
 }));
 
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
+import { routes } from "@/shared/constants/routes";
 
 describe("AssistantWorkspace", () => {
   it("keeps a locally created conversation selected until route props catch up", async () => {
@@ -89,7 +90,7 @@ describe("AssistantWorkspace", () => {
       screen.getByTestId("assistant-chat").getAttribute("data-reset-key"),
     ).toBe("0");
     expect(replaceMock).toHaveBeenCalledWith(
-      "/dashboard/assistant?conversationId=conv_1",
+      `${routes.app.assistant}?conversationId=conv_1`,
       { scroll: false },
     );
 

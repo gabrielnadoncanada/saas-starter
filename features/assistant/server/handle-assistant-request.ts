@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   convertToModelMessages,
+  isTextUIPart,
   safeValidateUIMessages,
   stepCountIs,
   streamText,
@@ -122,10 +123,7 @@ export async function handleAssistantRequest(req: Request) {
 
   for (const msg of messages) {
     const text =
-      msg?.parts
-        ?.filter((p: { type: string }) => p.type === "text")
-        ?.map((p: { text: string }) => p.text)
-        ?.join("") ?? "";
+      msg?.parts?.filter(isTextUIPart).map((p) => p.text).join("") ?? "";
     if (text.length > MAX_MESSAGE_LENGTH) {
       return Response.json(
         { error: `Message too long (max ${MAX_MESSAGE_LENGTH} characters).` },

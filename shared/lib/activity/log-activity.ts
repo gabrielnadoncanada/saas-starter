@@ -7,6 +7,7 @@ import type {
   ActivityEventMetadata,
 } from "@/shared/lib/activity/activity.types";
 import { db } from "@/shared/lib/db/prisma";
+import { InputJsonValue } from "@prisma/client/runtime/client";
 
 type LogActivityInput = {
   action: ActivityAction;
@@ -29,7 +30,7 @@ export async function logActivity(input: LogActivityInput): Promise<void> {
         actorUserId: input.actorUserId ?? null,
         targetType: input.targetType ?? null,
         targetId: input.targetId ?? null,
-        metadata: (input.metadata ?? null) as Prisma.InputJsonValue | null,
+        metadata: (input.metadata ?? null) as Prisma.NullableJsonNullValueInput | InputJsonValue | undefined,
       },
     });
   } catch (error) {

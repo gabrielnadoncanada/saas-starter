@@ -12,13 +12,13 @@ All product semantics for the app live in **`shared/config/billing.config.ts`** 
 1. Create products and prices in the Stripe Dashboard.
 2. Copy each price id into the matching `STRIPE_PRICE_*` variable in `.env`.
 3. Edit the `plans` array: names, features, capabilities, limits.
-4. Capabilities gate features (for example `ai.assistant`); limits gate quotas (`tasksPerMonth`, `teamMembers`, `storageMb`).
+4. Capabilities gate features (for example `ai.assistant`); limits gate quotas (`tasksPerMonth`, `teamMembers`, `storageMb`, `aiCredits`).
 5. One-time add-ons go in `oneTimeProducts`.
 
 ## Core types
 
 - **`capabilities`** — Closed list of strings such as `task.create`, `team.invite`, `ai.assistant`, `billing.portal`.
-- **`limitKeys`** — `tasksPerMonth`, `teamMembers`, `storageMb`.
+- **`limitKeys`** — `tasksPerMonth`, `teamMembers`, `storageMb`, `aiCredits`.
 - **`pricingModel`** — `"flat"` or `"per_seat"`.
 - **`BillingPlanDefinition`** — `id`, `name`, `description`, optional `highlighted`, `pricingModel`, `features` (marketing strings), `capabilities`, `limits`, and **`schedules`** per billing interval (`month` / `year`).
 
@@ -42,6 +42,6 @@ export type BillingPlanDefinition = {
 - **pro** — `flat`, monthly/yearly line items when env price ids exist; higher limits and more capabilities including `ai.assistant`.
 - **team** — `per_seat`, seat-priced line items when env price ids exist; highest default limits and `team.analytics`.
 
-**One-time example:** `storage_boost` adds `limitEffect.storageMb` when purchased (see `oneTimeProducts` in the same file).
+**One-time example:** `ai_credit_boost` adds `limitEffect.aiCredits` when purchased (see `oneTimeProducts` in the same file).
 
 > **Warning:** Paid intervals only appear in the UI if `schedules.month` / `schedules.year` include line items whose `price.priceId` is set from env. Missing `STRIPE_PRICE_*` values omit that schedule.

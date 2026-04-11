@@ -34,6 +34,7 @@ function createEntitlements(planId: PlanId): OrganizationEntitlements {
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     subscriptionStatus: planId === "free" ? null : "active",
+    trialEnd: null,
   };
 }
 

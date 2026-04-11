@@ -3,8 +3,6 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
-import { getPlanLimit } from "@/features/billing/plans";
-import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import { db } from "@/shared/lib/db/prisma";
 import { getFileStorage } from "@/shared/lib/storage/storage";
 
@@ -15,15 +13,6 @@ function buildStorageKey(organizationId: string, fileName: string) {
     .replace(/[^a-z0-9-_]+/gi, "-");
 
   return `${organizationId}/${randomUUID()}-${baseName}${extension}`;
-}
-
-export async function getOrganizationStorageUsage(organizationId: string) {
-  const result = await db.storedFile.aggregate({
-    where: { organizationId },
-    _sum: { sizeBytes: true },
-  });
-
-  return result._sum.sizeBytes ?? 0;
 }
 
 export async function getStoredFileRecord(
@@ -62,20 +51,7 @@ export async function saveStoredFile(input: {
   uploadedByUserId: string;
   file: File;
 }) {
-  const entitlements = await getCurrentOrganizationEntitlements();
-
-  if (!entitlements || entitlements.organizationId !== input.organizationId) {
-    throw new Error("Unable to determine organization plan");
-  }
-
   const sizeBytes = input.file.size;
-  const currentUsage = await getOrganizationStorageUsage(input.organizationId);
-  const limitBytes = getPlanLimit(entitlements, "storageMb") * 1024 * 1024;
-
-  if (currentUsage + sizeBytes > limitBytes) {
-    throw new Error("Storage limit reached for the current plan.");
-  }
-
   const storageKey = buildStorageKey(input.organizationId, input.file.name);
   const storage = await getFileStorage();
   const buffer = Buffer.from(await input.file.arrayBuffer());

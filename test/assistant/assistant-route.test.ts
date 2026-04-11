@@ -6,6 +6,17 @@ vi.mock("server-only", () => ({}));
 
 vi.mock("ai", () => ({
   convertToModelMessages: vi.fn(async (messages) => messages),
+  isTextUIPart: vi.fn(
+    (part: unknown) =>
+      typeof part === "object" &&
+      part !== null &&
+      "type" in part &&
+      (part as { type?: string }).type === "text",
+  ),
+  safeValidateUIMessages: vi.fn(async ({ messages }) => ({
+    success: true,
+    data: messages,
+  })),
   stepCountIs: vi.fn(() => "stop"),
   tool: <T>(definition: T) => definition,
   streamText: vi.fn(() => ({
@@ -45,6 +56,10 @@ vi.mock("@/shared/lib/ai/get-model-instance", () => ({
 
 vi.mock("@/features/assistant/server/assistant-conversations", () => ({
   getAssistantConversation: vi.fn(),
+}));
+
+vi.mock("@/features/billing/server/usage-service", () => ({
+  consumeMonthlyUsage: vi.fn(),
 }));
 
 const { streamText } = await import("ai");

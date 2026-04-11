@@ -24,12 +24,13 @@ function createEntitlements(): OrganizationEntitlements {
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     subscriptionStatus: "active",
+    trialEnd: null,
   };
 }
 
 type UsageDbClient = NonNullable<
-  Parameters<typeof consumeMonthlyUsage>[3]
->["db"];
+  Parameters<typeof consumeMonthlyUsage>[0]["db"]
+>;
 
 function createUsageDb(overrides: Record<string, unknown> = {}) {
   return {
@@ -49,7 +50,10 @@ describe("consumeMonthlyUsage", () => {
     });
 
     await expect(
-      consumeMonthlyUsage("org_123", "tasksPerMonth", createEntitlements(), {
+      consumeMonthlyUsage({
+        organizationId: "org_123",
+        limitKey: "tasksPerMonth",
+        entitlements: createEntitlements(),
         db,
       }),
     ).resolves.toBeUndefined();
@@ -65,7 +69,10 @@ describe("consumeMonthlyUsage", () => {
     });
 
     await expect(
-      consumeMonthlyUsage("org_123", "tasksPerMonth", createEntitlements(), {
+      consumeMonthlyUsage({
+        organizationId: "org_123",
+        limitKey: "tasksPerMonth",
+        entitlements: createEntitlements(),
         db,
       }),
     ).rejects.toBeInstanceOf(LimitReachedError);

@@ -31,17 +31,19 @@ describe("subscription status gating", () => {
 });
 
 describe("one-time purchase limits", () => {
-  it("adds storage when storage_boost was purchased", () => {
+  it("adds AI credits when ai_credit_boost was purchased", () => {
     const limits = {
       tasksPerMonth: 10,
       teamMembers: 1,
       storageMb: 100,
+      aiCredits: 100,
     };
 
-    const next = applyOneTimePurchaseLimits(limits, ["storage_boost"]);
+    const next = applyOneTimePurchaseLimits(limits, ["ai_credit_boost"]);
 
-    expect(next.storageMb).toBe(100 + 10_000);
+    expect(next.storageMb).toBe(100);
     expect(next.tasksPerMonth).toBe(10);
+    expect(next.aiCredits).toBe(100 + 10_000);
   });
 
   it("leaves limits unchanged when no matching purchase", () => {
@@ -49,6 +51,7 @@ describe("one-time purchase limits", () => {
       tasksPerMonth: 10,
       teamMembers: 1,
       storageMb: 100,
+      aiCredits: 100,
     };
 
     expect(applyOneTimePurchaseLimits(limits, [])).toEqual(limits);

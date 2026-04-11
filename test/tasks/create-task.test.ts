@@ -113,10 +113,12 @@ describe("createTask", () => {
 
     expect(db.task.create).not.toHaveBeenCalled();
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      "12",
-      "tasksPerMonth",
-      entitlements,
-      { db },
+      {
+        organizationId: "12",
+        limitKey: "tasksPerMonth",
+        entitlements,
+        db,
+      },
     );
   });
 
@@ -130,10 +132,12 @@ describe("createTask", () => {
 
     expect(assertCapability).toHaveBeenCalledWith(entitlements, "task.create");
     expect(consumeMonthlyUsage).toHaveBeenCalledWith(
-      "12",
-      "tasksPerMonth",
-      entitlements,
-      { db },
+      {
+        organizationId: "12",
+        limitKey: "tasksPerMonth",
+        entitlements,
+        db,
+      },
     );
     expect(db.task.create).toHaveBeenCalledWith({
       data: {

@@ -115,7 +115,7 @@ describe("handleStripeWebhookEvent", () => {
           currency: "usd",
           metadata: {
             checkoutType: "one_time_product",
-            itemKey: "storage_boost",
+            itemKey: "ai_credit_boost",
             organizationId: "org_123",
           },
           client_reference_id: null,
@@ -133,7 +133,7 @@ describe("handleStripeWebhookEvent", () => {
         create: expect.objectContaining({
           organizationId: "org_123",
           purchaseType: "one_time_product",
-          itemKey: "storage_boost",
+          itemKey: "ai_credit_boost",
         }),
       }),
     );
