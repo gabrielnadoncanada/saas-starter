@@ -7,7 +7,7 @@ import { isBillingInterval, isPlanId } from "@/features/billing/plans";
 import {
   oneTimeCheckoutSchema,
   subscriptionCheckoutSchema,
-} from "@/features/billing/schemas/checkout.schema";
+} from "@/features/billing/checkout.schema";
 import {
   createOrganizationOneTimeCheckoutSession,
   createOrganizationSubscriptionCheckoutSession,

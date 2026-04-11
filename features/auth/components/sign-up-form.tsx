@@ -9,7 +9,7 @@ import {
   type SignUpActionState,
 } from "@/features/auth/actions/public-auth.actions";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
-import { emailSchema } from "@/features/auth/schemas/auth-forms.schema";
+import { emailSchema } from "@/features/auth/auth-forms.schema";
 import { PasswordInput } from "@/shared/components/forms/password-input";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";

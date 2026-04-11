@@ -9,7 +9,7 @@ import {
   invitationIdSchema,
   inviteOrganizationMemberSchema,
   removeOrganizationMemberSchema,
-} from "@/features/organizations/schemas/organization.schema";
+} from "@/features/organizations/organization.schema";
 import {
   cancelOrganizationInvitation,
   inviteOrganizationMember,

@@ -4,7 +4,7 @@ import {
   authPasswordSchema,
   confirmPasswordField,
   emailSchema,
-} from "@/features/auth/schemas/auth-forms.schema";
+} from "@/features/auth/auth-forms.schema";
 
 const passwordChangeBaseSchema = z.object({
   currentPassword: z.string().default(""),

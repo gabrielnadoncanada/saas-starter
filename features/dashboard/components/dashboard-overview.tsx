@@ -1,3 +1,4 @@
+import type { Task } from "@prisma/client";
 import { ArrowRight, ListTodo, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -7,10 +8,10 @@ import { DashboardCurrentPlanCard } from "@/features/dashboard/components/dashbo
 import { DashboardMembersCard } from "@/features/dashboard/components/dashboard-members-card";
 import { DashboardOnboardingChecklist } from "@/features/dashboard/components/dashboard-onboarding-checklist";
 import { DashboardPlanAiEntitlementsCard } from "@/features/dashboard/components/dashboard-plan-ai-entitlements-card";
-import { DashboardRecentTasks } from "@/features/dashboard/components/dashboard-recent-tasks";
 import { DashboardUsageChart } from "@/features/dashboard/components/dashboard-usage-chart";
 import { DashboardUsageLimitsCard } from "@/features/dashboard/components/dashboard-usage-limits-card";
 import { getDashboardOverview } from "@/features/dashboard/server/get-dashboard-overview";
+import { taskPriorities, taskStatuses } from "@/features/tasks/task-display";
 import {
   Page,
   PageDescription,
@@ -29,8 +30,71 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/shared/components/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemHeader,
+  ItemTitle,
+} from "@/shared/components/ui/item";
 import { Separator } from "@/shared/components/ui/separator";
 import { routes } from "@/shared/constants/routes";
+
+function RecentTasks({ tasks }: { tasks: Task[] }) {
+  if (tasks.length === 0) {
+    return (
+      <Empty className="min-h-0 border">
+        <EmptyHeader>
+          <EmptyTitle>No tasks yet</EmptyTitle>
+          <EmptyDescription>
+            Create one to start shaping the workspace.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
+  return (
+    <ItemGroup className="gap-3">
+      {tasks.map((task) => {
+        const statusLabel = taskStatuses.find(
+          (status) => status.value === task.status,
+        )?.label;
+        const priorityLabel = taskPriorities.find(
+          (priority) => priority.value === task.priority,
+        )?.label;
+
+        return (
+          <Item key={task.id} asChild variant="outline">
+            <Link href={routes.app.tasks}>
+              <ItemContent>
+                <ItemHeader>
+                  <ItemTitle>{task.title}</ItemTitle>
+                  <ItemActions>
+                    <Badge variant="outline">
+                      {priorityLabel ?? task.priority}
+                    </Badge>
+                  </ItemActions>
+                </ItemHeader>
+                <ItemDescription>
+                  {task.code} · {statusLabel ?? task.status}
+                </ItemDescription>
+              </ItemContent>
+            </Link>
+          </Item>
+        );
+      })}
+    </ItemGroup>
+  );
+}
 
 export async function DashboardOverview() {
   const {
@@ -251,7 +315,7 @@ export async function DashboardOverview() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <DashboardRecentTasks tasks={recentTasks} />
+          <RecentTasks tasks={recentTasks} />
         </CardContent>
       </Card>
 

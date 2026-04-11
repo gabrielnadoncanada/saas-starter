@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { deleteOrganizationSchema } from "@/features/organizations/schemas/organization.schema";
+import { deleteOrganizationSchema } from "@/features/organizations/organization.schema";
 import { routes } from "@/shared/constants/routes";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";

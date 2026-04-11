@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import type { z } from "zod";
 
-import { renameOrganizationSchema } from "@/features/organizations/schemas/organization.schema";
+import { renameOrganizationSchema } from "@/features/organizations/organization.schema";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";

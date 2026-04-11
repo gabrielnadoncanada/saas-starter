@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { subscriptionCheckoutSchema } from "@/features/billing/schemas/checkout.schema";
+import { subscriptionCheckoutSchema } from "@/features/billing/checkout.schema";
 import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscriptions";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";

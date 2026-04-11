@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import type { PasswordFormValues } from "@/features/auth/schemas/password-change.schema";
+import type { PasswordFormValues } from "@/features/auth/password-change.schema";
 import { auth } from "@/shared/lib/auth/auth-config";
 import type { FormActionState } from "@/shared/types/form-action-state";
 

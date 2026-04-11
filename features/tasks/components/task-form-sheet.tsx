@@ -1,5 +1,6 @@
 "use client";
 
+import type { Task } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
@@ -7,11 +8,14 @@ import { useActionState, useEffect, useRef } from "react";
 import {
   createTaskAction,
   type CreateTaskActionState,
+  updateTaskAction,
 } from "@/features/tasks/actions/task.actions";
 import {
   taskLabels,
   taskPriorities,
+  taskStatuses,
 } from "@/features/tasks/task-display";
+import type { UpdateTaskValues } from "@/features/tasks/task.schema";
 import { UpgradePrompt } from "@/shared/components/billing/upgrade-prompt";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -39,19 +43,30 @@ import {
 } from "@/shared/components/ui/sheet";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
+import type { FormActionState } from "@/shared/types/form-action-state";
 
-type CreateTaskFormProps = {
+type TaskFormSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  task?: Task | null;
 };
 
-export function CreateTaskForm({ open, onOpenChange }: CreateTaskFormProps) {
+type TaskFormState = CreateTaskActionState & FormActionState<UpdateTaskValues>;
+
+export function TaskFormSheet({
+  open,
+  onOpenChange,
+  task,
+}: TaskFormSheetProps) {
+  const isUpdate = Boolean(task);
+  const action = isUpdate ? updateTaskAction : createTaskAction;
+
   const router = useRouter();
-  const lastHandledStateRef = useRef<CreateTaskActionState | null>(null);
+  const lastHandledStateRef = useRef<TaskFormState | null>(null);
   const [state, formAction, isPending] = useActionState<
-    CreateTaskActionState,
+    TaskFormState,
     FormData
-  >(createTaskAction, {});
+  >(action, {});
 
   const isBillingError = Boolean(state.errorCode);
 
@@ -73,19 +88,27 @@ export function CreateTaskForm({ open, onOpenChange }: CreateTaskFormProps) {
   const descriptionError = state.fieldErrors?.description?.[0];
   const labelError = state.fieldErrors?.label?.[0];
   const priorityError = state.fieldErrors?.priority?.[0];
+  const statusError = state.fieldErrors?.status?.[0];
 
-  const titleValue = state.values?.title ?? "";
-  const descriptionValue = state.values?.description ?? "";
-  const labelValue = state.values?.label ?? "FEATURE";
-  const priorityValue = state.values?.priority ?? "MEDIUM";
+  const titleValue = String(state.values?.title ?? task?.title ?? "");
+  const descriptionValue = String(
+    state.values?.description ?? task?.description ?? "",
+  );
+  const labelValue = String(state.values?.label ?? task?.label ?? "FEATURE");
+  const priorityValue = String(
+    state.values?.priority ?? task?.priority ?? "MEDIUM",
+  );
+  const statusValue = String(state.values?.status ?? task?.status ?? "TODO");
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex flex-col">
         <SheetHeader className="text-start">
-          <SheetTitle>Create Task</SheetTitle>
+          <SheetTitle>{isUpdate ? "Update Task" : "Create Task"}</SheetTitle>
           <SheetDescription>
-            Add a task for the current organization.
+            {isUpdate
+              ? `Edit ${task?.code} for the current organization.`
+              : "Add a task for the current organization."}
           </SheetDescription>
         </SheetHeader>
 
@@ -93,6 +116,10 @@ export function CreateTaskForm({ open, onOpenChange }: CreateTaskFormProps) {
           action={formAction}
           className="flex flex-1 flex-col gap-6 overflow-y-auto px-4"
         >
+          {isUpdate && task ? (
+            <input type="hidden" name="taskId" value={task.id} />
+          ) : null}
+
           <UpgradePrompt errorCode={state.errorCode} message={state.error} />
 
           <FieldGroup className="gap-4">
@@ -162,6 +189,29 @@ export function CreateTaskForm({ open, onOpenChange }: CreateTaskFormProps) {
               </Select>
               <FieldError>{priorityError}</FieldError>
             </Field>
+
+            {isUpdate ? (
+              <Field data-invalid={Boolean(statusError)}>
+                <FieldLabel htmlFor="task-status">Status</FieldLabel>
+                <Select name="status" defaultValue={statusValue}>
+                  <SelectTrigger
+                    id="task-status"
+                    className="w-full"
+                    aria-invalid={Boolean(statusError)}
+                  >
+                    <SelectValue placeholder="Select a status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {taskStatuses.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError>{statusError}</FieldError>
+              </Field>
+            ) : null}
           </FieldGroup>
 
           <SheetFooter className="mt-auto gap-2 px-0">
@@ -176,6 +226,8 @@ export function CreateTaskForm({ open, onOpenChange }: CreateTaskFormProps) {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
                 </>
+              ) : isUpdate ? (
+                "Save Changes"
               ) : (
                 "Create Task"
               )}

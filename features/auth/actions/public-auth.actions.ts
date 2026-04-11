@@ -9,13 +9,13 @@ import {
   type SignInFormValues,
   signUpFormSchema,
   type SignUpFormValues,
-} from "@/features/auth/schemas/auth-forms.schema";
+} from "@/features/auth/auth-forms.schema";
 import {
   requestPasswordResetSchema,
   type RequestPasswordResetValues,
   resetPasswordSchema,
   type ResetPasswordValues,
-} from "@/features/auth/schemas/password-change.schema";
+} from "@/features/auth/password-change.schema";
 import { routes } from "@/shared/constants/routes";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { validatedPublicAction } from "@/shared/lib/auth/authenticated-action";

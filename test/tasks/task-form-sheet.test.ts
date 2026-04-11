@@ -61,23 +61,23 @@ vi.mock("@/shared/lib/get-field-state", () => ({
   getFieldState: () => ({ error: undefined, invalid: false, value: "" }),
 }));
 
-import { CreateTaskForm } from "@/features/tasks/components/task-form-create";
+import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
 
-describe("CreateTaskForm", () => {
+describe("TaskFormSheet", () => {
   beforeEach(() => {
     refreshMock.mockReset();
     useActionStateMock.mockReset();
     useToastMessageMock.mockReset();
   });
 
-  it("handles a successful create action once per action state", () => {
+  it("handles a successful action once per action state", () => {
     let currentState: { success?: string } = { success: "Task created" };
 
     useActionStateMock.mockImplementation(() => [currentState, vi.fn(), false]);
 
     const firstOnOpenChange = vi.fn();
     const view = render(
-      React.createElement(CreateTaskForm, {
+      React.createElement(TaskFormSheet, {
         open: true,
         onOpenChange: firstOnOpenChange,
       }),
@@ -88,7 +88,7 @@ describe("CreateTaskForm", () => {
 
     const secondOnOpenChange = vi.fn();
     view.rerender(
-      React.createElement(CreateTaskForm, {
+      React.createElement(TaskFormSheet, {
         open: true,
         onOpenChange: secondOnOpenChange,
       }),
@@ -99,7 +99,7 @@ describe("CreateTaskForm", () => {
 
     currentState = { success: "Task created" };
     view.rerender(
-      React.createElement(CreateTaskForm, {
+      React.createElement(TaskFormSheet, {
         open: true,
         onOpenChange: secondOnOpenChange,
       }),

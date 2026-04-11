@@ -6,7 +6,7 @@ import { deleteOrganizationAction } from "@/features/organizations/actions/delet
 import {
   DELETE_ORGANIZATION_CONFIRMATION_WORD,
   type DeleteOrganizationInput,
-} from "@/features/organizations/schemas/organization.schema";
+} from "@/features/organizations/organization.schema";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
