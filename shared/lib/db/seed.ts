@@ -1,8 +1,21 @@
-import { seedAdminWorkspace } from "./seeds/admin-seed";
-import { seedDemoWorkspace } from "./seeds/demo-workspace-seed";
-import { seedStripeProducts } from "./seeds/stripe-products-seed";
+import "dotenv/config";
+
+import { execSync } from "node:child_process";
+
+function ensureFreshPrismaClient() {
+  execSync("pnpm exec prisma generate", { stdio: "inherit" });
+}
 
 async function seed() {
+  ensureFreshPrismaClient();
+
+  const [{ seedAdminWorkspace }, { seedDemoWorkspace }, { seedStripeProducts }] =
+    await Promise.all([
+      import("./seeds/admin-seed"),
+      import("./seeds/demo-workspace-seed"),
+      import("./seeds/stripe-products-seed"),
+    ]);
+
   await seedAdminWorkspace();
   await seedDemoWorkspace();
   await seedStripeProducts();

@@ -11,6 +11,20 @@ CREATE TYPE "TaskLabel" AS ENUM ('FEATURE', 'BUG', 'DOCUMENTATION');
 CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
 
 -- CreateTable
+CREATE TABLE "ActivityEvent" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT,
+    "actorUserId" TEXT,
+    "action" VARCHAR(64) NOT NULL,
+    "targetType" VARCHAR(32),
+    "targetId" VARCHAR(128),
+    "metadata" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ActivityEvent_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "AiConversation" (
     "id" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
@@ -240,12 +254,18 @@ CREATE TABLE "UsageCounter" (
     "organizationId" TEXT NOT NULL,
     "limitKey" VARCHAR(50) NOT NULL,
     "periodStart" TIMESTAMP(3) NOT NULL,
-    "count" INTEGER NOT NULL DEFAULT 0,
+    "count" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "UsageCounter_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE INDEX "ActivityEvent_organizationId_createdAt_idx" ON "ActivityEvent"("organizationId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "ActivityEvent_actorUserId_createdAt_idx" ON "ActivityEvent"("actorUserId", "createdAt");
 
 -- CreateIndex
 CREATE INDEX "AiConversation_organizationId_createdByUserId_surface_lastM_idx" ON "AiConversation"("organizationId", "createdByUserId", "surface", "lastMessageAt" DESC);
@@ -357,6 +377,12 @@ CREATE INDEX "UsageCounter_organizationId_limitKey_idx" ON "UsageCounter"("organ
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UsageCounter_organizationId_limitKey_periodStart_key" ON "UsageCounter"("organizationId", "limitKey", "periodStart");
+
+-- AddForeignKey
+ALTER TABLE "ActivityEvent" ADD CONSTRAINT "ActivityEvent_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ActivityEvent" ADD CONSTRAINT "ActivityEvent_actorUserId_fkey" FOREIGN KEY ("actorUserId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AiConversation" ADD CONSTRAINT "AiConversation_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -2,12 +2,12 @@
 
 import type React from "react"
 import {
-  useCallback,
-  useRef,
-  useState,
   type ChangeEvent,
   type DragEvent,
   type InputHTMLAttributes,
+  useCallback,
+  useRef,
+  useState,
 } from "react"
 
 export type FileMetadata = {
@@ -85,6 +85,25 @@ export const useFileUpload = (
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const syncInputFiles = useCallback((files: File[]) => {
+    if (!inputRef.current) {
+      return
+    }
+
+    if (files.length === 0) {
+      inputRef.current.value = ""
+      return
+    }
+
+    const dataTransfer = new DataTransfer()
+
+    for (const file of files) {
+      dataTransfer.items.add(file)
+    }
+
+    inputRef.current.files = dataTransfer.files
+  }, [])
+
   const validateFile = useCallback(
     (file: File | FileMetadata): string | null => {
       if (file instanceof File) {
@@ -153,9 +172,7 @@ export const useFileUpload = (
         }
       }
 
-      if (inputRef.current) {
-        inputRef.current.value = ""
-      }
+      syncInputFiles([])
 
       const newState = {
         ...prev,
@@ -166,7 +183,7 @@ export const useFileUpload = (
       onFilesChange?.(newState.files)
       return newState
     })
-  }, [onFilesChange])
+  }, [onFilesChange, syncInputFiles])
 
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
@@ -243,6 +260,9 @@ export const useFileUpload = (
           const newFiles = !multiple
             ? validFiles
             : [...prev.files, ...validFiles]
+          syncInputFiles(
+            newFiles.flatMap((file) => (file.file instanceof File ? [file.file] : []))
+          )
           onFilesChange?.(newFiles)
           return {
             ...prev,
@@ -257,11 +277,6 @@ export const useFileUpload = (
           errors,
         }))
       }
-
-      // Reset input value after handling files
-      if (inputRef.current) {
-        inputRef.current.value = ""
-      }
     },
     [
       state.files,
@@ -274,6 +289,7 @@ export const useFileUpload = (
       clearFiles,
       onFilesChange,
       onFilesAdded,
+      syncInputFiles,
     ]
   )
 
@@ -291,6 +307,9 @@ export const useFileUpload = (
         }
 
         const newFiles = prev.files.filter((file) => file.id !== id)
+        syncInputFiles(
+          newFiles.flatMap((file) => (file.file instanceof File ? [file.file] : []))
+        )
         onFilesChange?.(newFiles)
 
         return {
@@ -300,7 +319,7 @@ export const useFileUpload = (
         }
       })
     },
-    [onFilesChange]
+    [onFilesChange, syncInputFiles]
   )
 
   const clearErrors = useCallback(() => {

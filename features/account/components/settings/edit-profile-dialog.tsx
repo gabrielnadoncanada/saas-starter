@@ -24,7 +24,6 @@ import {
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import type { FileWithPreview } from "@/shared/hooks/use-file-upload";
 import { useToastMessage } from "@/shared/hooks/use-toast-message";
 import { getFieldState } from "@/shared/lib/get-field-state";
 import type { FormActionState } from "@/shared/types/form-action-state";
@@ -37,7 +36,6 @@ type EditProfileDialogProps = {
 export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [avatar, setAvatar] = useState<FileWithPreview | null>(null);
   const [removeExistingAvatar, setRemoveExistingAvatar] = useState(false);
   const [state, formAction, isPending] = useActionState<
     FormActionState<UpdateAccountInput>,
@@ -52,7 +50,6 @@ export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
     }
 
     setOpen(false);
-    setAvatar(null);
     setRemoveExistingAvatar(false);
     router.refresh();
   }, [router, state]);
@@ -68,14 +65,12 @@ export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
     setOpen(nextOpen);
 
     if (!nextOpen) {
-      setAvatar(null);
       setRemoveExistingAvatar(false);
     }
   }
 
-  function handleAvatarChange(next: FileWithPreview | null) {
-    setAvatar(next);
-    if (next?.file instanceof File) {
+  function handleAvatarChange(hasAvatar: boolean) {
+    if (hasAvatar) {
       setRemoveExistingAvatar(false);
     }
   }
@@ -106,7 +101,7 @@ export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
             <CFileUpload
               inputName="avatar"
               defaultAvatar={image ?? undefined}
-              onFileChange={handleAvatarChange}
+              onFileChange={(file) => handleAvatarChange(Boolean(file))}
               onExistingAvatarClear={() => setRemoveExistingAvatar(true)}
               className="items-center flex-row"
             />
