@@ -67,7 +67,7 @@ export function TasksTable({
         "flex flex-1 flex-col gap-4",
       )}
     >
-      <TasksTableToolbar params={tableParams} table={table} />
+      <TasksTableToolbar table={table} />
       <DataTableContent table={table} tableClassName="min-w-xl" />
 
       <div className="flex items-center justify-between gap-4">

@@ -76,13 +76,13 @@ function getAuthErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-export const signInAction = validatedPublicAction<
-  typeof signInFormSchema,
-  {
-    redirectTo?: string;
-    requiresVerification?: boolean;
-  }
->(signInFormSchema, async ({ callbackUrl, email, password }) => {
+export const signInAction = validatedPublicAction(
+  signInFormSchema,
+  async ({
+    callbackUrl,
+    email,
+    password,
+  }): Promise<SignInActionState> => {
   const normalizedEmail = normalizeEmail(email);
 
   try {
@@ -128,14 +128,17 @@ export const signInAction = validatedPublicAction<
       values: { email: normalizedEmail, callbackUrl },
     };
   }
-});
+},
+);
 
-export const signUpAction = validatedPublicAction<
-  typeof signUpFormSchema,
-  { redirectTo?: string }
->(
+export const signUpAction = validatedPublicAction(
   signUpFormSchema,
-  async ({ callbackUrl, confirmPassword: _, email, password }) => {
+  async ({
+    callbackUrl,
+    confirmPassword: _,
+    email,
+    password,
+  }): Promise<SignUpActionState> => {
     const normalizedEmail = normalizeEmail(email);
     const redirectTo = buildCallbackURL(
       routes.auth.verifyEmailSent,
@@ -175,10 +178,9 @@ export const signUpAction = validatedPublicAction<
   },
 );
 
-export const resendVerificationEmailAction = validatedPublicAction<
-  typeof resendVerificationEmailSchema,
-  {}
->(resendVerificationEmailSchema, async ({ callbackUrl, email }) => {
+export const resendVerificationEmailAction = validatedPublicAction(
+  resendVerificationEmailSchema,
+  async ({ callbackUrl, email }) => {
   const normalizedEmail = normalizeEmail(email);
 
   try {
@@ -200,12 +202,12 @@ export const resendVerificationEmailAction = validatedPublicAction<
       values: { email: normalizedEmail, callbackUrl },
     };
   }
-});
+},
+);
 
-export const requestPasswordResetAction = validatedPublicAction<
-  typeof requestPasswordResetSchema,
-  {}
->(requestPasswordResetSchema, async ({ callbackUrl, email }) => {
+export const requestPasswordResetAction = validatedPublicAction(
+  requestPasswordResetSchema,
+  async ({ callbackUrl, email }) => {
   const normalizedEmail = normalizeEmail(email);
 
   await auth.api.requestPasswordReset({
@@ -222,10 +224,7 @@ export const requestPasswordResetAction = validatedPublicAction<
   };
 });
 
-export const resetPasswordAction = validatedPublicAction<
-  typeof resetPasswordSchema,
-  {}
->(
+export const resetPasswordAction = validatedPublicAction(
   resetPasswordSchema,
   async ({ confirmPassword: _, newPassword }, formData) => {
     const token = String(formData.get("token") ?? "").trim();

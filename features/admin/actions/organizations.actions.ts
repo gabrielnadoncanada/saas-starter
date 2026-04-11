@@ -5,18 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { db } from "@/shared/lib/db/prisma";
 
-import {
-  getAdminOrganizationDetail,
-  listAdminOrganizations,
-} from "../server/organizations";
-import type { ListAdminOrganizationsQuery } from "../types/organizations.types";
-
-export async function listOrganizationsAction(
-  query: ListAdminOrganizationsQuery,
-) {
-  await requireAdminAction();
-  return listAdminOrganizations(query);
-}
+import { getAdminOrganizationDetail } from "../server/organizations";
 
 export async function getOrganizationDetailAction(organizationId: string) {
   await requireAdminAction();

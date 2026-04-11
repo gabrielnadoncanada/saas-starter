@@ -26,6 +26,7 @@ export type SubscriptionSnapshot = {
   plan: string | null;
   billingInterval: BillingInterval | null;
   subscriptionStatus: string | null;
+  trialEnd: Date | null;
   pricingModel: PricingModel | null;
 };
 
@@ -40,6 +41,7 @@ const emptySnapshot: SubscriptionSnapshot = {
   stripeCustomerId: null,
   stripeSubscriptionId: null,
   subscriptionStatus: null,
+  trialEnd: null,
 };
 
 export async function getOrganizationSubscriptionSnapshot(
@@ -67,6 +69,7 @@ export async function getOrganizationSubscriptionSnapshot(
         ? sub.billingInterval
         : null,
     subscriptionStatus: sub.status ?? null,
+    trialEnd: sub.trialEnd ?? null,
     pricingModel:
       sub.plan && isPlanId(sub.plan) ? getPlan(sub.plan).pricingModel : null,
   };

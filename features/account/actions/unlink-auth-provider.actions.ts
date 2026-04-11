@@ -7,10 +7,9 @@ import { unlinkOAuthAccountForUser } from "@/features/account/server/linked-acco
 import { routes } from "@/shared/constants/routes";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
-export const unlinkAuthProviderAction = validatedAuthenticatedAction<
-  typeof unlinkAuthProviderSchema,
-  {}
->(unlinkAuthProviderSchema, async ({ provider }, _formData, user) => {
+export const unlinkAuthProviderAction = validatedAuthenticatedAction(
+  unlinkAuthProviderSchema,
+  async ({ provider }) => {
   const result = await unlinkOAuthAccountForUser({ provider });
 
   if (result.status === "blocked") {
@@ -31,4 +30,5 @@ export const unlinkAuthProviderAction = validatedAuthenticatedAction<
   return redirect(
     `${routes.settings.profile}?provider=${provider}&success=unlinked`,
   );
-});
+},
+);

@@ -4,24 +4,15 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createOrganizationBillingPortalSession } from "@/features/billing/server/stripe/stripe-customers";
-import {
-  getCurrentOrganization,
-  requireActiveOrganizationRole,
-} from "@/features/organizations/server/organizations";
+import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
 
 const customerPortalSchema = z.object({});
 
-export const customerPortalAction = validatedAuthenticatedAction<
-  typeof customerPortalSchema
->(
+export const customerPortalAction = validatedOrganizationOwnerAction(
   customerPortalSchema,
   async () => {
-    await requireActiveOrganizationRole(["owner"], {
-      redirectTo: routes.settings.members,
-    });
-
     const organization = await getCurrentOrganization();
     if (!organization?.stripeCustomerId || !organization?.subscriptionStatus) {
       redirect(routes.marketing.pricing);
@@ -32,6 +23,7 @@ export const customerPortalAction = validatedAuthenticatedAction<
     redirect(url);
   },
   {
+    redirectTo: routes.settings.members,
     onUnauthenticated: () => {
       redirect(routes.auth.login);
     },

@@ -1,5 +1,5 @@
 import "@/shared/lib/env";
-import "@/shared/styles/globals.css";
+import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";

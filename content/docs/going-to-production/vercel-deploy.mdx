@@ -1,0 +1,108 @@
+---
+title: Deploy to Vercel
+description: Step-by-step guide to ship this starter to Vercel with Postgres, Stripe, and Resend wired up.
+---
+
+This is the fastest way to put the starter on the public internet. You'll need a GitHub account, a Vercel account, and accounts at Stripe and Resend before you start. Total time: ~20 minutes once you have the accounts.
+
+## 1. Prepare the repo
+
+Push your local copy of the starter to a **GitHub repository** you own. Vercel imports from GitHub, so the repo must be reachable by your Vercel account.
+
+```bash
+git init
+git add -A
+git commit -m "Initial commit"
+git remote add origin git@github.com:<you>/<your-repo>.git
+git push -u origin main
+```
+
+## 2. Provision Postgres
+
+The starter needs a PostgreSQL database. Any managed Postgres works. Pick one:
+
+- **Vercel Postgres** — Simplest. Create it from the Vercel dashboard under *Storage → Create Database → Postgres*. Vercel injects `POSTGRES_URL` for you.
+- **Neon / Supabase / Railway** — Copy their connection string into `POSTGRES_URL`. Make sure it includes `sslmode=require` if the provider requires TLS.
+
+Keep the connection string handy — you'll paste it into Vercel in step 4.
+
+## 3. Import the project into Vercel
+
+1. Open **[vercel.com/new](https://vercel.com/new)** and select your GitHub repo.
+2. Framework preset: **Next.js** (auto-detected).
+3. Install command: leave as default (`pnpm install`).
+4. Build command: leave as default (`next build`).
+5. Output directory: leave as default.
+
+Do **not** click *Deploy* yet — environment variables come first.
+
+## 4. Set environment variables
+
+Expand **Environment Variables** in the Vercel import screen and add everything from `.env.example`. The minimum set for a first boot:
+
+| Variable | Where it comes from |
+| --- | --- |
+| `POSTGRES_URL` | Step 2 (Postgres provider). |
+| `BASE_URL` | Your final domain, e.g. `https://your-app.vercel.app`. Use the generated preview URL for the first deploy, then update it after you add a custom domain. |
+| `AUTH_SECRET` | Generate with `openssl rand -base64 32`. **Do not** reuse your dev secret. |
+| `STRIPE_SECRET_KEY` | Stripe Dashboard → *Developers → API keys* (live or test — match what you want buyers to hit). |
+| `STRIPE_WEBHOOK_SECRET` | Added in step 6 after you create the webhook. You can leave this blank for the first deploy and set it later. |
+| `STRIPE_PRICE_PRO_MONTHLY` | Stripe Dashboard → *Products*. Copy the `price_...` ID for your Pro monthly price. |
+| `STRIPE_PRICE_PRO_YEARLY` | Same, Pro yearly. |
+| `STRIPE_PRICE_TEAM_MONTHLY` | Same, Team monthly. |
+| `STRIPE_PRICE_TEAM_YEARLY` | Same, Team yearly. |
+| `RESEND_API_KEY` | Resend Dashboard → *API Keys*. |
+| `EMAIL_FROM` | A sender address on a **verified** Resend domain, e.g. `Acme <hello@yourdomain.com>`. |
+| `NEXT_PUBLIC_ACCOUNT_MODE` | `organizations-only` (default) or `personal-only`. |
+
+OAuth keys (`GOOGLE_CLIENT_ID`, `GITHUB_CLIENT_ID`, …) are optional. Leave them blank to disable those sign-in buttons.
+
+<Callout type="warn">
+`NEXT_PUBLIC_*` variables are baked into the build. If you change them later you must redeploy.
+</Callout>
+
+## 5. First deploy
+
+Click **Deploy**. Vercel runs `pnpm install` → `prisma generate` (via the postinstall hook) → `next build`. First build takes 2–4 minutes.
+
+When it finishes, Vercel shows your preview URL. Before you sign up, run the database migrations once:
+
+```bash
+# From your local machine, pointing at the production DB
+POSTGRES_URL="<your-prod-url>" pnpm exec prisma migrate deploy
+```
+
+This creates all the tables. The app will now boot, but **billing won't work yet** — you need to wire up the Stripe webhook.
+
+## 6. Configure the Stripe webhook
+
+1. In the Stripe Dashboard, open *Developers → Webhooks → Add endpoint*.
+2. Endpoint URL: `https://<your-vercel-domain>/api/stripe/webhook`
+3. Select events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`.
+4. Create the endpoint, then copy the **Signing secret** (`whsec_...`).
+5. In Vercel, set `STRIPE_WEBHOOK_SECRET` to that value and **redeploy** (Deployments → *...* → Redeploy).
+
+## 7. Point `BASE_URL` at the real domain
+
+If you added a custom domain, update `BASE_URL` in Vercel to `https://your-domain.com` and redeploy. Better Auth uses this value to build callback URLs; a stale `BASE_URL` breaks OAuth sign-in and Stripe redirects.
+
+## 8. Smoke test
+
+1. Sign up with a real email → check that the verification email arrives.
+2. Create an organization → verify you land on the dashboard.
+3. Start a subscription checkout → complete with Stripe's `4242 4242 4242 4242` test card (in test mode) or a real card (in live mode).
+4. Confirm the webhook fires in Stripe's dashboard and your organization's subscription status flips to `active`.
+
+## Common gotchas
+
+- **`EMAIL_NOT_VERIFIED` on sign in** — User hasn't clicked the email link yet, or `RESEND_API_KEY`/`EMAIL_FROM` are misconfigured. Check Resend's delivery logs.
+- **Stripe checkout returns but subscription is missing** — The webhook isn't delivering. Verify `STRIPE_WEBHOOK_SECRET` matches the live endpoint and check the *Webhooks → Attempts* tab in Stripe.
+- **Ephemeral filesystem** — Uploads written to `.storage/` disappear between requests on Vercel. Use S3-compatible storage in production — see [Storage configuration](../storage/configuration.mdx).
+- **Prisma cold-start timeouts on serverless** — If you see `Can't reach database server`, your Postgres provider is rejecting new connections. Use a pooled connection URL (most providers offer one) or enable Prisma Accelerate.
+- **OAuth redirect URI mismatch** — Update the redirect URIs in Google/GitHub to the production `BASE_URL`. Dev and prod need separate OAuth app entries.
+
+## What to do next
+
+- [Production checklist](./checklist.mdx) — run through this before you invite real users.
+- [Environment variables reference](./environment.mdx) — full list of every supported flag.
+- [Storage configuration](../storage/configuration.mdx) — swap the dev filesystem for S3.

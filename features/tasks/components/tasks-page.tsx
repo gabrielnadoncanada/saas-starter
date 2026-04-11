@@ -4,8 +4,9 @@ import type { Task } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 
+import { CreateTaskForm } from "@/features/tasks/components/task-form-create";
+import { UpdateTaskForm } from "@/features/tasks/components/task-form-update";
 import { TaskDeleteDialog } from "@/features/tasks/components/task-delete-dialog";
-import { TaskForm } from "@/features/tasks/components/task-form";
 import { TasksTable } from "@/features/tasks/components/tasks-table";
 import type { TaskTableSearchParams } from "@/features/tasks/task-table-search-params";
 import {
@@ -76,15 +77,13 @@ export function TasksPage({ tasksPage }: TasksPageProps) {
         />
       </Page>
 
-      <TaskForm
-        mode="create"
+      <CreateTaskForm
         open={dialog === "create"}
         onOpenChange={handleDialogOpenChange}
       />
 
       {currentTask ? (
-        <TaskForm
-          mode="update"
+        <UpdateTaskForm
           task={currentTask}
           open={dialog === "update"}
           onOpenChange={handleDialogOpenChange}

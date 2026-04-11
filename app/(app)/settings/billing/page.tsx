@@ -1,12 +1,16 @@
+import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
 import { startOneTimeCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
+import { isTrialingSubscription } from "@/features/billing/plans";
 import { getBillingPageData } from "@/features/billing/server/get-billing-page-data";
 import { Page } from "@/shared/components/layout/page-layout";
+import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -23,6 +27,10 @@ export default async function SettingsBillingPage() {
 
   const { context, entitlements, hasSubscription, plans, oneTimeProducts } =
     data;
+  const isTrialing = isTrialingSubscription(entitlements.subscriptionStatus);
+  const trialEndsOn = entitlements.trialEnd
+    ? format(entitlements.trialEnd, "MMM d, yyyy")
+    : null;
 
   return (
     <Page>
@@ -40,14 +48,30 @@ export default async function SettingsBillingPage() {
               <Card>
                 <CardHeader>
                   <CardDescription>Current plan</CardDescription>
+                  {isTrialing ? (
+                    <CardAction>
+                      <Badge variant="secondary">Trial</Badge>
+                    </CardAction>
+                  ) : null}
                   <CardTitle>{entitlements.planName}</CardTitle>
+                  {isTrialing ? (
+                    <CardDescription>
+                      {trialEndsOn
+                        ? `Trial active until ${trialEndsOn}.`
+                        : "Trial active."}
+                    </CardDescription>
+                  ) : null}
                 </CardHeader>
               </Card>
               <Card>
                 <CardHeader>
                   <CardDescription>Billing</CardDescription>
                   <CardTitle className="text-base font-normal text-muted-foreground">
-                    {hasSubscription && entitlements.stripeCustomerId
+                    {isTrialing
+                      ? trialEndsOn
+                        ? `This workspace is currently in trial until ${trialEndsOn}.`
+                        : "This workspace is currently in trial."
+                      : hasSubscription && entitlements.stripeCustomerId
                       ? "Manage subscription and invoices in the customer portal when available."
                       : "Pick a plan below to enable subscription billing."}
                   </CardTitle>

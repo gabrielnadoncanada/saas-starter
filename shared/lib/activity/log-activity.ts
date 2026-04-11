@@ -5,7 +5,7 @@ import type { Prisma } from "@prisma/client";
 import type {
   ActivityAction,
   ActivityEventMetadata,
-} from "@/features/activity/activity.schema";
+} from "@/shared/lib/activity/activity.types";
 import { db } from "@/shared/lib/db/prisma";
 
 type LogActivityInput = {
@@ -17,13 +17,9 @@ type LogActivityInput = {
   metadata?: ActivityEventMetadata | null;
 };
 
-/**
- * Records an audit log entry. Failures are swallowed on purpose — audit
- * logging must never break the primary action that triggered it.
- *
- * Prefer calling this *after* the critical-path write has succeeded so you
- * never record an event for work that did not happen.
- */
+// Failures are swallowed on purpose — audit logging must never break the
+// primary action that triggered it. Call this AFTER the critical write
+// succeeds so you never log an event for work that did not happen.
 export async function logActivity(input: LogActivityInput): Promise<void> {
   try {
     await db.activityEvent.create({
@@ -37,10 +33,6 @@ export async function logActivity(input: LogActivityInput): Promise<void> {
       },
     });
   } catch (error) {
-    console.error(
-      "[activity] failed to record event",
-      input.action,
-      error,
-    );
+    console.error("[activity] failed to record event", input.action, error);
   }
 }

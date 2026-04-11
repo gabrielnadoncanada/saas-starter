@@ -12,6 +12,8 @@ export async function listAdminOrganizations(
   const limit = query.limit ?? 20;
   const offset = query.offset ?? 0;
   const search = query.search?.trim() || undefined;
+  const sortBy = query.sortBy ?? "createdAt";
+  const sortDirection = query.sortDirection ?? "desc";
 
   const where = search
     ? { name: { contains: search, mode: "insensitive" as const } }
@@ -21,7 +23,7 @@ export async function listAdminOrganizations(
     db.organization.findMany({
       where,
       include: adminOrganizationListInclude,
-      orderBy: { createdAt: "desc" },
+      orderBy: { [sortBy]: sortDirection },
       take: limit,
       skip: offset,
     }),

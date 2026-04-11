@@ -13,9 +13,9 @@ import { routes } from "@/shared/constants/routes";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
-export const updateAccountAction = validatedAuthenticatedAction<
-  typeof updateAccountSchema
->(updateAccountSchema, async ({ name }, formData, user) => {
+export const updateAccountAction = validatedAuthenticatedAction(
+  updateAccountSchema,
+  async ({ name }, formData, user) => {
   const removeAvatar = formData.get("removeAvatar") === "true";
   const avatarFile = formData.get("avatar");
   const avatar =
@@ -73,4 +73,5 @@ export const updateAccountAction = validatedAuthenticatedAction<
       },
     };
   }
-});
+},
+);

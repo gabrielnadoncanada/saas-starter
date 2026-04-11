@@ -1,11 +1,9 @@
 "use client";
 
-import type {
-  BillingInterval,
-  BillingPrice,
-  PlanId,
-  PricingModel,
-} from "@/shared/config/billing.config";
+import {
+  formatPriceAmount,
+  getBillingIntervalSuffix,
+} from "@/features/billing/format-price";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Field,
@@ -14,8 +12,12 @@ import {
   FieldTitle,
 } from "@/shared/components/ui/field";
 import { RadioGroupItem } from "@/shared/components/ui/radio-group";
-
-const PRICE_LOCALE = "en-US";
+import type {
+  BillingInterval,
+  BillingPrice,
+  PlanId,
+  PricingModel,
+} from "@/shared/config/billing.config";
 
 export type BillingPlanOption = {
   id: string;
@@ -26,22 +28,6 @@ export type BillingPlanOption = {
   monthly: BillingPrice | null;
   yearly: BillingPrice | null;
 };
-
-function formatPrice(unitAmount: number, locale: string) {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(unitAmount / 100);
-}
-
-function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
-  if (pricingModel === "per_seat") {
-    return interval === "year" ? "per seat / yr" : "per seat / mo";
-  }
-
-  return interval === "year" ? "/ yr" : "/ mo";
-}
 
 export function getPlanPrice(
   plan: BillingPlanOption,
@@ -62,12 +48,14 @@ function BillingPlanPrice({
   return (
     <div className="space-y-1 md:text-right">
       <div className="text-xl font-semibold tracking-tight">
-        {price ? formatPrice(price.unitAmount, PRICE_LOCALE) : "Unavailable"}
+        {price
+          ? formatPriceAmount(price.unitAmount, { minimumFractionDigits: 2 })
+          : "Unavailable"}
       </div>
 
       {price ? (
         <FieldDescription>
-          {getPriceSuffix(interval, pricingModel)}
+          {getBillingIntervalSuffix(interval, pricingModel, "short")}
         </FieldDescription>
       ) : null}
     </div>

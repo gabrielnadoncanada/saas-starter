@@ -4,7 +4,7 @@ import type {
   ActivityAction,
   ActivityEventMetadata,
   ActivityFeedItem,
-} from "@/features/activity/activity.schema";
+} from "@/shared/lib/activity/activity.types";
 import { db } from "@/shared/lib/db/prisma";
 
 const DEFAULT_LIMIT = 50;

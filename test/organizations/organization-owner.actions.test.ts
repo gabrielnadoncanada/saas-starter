@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LimitReachedError } from "@/features/billing/plans";
+import {
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/plans";
 
 const {
   headersMock,
@@ -27,19 +30,37 @@ vi.mock("next/headers", () => ({
 }));
 
 vi.mock("@/shared/lib/auth/authenticated-action", () => ({
-  validatedAuthenticatedAction: (_schema: unknown, action: unknown) => {
+  validatedOrganizationOwnerAction: (_schema: unknown, action: unknown) => {
     const fn = action as (
       data: { email: string; role: "member" | "admin" },
-      formData: FormData,
-      user: { id: string; email: string },
+      context: {
+        organizationId: string;
+        user: { id: string; email: string };
+        formData: FormData;
+      },
     ) => Promise<unknown>;
     return async (_prevState: unknown, formData: FormData) => {
-      const raw = Object.fromEntries(formData.entries());
-      const data = {
-        email: String(raw.email ?? ""),
-        role: raw.role as "member" | "admin",
-      };
-      return fn(data, formData, { id: "owner_1", email: "owner@example.com" });
+      try {
+        await requireActiveOrganizationRoleMock(["owner"]);
+        const raw = Object.fromEntries(formData.entries());
+        const data = {
+          email: String(raw.email ?? ""),
+          role: raw.role as "member" | "admin",
+        };
+        return await fn(data, {
+          formData,
+          organizationId: "org_1",
+          user: { id: "owner_1", email: "owner@example.com" },
+        });
+      } catch (error) {
+        if (error instanceof UpgradeRequiredError) {
+          return { error: error.message, errorCode: "UPGRADE_REQUIRED" };
+        }
+        if (error instanceof LimitReachedError) {
+          return { error: error.message, errorCode: "LIMIT_REACHED" };
+        }
+        throw error;
+      }
     };
   },
 }));

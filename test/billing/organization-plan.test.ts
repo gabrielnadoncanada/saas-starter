@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   hasCurrentStripeSubscription,
   hasPlanAccess,
+  isTrialingSubscription,
 } from "@/features/billing/plans";
 import { applyOneTimePurchaseLimits } from "@/features/billing/server/organization-entitlements";
 
@@ -20,6 +21,12 @@ describe("subscription status gating", () => {
     expect(hasCurrentStripeSubscription("paused")).toBe(true);
     expect(hasCurrentStripeSubscription("canceled")).toBe(false);
     expect(hasCurrentStripeSubscription(null)).toBe(false);
+  });
+
+  it("flags trial subscriptions explicitly", () => {
+    expect(isTrialingSubscription("trialing")).toBe(true);
+    expect(isTrialingSubscription("active")).toBe(false);
+    expect(isTrialingSubscription(null)).toBe(false);
   });
 });
 

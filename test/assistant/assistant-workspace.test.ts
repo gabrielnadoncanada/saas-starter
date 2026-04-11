@@ -17,7 +17,7 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-vi.mock("@/features/assistant/components/chat/assistant-chat", () => ({
+vi.mock("@/features/assistant/components/assistant-chat", () => ({
   AssistantChat: (props: Record<string, unknown>) => {
     latestProps.current = props;
 
@@ -55,7 +55,7 @@ vi.mock("@/features/assistant/components/chat/assistant-chat", () => ({
   },
 }));
 
-import { AssistantWorkspace } from "@/features/assistant/components/chat/assistant-workspace";
+import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 
 describe("AssistantWorkspace", () => {
   it("keeps a locally created conversation selected until route props catch up", async () => {

@@ -2,16 +2,15 @@
 
 import { headers } from "next/headers";
 
-import { logActivity } from "@/features/activity/server/log-activity";
 import { deleteAccountSchema } from "@/features/account/schemas/account.schema";
 import { deleteAccount } from "@/features/account/server/delete-account";
+import { logActivity } from "@/shared/lib/activity/log-activity";
 import { auth } from "@/shared/lib/auth/auth-config";
 import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 
-export const deleteAccountAction = validatedAuthenticatedAction<
-  typeof deleteAccountSchema,
-  {}
->(deleteAccountSchema, async (_, __, user) => {
+export const deleteAccountAction = validatedAuthenticatedAction(
+  deleteAccountSchema,
+  async (_, __, user) => {
   const requestHeaders = await headers();
 
   await logActivity({
@@ -41,4 +40,5 @@ export const deleteAccountAction = validatedAuthenticatedAction<
   }
 
   return result;
-});
+},
+);

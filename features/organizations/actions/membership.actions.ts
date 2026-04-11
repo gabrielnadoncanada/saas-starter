@@ -3,7 +3,6 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import { logActivity } from "@/features/activity/server/log-activity";
 import { assertCapability, assertLimit } from "@/features/billing/plans";
 import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
 import {
@@ -16,12 +15,9 @@ import {
   inviteOrganizationMember,
   resendOrganizationInvitation,
 } from "@/features/organizations/server/organization-invitations";
-import { requireActiveOrganizationRole } from "@/features/organizations/server/organizations";
+import { logActivity } from "@/shared/lib/activity/log-activity";
 import { auth } from "@/shared/lib/auth/auth-config";
-import {
-  validatedAuthenticatedAction,
-  withBillingErrors,
-} from "@/shared/lib/auth/authenticated-action";
+import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
 type RefreshableActionState<
@@ -50,13 +46,12 @@ type RemoveOrganizationMemberValues = z.infer<
 export type RemoveOrganizationMemberActionState =
   RefreshableActionState<RemoveOrganizationMemberValues>;
 
-export const inviteOrganizationMemberAction = validatedAuthenticatedAction<
-  typeof inviteOrganizationMemberSchema,
-  { refreshKey?: number }
->(inviteOrganizationMemberSchema, async ({ email, role }, _formData, user) => {
-  return withBillingErrors(async () => {
-    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
-
+export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction(
+  inviteOrganizationMemberSchema,
+  async (
+    { email, role },
+    { organizationId, user },
+  ): Promise<InviteOrganizationMemberActionState> => {
     const entitlements = await getCurrentOrganizationEntitlements();
     if (!entitlements) {
       return { error: "Unable to determine organization plan" };
@@ -101,74 +96,73 @@ export const inviteOrganizationMemberAction = validatedAuthenticatedAction<
     });
 
     return { success: "Invitation sent successfully", refreshKey: Date.now() };
-  });
-});
+  },
+);
 
-export const cancelOrganizationInvitationAction = validatedAuthenticatedAction<
-  typeof invitationIdSchema,
-  { refreshKey?: number }
->(invitationIdSchema, async ({ invitationId }, _formData, user) => {
-  return withBillingErrors(async () => {
-    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
+export const cancelOrganizationInvitationAction =
+  validatedOrganizationOwnerAction(
+    invitationIdSchema,
+    async (
+      { invitationId },
+      { organizationId, user },
+    ): Promise<CancelOrganizationInvitationActionState> => {
+      try {
+        await cancelOrganizationInvitation({ invitationId });
+      } catch (error) {
+        return {
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to cancel invitation",
+        };
+      }
 
-    try {
-      await cancelOrganizationInvitation({ invitationId });
-    } catch (error) {
-      return {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to cancel invitation",
-      };
-    }
+      await logActivity({
+        action: "invitation.cancelled",
+        organizationId,
+        actorUserId: user.id,
+        targetType: "invitation",
+        targetId: invitationId,
+      });
 
-    await logActivity({
-      action: "invitation.cancelled",
-      organizationId,
-      actorUserId: user.id,
-      targetType: "invitation",
-      targetId: invitationId,
-    });
+      return { success: "Invitation canceled", refreshKey: Date.now() };
+    },
+  );
 
-    return { success: "Invitation canceled", refreshKey: Date.now() };
-  });
-});
+export const resendOrganizationInvitationAction =
+  validatedOrganizationOwnerAction(
+    invitationIdSchema,
+    async (
+      { invitationId },
+      { organizationId, user },
+    ): Promise<ResendOrganizationInvitationActionState> => {
+      const result = await resendOrganizationInvitation({
+        invitationId,
+        organizationId,
+      });
 
-export const resendOrganizationInvitationAction = validatedAuthenticatedAction<
-  typeof invitationIdSchema,
-  { refreshKey?: number }
->(invitationIdSchema, async ({ invitationId }, _formData, user) => {
-  return withBillingErrors(async () => {
-    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
+      if (result.error) {
+        return result;
+      }
 
-    const result = await resendOrganizationInvitation({
-      invitationId,
-      organizationId,
-    });
+      await logActivity({
+        action: "invitation.resent",
+        organizationId,
+        actorUserId: user.id,
+        targetType: "invitation",
+        targetId: invitationId,
+      });
 
-    if (result.error) {
-      return result;
-    }
+      return { ...result, refreshKey: Date.now() };
+    },
+  );
 
-    await logActivity({
-      action: "invitation.resent",
-      organizationId,
-      actorUserId: user.id,
-      targetType: "invitation",
-      targetId: invitationId,
-    });
-
-    return { ...result, refreshKey: Date.now() };
-  });
-});
-
-export const removeOrganizationMemberAction = validatedAuthenticatedAction<
-  typeof removeOrganizationMemberSchema,
-  { refreshKey?: number }
->(removeOrganizationMemberSchema, async ({ memberId }, _formData, user) => {
-  return withBillingErrors(async () => {
-    const { organizationId } = await requireActiveOrganizationRole(["owner"]);
-
+export const removeOrganizationMemberAction = validatedOrganizationOwnerAction(
+  removeOrganizationMemberSchema,
+  async (
+    { memberId },
+    { organizationId, user },
+  ): Promise<RemoveOrganizationMemberActionState> => {
     try {
       await auth.api.removeMember({
         headers: await headers(),
@@ -193,5 +187,5 @@ export const removeOrganizationMemberAction = validatedAuthenticatedAction<
       success: "Organization member removed successfully",
       refreshKey: Date.now(),
     };
-  });
-});
+  },
+);

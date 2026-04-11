@@ -61,9 +61,9 @@ vi.mock("@/shared/lib/get-field-state", () => ({
   getFieldState: () => ({ error: undefined, invalid: false, value: "" }),
 }));
 
-import { TaskForm } from "@/features/tasks/components/task-form";
+import { CreateTaskForm } from "@/features/tasks/components/task-form-create";
 
-describe("TaskForm", () => {
+describe("CreateTaskForm", () => {
   beforeEach(() => {
     refreshMock.mockReset();
     useActionStateMock.mockReset();
@@ -77,8 +77,7 @@ describe("TaskForm", () => {
 
     const firstOnOpenChange = vi.fn();
     const view = render(
-      React.createElement(TaskForm, {
-        mode: "create",
+      React.createElement(CreateTaskForm, {
         open: true,
         onOpenChange: firstOnOpenChange,
       }),
@@ -89,8 +88,7 @@ describe("TaskForm", () => {
 
     const secondOnOpenChange = vi.fn();
     view.rerender(
-      React.createElement(TaskForm, {
-        mode: "create",
+      React.createElement(CreateTaskForm, {
         open: true,
         onOpenChange: secondOnOpenChange,
       }),
@@ -101,8 +99,7 @@ describe("TaskForm", () => {
 
     currentState = { success: "Task created" };
     view.rerender(
-      React.createElement(TaskForm, {
-        mode: "create",
+      React.createElement(CreateTaskForm, {
         open: true,
         onOpenChange: secondOnOpenChange,
       }),

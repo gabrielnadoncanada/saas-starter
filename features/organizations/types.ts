@@ -39,5 +39,6 @@ export type CurrentOrganizationView = {
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   subscriptionStatus: string | null;
+  trialEnd: string | null;
   members: OrganizationMemberView[];
 };

@@ -5,6 +5,10 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
+import {
+  formatPriceAmount,
+  getBillingIntervalSuffix,
+} from "@/features/billing/format-price";
 import { Button } from "@/shared/components/ui/button";
 import type {
   BillingInterval,
@@ -34,25 +38,6 @@ const recurringGridCols: Record<number, string> = {
   2: "max-w-3xl mx-auto md:grid-cols-2",
   3: "max-w-5xl mx-auto md:grid-cols-3",
 };
-
-function formatAmount(amount: number) {
-  return new Intl.NumberFormat("en-US", {
-    currency: "USD",
-    style: "currency",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
-}
-
-function getIntervalLabel(
-  interval: BillingInterval,
-  pricingModel: PricingModel,
-) {
-  if (pricingModel === "per_seat") {
-    return interval === "year" ? "per seat / year" : "per seat / month";
-  }
-
-  return interval === "year" ? "/ year" : "/ month";
-}
 
 function SubmitPricingButton({ label = "Get Started" }: { label?: string }) {
   const { pending } = useFormStatus();
@@ -113,9 +98,9 @@ function PricingCard({
           : "\u00A0"}
       </p>
       <p className="mb-6 text-4xl font-medium text-foreground">
-        {formatAmount(schedule.unitAmount)}
+        {formatPriceAmount(schedule.unitAmount)}
         <span className="text-xl font-normal text-muted-foreground">
-          {getIntervalLabel(interval, plan.pricingModel)}
+          {getBillingIntervalSuffix(interval, plan.pricingModel)}
         </span>
       </p>
       <ul className="mb-8 space-y-4">

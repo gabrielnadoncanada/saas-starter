@@ -71,7 +71,7 @@ export async function listAdminOrganizations(
 }
 ```
 
-The client table `AdminOrganizationsTable` calls `listOrganizationsAction` for pagination and search, and `getOrganizationDetailAction` when opening a row.
+The server page reads URL search params (page, sort, q) and fetches rows via `getAdminOrganizationsPage`. The client table `AdminOrganizationsTable` drives pagination/sorting/search through nuqs and calls `getOrganizationDetailAction` when opening a row.
 
 ## Organization detail
 

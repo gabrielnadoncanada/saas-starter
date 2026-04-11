@@ -1,15 +1,11 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useQueryStates } from "nuqs";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import {
-  type AdminUsersTableSearchParams,
-  buildAdminUsersTableHref,
-  ADMIN_USERS_TABLE_PAGE_SIZES,
-} from "@/features/admin/admin-users-table-search-params";
 import {
   banUserAction,
   getAdminUserDetailAction,
@@ -18,18 +14,24 @@ import {
   setUserRoleAction,
   unbanUserAction,
 } from "@/features/admin/actions/users.actions";
+import {
+  ADMIN_USERS_TABLE_PAGE_SIZES,
+  type AdminUsersTableSearchParams,
+  adminUsersTableSearchParams,
+  buildAdminUsersTableHref,
+} from "@/features/admin/admin-users-table-search-params";
 import { getAdminUsersColumns } from "@/features/admin/components/admin-users-table-columns";
-import type {
-  AdminApiSession,
-  AdminApiUser,
-} from "@/shared/lib/auth/better-auth-inferred-types";
-import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import {
   DataTableContent,
   DataTablePagination,
 } from "@/shared/components/data-table";
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Input } from "@/shared/components/ui/input";
 import { useServerTable } from "@/shared/hooks/use-server-table";
+import type {
+  AdminApiSession,
+  AdminApiUser,
+} from "@/shared/lib/auth/better-auth-inferred-types";
 
 import { UserDetailSheet } from "./user-detail-sheet";
 
@@ -66,15 +68,21 @@ export function AdminUsersTable({
 }: AdminUsersTableProps) {
   const { rows, rowCount, pageCount, ...tableParams } = usersPage;
   const router = useRouter();
-  const pathname = usePathname();
   const [, startTransition] = useTransition();
+
+  const [{ q: searchInput }, setSearchQuery] = useQueryStates(
+    {
+      q: adminUsersTableSearchParams.q,
+      page: adminUsersTableSearchParams.page,
+    },
+    { shallow: false, throttleMs: 300 },
+  );
 
   const [selectedUser, setSelectedUser] = useState<AdminApiUser | null>(null);
   const [sessions, setSessions] = useState<AdminApiSession[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(emptyConfirmState);
-  const [searchInput, setSearchInput] = useState(tableParams.q ?? "");
 
   function copyToClipboard(value: string) {
     void navigator.clipboard.writeText(value);
@@ -200,20 +208,9 @@ export function AdminUsersTable({
           className="pl-9"
           placeholder="Search users by email..."
           value={searchInput}
-          onChange={(event) => {
-            const value = event.target.value;
-            setSearchInput(value);
-            startTransition(() =>
-              router.replace(
-                buildAdminUsersTableHref(pathname, {
-                  ...tableParams,
-                  page: 1,
-                  q: value || undefined,
-                }),
-                { scroll: false },
-              ),
-            );
-          }}
+          onChange={(event) =>
+            setSearchQuery({ q: event.target.value, page: 1 })
+          }
         />
       </div>
 

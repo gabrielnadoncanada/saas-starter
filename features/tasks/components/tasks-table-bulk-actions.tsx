@@ -17,7 +17,7 @@ import {
   bulkUpdateTaskStatusAction,
   type BulkUpdateTaskStatusActionState,
 } from "@/features/tasks/actions/task.actions";
-import { taskStatuses } from "@/features/tasks/task.schema";
+import { taskStatuses } from "@/features/tasks/task-display";
 import { DataTableBulkActions } from "@/shared/components/data-table";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Button } from "@/shared/components/ui/button";

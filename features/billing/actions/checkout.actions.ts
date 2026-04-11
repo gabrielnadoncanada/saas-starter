@@ -12,23 +12,14 @@ import {
   createOrganizationOneTimeCheckoutSession,
   createOrganizationSubscriptionCheckoutSession,
 } from "@/features/billing/server/stripe/stripe-checkout";
-import {
-  getCurrentOrganization,
-  requireActiveOrganizationRole,
-} from "@/features/organizations/server/organizations";
+import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
 import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
 
-export const startSubscriptionCheckoutAction = validatedAuthenticatedAction<
-  typeof subscriptionCheckoutSchema
->(
+export const startSubscriptionCheckoutAction = validatedOrganizationOwnerAction(
   subscriptionCheckoutSchema,
   async ({ billingInterval, planId, seatQuantity }) => {
-    await requireActiveOrganizationRole(["owner"], {
-      redirectTo: routes.settings.members,
-    });
-
     const organization = await getCurrentOrganization();
     if (!organization) {
       throw new Error("Organization not found");
@@ -44,6 +35,7 @@ export const startSubscriptionCheckoutAction = validatedAuthenticatedAction<
     redirect(url);
   },
   {
+    redirectTo: routes.settings.members,
     onUnauthenticated: (_, rawValues) => {
       const planId =
         typeof rawValues.planId === "string" &&
@@ -71,15 +63,9 @@ export const startSubscriptionCheckoutAction = validatedAuthenticatedAction<
   },
 );
 
-export const startOneTimeCheckoutAction = validatedAuthenticatedAction<
-  typeof oneTimeCheckoutSchema
->(
+export const startOneTimeCheckoutAction = validatedOrganizationOwnerAction(
   oneTimeCheckoutSchema,
   async ({ itemKey }) => {
-    await requireActiveOrganizationRole(["owner"], {
-      redirectTo: routes.settings.members,
-    });
-
     const organization = await getCurrentOrganization();
     if (!organization) {
       throw new Error("Organization not found");
@@ -93,6 +79,7 @@ export const startOneTimeCheckoutAction = validatedAuthenticatedAction<
     redirect(url);
   },
   {
+    redirectTo: routes.settings.members,
     onUnauthenticated: () => {
       redirect(routes.auth.login);
     },

@@ -83,6 +83,7 @@ export type OrganizationEntitlements = {
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   subscriptionStatus: string | null;
+  trialEnd: Date | null;
 };
 
 export const billingConfig = {

@@ -23,10 +23,7 @@ import {
   updateTaskStatusSchema,
 } from "@/features/tasks/task.schema";
 import { routes } from "@/shared/constants/routes";
-import {
-  validatedAuthenticatedAction,
-  withBillingErrors,
-} from "@/shared/lib/auth/authenticated-action";
+import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
 export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
@@ -44,82 +41,47 @@ export type BulkUpdateTaskStatusActionState =
     taskIds?: number[];
   };
 
-export const createTaskAction = validatedAuthenticatedAction<
-  typeof createTaskSchema,
-  { task?: Task }
->(
+export const createTaskAction = validatedAuthenticatedAction(
   createTaskSchema,
-  async (data) => {
-    return withBillingErrors(async () => {
-      const task = await createTask(data);
-
-      revalidatePath(routes.app.tasks);
-
-      return {
-        success: "Task created",
-        task,
-      };
-    });
+  async (data): Promise<CreateTaskActionState> => {
+    const task = await createTask(data);
+    revalidatePath(routes.app.tasks);
+    return { success: "Task created", task };
   },
 );
 
-export const updateTaskAction = validatedAuthenticatedAction<
-  typeof updateTaskSchema,
-  {}
->(
+export const updateTaskAction = validatedAuthenticatedAction(
   updateTaskSchema,
   async (data) => {
     await updateTask(data);
-
     revalidatePath(routes.app.tasks);
-
     return { success: "Task updated" };
   },
 );
 
-export const deleteTaskAction = validatedAuthenticatedAction<
-  typeof deleteTaskSchema,
-  {}
->(
+export const deleteTaskAction = validatedAuthenticatedAction(
   deleteTaskSchema,
   async ({ taskId }) => {
     await deleteTask(taskId);
-
     revalidatePath(routes.app.tasks);
-
-    return {
-      success: "Task deleted",
-    };
+    return { success: "Task deleted" };
   },
 );
 
-export const updateTaskStatusAction = validatedAuthenticatedAction<
-  typeof updateTaskStatusSchema,
-  { refreshKey?: number }
->(
+export const updateTaskStatusAction = validatedAuthenticatedAction(
   updateTaskStatusSchema,
   async (data) => {
     await updateTaskStatus(data);
-
     revalidatePath(routes.app.tasks);
-
-    return {
-      success: "Task updated",
-      refreshKey: Date.now(),
-    };
+    return { success: "Task updated", refreshKey: Date.now() };
   },
 );
 
-export const bulkDeleteTasksAction = validatedAuthenticatedAction<
-  typeof bulkDeleteTasksSchema,
-  { taskIds?: number[] }
->(
+export const bulkDeleteTasksAction = validatedAuthenticatedAction(
   bulkDeleteTasksSchema,
-  async ({ taskIds }) => {
+  async ({ taskIds }): Promise<BulkDeleteTasksActionState> => {
     const deletedCount = await bulkDeleteTasks(taskIds);
-
     revalidatePath(routes.app.tasks);
-
     return {
       success:
         deletedCount === 1 ? "1 task deleted" : `${deletedCount} tasks deleted`,
@@ -128,16 +90,11 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction<
   },
 );
 
-export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction<
-  typeof bulkUpdateTaskStatusSchema,
-  { status?: Task["status"]; taskIds?: number[] }
->(
+export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction(
   bulkUpdateTaskStatusSchema,
-  async (data) => {
+  async (data): Promise<BulkUpdateTaskStatusActionState> => {
     const updatedCount = await bulkUpdateTaskStatus(data);
-
     revalidatePath(routes.app.tasks);
-
     return {
       success:
         updatedCount === 1 ? "1 task updated" : `${updatedCount} tasks updated`,

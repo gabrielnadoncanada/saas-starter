@@ -4,21 +4,14 @@ import { redirect } from "next/navigation";
 
 import { subscriptionCheckoutSchema } from "@/features/billing/schemas/checkout.schema";
 import { updateOrganizationSubscriptionConfiguration } from "@/features/billing/server/stripe/stripe-subscriptions";
-import {
-  getCurrentOrganization,
-  requireActiveOrganizationRole,
-} from "@/features/organizations/server/organizations";
+import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
 
 export const updateSubscriptionConfigurationAction =
-  validatedAuthenticatedAction<typeof subscriptionCheckoutSchema>(
+  validatedOrganizationOwnerAction(
     subscriptionCheckoutSchema,
     async ({ billingInterval, planId, seatQuantity }) => {
-      await requireActiveOrganizationRole(["owner"], {
-        redirectTo: routes.settings.members,
-      });
-
       const organization = await getCurrentOrganization();
       if (!organization) {
         throw new Error("Organization not found");
@@ -34,6 +27,7 @@ export const updateSubscriptionConfigurationAction =
       redirect(routes.settings.billing);
     },
     {
+      redirectTo: routes.settings.members,
       onUnauthenticated: () => {
         redirect(routes.auth.login);
       },

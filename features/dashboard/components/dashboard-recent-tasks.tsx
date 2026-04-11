@@ -1,7 +1,7 @@
 import type { Task } from "@prisma/client";
 import Link from "next/link";
 
-import { taskPriorities, taskStatuses } from "@/features/tasks/task.schema";
+import { taskPriorities, taskStatuses } from "@/features/tasks/task-display";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Empty,

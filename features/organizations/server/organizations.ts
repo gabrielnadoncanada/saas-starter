@@ -188,6 +188,7 @@ function mapCurrentOrganization(
       organization.stripeCustomerId ?? subscription.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId,
     subscriptionStatus: subscription.subscriptionStatus,
+    trialEnd: toIsoString(subscription.trialEnd),
     members: (organization.members ?? []).map(mapOrganizationMember),
   };
 }

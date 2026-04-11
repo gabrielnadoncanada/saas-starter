@@ -95,6 +95,7 @@ export async function resolveOrganizationEntitlements(
     stripeCustomerId: subscription.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
     subscriptionStatus: subscription.status ?? null,
+    trialEnd: subscription.trialEnd ?? null,
   };
 }
 

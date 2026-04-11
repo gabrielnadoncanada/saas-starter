@@ -1,4 +1,4 @@
-import { AssistantWorkspace } from "@/features/assistant/components/chat/assistant-workspace";
+import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
 import { getAssistantConversation } from "@/features/assistant/server/assistant-conversations";
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
 import { hasCapability } from "@/features/billing/plans";

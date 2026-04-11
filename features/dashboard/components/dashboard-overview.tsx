@@ -162,6 +162,7 @@ export async function DashboardOverview() {
           planName={plan.name}
           pricingModel={plan.pricingModel}
           subscriptionStatus={organization?.subscriptionStatus ?? null}
+          trialEnd={organization?.trialEnd ?? null}
         />
       </div>
 

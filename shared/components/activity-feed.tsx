@@ -11,10 +11,6 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import type {
-  ActivityAction,
-  ActivityFeedItem,
-} from "@/features/activity/activity.schema";
 import {
   Avatar,
   AvatarFallback,
@@ -32,6 +28,10 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/shared/components/ui/empty";
+import type {
+  ActivityAction,
+  ActivityFeedItem,
+} from "@/shared/lib/activity/activity.types";
 
 const ACTION_DEFINITIONS: Record<
   ActivityAction,
@@ -39,10 +39,7 @@ const ACTION_DEFINITIONS: Record<
 > = {
   "member.invited": { label: "invited a new member", icon: UserPlus },
   "member.removed": { label: "removed a member", icon: UserMinus },
-  "invitation.cancelled": {
-    label: "cancelled an invitation",
-    icon: MailX,
-  },
+  "invitation.cancelled": { label: "cancelled an invitation", icon: MailX },
   "invitation.resent": { label: "resent an invitation", icon: Send },
   "subscription.created": {
     label: "started a subscription",
@@ -52,10 +49,7 @@ const ACTION_DEFINITIONS: Record<
     label: "cancelled a subscription",
     icon: CreditCard,
   },
-  "organization.deleted": {
-    label: "deleted the organization",
-    icon: Trash2,
-  },
+  "organization.deleted": { label: "deleted the organization", icon: Trash2 },
   "user.deleted": { label: "deleted their account", icon: LogOut },
 };
 

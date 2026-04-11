@@ -10,7 +10,7 @@ describe("task table search params", () => {
   it("uses defaults when params are missing", () => {
     expect(parseTaskTableSearchParams({})).toEqual({
       ...TASK_TABLE_DEFAULTS,
-      q: undefined,
+      q: "",
       status: [],
       priority: [],
     });
@@ -32,7 +32,7 @@ describe("task table search params", () => {
     expect(
       parseTaskTableSearchParams({
         status: "TODO,DONE",
-        priority: ["HIGH,LOW"],
+        priority: "HIGH,LOW",
       }),
     ).toMatchObject({
       status: ["TODO", "DONE"],
@@ -44,7 +44,7 @@ describe("task table search params", () => {
     expect(
       buildTasksTableHref("/dashboard/tasks", {
         ...TASK_TABLE_DEFAULTS,
-        q: undefined,
+        q: "",
         status: [],
         priority: [],
       }),

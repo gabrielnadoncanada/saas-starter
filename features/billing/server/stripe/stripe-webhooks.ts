@@ -1,12 +1,12 @@
 import type Stripe from "stripe";
 
-import { logActivity } from "@/features/activity/server/log-activity";
 import {
   findCatalogRecurringPriceByPriceId,
   isPlanId,
 } from "@/features/billing/plans";
 import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscriptions";
 import type { BillingInterval } from "@/shared/config/billing.config";
+import { logActivity } from "@/shared/lib/activity/log-activity";
 import { db } from "@/shared/lib/db/prisma";
 
 import {

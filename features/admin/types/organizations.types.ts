@@ -30,4 +30,6 @@ export type ListAdminOrganizationsQuery = {
   limit?: number;
   offset?: number;
   search?: string;
+  sortBy?: "createdAt" | "name";
+  sortDirection?: "asc" | "desc";
 };

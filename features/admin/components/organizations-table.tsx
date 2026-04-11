@@ -1,51 +1,45 @@
 "use client";
 
-import { format } from "date-fns";
-import {
-  Building2,
-  MoreVertical,
-  Search,
-  Trash2,
-  Users,
-} from "lucide-react";
-import { useState, useTransition } from "react";
+import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQueryStates } from "nuqs";
+import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import {
   deleteOrganizationAction,
   getOrganizationDetailAction,
-  listOrganizationsAction,
 } from "@/features/admin/actions/organizations.actions";
+import {
+  ADMIN_ORGANIZATIONS_TABLE_PAGE_SIZES,
+  type AdminOrganizationsTableSearchParams,
+  adminOrganizationsTableSearchParams,
+  buildAdminOrganizationsTableHref,
+} from "@/features/admin/admin-organizations-table-search-params";
+import { getAdminOrganizationsColumns } from "@/features/admin/components/admin-organizations-table-columns";
 import type {
   AdminOrganization,
   OrgSubscription,
 } from "@/features/admin/types/organizations.types";
-import { AdminTablePagination } from "@/features/admin/components/admin-table-pagination";
+import {
+  DataTableContent,
+  DataTablePagination,
+} from "@/shared/components/data-table";
 import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
-import { Button } from "@/shared/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
 import { Input } from "@/shared/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/components/ui/table";
+import { useServerTable } from "@/shared/hooks/use-server-table";
 
 import { AdminOrganizationDetailSheet } from "./organization-detail-sheet";
 
+type AdminOrganizationsPageData = AdminOrganizationsTableSearchParams & {
+  rows: AdminOrganization[];
+  rowCount: number;
+  pageCount: number;
+};
+
 type AdminOrganizationsTableProps = {
   currentUserId: string;
-  initialOrganizations: AdminOrganization[];
-  initialTotal: number;
-  pageSize: number;
+  organizationsPage: AdminOrganizationsPageData;
 };
 
 type ConfirmState = {
@@ -62,23 +56,30 @@ const emptyConfirmState: ConfirmState = {
   action: async () => {},
 };
 
+const sortableColumns = ["name", "createdAt"];
+
 export function AdminOrganizationsTable({
   currentUserId,
-  initialOrganizations,
-  initialTotal,
-  pageSize,
+  organizationsPage,
 }: AdminOrganizationsTableProps) {
-  const [organizations, setOrganizations] = useState(initialOrganizations);
-  const [total, setTotal] = useState(initialTotal);
-  const [offset, setOffset] = useState(0);
-  const [search, setSearch] = useState("");
+  const { rows, rowCount, pageCount, ...tableParams } = organizationsPage;
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+
+  const [{ q: searchInput }, setSearchQuery] = useQueryStates(
+    {
+      q: adminOrganizationsTableSearchParams.q,
+      page: adminOrganizationsTableSearchParams.page,
+    },
+    { shallow: false, throttleMs: 300 },
+  );
+
   const [selectedOrganization, setSelectedOrganization] =
     useState<AdminOrganization | null>(null);
   const [subscription, setSubscription] = useState<OrgSubscription>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(emptyConfirmState);
-  const [isPending, startTransition] = useTransition();
 
   function viewerBelongsToOrganization(organization: AdminOrganization) {
     return organization.members.some(
@@ -86,22 +87,8 @@ export function AdminOrganizationsTable({
     );
   }
 
-  function fetchOrganizations(nextOffset: number, nextSearch = search) {
-    startTransition(async () => {
-      try {
-        const result = await listOrganizationsAction({
-          limit: pageSize,
-          offset: nextOffset,
-          search: nextSearch,
-        });
-
-        setOrganizations(result.organizations);
-        setTotal(result.total);
-        setOffset(nextOffset);
-      } catch {
-        toast.error("Failed to fetch organizations");
-      }
-    });
+  function refreshPage() {
+    startTransition(() => router.refresh());
   }
 
   async function openOrganizationDetail(organization: AdminOrganization) {
@@ -131,8 +118,8 @@ export function AdminOrganizationsTable({
         try {
           await deleteOrganizationAction(organization.id);
           toast.success("Organization deleted");
-          fetchOrganizations(offset);
           setDetailOpen(false);
+          refreshPage();
         } catch (error) {
           toast.error(
             error instanceof Error
@@ -144,119 +131,48 @@ export function AdminOrganizationsTable({
     });
   }
 
+  const columns = useMemo(
+    () => getAdminOrganizationsColumns({ currentUserId, onDelete: confirmDelete }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentUserId],
+  );
+
+  const table = useServerTable({
+    data: rows,
+    columns,
+    pageCount,
+    params: tableParams,
+    buildHref: buildAdminOrganizationsTableHref,
+    sortableColumns,
+    pageSizes: ADMIN_ORGANIZATIONS_TABLE_PAGE_SIZES,
+    getRowId: (organization) => organization.id,
+  });
+
   return (
-    <>
+    <div className="flex flex-1 flex-col gap-4">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           className="pl-9"
           placeholder="Search organizations..."
-          value={search}
-          onChange={(event) => {
-            const nextSearch = event.target.value;
-            setSearch(nextSearch);
-            fetchOrganizations(0, nextSearch);
-          }}
+          value={searchInput}
+          onChange={(event) =>
+            setSearchQuery({ q: event.target.value, page: 1 })
+          }
         />
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Organization</TableHead>
-              <TableHead>Members</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-12" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {organizations.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
-                  No organizations found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              organizations.map((organization) => {
-                const ownOrganization =
-                  viewerBelongsToOrganization(organization);
-
-                return (
-                  <TableRow
-                    key={organization.id}
-                    className={isPending ? "opacity-50" : "cursor-pointer"}
-                    onClick={() => openOrganizationDetail(organization)}
-                  >
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="flex size-9 items-center justify-center rounded-md border bg-muted">
-                          <Building2 className="size-4 text-muted-foreground" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate font-medium">
-                            {organization.name}
-                          </p>
-                          <p className="truncate text-sm text-muted-foreground">
-                            {organization.slug}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1.5 text-sm">
-                        <Users className="size-4 text-muted-foreground" />
-                        {organization._count.members}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {format(new Date(organization.createdAt), "MMM d, yyyy")}
-                    </TableCell>
-                    <TableCell>
-                      <div onClick={(event) => event.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-8"
-                            >
-                              <MoreVertical className="size-4" />
-                              <span className="sr-only">Actions</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              disabled={ownOrganization}
-                              onClick={() => confirmDelete(organization)}
-                            >
-                              <Trash2 className="size-4" />
-                              {ownOrganization
-                                ? "Cannot delete own org"
-                                : "Delete organization"}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <AdminTablePagination
-        currentPage={Math.floor(offset / pageSize) + 1}
-        disabled={isPending}
-        offset={offset}
-        onChange={fetchOrganizations}
-        pageSize={pageSize}
-        total={total}
-        totalPages={Math.ceil(total / pageSize)}
+      <DataTableContent
+        table={table}
+        onRowClick={(row) => openOrganizationDetail(row.original)}
       />
+
+      <div className="flex items-center justify-between gap-4">
+        <p className="whitespace-nowrap text-sm text-muted-foreground">
+          {rowCount === 1 ? "1 organization" : `${rowCount} organizations`}
+        </p>
+        <DataTablePagination table={table} className="mt-auto w-full px-0" />
+      </div>
 
       <AdminOrganizationDetailSheet
         loading={loadingDetail}
@@ -281,6 +197,6 @@ export function AdminOrganizationsTable({
         open={confirmDialog.open}
         title={confirmDialog.title}
       />
-    </>
+    </div>
   );
 }

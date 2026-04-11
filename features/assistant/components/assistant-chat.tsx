@@ -9,9 +9,9 @@ import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
 } from "@/features/assistant/client/assistant-conversations-api";
-import { AssistantChatComposer } from "@/features/assistant/components/chat/assistant-chat-composer";
-import { AssistantChatErrorState } from "@/features/assistant/components/chat/assistant-chat-error-state";
-import { AssistantChatMessageList } from "@/features/assistant/components/chat/assistant-chat-message-list";
+import { AssistantChatComposer } from "@/features/assistant/components/assistant-chat-composer";
+import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
+import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
 import {
   Conversation,

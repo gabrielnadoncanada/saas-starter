@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   getPlanDisplayPrice,
   hasCurrentStripeSubscription,
+  isTrialingSubscription,
 } from "@/features/billing/plans";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -32,6 +33,7 @@ type DashboardCurrentPlanCardProps = {
   planName: string;
   pricingModel: PricingModel;
   subscriptionStatus: string | null;
+  trialEnd: string | null;
 };
 
 function formatPlanPrice(unitAmount: number) {
@@ -51,6 +53,10 @@ function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
 }
 
 function getStatusLabel(planId: string, subscriptionStatus: string | null) {
+  if (isTrialingSubscription(subscriptionStatus)) {
+    return "Trial";
+  }
+
   if (hasCurrentStripeSubscription(subscriptionStatus)) {
     return "Active";
   }
@@ -66,7 +72,17 @@ function getRenewalText(params: {
   cancelAtPeriodEnd: boolean;
   hasStripeSubscription: boolean;
   periodEnd: string | null;
+  subscriptionStatus: string | null;
+  trialEnd: string | null;
 }) {
+  if (isTrialingSubscription(params.subscriptionStatus)) {
+    if (!params.trialEnd) {
+      return "Trial active";
+    }
+
+    return `Trial ends on ${format(new Date(params.trialEnd), "MMM d, yyyy")}`;
+  }
+
   if (!params.periodEnd) {
     return null;
   }
@@ -88,6 +104,7 @@ export function DashboardCurrentPlanCard({
   planName,
   pricingModel,
   subscriptionStatus,
+  trialEnd,
 }: DashboardCurrentPlanCardProps) {
   const activeInterval =
     billingInterval && getPlanDisplayPrice(planId, billingInterval)
@@ -106,6 +123,8 @@ export function DashboardCurrentPlanCard({
     cancelAtPeriodEnd,
     hasStripeSubscription,
     periodEnd,
+    subscriptionStatus,
+    trialEnd,
   });
 
   return (

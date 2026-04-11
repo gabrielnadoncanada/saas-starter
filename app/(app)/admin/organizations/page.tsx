@@ -1,5 +1,6 @@
+import { parseAdminOrganizationsTableSearchParams } from "@/features/admin/admin-organizations-table-search-params";
 import { AdminOrganizationsTable } from "@/features/admin/components/organizations-table";
-import { listAdminOrganizations } from "@/features/admin/server/organizations";
+import { getAdminOrganizationsPage } from "@/features/admin/server/get-admin-organizations-page";
 import { requireAdmin } from "@/features/auth/server/require-admin";
 import {
   Page,
@@ -8,14 +9,16 @@ import {
   PageTitle,
 } from "@/shared/components/layout/page-layout";
 
-const PAGE_SIZE = 25;
+type AdminOrganizationsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default async function AdminOrganizationsPage() {
+export default async function AdminOrganizationsPage({
+  searchParams,
+}: AdminOrganizationsPageProps) {
   const currentUser = await requireAdmin();
-  const { organizations, total } = await listAdminOrganizations({
-    limit: PAGE_SIZE,
-    offset: 0,
-  });
+  const params = parseAdminOrganizationsTableSearchParams(await searchParams);
+  const page = await getAdminOrganizationsPage(params);
 
   return (
     <Page>
@@ -27,10 +30,8 @@ export default async function AdminOrganizationsPage() {
       </PageHeader>
 
       <AdminOrganizationsTable
-        initialOrganizations={organizations}
-        initialTotal={total}
         currentUserId={currentUser.id}
-        pageSize={PAGE_SIZE}
+        organizationsPage={{ ...params, ...page }}
       />
     </Page>
   );
