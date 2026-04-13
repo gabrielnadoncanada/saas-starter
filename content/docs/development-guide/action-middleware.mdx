@@ -3,106 +3,62 @@ title: Action middleware and guards
 description: Guards for admin server actions and authenticated form actions.
 ---
 
-## Admin actions: `requireAdminAction`
+This starter uses a few small guard helpers instead of a custom action framework.
 
-Server actions that perform platform admin work must assert an admin session before doing anything. The shared helper lives in `features/auth/server/require-admin.ts`:
+## `requireAdminAction`
 
-```ts title="features/auth/server/require-admin.ts"
-export async function requireAdminAction(): Promise<string> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+Use `requireAdminAction()` at the top of admin mutations that should throw when the caller is not a platform admin.
 
-  if (!session?.user?.id) {
-    throw new Error("Unauthorized");
-  }
+Typical use:
 
-  if (!isPlatformAdmin(session.user.role)) {
-    throw new Error("Forbidden: admin role required");
-  }
-
-  return session.user.id;
-}
+```ts
+await requireAdminAction();
+return listAdminUsers(query);
 ```
 
-Return value is the **admin user id**, used when an action must prevent self-targeted operations (for example banning or deleting your own account).
+This is the right fit for programmatic admin actions and non-form admin calls.
 
-Use this at the **start** of every admin action:
+## `requireAdmin`
 
-```ts title="features/admin/actions/admin-users.actions.ts"
-export async function listAdminUsersAction(query: ListAdminUsersQuery) {
-  await requireAdminAction();
-  return listAdminUsers(query);
-}
-```
+Use `requireAdmin()` in Server Components and layouts. It redirects instead of throwing, which makes it better for page-level protection.
 
-## Page-level admin guard: `requireAdmin`
+Use it in:
 
-For Server Components and layouts, use `requireAdmin()` instead. It redirects to sign-in or the main dashboard rather than throwing:
+- `app/(app)/admin/layout.tsx`
+- admin page loaders
+- admin-only dashboards
 
-```ts title="features/auth/server/require-admin.ts"
-export async function requireAdmin() {
-  const user = await getCurrentUser();
+## `validatedAuthenticatedAction`
 
-  if (!user) {
-    redirect(routes.auth.login);
-  }
+Use `validatedAuthenticatedAction()` for normal signed-in product forms.
 
-  if (!isPlatformAdmin(user.role)) {
-    redirect(routes.app.dashboard);
-  }
+It handles:
 
-  return user;
-}
-```
+- session lookup
+- Zod validation
+- sticky form values
+- field-level errors
+- billing and organization membership error mapping
 
-## Authenticated form pipeline: `validatedAuthenticatedAction`
+That keeps the action body simple and lets the form consume one predictable `FormActionState`.
 
-For normal (signed-in) app users submitting forms, use `validatedAuthenticatedAction` from `shared/lib/auth/authenticated-action.ts`. It composes:
+## `validatedOrganizationOwnerAction`
 
-- Session check via `getCurrentUser()`.
-- Zod `safeParse` on `Object.fromEntries(formData)`.
-- A typed handler that receives parsed data, raw `FormData`, and the user object.
+Use `validatedOrganizationOwnerAction()` when the caller must be the owner of the active organization. It builds on `validatedAuthenticatedAction()` and adds the ownership requirement.
 
-```ts title="shared/lib/auth/authenticated-action.ts"
-export function validatedAuthenticatedAction<
-  S extends z.ZodTypeAny,
-  TExtraState extends object = {},
->(schema: S, action: ValidatedAuthenticatedActionHandler<S, TExtraState>) {
-  type Values = z.infer<S>;
-  type State = FormActionState<Values> & TExtraState;
+This is the clean default for:
 
-  return async (_prevState: State, formData: FormData): Promise<State> => {
-    const user = await getCurrentUser();
+- deleting an organization
+- owner-only billing flows
+- restricted organization settings
 
-    if (!user) {
-      return {
-        error: NOT_AUTHENTICATED,
-      } as State;
-    }
+## Domain guards still belong in `server/`
 
-    const rawValues = Object.fromEntries(formData) as Record<string, unknown>;
-    const parsed = schema.safeParse(rawValues);
+Action helpers are not a substitute for domain checks.
 
-    if (!parsed.success) {
-      const flat = parsed.error.flatten();
+The actual business boundary should still live in `features/<name>/server/`. For example, `features/tasks/server/task-mutations.ts` checks organization membership and billing entitlements before writing any data.
 
-      return {
-        error: FORM_VALIDATION_FAILED,
-        values: rawValues as Partial<Values>,
-        fieldErrors: flat.fieldErrors as State["fieldErrors"],
-      } as State;
-    }
+Use this rule:
 
-    return action(parsed.data, formData, user);
-  };
-}
-```
-
-Pair this with `useActionState` in a client component and a `<form action={formAction}>` for progressive enhancement.
-
-## Domain guards inside server modules
-
-Additional checks live next to data access. For example, `features/tasks/server/task-mutations.ts` uses `requireActiveOrganizationMembership()` and billing helpers so mutations only apply within the active org and plan limits. That is not a generic “middleware” but the same idea: **guard at the boundary you own**.
-
-> **Note:** Throwing in `requireAdminAction` surfaces as errors to the caller; admin UI wraps actions in transitions and toasts. Design user-facing messaging in those call sites.
+- auth + form validation at the action boundary
+- business rules at the domain boundary

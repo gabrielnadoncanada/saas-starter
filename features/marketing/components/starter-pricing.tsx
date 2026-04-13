@@ -31,7 +31,7 @@ const tiers: Tier[] = [
       "Plan gating with capability checks and usage limits",
       "Team management with roles and invitations",
       "Dashboard shell with sidebar and settings",
-      "Tasks CRUD example with plan-gated creation",
+      "Simple tasks CRUD example with plan-gated creation",
       "AI-ready assistant module with real task actions and honest scaffolds",
       "PostgreSQL + Prisma with migrations and seed",
       "Email templates with Resend",
@@ -122,9 +122,7 @@ function TierCard({ tier }: { tier: Tier }) {
           <Button
             size="lg"
             className={`w-full rounded-full text-base ${
-              tier.highlighted
-                ? "shadow-lg shadow-violet-500/20"
-                : ""
+              tier.highlighted ? "shadow-lg shadow-violet-500/20" : ""
             }`}
             variant={tier.highlighted ? "default" : "outline"}
           >

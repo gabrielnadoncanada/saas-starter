@@ -27,7 +27,7 @@ type UserRowActionsProps = {
   onRemove: (userId: string) => void;
 };
 
-export function UserRowActions({
+export function AdminUserRowActions({
   user,
   onSetRole,
   onBan,

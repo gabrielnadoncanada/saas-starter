@@ -12,21 +12,6 @@ const taskDescriptionSchema = z.string().trim().max(5000).optional();
 const taskStatusSchema = z.nativeEnum(TaskStatus);
 const taskLabelSchema = z.nativeEnum(TaskLabel);
 const taskPrioritySchema = z.nativeEnum(TaskPriority);
-const taskIdsSchema = z
-  .string()
-  .trim()
-  .min(1, { message: "Select at least one task" })
-  .transform((value) =>
-    value
-      .split(",")
-      .map((part) => part.trim())
-      .filter(Boolean),
-  )
-  .pipe(
-    z
-      .array(z.coerce.number().int().positive())
-      .min(1, { message: "Select at least one task" }),
-  );
 
 export const createTaskSchema = z.object({
   title: taskTitleSchema,
@@ -48,23 +33,5 @@ export const deleteTaskSchema = z.object({
   taskId: z.coerce.number().int().positive(),
 });
 
-export const updateTaskStatusSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-  status: taskStatusSchema,
-});
-
-export const bulkDeleteTasksSchema = z.object({
-  taskIds: taskIdsSchema,
-});
-
-export const bulkUpdateTaskStatusSchema = z.object({
-  taskIds: taskIdsSchema,
-  status: taskStatusSchema,
-});
-
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;
 export type UpdateTaskValues = z.infer<typeof updateTaskSchema>;
-export type BulkDeleteTasksValues = z.infer<typeof bulkDeleteTasksSchema>;
-export type BulkUpdateTaskStatusValues = z.infer<
-  typeof bulkUpdateTaskStatusSchema
->;

@@ -5,14 +5,14 @@ import { revalidatePath } from "next/cache";
 import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { db } from "@/shared/lib/db/prisma";
 
-import { getAdminOrganizationDetail } from "../server/organizations";
+import { getAdminOrganizationDetail } from "../server/admin-organizations";
 
-export async function getOrganizationDetailAction(organizationId: string) {
+export async function getAdminOrganizationDetailAction(organizationId: string) {
   await requireAdminAction();
   return getAdminOrganizationDetail(organizationId);
 }
 
-export async function deleteOrganizationAction(organizationId: string) {
+export async function deleteAdminOrganizationAction(organizationId: string) {
   const adminId = await requireAdminAction();
 
   const membership = await db.member.findFirst({

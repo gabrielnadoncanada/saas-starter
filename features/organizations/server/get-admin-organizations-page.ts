@@ -1,7 +1,7 @@
 import "server-only";
 
-import type { AdminOrganizationsTableSearchParams } from "@/features/admin/admin-organizations-table-search-params";
-import { listAdminOrganizations } from "@/features/admin/server/organizations";
+import type { AdminOrganizationsTableSearchParams } from "@/features/organizations/admin-organizations-table-search-params";
+import { listAdminOrganizations } from "@/features/organizations/server/admin-organizations";
 
 export async function getAdminOrganizationsPage(
   params: AdminOrganizationsTableSearchParams,

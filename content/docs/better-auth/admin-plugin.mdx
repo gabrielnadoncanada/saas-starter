@@ -38,7 +38,7 @@ Routes under `/admin` use `requireAdmin()` / `requireAdminAction()` from `featur
 
 Admin server actions call **`auth.api`** methods from the admin plugin, for example:
 
-```ts title="features/admin/actions/admin-users.actions.ts"
+```ts title="features/users/actions/admin-users.actions.ts"
 export async function setUserRoleAction(
   userId: string,
   role: "user" | "admin",

@@ -5,7 +5,7 @@ description: Admin organization listing, detail sheet, subscription summary, and
 
 ## Overview
 
-Platform admins browse organizations at `/admin/organizations`. Data comes from Prisma (`Organization`, members, Stripe-linked subscription). Listing and detail are implemented under `features/admin/server/`; mutations go through `features/admin/actions/admin-organizations.actions.ts`.
+Platform admins browse organizations at `/admin/organizations`. The route is under the admin area, but the behavior is owned by `features/organizations/`. Data comes from Prisma (`Organization`, members, Stripe-linked subscription). Listing and detail live under `features/organizations/server/admin-organizations.ts`; mutations go through `features/organizations/actions/admin-organizations.actions.ts`.
 
 ## Route and initial load
 
@@ -71,7 +71,7 @@ export async function listAdminOrganizations(
 }
 ```
 
-The server page reads URL search params (page, sort, q) and fetches rows via `getAdminOrganizationsPage`. The client table `AdminOrganizationsTable` drives pagination/sorting/search through nuqs and calls `getOrganizationDetailAction` when opening a row.
+The server page reads URL search params (page, sort, q) and fetches rows via `getAdminOrganizationsPage`. The client table `AdminOrganizationsTable` drives pagination/sorting/search through nuqs and calls `getAdminOrganizationDetailAction` when opening a row.
 
 ## Organization detail
 
@@ -119,13 +119,13 @@ export async function getAdminOrganizationDetail(organizationId: string) {
 
 ## Deleting an organization
 
-`deleteOrganizationAction` applies extra rules before `db.organization.delete`:
+`deleteAdminOrganizationAction` applies extra rules before `db.organization.delete`:
 
 - You **cannot** delete an organization you are a member of.
 - If the org has a Stripe customer and an **active** or **trialing** subscription exists, deletion throws until you cancel the subscription.
 
 ```tsx title="app/(app)/admin/layout.tsx"
-export async function deleteOrganizationAction(organizationId: string) {
+export async function deleteAdminOrganizationAction(organizationId: string) {
   const adminId = await requireAdminAction();
 
   const membership = await db.member.findFirst({

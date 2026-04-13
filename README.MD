@@ -16,9 +16,9 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 - **Organization management** - Multi-organization support with roles (Owner, Admin, Member), invitations, and active organization switching.
 - **Dashboard shell** - Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
 - **AI assistant** - Org-scoped chat with tool calling (e.g. task creation), model selection, and conversations stored in the database.
-- **Tasks CRUD example** - Full working feature with TanStack Table (sort, filter, paginate, bulk actions), server actions, Zod validation, and plan-gated creation.
+- **Tasks CRUD example** - Simple create/edit/delete flow with server actions, Zod validation, and plan-gated creation.
 - **Email** - Resend integration with React Email templates for auth emails and team invitations.
-- **Starter docs** - Local guides for environment setup, adding a feature, testing, and extending assistant tools.
+- **Starter docs** - Local guides for setup, project structure, forms, server actions, feature creation, and testing.
 
 ## Tech stack
 
@@ -64,21 +64,21 @@ Seeded local accounts:
 
 Copy `.env.example` and configure:
 
-| Variable                                    | Purpose                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `POSTGRES_URL`                              | PostgreSQL connection string                                                         |
-| `AUTH_SECRET`                               | Better Auth secret for signing sessions and auth tokens                              |
-| `STRIPE_SECRET_KEY`                         | Stripe API key                                                                       |
-| `STRIPE_WEBHOOK_SECRET`                     | Stripe webhook signature secret                                                      |
-| `BASE_URL`                                  | Your app URL (`http://localhost:3000` locally)                                       |
-| `RESEND_API_KEY`                            | Resend email API key (for magic links and auth email)                                |
-| `EMAIL_FROM`                                | Sender address for transactional emails                                              |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                                              |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                                              |
-| `BETTER_AUTH_API_KEY`                       | Optional API key if you enable Better Auth’s API routes                              |
+| Variable                                    | Purpose                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------ |
+| `POSTGRES_URL`                              | PostgreSQL connection string                                             |
+| `AUTH_SECRET`                               | Better Auth secret for signing sessions and auth tokens                  |
+| `STRIPE_SECRET_KEY`                         | Stripe API key                                                           |
+| `STRIPE_WEBHOOK_SECRET`                     | Stripe webhook signature secret                                          |
+| `BASE_URL`                                  | Your app URL (`http://localhost:3000` locally)                           |
+| `RESEND_API_KEY`                            | Resend email API key (for magic links and auth email)                    |
+| `EMAIL_FROM`                                | Sender address for transactional emails                                  |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth (optional)                                                  |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth (optional)                                                  |
+| `BETTER_AUTH_API_KEY`                       | Optional API key if you enable Better Auth’s API routes                  |
 | `NEXT_PUBLIC_ACCOUNT_MODE`                  | `personal-only` \| `organizations-only` (defaults to organizations-only) |
-| `ALLOW_EMAIL_ACCOUNT_LINKING`               | Set `true` to link OAuth accounts by verified email                                  |
-| `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email                                            |
+| `ALLOW_EMAIL_ACCOUNT_LINKING`               | Set `true` to link OAuth accounts by verified email                      |
+| `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email                                |
 
 See the [Installation docs](/docs/installation/environment-variables) for the full checklist and the [Stripe Setup guide](/docs/billing/stripe-setup) for the billing flow. The authoritative list is `.env.example`.
 
@@ -111,7 +111,7 @@ features/           -> Product code organized by domain
   auth/             -> Sign-in, sign-up, post-sign-in, OAuth
   billing/          -> Plans, guards, checkout, webhooks, usage tracking
   assistant/        -> AI chat, tools, conversations, model selection
-  tasks/            -> CRUD example with plan gating
+  tasks/            -> Simple CRUD reference feature with plan gating
   organizations/    -> Organization management, invitations, roles
   account/          -> Profile, settings, account deletion
 shared/             -> Cross-feature infrastructure
@@ -128,7 +128,7 @@ content/docs/       -> Full documentation (Fumadocs MDX)
 - **Launch faster** - Auth, billing, organizations, and a dashboard shell are already wired together. Start building your product features on day one.
 - **Understand quickly** - Feature-organized code, thin routes, and short files. No custom frameworks to learn.
 - **Modify safely** - Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
-- **Customize freely** - The repo includes focused docs for environment setup, feature creation, testing, and extending assistant tools.
+- **Customize freely** - The repo includes focused docs for setup, project structure, forms, server actions, feature creation, and testing.
 - **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
 
 ## Documentation
@@ -136,24 +136,24 @@ content/docs/       -> Full documentation (Fumadocs MDX)
 Full documentation is available at `/docs` when the app is running, or browse `content/docs/` in the repo. Key sections:
 
 - [Installation](/docs/installation) — prerequisites, setup, environment variables
+- [Project structure](/docs/project-structure) — where routes, features, shared code, docs, and tests live
 - [Billing](/docs/billing) — Stripe setup, pricing, entitlements, usage
 - [Development Guide](/docs/development-guide) — adding features, server actions, forms
 - [Testing](/docs/testing) — unit testing, writing tests
-- [Assistant tool integration](features/assistant/TOOL_INTEGRATION.md)
 
 ## Scripts
 
-| Command           | Purpose                                                    |
-| ----------------- | ---------------------------------------------------------- |
-| `pnpm setup`      | One-command install: .env, migrations, seed                |
-| `pnpm dev`        | Start dev server with Turbopack                            |
-| `pnpm build`      | Production build                                           |
-| `pnpm test`       | Run tests                                                  |
-| `pnpm test:watch` | Tests in watch mode                                        |
-| `pnpm db:migrate` | Run database migrations                                    |
-| `pnpm db:seed`    | Seed demo data                                             |
-| `pnpm db:studio`  | Open Prisma Studio                                         |
-| `pnpm email:dev`  | Preview email templates                                    |
+| Command           | Purpose                                     |
+| ----------------- | ------------------------------------------- |
+| `pnpm setup`      | One-command install: .env, migrations, seed |
+| `pnpm dev`        | Start dev server with Turbopack             |
+| `pnpm build`      | Production build                            |
+| `pnpm test`       | Run tests                                   |
+| `pnpm test:watch` | Tests in watch mode                         |
+| `pnpm db:migrate` | Run database migrations                     |
+| `pnpm db:seed`    | Seed demo data                              |
+| `pnpm db:studio`  | Open Prisma Studio                          |
+| `pnpm email:dev`  | Preview email templates                     |
 
 ## License
 

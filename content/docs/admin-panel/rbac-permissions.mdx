@@ -61,7 +61,7 @@ export async function requireAdminAction(): Promise<string> {
 }
 ```
 
-Every function in `features/admin/actions/admin-users.actions.ts` and `admin-organizations.actions.ts` starts with `await requireAdminAction()` (or uses its return value for self-service checks).
+Every function in `features/users/actions/admin-users.actions.ts` and `features/organizations/actions/admin-organizations.actions.ts` starts with `await requireAdminAction()` (or uses its return value for self-service checks).
 
 ## Client-side hints
 

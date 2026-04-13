@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 
-import type { OrgMember } from "@/features/admin/types/organizations.types";
+import type { OrgMember } from "@/features/organizations/admin-organizations.types";
 import {
   Avatar,
   AvatarFallback,

@@ -14,11 +14,12 @@ export type BillingErrorCode = "UPGRADE_REQUIRED" | "LIMIT_REACHED";
  * - `success`   → toast message on success.
  * - `error`     → top-level form error (invalid credentials, billing, etc.).
  * - `errorCode` → set to `"UPGRADE_REQUIRED"` or `"LIMIT_REACHED"` when the
- *                 error came from a billing guard. The `FormStatus` component
- *                 uses this to render an upgrade prompt instead of a red banner.
+ *                 error came from a billing guard. UI can use this to show an
+ *                 upgrade prompt instead of a generic error banner.
  * - `values`    → sticky form values echoed back on validation failure so the
  *                 user doesn't lose their input.
- * - `fieldErrors` → per-field messages rendered inline by `<FormField />`.
+ * - `fieldErrors` → per-field messages rendered inline by your form inputs,
+ *                   often through `getFieldState()`.
  *
  * @example
  * ```ts

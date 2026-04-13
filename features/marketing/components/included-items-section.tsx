@@ -34,7 +34,7 @@ const includedItems = [
   {
     label: "CRUD example",
     detail:
-      "Tasks with TanStack Table, server actions, Zod, plan-gated creation",
+      "Tasks with a simple create/edit/delete flow, server actions, Zod, and plan-gated creation",
   },
   {
     label: "Database",

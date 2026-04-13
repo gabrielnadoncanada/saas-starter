@@ -13,14 +13,14 @@ import {
   revokeAllUserSessionsAction,
   setUserRoleAction,
   unbanUserAction,
-} from "@/features/admin/actions/users.actions";
+} from "@/features/users/actions/admin-users.actions";
 import {
   ADMIN_USERS_TABLE_PAGE_SIZES,
   type AdminUsersTableSearchParams,
   adminUsersTableSearchParams,
   buildAdminUsersTableHref,
-} from "@/features/admin/admin-users-table-search-params";
-import { getAdminUsersColumns } from "@/features/admin/components/admin-users-table-columns";
+} from "@/features/users/admin-users-table-search-params";
+import { getAdminUsersColumns } from "@/features/users/components/admin-users-table-columns";
 import {
   DataTableContent,
   DataTablePagination,
@@ -33,7 +33,7 @@ import type {
   AdminApiUser,
 } from "@/shared/lib/auth/better-auth-inferred-types";
 
-import { UserDetailSheet } from "./user-detail-sheet";
+import { AdminUserDetailSheet } from "./admin-user-detail-sheet";
 
 type AdminUsersPageData = AdminUsersTableSearchParams & {
   rows: AdminApiUser[];
@@ -226,7 +226,7 @@ export function AdminUsersTable({
         <DataTablePagination table={table} className="mt-auto w-full px-0" />
       </div>
 
-      <UserDetailSheet
+      <AdminUserDetailSheet
         copyToClipboard={copyToClipboard}
         currentUserId={currentUserId}
         loadingDetail={isLoadingUserDetail}

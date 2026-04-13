@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 
-import { UserRowActions } from "./user-row-actions";
+import { AdminUserRowActions } from "./admin-user-row-actions";
 
 export type AdminUsersRowHandlers = {
   currentUserId: string;
@@ -115,7 +115,7 @@ export function getAdminUsersColumns(
       cell: ({ row }) =>
         row.original.id !== handlers.currentUserId ? (
           <div onClick={(event) => event.stopPropagation()}>
-            <UserRowActions
+            <AdminUserRowActions
               user={row.original}
               onSetRole={handlers.onSetRole}
               onBan={handlers.onBan}
