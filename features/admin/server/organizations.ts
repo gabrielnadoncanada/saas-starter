@@ -1,12 +1,10 @@
-import "server-only";
-
 import { db } from "@/shared/lib/db/prisma";
 
 import type {
   ListAdminOrganizationsQuery,
   OrgSubscription,
-} from "../admin-organizations.types";
-import { adminOrganizationListInclude } from "../admin-organizations.types";
+} from "../types/organizations.types";
+import { adminOrganizationListInclude } from "../types/organizations.types";
 
 export async function listAdminOrganizations(
   query: ListAdminOrganizationsQuery,

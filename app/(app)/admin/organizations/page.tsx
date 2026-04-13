@@ -1,7 +1,7 @@
+import { parseAdminOrganizationsTableSearchParams } from "@/features/admin/admin-organizations-table-search-params";
+import { AdminOrganizationsTable } from "@/features/admin/components/organizations-table";
+import { getAdminOrganizationsPage } from "@/features/admin/server/get-admin-organizations-page";
 import { requireAdmin } from "@/features/auth/server/require-admin";
-import { parseAdminOrganizationsTableSearchParams } from "@/features/organizations/admin-organizations-table-search-params";
-import { AdminOrganizationsTable } from "@/features/organizations/components/admin-organizations-table";
-import { getAdminOrganizationsPage } from "@/features/organizations/server/get-admin-organizations-page";
 import {
   Page,
   PageDescription,

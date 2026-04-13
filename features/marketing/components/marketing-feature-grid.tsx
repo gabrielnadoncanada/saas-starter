@@ -63,7 +63,7 @@ const features = [
     icon: ArrowRight,
     title: "CRUD Example",
     description:
-      "Simple tasks module with server actions, Zod validation, and plan-gated creation. Copy this path first before reaching for heavier table patterns.",
+      "Full tasks module with TanStack Table, server actions, Zod validation, and plan-gated creation. The exact pattern to replicate for your features.",
   },
 ];
 

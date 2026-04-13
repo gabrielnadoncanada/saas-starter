@@ -7,20 +7,20 @@ import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import {
-  deleteAdminOrganizationAction,
-  getAdminOrganizationDetailAction,
-} from "@/features/organizations/actions/admin-organizations.actions";
+  deleteOrganizationAction,
+  getOrganizationDetailAction,
+} from "@/features/admin/actions/organizations.actions";
 import {
   ADMIN_ORGANIZATIONS_TABLE_PAGE_SIZES,
   type AdminOrganizationsTableSearchParams,
   adminOrganizationsTableSearchParams,
   buildAdminOrganizationsTableHref,
-} from "@/features/organizations/admin-organizations-table-search-params";
-import { getAdminOrganizationsColumns } from "@/features/organizations/components/admin-organizations-table-columns";
+} from "@/features/admin/admin-organizations-table-search-params";
+import { getAdminOrganizationsColumns } from "@/features/admin/components/admin-organizations-table-columns";
 import type {
   AdminOrganization,
   OrgSubscription,
-} from "@/features/organizations/admin-organizations.types";
+} from "@/features/admin/types/organizations.types";
 import {
   DataTableContent,
   DataTablePagination,
@@ -29,7 +29,7 @@ import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
 import { Input } from "@/shared/components/ui/input";
 import { useServerTable } from "@/shared/hooks/use-server-table";
 
-import { AdminOrganizationDetailSheet } from "./admin-organization-detail-sheet";
+import { AdminOrganizationDetailSheet } from "./organization-detail-sheet";
 
 type AdminOrganizationsPageData = AdminOrganizationsTableSearchParams & {
   rows: AdminOrganization[];
@@ -98,7 +98,7 @@ export function AdminOrganizationsTable({
     setLoadingDetail(true);
 
     try {
-      const detail = await getAdminOrganizationDetailAction(organization.id);
+      const detail = await getOrganizationDetailAction(organization.id);
       setSelectedOrganization(detail.organization);
       setSubscription(detail.subscription);
     } catch {
@@ -116,7 +116,7 @@ export function AdminOrganizationsTable({
         "This will permanently delete this organization, all its members, tasks, and data. This cannot be undone.",
       action: async () => {
         try {
-          await deleteAdminOrganizationAction(organization.id);
+          await deleteOrganizationAction(organization.id);
           toast.success("Organization deleted");
           setDetailOpen(false);
           refreshPage();
@@ -132,8 +132,7 @@ export function AdminOrganizationsTable({
   }
 
   const columns = useMemo(
-    () =>
-      getAdminOrganizationsColumns({ currentUserId, onDelete: confirmDelete }),
+    () => getAdminOrganizationsColumns({ currentUserId, onDelete: confirmDelete }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUserId],
   );

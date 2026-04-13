@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Building2, MoreVertical, Trash2, Users } from "lucide-react";
 
-import type { AdminOrganization } from "@/features/organizations/admin-organizations.types";
+import type { AdminOrganization } from "@/features/admin/types/organizations.types";
 import { DataTableColumnHeader } from "@/shared/components/data-table";
 import { Button } from "@/shared/components/ui/button";
 import {

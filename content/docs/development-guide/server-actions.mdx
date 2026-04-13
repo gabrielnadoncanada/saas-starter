@@ -3,67 +3,75 @@ title: Server actions
 description: Patterns for server actions, revalidation, and Zod-validated form actions.
 ---
 
-Server actions are the mutation boundary for the app. Keep them small.
+## Declaring server actions
 
-## Default shape
+Mark the file with `"use server"` at the top. Import server-only modules (Prisma, feature mutations) from paths that do not leak into client bundles incorrectly.
 
-For product features:
+Admin actions call `requireAdminAction()` then run the logic directly:
 
-1. put business logic in `features/<name>/server/`
-2. put the action in `features/<name>/actions/`
-3. mark the file with `"use server"`
-4. call `revalidatePath()` after successful writes
-
-Example from the shipped tasks feature:
-
-```ts title="features/tasks/actions/task.actions.ts"
+```typescript
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/features/auth/server/require-admin";
+import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
 
-import {
-  createTaskSchema,
-  type CreateTaskValues,
-} from "@/features/tasks/task.schema";
-import { createTask } from "@/features/tasks/server/task-mutations";
-import { routes } from "@/shared/constants/routes";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
-import type { FormActionState } from "@/shared/types/form-action-state";
+import { listAdminUsers } from "../server/list-users";
 
-export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
-  task?: Task;
-};
-
-export const createTaskAction = validatedAuthenticatedAction(
-  createTaskSchema,
-  async (data): Promise<CreateTaskActionState> => {
-    const task = await createTask(data);
-    revalidatePath(routes.app.tasks);
-    return { success: "Task created", task };
-  },
-);
+export async function listAdminUsersAction(
+  query: Partial<ListUsersQueryInput>,
+) {
+  await requireAdminAction();
+  return listAdminUsers(query);
+}
 ```
 
-## What `validatedAuthenticatedAction` does
+## Revalidation
 
-`validatedAuthenticatedAction` in `shared/lib/auth/authenticated-action.ts` is the normal choice for signed-in product forms.
+After mutations, call `revalidatePath` (and optionally `revalidateTag`) for routes that show stale data. Admin user actions revalidate `/admin` and `/admin/users`; organization delete revalidates `/admin` and `/admin/organizations`.
 
-It automatically:
+## Authenticated actions with Zod
 
-- resolves the current user
-- validates `FormData` against a Zod schema
-- returns `fieldErrors` and sticky `values` on validation failure
-- maps billing and organization membership errors into form state
+For form posts from the app, the starter provides `validatedAuthenticatedAction` in `shared/lib/auth/authenticated-action.ts`. It:
 
-That means most action bodies only need to:
+1. Resolves the current user with `getCurrentUser()`.
+2. Parses `FormData` with a Zod schema.
+3. Returns structured `FormActionState` with `fieldErrors` on validation failure.
 
-- call the server mutation
-- revalidate the page
-- return `{ success: "..." }`
+Task actions wrap this helper:
 
-## Public actions
+```ts title="features/tasks/actions/task.actions.ts"
+export const createTaskAction = validatedAuthenticatedAction<
+  typeof createTaskSchema,
+  { task?: Task }
+>(createTaskSchema, async (data) => {
+  try {
+    const task = await createTask(data);
 
-For sign-in, sign-up, forgot-password, and reset-password forms, use `validatedPublicAction`.
+    revalidatePath(routes.app.tasks);
+
+    return {
+      success: "Task created",
+      task,
+    };
+  } catch (error) {
+    if (
+      error instanceof UpgradeRequiredError ||
+      error instanceof LimitReachedError ||
+      (error instanceof Error && error.message === "Organization not found")
+    ) {
+      return { error: error.message };
+    }
+
+    throw error;
+  }
+});
+```
+
+Business logic stays in `features/tasks/server/task-mutations.ts`; the action layer handles HTTP-ish concerns (revalidate, user-visible errors).
+
+## Public actions with Zod
+
+For auth pages and other unauthenticated form posts, use `validatedPublicAction` from the same file. It keeps the same `FormActionState` contract without requiring a session first.
 
 ```ts title="features/auth/actions/public-auth.actions.ts"
 export const signInAction = validatedPublicAction(
@@ -83,30 +91,4 @@ export const signInAction = validatedPublicAction(
 );
 ```
 
-## Owner-only actions
-
-When only organization owners should be allowed to mutate something, use `validatedOrganizationOwnerAction`. It composes the normal auth + validation pipeline with an ownership check for the active organization.
-
-Use this for flows like:
-
-- deleting an organization
-- opening billing portal access that must stay owner-only
-- ownership-restricted settings
-
-## Admin actions
-
-Admin actions are different because they are not always plain form posts. For admin mutations and programmatic admin UI calls, start with `requireAdminAction()` and then call the domain function directly.
-
-```ts
-await requireAdminAction();
-return listAdminUsers(query);
-```
-
-## Revalidation rules
-
-After a successful mutation:
-
-- revalidate the route the user is currently on
-- revalidate any sibling routes that show the same stale data
-
-Do not revalidate inside low-level `server/` functions. Keep that decision in the action layer where the route context is obvious.
+> **Note:** Admin actions use `requireAdminAction()` instead of `validatedAuthenticatedAction` because they are invoked programmatically from admin UI, not always via a single `FormData` shape.

@@ -6,7 +6,7 @@ import { Building2, Calendar, Trash2, Users } from "lucide-react";
 import type {
   AdminOrganization,
   OrgSubscription,
-} from "@/features/organizations/admin-organizations.types";
+} from "@/features/admin/types/organizations.types";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import {
@@ -17,8 +17,8 @@ import {
   SheetTitle,
 } from "@/shared/components/ui/sheet";
 
-import { AdminOrganizationMembersList } from "./admin-organization-members-list";
-import { AdminOrganizationSubscriptionCard } from "./admin-organization-subscription-card";
+import { AdminOrganizationMembersList } from "./organization-members-list";
+import { AdminOrganizationSubscriptionCard } from "./organization-subscription-card";
 
 type AdminOrganizationDetailSheetProps = {
   loading: boolean;

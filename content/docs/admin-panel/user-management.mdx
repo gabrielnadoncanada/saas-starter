@@ -5,7 +5,7 @@ description: Admin user listing, detail, and moderation actions using Better Aut
 
 ## Overview
 
-Platform admins manage users from `/admin/users`. The route is under the admin area, but the behavior is owned by `features/users/`. The page is a Server Component that parses search params and loads a page of users; the table is a client component that paginates, searches, and opens a detail sheet. Mutations run through server actions in `features/users/actions/admin-users.actions.ts`, which call Better Auth’s admin APIs (`auth.api.*`).
+Platform admins manage users from `/admin/users`. The page is a Server Component that loads an initial batch of users; the table is a client component that paginates, searches, and opens a detail sheet. Mutations run through server actions in `features/admin/actions/admin-users.actions.ts`, which call Better Auth’s admin APIs (`auth.api.*`).
 
 ## Route and data loading
 
@@ -37,7 +37,7 @@ export default async function AdminUsersPage() {
 
 Server-side listing delegates to Better Auth with optional search and sort:
 
-```ts title="features/users/server/admin-users.ts"
+```ts title="features/admin/server/list-admin-users.ts"
 export async function listAdminUsers(query: ListAdminUsersQuery) {
   return auth.api.listUsers({
     query: {
@@ -64,7 +64,7 @@ export async function listAdminUsers(query: ListAdminUsersQuery) {
 
 Opening a user loads `getAdminUserDetail`, which fetches the user and normalizes sessions from `listUserSessions`:
 
-```ts title="features/users/server/admin-users.ts"
+```ts title="features/admin/server/get-admin-user-detail.ts"
 export async function getAdminUserDetail(userId: string) {
   const requestHeaders = await headers();
 
@@ -98,7 +98,7 @@ All user actions call `requireAdminAction()` first, then Better Auth APIs. Examp
 
 Self-service protections: you cannot ban, delete, change the role of, or revoke all sessions for **your own** user id (enforced in the action).
 
-```ts title="features/users/actions/admin-users.actions.ts"
+```ts title="features/admin/actions/admin-users.actions.ts"
 export async function banUserAction(
   userId: string,
   banReason?: string,

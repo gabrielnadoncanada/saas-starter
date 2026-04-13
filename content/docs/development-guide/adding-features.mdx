@@ -1,45 +1,30 @@
 ---
 title: Adding a feature
-description: Add a new feature using the same boring CRUD path the starter ships in the tasks module.
+description: Step-by-step tutorial — build a new feature module from Prisma model to UI, using the tasks feature as the reference.
 ---
 
-Start with the same default path used by the shipped `tasks` feature:
+This guide walks through adding a new feature end-to-end. We'll build a fictional **invoices** feature so you can see every layer touched. By the end you'll know where each file goes and which shared helpers to call.
 
-1. one Prisma model
-2. one schema file
-3. one `server/` file for queries and mutations
-4. one `actions/` file
-5. one main page component
-6. one form component
-7. one thin route under `app/`
+The starter already ships a complete **tasks** feature that demonstrates all of these patterns — when in doubt, read `features/tasks/` alongside this guide.
 
-If your first version needs sorting, filters, URL state, or bulk actions, stop and ask whether the feature is really advanced enough to earn that complexity. For most starter features, it is not.
+## Feature folder layout
 
-## Folder shape
+Every feature lives under `features/<name>/` with the same subfolders:
 
-Keep the feature local and obvious:
-
-```text
+```
 features/invoices/
-  actions/
-    invoice.actions.ts
-  components/
-    invoice-form-sheet.tsx
-    invoices-page.tsx
-  server/
-    invoice-mutations.ts
-  invoice.schema.ts
+  actions/             → "use server" server actions called from the client
+  components/          → React UI (client + server components)
+  server/              → server-only helpers (Prisma, guards, mutations)
+  invoices.schema.ts   → Zod schemas + derived types (flat file is fine)
+  types.ts             → optional: shared TypeScript types
 ```
 
-Routes stay thin and live under `app/` only:
+Dependency direction is strict: **`app/` → `features/` → `shared/lib/`**. Features never import from `app/`, and they rarely import from each other — promote shared code to `shared/lib/` when two features need it.
 
-```text
-app/(app)/dashboard/invoices/page.tsx
-```
+## Step 1 — Model the data
 
-## Step 1: model the data
-
-Add the Prisma model in `prisma/models/`. Tenant-scoped models should carry `organizationId` and index it.
+Add the Prisma model to the appropriate file in `prisma/models/`. Create a new file if your feature doesn't fit an existing group.
 
 ```prisma title="prisma/models/invoices.prisma"
 model Invoice {
@@ -47,6 +32,7 @@ model Invoice {
   organizationId String
   number         String
   amountCents    Int
+  status         InvoiceStatus @default(DRAFT)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -55,25 +41,37 @@ model Invoice {
   @@unique([organizationId, number])
   @@index([organizationId, createdAt])
 }
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  VOID
+}
 ```
 
-Then run:
+Run the migration and regenerate the client:
 
 ```bash
 pnpm db:migrate
 pnpm db:generate
 ```
 
-## Step 2: add the feature schema
+Every tenant-scoped model **must** carry `organizationId` and a compound index starting with it. All queries filter on `organizationId`, and the starter enforces this via the guards in Step 3.
 
-Keep Zod schemas next to the feature. The same file powers validation and form types.
+## Step 2 — Write the Zod schema
 
-```ts title="features/invoices/invoice.schema.ts"
+Schemas live next to the feature. Keep form schemas and derived types in the same file so actions and components can import from one place.
+
+```ts title="features/invoices/invoices.schema.ts"
 import { z } from "zod";
+
+import { InvoiceStatus } from "@/shared/lib/db/enums";
 
 export const createInvoiceSchema = z.object({
   number: z.string().trim().min(1, { message: "Number is required" }).max(64),
   amountCents: z.coerce.number().int().positive(),
+  status: z.nativeEnum(InvoiceStatus).default(InvoiceStatus.DRAFT),
 });
 
 export const updateInvoiceSchema = createInvoiceSchema.extend({
@@ -84,33 +82,29 @@ export type CreateInvoiceValues = z.infer<typeof createInvoiceSchema>;
 export type UpdateInvoiceValues = z.infer<typeof updateInvoiceSchema>;
 ```
 
-## Step 3: keep server logic in one obvious file
+Schemas do double duty: they validate server-action input and produce the `TValues` type that drives `FormActionState<TValues>` on the client.
 
-Put queries and mutations in `server/` and mark the file `server-only`.
+## Step 3 — Server mutations and queries
+
+Server helpers go in `features/invoices/server/`. Add `import "server-only"` at the top so Next.js fails the build if a client component imports it by mistake.
+
+Use `getCurrentEntitlements()` to get both the active organization **and** the billing plan in one call. The returned `entitlements` object is what you pass to `assertCapability`, `assertLimit`, and `consumeMonthlyUsage`.
 
 ```ts title="features/invoices/server/invoice-mutations.ts"
 import "server-only";
 
-import { assertCapability } from "@/features/billing/entitlements";
 import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
-import { db } from "@/shared/lib/db/prisma";
+import { prisma } from "@/shared/lib/db/prisma";
 
-import type { CreateInvoiceValues } from "@/features/invoices/invoice.schema";
+import type { CreateInvoiceValues } from "@/features/invoices/invoices.schema";
 
-export async function createInvoice(input: CreateInvoiceValues) {
+export async function createInvoice(data: CreateInvoiceValues) {
   const entitlements = await getCurrentEntitlements();
 
-  if (!entitlements) {
-    throw new Error("Organization not found");
-  }
-
-  assertCapability(entitlements, "invoice.create");
-
-  return db.invoice.create({
+  return prisma.invoice.create({
     data: {
+      ...data,
       organizationId: entitlements.organizationId,
-      number: input.number,
-      amountCents: input.amountCents,
     },
   });
 }
@@ -118,59 +112,82 @@ export async function createInvoice(input: CreateInvoiceValues) {
 export async function listInvoices() {
   const entitlements = await getCurrentEntitlements();
 
-  return db.invoice.findMany({
+  return prisma.invoice.findMany({
     where: { organizationId: entitlements.organizationId },
     orderBy: { createdAt: "desc" },
   });
 }
 ```
 
-Billing and organization guards belong here, not in the client.
+### Gating a feature by plan
 
-## Step 4: wrap mutations in one server action file
+If the feature requires a paid plan or has a usage limit, guard it inside the mutation — never rely on the client alone. The guards throw `UpgradeRequiredError` / `LimitReachedError`, which the action wrapper translates into a friendly error state (Step 4).
 
-Client forms should talk to `actions/`, not directly to `server/`.
+```ts
+import {
+  assertCapability,
+  assertLimit,
+} from "@/features/billing/server/billing-guards";
+
+export async function createInvoice(data: CreateInvoiceValues) {
+  const entitlements = await getCurrentEntitlements();
+
+  assertCapability(entitlements, "invoices.create");
+  await assertLimit(entitlements, "invoices.perMonth");
+
+  return prisma.invoice.create({ /* ... */ });
+}
+```
+
+Capabilities and limits are declared in `features/billing/plans.ts` — add your new keys there and they'll flow through to every plan.
+
+## Step 4 — Server action
+
+Actions sit in `features/invoices/actions/` and are the only server entry point the client talks to. Wrap every action in `validatedAuthenticatedAction` — it runs auth, parses the Zod schema, and returns the discriminated `FormActionState` the forms expect.
+
+Wrap any body that can raise billing errors in `withBillingErrors` so the client receives `errorCode: "UPGRADE_REQUIRED" | "LIMIT_REACHED"` instead of a 500.
 
 ```ts title="features/invoices/actions/invoice.actions.ts"
 "use server";
 
+import type { Invoice } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import {
   createInvoiceSchema,
   type CreateInvoiceValues,
-} from "@/features/invoices/invoice.schema";
+} from "@/features/invoices/invoices.schema";
 import { createInvoice } from "@/features/invoices/server/invoice-mutations";
 import { routes } from "@/shared/constants/routes";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import {
+  validatedAuthenticatedAction,
+  withBillingErrors,
+} from "@/shared/lib/auth/authenticated-action";
 import type { FormActionState } from "@/shared/types/form-action-state";
 
-export type CreateInvoiceActionState = FormActionState<CreateInvoiceValues>;
+export type CreateInvoiceActionState = FormActionState<CreateInvoiceValues> & {
+  invoice?: Invoice;
+};
 
-export const createInvoiceAction = validatedAuthenticatedAction(
-  createInvoiceSchema,
-  async (data): Promise<CreateInvoiceActionState> => {
-    await createInvoice(data);
+export const createInvoiceAction = validatedAuthenticatedAction<
+  typeof createInvoiceSchema,
+  { invoice?: Invoice }
+>(createInvoiceSchema, async (data) => {
+  return withBillingErrors(async () => {
+    const invoice = await createInvoice(data);
+
     revalidatePath(routes.app.invoices);
-    return { success: "Invoice created" };
-  },
-);
+
+    return { success: "Invoice created", invoice };
+  });
+});
 ```
 
-`validatedAuthenticatedAction` already:
+## Step 5 — Build the form
 
-- checks the session
-- validates `FormData` with Zod
-- returns `fieldErrors` and sticky `values`
-- maps billing and organization errors to form state automatically
+Forms use `useActionState` bound to the server action. The `FormActionState<TValues>` shape is what `FormField` reads to render per-field errors without extra glue code.
 
-You do not need a second billing wrapper around the action body.
-
-## Step 5: build a small form component
-
-Use `useActionState`, shadcn field primitives, and inline field errors.
-
-```tsx title="features/invoices/components/invoice-form-sheet.tsx"
+```tsx title="features/invoices/components/create-invoice-form.tsx"
 "use client";
 
 import { useActionState } from "react";
@@ -179,116 +196,81 @@ import {
   createInvoiceAction,
   type CreateInvoiceActionState,
 } from "@/features/invoices/actions/invoice.actions";
-import { Button } from "@/shared/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
+import { FormField } from "@/shared/components/forms/form-field";
+import { FormStatus } from "@/shared/components/forms/form-status";
+import { SubmitButton } from "@/shared/components/forms/submit-button";
 
 const initialState: CreateInvoiceActionState = {};
 
-export function InvoiceForm() {
-  const [state, formAction, isPending] = useActionState(
-    createInvoiceAction,
-    initialState,
-  );
-
-  const numberError = state.fieldErrors?.number?.[0];
-  const amountError = state.fieldErrors?.amountCents?.[0];
+export function CreateInvoiceForm() {
+  const [state, formAction] = useActionState(createInvoiceAction, initialState);
 
   return (
-    <form action={formAction} className="space-y-6">
-      <FieldGroup className="gap-4">
-        <Field data-invalid={Boolean(numberError)}>
-          <FieldLabel htmlFor="invoice-number">Number</FieldLabel>
-          <Input
-            id="invoice-number"
-            name="number"
-            defaultValue={String(state.values?.number ?? "")}
-            aria-invalid={Boolean(numberError)}
-            required
-          />
-          <FieldError>{numberError}</FieldError>
-        </Field>
-
-        <Field data-invalid={Boolean(amountError)}>
-          <FieldLabel htmlFor="invoice-amount">Amount (cents)</FieldLabel>
-          <Input
-            id="invoice-amount"
-            name="amountCents"
-            type="number"
-            defaultValue={String(state.values?.amountCents ?? "")}
-            aria-invalid={Boolean(amountError)}
-            required
-          />
-          <FieldError>{amountError}</FieldError>
-        </Field>
-      </FieldGroup>
-
-      <Button type="submit" disabled={isPending}>
-        {isPending ? "Saving..." : "Create invoice"}
-      </Button>
+    <form action={formAction} className="space-y-4">
+      <FormField label="Number" name="number" state={state} />
+      <FormField label="Amount (cents)" name="amountCents" state={state} type="number" />
+      <FormStatus state={state} />
+      <SubmitButton>Create invoice</SubmitButton>
     </form>
   );
 }
 ```
 
-If you need a bigger example, read `features/tasks/components/task-form-sheet.tsx`.
+`FormField` is wired to read `state.fieldErrors[name]` automatically. `FormStatus` renders `state.success`, `state.error`, and upgrade prompts for `errorCode: "UPGRADE_REQUIRED"`.
 
-## Step 6: keep the route thin
+## Step 6 — Wire up the route
 
-The route should fetch data and hand it to the feature page. Nothing more.
+Routes stay thin: auth/org resolution, data fetch, compose feature components. Put route files under `app/(app)/invoices/`.
 
-```tsx title="app/(app)/dashboard/invoices/page.tsx"
-import { InvoicesPage } from "@/features/invoices/components/invoices-page";
+```tsx title="app/(app)/invoices/page.tsx"
+import { CreateInvoiceForm } from "@/features/invoices/components/create-invoice-form";
+import { InvoicesTable } from "@/features/invoices/components/invoices-table";
 import { listInvoices } from "@/features/invoices/server/invoice-mutations";
+import { Page, PageHeader } from "@/shared/components/layout/page-layout";
 
-export default async function DashboardInvoicesPage() {
+export default async function InvoicesPage() {
   const invoices = await listInvoices();
 
-  return <InvoicesPage invoices={invoices} />;
+  return (
+    <Page>
+      <PageHeader title="Invoices" description="Manage your billing documents." />
+      <CreateInvoiceForm />
+      <InvoicesTable invoices={invoices} />
+    </Page>
+  );
 }
 ```
 
-Add the route constant in `shared/constants/routes.ts` and sidebar entry in `features/dashboard/config/dashboard-navigation.ts` if the feature should appear in navigation.
+Add the route to `shared/constants/routes.ts` so every link is type-checked:
 
-## Step 7: keep the first list boring
+```ts
+export const routes = {
+  app: {
+    // ...
+    invoices: "/invoices",
+  },
+};
+```
 
-For the first version, prefer a direct table or list inside `features/invoices/components/invoices-page.tsx`.
+## Step 7 — Navigation and access
 
-Good default:
+Add the entry to `features/dashboard/config/dashboard-navigation.ts` so it appears in the sidebar. If the feature is plan-gated, guard the route itself with `hasCapability(entitlements, "invoices.create")` and render the `<UpgradeCard />` when the user lacks access — the assistant page at `app/(app)/assistant/page.tsx` is a concise reference for this pattern.
 
-- fetch all rows with one `listInvoices()` query
-- render a simple table or empty state
-- open create/edit/delete dialogs from that page component
+## Step 8 — Tests
 
-Avoid by default:
+Feature tests live under `test/<feature>/`. Unit-test mutations by calling them against a real database (the test harness spins up a scratch schema) and integration-test actions by invoking them through the Next.js action boundary.
 
-- URL-state helpers
-- generic table frameworks
-- bulk actions
-- server-side pagination
-- feature-local filter systems
-
-Use the admin tables as the advanced example later, not as the starting point.
-
-## Step 8: add tests where the logic lives
-
-`test/<feature>/` should focus on the risky behavior: mutations, plan gating, and form behavior.
-
-```ts title="test/invoices/create-invoice.test.ts"
+```ts title="test/invoices/invoice-mutations.test.ts"
 import { describe, expect, it } from "vitest";
 
 import { createInvoice } from "@/features/invoices/server/invoice-mutations";
 
 describe("createInvoice", () => {
-  it("persists the invoice in the active organization", async () => {
+  it("persists the invoice with the active organization id", async () => {
     const invoice = await createInvoice({
       number: "INV-001",
       amountCents: 9900,
+      status: "DRAFT",
     });
 
     expect(invoice.organizationId).toBeTruthy();
@@ -296,26 +278,30 @@ describe("createInvoice", () => {
 });
 ```
 
+Run the suite with `pnpm test` or `pnpm test:watch`.
+
 ## Checklist
 
-- [ ] Prisma model exists and is scoped correctly
-- [ ] Schema lives in `features/<name>/<name>.schema.ts`
-- [ ] `server/` owns queries and mutations
-- [ ] `actions/` owns the server action boundary
-- [ ] The first page version is a direct list or table, not a framework
-- [ ] Route file in `app/` is thin
-- [ ] Route constant and navigation entry are added when needed
-- [ ] Tests cover the risky server logic
+A new feature is "done" when all of these are true:
 
-## Reference files
+- [ ] Prisma model carries `organizationId` and a compound index
+- [ ] Zod schema in `features/<name>/<name>.schema.ts` with exported `TValues` types
+- [ ] Server mutations `import "server-only"` and call `getCurrentEntitlements()`
+- [ ] Plan-gated paths call `assertCapability` / `assertLimit` / `consumeMonthlyUsage`
+- [ ] Server actions wrap bodies in `withBillingErrors` where billing errors can fire
+- [ ] Route file under `app/(app)/...` is thin and calls into `features/`
+- [ ] Route added to `shared/constants/routes.ts`
+- [ ] Navigation entry added (if user-facing)
+- [ ] Tests under `test/<name>/`
 
-Read the shipped tasks feature in this order:
+## Reference feature
+
+Read these files in order to see the full pattern in a shipped feature:
 
 1. `prisma/models/tasks.prisma`
 2. `features/tasks/task.schema.ts`
 3. `features/tasks/server/task-mutations.ts`
 4. `features/tasks/actions/task.actions.ts`
-5. `features/tasks/components/task-form-sheet.tsx`
-6. `features/tasks/components/tasks-page.tsx`
-7. `app/(app)/dashboard/tasks/page.tsx`
-8. `test/tasks/`
+5. `features/tasks/components/` (forms, table, sheet)
+6. `app/(app)/tasks/page.tsx`
+7. `test/tasks/`

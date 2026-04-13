@@ -1,7 +1,7 @@
+import { parseAdminUsersTableSearchParams } from "@/features/admin/admin-users-table-search-params";
+import { AdminUsersTable } from "@/features/admin/components/users-table";
+import { getAdminUsersPage } from "@/features/admin/server/get-admin-users-page";
 import { requireAdmin } from "@/features/auth/server/require-admin";
-import { parseAdminUsersTableSearchParams } from "@/features/users/admin-users-table-search-params";
-import { AdminUsersTable } from "@/features/users/components/admin-users-table";
-import { getAdminUsersPage } from "@/features/users/server/get-admin-users-page";
 import {
   Page,
   PageDescription,

@@ -1,0 +1,184 @@
+"use client";
+
+import type { Task } from "@prisma/client";
+import type { Table } from "@tanstack/react-table";
+import { CircleArrowUp, Loader2, Trash2 } from "lucide-react";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  bulkDeleteTasksAction,
+  type BulkDeleteTasksActionState,
+  bulkUpdateTaskStatusAction,
+  type BulkUpdateTaskStatusActionState,
+} from "@/features/tasks/actions/task.actions";
+import { taskStatuses } from "@/features/tasks/task-display";
+import { DataTableBulkActions } from "@/shared/components/data-table";
+import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
+import { Button } from "@/shared/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
+import { useToastMessage } from "@/shared/hooks/use-toast-message";
+
+type TasksBulkActionsProps = {
+  table: Table<Task>;
+};
+
+function serializeTaskIds(tasks: Task[]) {
+  return tasks.map((task) => task.id).join(",");
+}
+
+export function TasksBulkActions({ table }: TasksBulkActionsProps) {
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const selectedTasks = useMemo(
+    () => table.getFilteredSelectedRowModel().rows.map((row) => row.original),
+    [table, table.getState().rowSelection],
+  );
+  const taskIds = serializeTaskIds(selectedTasks);
+  const [statusState, statusAction, isStatusPending] = useActionState<
+    BulkUpdateTaskStatusActionState,
+    FormData
+  >(bulkUpdateTaskStatusAction, {});
+  const [deleteState, deleteAction, isDeletePending] = useActionState<
+    BulkDeleteTasksActionState,
+    FormData
+  >(bulkDeleteTasksAction, {});
+
+  useToastMessage(statusState.error, {
+    kind: "error",
+    skip: Boolean(statusState.fieldErrors),
+    trigger: statusState,
+  });
+  useToastMessage(statusState.success, {
+    kind: "success",
+    trigger: statusState,
+  });
+  useToastMessage(deleteState.error, {
+    kind: "error",
+    skip: Boolean(deleteState.fieldErrors),
+    trigger: deleteState,
+  });
+  useToastMessage(deleteState.success, {
+    kind: "success",
+    trigger: deleteState,
+  });
+
+  useEffect(() => {
+    if (!statusState.success && !deleteState.success) {
+      return;
+    }
+
+    table.resetRowSelection();
+    setIsDeleteOpen(false);
+  }, [deleteState.success, statusState.success, table]);
+
+  return (
+    <>
+      <DataTableBulkActions table={table} entityName="task">
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-8"
+                  aria-label={"Update status"}
+                  disabled={isStatusPending || isDeletePending}
+                >
+                  {isStatusPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <CircleArrowUp />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Update status</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <DropdownMenuContent sideOffset={14}>
+            {taskStatuses.map((status) => (
+              <DropdownMenuItem
+                key={status.value}
+                disabled={isStatusPending || isDeletePending}
+                onSelect={() => {
+                  const formData = new FormData();
+                  formData.set("taskIds", taskIds);
+                  formData.set("status", status.value);
+                  startTransition(() => statusAction(formData));
+                }}
+              >
+                {status.icon ? (
+                  <status.icon className="size-4 text-muted-foreground" />
+                ) : null}
+                {status.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={() => setIsDeleteOpen(true)}
+              className="size-8"
+              aria-label={"Delete selected tasks"}
+              disabled={isStatusPending || isDeletePending}
+            >
+              {isDeletePending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Trash2 />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Delete selected tasks</p>
+          </TooltipContent>
+        </Tooltip>
+      </DataTableBulkActions>
+
+      <ConfirmDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        handleConfirm={() => {
+          const formData = new FormData();
+          formData.set("taskIds", taskIds);
+          startTransition(() => deleteAction(formData));
+        }}
+        destructive
+        isLoading={isDeletePending}
+        title={
+          selectedTasks.length === 1
+            ? "Delete 1 task?"
+            : `Delete ${selectedTasks.length} tasks?`
+        }
+        desc={
+          <div className="space-y-3">
+            <p>This action will permanently delete the selected tasks.</p>
+          </div>
+        }
+        confirmText={"Delete"}
+      />
+    </>
+  );
+}

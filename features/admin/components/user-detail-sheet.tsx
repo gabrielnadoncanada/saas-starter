@@ -69,7 +69,7 @@ function UserDetailField({
   );
 }
 
-export function AdminUserDetailSheet({
+export function UserDetailSheet({
   currentUserId,
   loadingDetail,
   onOpenChange,

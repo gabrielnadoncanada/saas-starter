@@ -7,9 +7,12 @@ import { getCurrentEntitlements } from "@/features/billing/server/organization-e
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
 import type {
+  BulkDeleteTasksValues,
+  BulkUpdateTaskStatusValues,
   CreateTaskValues,
   UpdateTaskValues,
 } from "@/features/tasks/task.schema";
+import type { TaskStatus } from "@/shared/lib/db/enums";
 import { db } from "@/shared/lib/db/prisma";
 
 const MAX_TASK_CODE_ATTEMPTS = 10;
@@ -114,6 +117,27 @@ export async function updateTask(input: UpdateTaskValues) {
   }
 }
 
+export async function updateTaskStatus(input: {
+  taskId: number;
+  status: TaskStatus;
+}) {
+  const organizationId = await getOrganizationId();
+
+  const { count } = await db.task.updateMany({
+    where: {
+      id: input.taskId,
+      organizationId,
+    },
+    data: {
+      status: input.status,
+    },
+  });
+
+  if (count === 0) {
+    throw new Error("Task not found");
+  }
+}
+
 export async function deleteTask(taskId: number) {
   const organizationId = await getOrganizationId();
 
@@ -127,4 +151,47 @@ export async function deleteTask(taskId: number) {
   if (count === 0) {
     throw new Error("Task not found");
   }
+}
+
+export async function bulkUpdateTaskStatus(input: BulkUpdateTaskStatusValues) {
+  const organizationId = await getOrganizationId();
+
+  const { count } = await db.task.updateMany({
+    where: {
+      id: {
+        in: input.taskIds,
+      },
+      organizationId,
+    },
+    data: {
+      status: input.status,
+    },
+  });
+
+  if (count === 0) {
+    throw new Error("Tasks not found");
+  }
+
+  return count;
+}
+
+export async function bulkDeleteTasks(
+  taskIds: BulkDeleteTasksValues["taskIds"],
+) {
+  const organizationId = await getOrganizationId();
+
+  const { count } = await db.task.deleteMany({
+    where: {
+      id: {
+        in: taskIds,
+      },
+      organizationId,
+    },
+  });
+
+  if (count === 0) {
+    throw new Error("Tasks not found");
+  }
+
+  return count;
 }

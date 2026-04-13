@@ -1,8 +1,32 @@
+import { redirect } from "next/navigation";
+
 import { TasksPage } from "@/features/tasks/components/tasks-page";
-import { listTasks } from "@/features/tasks/server/task-mutations";
+import { getTasksPage } from "@/features/tasks/server/get-tasks-page";
+import {
+  buildTasksTableHref,
+  parseTaskTableSearchParams,
+} from "@/features/tasks/task-table-search-params";
+import { routes } from "@/shared/constants/routes";
 
-export default async function DashboardTasksPage() {
-  const tasks = await listTasks();
+type DashboardTasksPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-  return <TasksPage tasks={tasks} />;
+export default async function DashboardTasksPage({
+  searchParams,
+}: DashboardTasksPageProps) {
+  const nextSearchParams = await searchParams;
+  const parsedParams = parseTaskTableSearchParams(nextSearchParams);
+  const tasksPage = await getTasksPage(parsedParams);
+
+  if (tasksPage.page !== parsedParams.page) {
+    redirect(
+      buildTasksTableHref(routes.app.tasks, {
+        ...parsedParams,
+        page: tasksPage.page,
+      }),
+    );
+  }
+
+  return <TasksPage tasksPage={tasksPage} />;
 }

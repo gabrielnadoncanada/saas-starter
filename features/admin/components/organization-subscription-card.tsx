@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 
-import type { OrgSubscription } from "@/features/organizations/admin-organizations.types";
+import type { OrgSubscription } from "@/features/admin/types/organizations.types";
 import { Badge } from "@/shared/components/ui/badge";
 import { Card, CardContent } from "@/shared/components/ui/card";
 
