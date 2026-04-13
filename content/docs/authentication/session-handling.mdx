@@ -41,7 +41,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
 
 - Returns **`null`** when there is no authenticated user.
 - **`CurrentUser`** is the session `user` plus normalized **`role`** and **`twoFactorEnabled`** for UI and guards.
-- **`toSidebarUser`** maps a `CurrentUser` to a smaller shape for navigation.
+- **`toDisplayUser`** maps a `CurrentUser` to a smaller shape for navigation.
 
 ## Usage patterns
 

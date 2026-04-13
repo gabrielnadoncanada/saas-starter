@@ -6,7 +6,7 @@ process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
 process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
 const { billingConfig } = await import("@/shared/config/billing.config");
-const { findCatalogRecurringPriceByPriceId, getPlan, getPlanDisplayPrice } =
+const { findCatalogPrice, getPlan, getPlanDisplayPrice } =
   await import("@/features/billing/plans");
 
 describe("billing catalog price mapping", () => {
@@ -23,7 +23,7 @@ describe("billing catalog price mapping", () => {
     expect(getPlanDisplayPrice("team", "year")?.priceId).toBe(
       "price_team_yearly",
     );
-    expect(getPlan("free").schedules).toEqual({});
+    expect(getPlan("free").intervalPricing).toEqual({});
     expect(
       billingConfig.plans.find((plan) => plan.id === "pro")?.highlighted,
     ).toBe(true);
@@ -31,14 +31,14 @@ describe("billing catalog price mapping", () => {
 
   it("resolves Stripe recurring price ids back to catalog entries", () => {
     expect(
-      findCatalogRecurringPriceByPriceId("price_pro_monthly"),
+      findCatalogPrice("price_pro_monthly"),
     ).toMatchObject({
       billingInterval: "month",
       itemKey: "pro",
       itemType: "plan",
     });
     expect(
-      findCatalogRecurringPriceByPriceId("price_team_yearly"),
+      findCatalogPrice("price_team_yearly"),
     ).toMatchObject({
       billingInterval: "year",
       itemKey: "team",
@@ -47,6 +47,6 @@ describe("billing catalog price mapping", () => {
   });
 
   it("rejects unknown price ids", () => {
-    expect(findCatalogRecurringPriceByPriceId("price_unknown")).toBeNull();
+    expect(findCatalogPrice("price_unknown")).toBeNull();
   });
 });

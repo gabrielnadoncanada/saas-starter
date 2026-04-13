@@ -13,9 +13,9 @@ export function CodeProof() {
             </p>
             <p className="mt-3 text-muted-foreground">
               Gate any feature with a capability check. Enforce any usage quota
-              with a limit check. Subscriptions, seats, and one-time products
-              resolve into one entitlement object. Stripe decides what is active.
-              Your catalog decides what it gives.
+              with a limit check. Subscriptions resolve into one entitlement
+              object. Stripe decides what is active. Your catalog decides what it
+              gives.
             </p>
             <ul className="mt-6 space-y-3">
               {[
@@ -23,7 +23,7 @@ export function CodeProof() {
                 "assertLimit() — enforce usage quotas",
                 "consumeMonthlyUsage() — meter AI and tasks against monthly quotas",
                 "Billing catalog — one source of truth for plans and line items",
-                "Three billing models — flat subscription, per-seat subscription, one-time",
+                "Flat-rate subscriptions with monthly and yearly billing",
               ].map((item) => (
                 <li
                   key={item}
@@ -43,7 +43,7 @@ export function CodeProof() {
                 // Gate a feature in your server action
               </p>
               <pre className="whitespace-pre leading-relaxed">
-                const entitlements = await getCurrentOrganizationEntitlements();
+                const entitlements = await getCurrentEntitlements();
                 assertCapability(entitlements, "team.invite");
                 assertLimit(entitlements, "teamMembers", memberCount); // If we
                 get here, the user's plan allows it

@@ -50,7 +50,7 @@ The Better Auth `organization` plugin reads `allowCreateOrganization` from these
 
 ## Billing configuration (`billing.config.ts`)
 
-`billingConfig` defines the **catalog** of plans and one-time products: capabilities, usage limits, marketing copy, and (when env price IDs exist) Stripe recurring schedules.
+`billingConfig` defines the **catalog** of plans: capabilities, usage limits, marketing copy, and (when env price IDs exist) Stripe recurring pricing.
 
 ```ts title="shared/config/billing.config.ts"
 export const billingConfig = {
@@ -60,14 +60,13 @@ export const billingConfig = {
       id: "free",
       name: "Free",
       description: "For trying the starter without paid billing.",
-      pricingModel: "flat",
       features: ["Create tasks", "Billing portal access"],
       capabilities: ["task.create", "billing.portal"],
       limits: { tasksPerMonth: 10, teamMembers: 1, storageMb: 100 },
-      schedules: {},
+      intervalPricing: {},
     },
 ```
 
-Capabilities and limit keys are enumerated at the top of the file (`capabilities`, `limitKeys`). Paid plan Stripe price IDs come from environment variables such as `STRIPE_PRICE_PRO_MONTHLY`; if a price ID is missing, that interval’s schedule is omitted and the UI falls back accordingly.
+Capabilities and limit keys are enumerated at the top of the file (`capabilities`, `limitKeys`). Paid plan Stripe price IDs come from environment variables such as `STRIPE_PRICE_PRO_MONTHLY`; if a price ID is missing, that interval’s pricing is omitted and the UI falls back accordingly.
 
 > **Warning:** Changing plan `id` values or the shape of `billingConfig` affects database-stored subscription state and Stripe mapping. Coordinate with migrations and Stripe dashboard products when renaming plans.

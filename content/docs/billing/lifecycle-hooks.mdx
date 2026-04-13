@@ -1,6 +1,6 @@
 ---
 title: Subscription lifecycle hooks
-description: Stripe webhook events handled in-app and how they update subscriptions and purchases.
+description: Stripe webhook events handled in-app and how they update subscriptions.
 ---
 
 ## Entry point
@@ -33,7 +33,6 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
 
 - Resolves **organization** from `session.metadata.organizationId` or `client_reference_id`.
 - Syncs Stripe customer id onto the organization.
-- If `mode === "payment"`, upserts a **completed** `purchase` row for one-time products (metadata `itemKey`).
 
 ## Subscription sync (`customer.subscription.*`)
 
@@ -41,11 +40,10 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
 
 1. Resolves **reference id** (org) from subscription metadata or by looking up the Stripe customer id.
 2. Resolves **plan id** from `subscription.metadata.planId` or by matching subscription item prices to the catalog.
-3. Upserts the local **`subscription`** row (status, periods, trial dates, seat quantity from primary item, Stripe ids).
-4. Calls **`syncSubscriptionItems`** to mirror Stripe subscription line items into `subscriptionItem` rows.
+3. Upserts the local **`subscription`** row (status, periods, trial dates, Stripe price and subscription item ids).
 
 ## `customer.deleted`
 
-`clearStripeCustomerBillingState` clears `stripeCustomerId` on affected organizations and deletes related subscription rows for that customer id.
+`clearBillingState` clears `stripeCustomerId` on affected organizations and deletes related subscription rows for that customer id.
 
-> **Note:** Plan access for entitlements treats **`active`** and **`trialing`** Stripe statuses as having access (`hasPlanAccess` in `plan-guards.ts`); other statuses are handled for “current subscription” UI vs terminal states.
+> **Note:** Plan access for entitlements treats **`active`** and **`trialing`** Stripe statuses as having access (`hasPlanAccess` in `plan-guards.ts`); other statuses are handled for "current subscription" UI vs terminal states.

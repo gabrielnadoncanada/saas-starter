@@ -3,11 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plans";
+} from "@/features/billing/entitlements";
 
 const {
   headersMock,
-  getCurrentOrganizationEntitlementsMock,
+  getCurrentEntitlementsMock,
   assertCapabilityMock,
   assertLimitMock,
   inviteOrganizationMemberMock,
@@ -16,7 +16,7 @@ const {
   requireActiveOrganizationRoleMock,
 } = vi.hoisted(() => ({
   headersMock: vi.fn(),
-  getCurrentOrganizationEntitlementsMock: vi.fn(),
+  getCurrentEntitlementsMock: vi.fn(),
   assertCapabilityMock: vi.fn(),
   assertLimitMock: vi.fn(),
   inviteOrganizationMemberMock: vi.fn(),
@@ -73,12 +73,12 @@ vi.mock("@/features/organizations/server/organizations", () => ({
 }));
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
-  getCurrentOrganizationEntitlements: getCurrentOrganizationEntitlementsMock,
+  getCurrentEntitlements: getCurrentEntitlementsMock,
 }));
 
-vi.mock("@/features/billing/plans", async (importOriginal) => {
+vi.mock("@/features/billing/entitlements", async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import("@/features/billing/plans")>();
+    await importOriginal<typeof import("@/features/billing/entitlements")>();
   return {
     ...actual,
     assertCapability: assertCapabilityMock,
@@ -113,9 +113,6 @@ const entitlements = {
   limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000 },
   capabilities: ["team.invite"],
   billingInterval: "month",
-  oneTimeProductIds: [],
-  pricingModel: "flat",
-  seats: null,
   stripeCustomerId: null,
   stripeSubscriptionId: null,
   subscriptionStatus: "active",
@@ -131,7 +128,7 @@ describe("inviteOrganizationMemberAction", () => {
       roles: ["owner"],
       primaryRole: "owner",
     });
-    getCurrentOrganizationEntitlementsMock.mockResolvedValue(entitlements);
+    getCurrentEntitlementsMock.mockResolvedValue(entitlements);
     listMembersMock.mockResolvedValue({
       members: [{ userId: "owner_1" }],
     });

@@ -1,5 +1,5 @@
 import { getPlanDisplayPrice } from "@/features/billing/plans";
-import { createOrganizationSubscriptionCheckoutSession } from "@/features/billing/server/stripe/stripe-checkout";
+import { createSubscriptionCheckout } from "@/features/billing/server/stripe/stripe-checkout";
 import {
   type BillingInterval,
   type PaidPlanId,
@@ -41,10 +41,9 @@ export async function resumeCheckoutAfterSignIn({
     return null;
   }
 
-  return createOrganizationSubscriptionCheckoutSession({
+  return createSubscriptionCheckout({
     billingInterval,
     organizationId: organization.id,
     planId,
-    seatQuantity: organization.members.length,
   });
 }

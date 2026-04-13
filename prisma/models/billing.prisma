@@ -1,64 +1,25 @@
 model Subscription {
-  id                   String             @id
-  plan                 String             @db.VarChar(50)
-  referenceId          String
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  status               String             @default("incomplete") @db.VarChar(30)
-  periodStart          DateTime?
-  periodEnd            DateTime?
-  trialStart           DateTime?
-  trialEnd             DateTime?
-  cancelAtPeriodEnd    Boolean?           @default(false)
-  cancelAt             DateTime?
-  canceledAt           DateTime?
-  endedAt              DateTime?
-  seats                Int?
-  billingInterval      String?            @db.VarChar(20)
-  stripeScheduleId     String?
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  items                SubscriptionItem[]
+  id                       String   @id
+  plan                     String   @db.VarChar(50)
+  referenceId              String
+  stripeCustomerId         String?
+  stripeSubscriptionId     String?
+  stripePriceId            String?  @db.VarChar(255)
+  stripeSubscriptionItemId String?  @unique
+  status                   String   @default("incomplete") @db.VarChar(30)
+  periodStart              DateTime?
+  periodEnd                DateTime?
+  trialStart               DateTime?
+  trialEnd                 DateTime?
+  cancelAtPeriodEnd        Boolean? @default(false)
+  cancelAt                 DateTime?
+  canceledAt               DateTime?
+  endedAt                  DateTime?
+  billingInterval          String?  @db.VarChar(20)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
   @@index([referenceId])
   @@index([stripeCustomerId])
   @@index([stripeSubscriptionId])
-}
-
-model SubscriptionItem {
-  id                       String       @id @default(cuid())
-  subscriptionId           String
-  itemType                 String       @db.VarChar(20)
-  itemKey                  String       @db.VarChar(100)
-  componentKey             String       @default("default") @db.VarChar(100)
-  stripeSubscriptionItemId String?      @unique
-  stripePriceId            String       @db.VarChar(255)
-  billingInterval          String?      @db.VarChar(20)
-  quantity                 Int?
-  status                   String       @default("active") @db.VarChar(30)
-  createdAt                DateTime     @default(now())
-  updatedAt                DateTime     @updatedAt
-  subscription             Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-
-  @@unique([subscriptionId, itemType, itemKey, componentKey])
-  @@index([subscriptionId])
-  @@index([itemType, itemKey])
-}
-
-model Purchase {
-  id                      String       @id @default(cuid())
-  organizationId          String
-  purchaseType            String       @db.VarChar(30)
-  itemKey                 String       @db.VarChar(100)
-  stripeCheckoutSessionId String?      @unique
-  stripePaymentIntentId   String?      @unique
-  stripeCustomerId        String?
-  amount                  Int
-  currency                String       @default("usd") @db.VarChar(10)
-  status                  String       @db.VarChar(30)
-  createdAt               DateTime     @default(now())
-  updatedAt               DateTime     @updatedAt
-  organization            Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  @@index([organizationId, purchaseType, itemKey])
 }

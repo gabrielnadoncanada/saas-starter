@@ -13,35 +13,30 @@ All product semantics for the app live in **`shared/config/billing.config.ts`** 
 2. Copy each price id into the matching `STRIPE_PRICE_*` variable in `.env`.
 3. Edit the `plans` array: names, features, capabilities, limits.
 4. Capabilities gate features (for example `ai.assistant`); limits gate quotas (`tasksPerMonth`, `teamMembers`, `storageMb`, `aiCredits`).
-5. One-time add-ons go in `oneTimeProducts`.
 
 ## Core types
 
 - **`capabilities`** — Closed list of strings such as `task.create`, `team.invite`, `ai.assistant`, `billing.portal`.
 - **`limitKeys`** — `tasksPerMonth`, `teamMembers`, `storageMb`, `aiCredits`.
-- **`pricingModel`** — `"flat"` or `"per_seat"`.
-- **`BillingPlanDefinition`** — `id`, `name`, `description`, optional `highlighted`, `pricingModel`, `features` (marketing strings), `capabilities`, `limits`, and **`schedules`** per billing interval (`month` / `year`).
+- **`BillingPlan`** — `id`, `name`, `description`, optional `highlighted`, `features` (marketing strings), `capabilities`, `limits`, and **`intervalPricing`** per billing interval (`month` / `year`).
 
 ```ts title="shared/config/billing.config.ts"
-export type BillingPlanDefinition = {
+export type BillingPlan = {
   id: string;
   name: string;
   description: string;
   highlighted?: boolean;
-  pricingModel: PricingModel;
   features: string[];
   capabilities: Capability[];
   limits: Record<LimitKey, number>;
-  schedules: Partial<Record<BillingInterval, BillingPlanSchedule>>;
+  intervalPricing: Partial<Record<BillingInterval, BillingIntervalPricing>>;
 };
 ```
 
 ## Default catalog snapshot
 
-- **free** — `flat`, no Stripe schedules in-repo; limits e.g. 10 tasks/month, 1 team member, 100 MB storage; capabilities `task.create`, `billing.portal`.
-- **pro** — `flat`, monthly/yearly line items when env price ids exist; higher limits and more capabilities including `ai.assistant`.
-- **team** — `per_seat`, seat-priced line items when env price ids exist; highest default limits and `team.analytics`.
+- **free** — no Stripe interval pricing in-repo; limits e.g. 10 tasks/month, 1 team member, 100 MB storage; capabilities `task.create`, `billing.portal`.
+- **pro** — monthly/yearly line items when env price ids exist; higher limits and more capabilities including `ai.assistant`.
+- **team** — monthly/yearly line items when env price ids exist; highest default limits and `team.analytics`.
 
-**One-time example:** `ai_credit_boost` adds `limitEffect.aiCredits` when purchased (see `oneTimeProducts` in the same file).
-
-> **Warning:** Paid intervals only appear in the UI if `schedules.month` / `schedules.year` include line items whose `price.priceId` is set from env. Missing `STRIPE_PRICE_*` values omit that schedule.
+> **Warning:** Paid intervals only appear in the UI if `intervalPricing.month` / `intervalPricing.year` include line items whose `price.priceId` is set from env. Missing `STRIPE_PRICE_*` values omit that interval.

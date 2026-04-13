@@ -1,6 +1,5 @@
 "use client";
 
-import { SkipToMain } from "@/shared/components/a11y/skip-to-main";
 import { SearchProvider } from "@/shared/components/command/search-provider";
 import { Header } from "@/shared/components/layout/shell/header";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
@@ -18,7 +17,6 @@ export function AppShell({ defaultOpen, sidebar, children }: AppShellProps) {
     <SearchProvider>
       <TooltipProvider>
         <SidebarProvider defaultOpen={defaultOpen}>
-          <SkipToMain />
           {sidebar}
           <SidebarInset
             className={cn(

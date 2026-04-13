@@ -1,55 +1,44 @@
 ---
 title: Advanced pricing structures
-description: Recurring line items, per-seat math, schedules, and one-time products in the billing catalog.
+description: Recurring line items, interval pricing, and the billing catalog.
 ---
 
-## What “advanced” means here
+## What "advanced" means here
 
 The starter does **not** configure Stripe graduated/tiered price tiers in code. Instead, it models:
 
-- **Per-interval schedules** (`month` / `year`) with one or more **line items**.
-- Each line item has a **`kind`**: `"flat"` (quantity 1 in checkout) or `"seat"` (quantity derived from seat selection).
-- Optional **`includedQuantity`** on seat lines reduces billed seats before the minimum of 1 applies.
+- **Per-interval pricing** (`month` / `year`) with one or more **line items**.
+- Each line item has a **`kind`** of `"flat"` (quantity 1 in checkout).
 
 ```ts title="shared/config/billing.config.ts"
 export type BillingRecurringLineItem = {
-  id: string;
+  component: string;
   kind: BillingLineItemKind;
   price: BillingPrice;
-  includedQuantity?: number;
   unitLabel?: string;
 };
 
-export type BillingPlanSchedule = {
+export type BillingIntervalPricing = {
   lineItems: readonly BillingRecurringLineItem[];
 };
 ```
 
 ## Building checkout quantities
 
-`buildRecurringSelectionItems` maps each line item to a Stripe line: flat lines use quantity `1`; seat lines use:
-
-`max(1, seatQuantity - (includedQuantity ?? 0))`.
+`buildLineItemsWithQuantities` maps each line item to a Stripe line with quantity `1`.
 
 ```ts title="features/billing/catalog.ts"
-  return schedule.lineItems.map((lineItem) => ({
-    componentKey: lineItem.id,
+  return intervalPricing.lineItems.map((lineItem) => ({
+    componentKey: lineItem.component,
     itemKey: plan.id,
     itemType: "plan" as const,
     priceId: lineItem.price.priceId,
-    quantity:
-      lineItem.kind === "seat"
-        ? Math.max(1, params.seatQuantity - (lineItem.includedQuantity ?? 0))
-        : 1,
+    quantity: 1,
   }));
 ```
 
 ## Catalog index for webhooks
 
-`catalog.ts` indexes all configured recurring prices so webhook sync can resolve Stripe price ids back to plan metadata via `findCatalogRecurringPriceByPriceId`.
+`catalog.ts` indexes all configured recurring prices so webhook sync can resolve Stripe price ids back to plan metadata via `findCatalogPrice`.
 
-## One-time products
-
-`OneTimeProductDefinition` supports optional `price` (Stripe price id + unit amount for display) and `limitEffect` to bump plan limits (for example extra storage MB) after a completed payment purchase.
-
-> **Note:** To model multiple recurring components per plan (e.g. base + add-on), add multiple entries to `lineItems`. The Team plan in the default config uses a single `seat` line item.
+> **Note:** To model multiple recurring components per plan (e.g. base + add-on), add multiple entries to `lineItems`.

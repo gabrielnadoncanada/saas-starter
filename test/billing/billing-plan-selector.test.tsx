@@ -9,13 +9,13 @@ vi.mock("@/features/billing/actions/checkout.actions", () => ({
 }));
 
 vi.mock("@/features/billing/actions/customer-portal.actions", () => ({
-  customerPortalAction: vi.fn(),
+  openBillingPortalAction: vi.fn(),
 }));
 
 vi.mock(
   "@/features/billing/actions/subscription-configuration.actions",
   () => ({
-    updateSubscriptionConfigurationAction: vi.fn(),
+    changePlanAction: vi.fn(),
   }),
 );
 
@@ -27,7 +27,6 @@ const plans = [
     name: "Pro",
     description: "For shipping.",
     features: ["Feature A"],
-    pricingModel: "flat" as const,
     monthly: {
       priceId: "price_pro_month",
       unitAmount: 2900,
@@ -39,8 +38,7 @@ const plans = [
     id: "team" as const,
     name: "Team",
     description: "For teams.",
-    features: ["Seats"],
-    pricingModel: "per_seat" as const,
+    features: ["Analytics"],
     monthly: {
       priceId: "price_team_month",
       unitAmount: 4900,
@@ -59,7 +57,7 @@ describe("BillingPlanSelector", () => {
         canUpdateSubscription: false,
         currentBillingInterval: "month",
         currentPlanId: "pro",
-        currentSeatQuantity: 1,
+
         hasCurrentSubscription: false,
         plans,
       }),
@@ -80,7 +78,7 @@ describe("BillingPlanSelector", () => {
         canUpdateSubscription: true,
         currentBillingInterval: "month",
         currentPlanId: "pro",
-        currentSeatQuantity: 1,
+
         hasCurrentSubscription: true,
         plans,
       }),
@@ -102,7 +100,7 @@ describe("BillingPlanSelector", () => {
         canUpdateSubscription: false,
         currentBillingInterval: "month",
         currentPlanId: "pro",
-        currentSeatQuantity: 1,
+
         hasCurrentSubscription: true,
         plans,
       }),

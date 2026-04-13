@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { getPlan, LimitReachedError } from "@/features/billing/plans";
+import { LimitReachedError } from "@/features/billing/entitlements";
+import { getPlan } from "@/features/billing/plans";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import type { OrganizationEntitlements } from "@/shared/config/billing.config";
 
@@ -15,12 +16,9 @@ function createEntitlements(): OrganizationEntitlements {
     billingInterval: "month",
     capabilities: [...plan.capabilities],
     limits: { ...plan.limits },
-    oneTimeProductIds: [],
     organizationId: "org_123",
     planId: "pro",
     planName: plan.name,
-    pricingModel: plan.pricingModel,
-    seats: null,
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     subscriptionStatus: "active",

@@ -3,10 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
-  getCurrentOrganizationEntitlements: vi.fn(),
+  getCurrentEntitlements: vi.fn(),
 }));
 
-const { getCurrentOrganizationEntitlements } =
+const { getCurrentEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { assertOrganizationAiAccess } =
   await import("@/features/assistant/server/organization-ai-access");
@@ -17,7 +17,7 @@ describe("assertOrganizationAiAccess", () => {
   });
 
   it("asserts organization AI access from entitlements", async () => {
-    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue({
+    vi.mocked(getCurrentEntitlements).mockResolvedValue({
       organizationId: "org_1",
       planId: "pro",
       planName: "Pro",
@@ -28,9 +28,6 @@ describe("assertOrganizationAiAccess", () => {
       },
       capabilities: ["ai.assistant"],
       billingInterval: "month",
-      oneTimeProductIds: [],
-      pricingModel: "flat",
-      seats: null,
       stripeCustomerId: null,
       stripeSubscriptionId: null,
       subscriptionStatus: "active",

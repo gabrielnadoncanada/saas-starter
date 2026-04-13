@@ -2,7 +2,8 @@ import "@/shared/lib/env";
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
 import { Providers } from "@/shared/components/providers/providers";
 
 export const metadata: Metadata = {
@@ -22,20 +23,17 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans-fallback",
-  fallback: ["system-ui,Helvetica Neue,Helvetica,Arial"],
-});
-
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang={"en"} suppressHydrationWarning className={inter.variable}>
-      <body suppressHydrationWarning>
+    <html lang={"en"} suppressHydrationWarning>
+      <body
+        className={`${GeistSans.variable} ${GeistMono.variable} font-sans`}
+        suppressHydrationWarning
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

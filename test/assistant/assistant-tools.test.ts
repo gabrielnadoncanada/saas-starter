@@ -9,7 +9,7 @@ vi.mock("ai", () => ({
 }));
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
-  getCurrentOrganizationEntitlements: vi.fn(),
+  getCurrentEntitlements: vi.fn(),
 }));
 
 vi.mock("@/features/billing/server/usage-service", () => ({

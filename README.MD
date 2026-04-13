@@ -11,7 +11,7 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 ## What's included
 
 - **Authentication** - Better Auth with database sessions, email/password, magic link, Google, and GitHub OAuth. Account linking, session management, and soft delete built in.
-- **Stripe billing** - Subscriptions (flat and per-seat), one-time payments, checkout, customer portal, and webhook handling.
+- **Stripe billing** - Flat-rate subscriptions (monthly and yearly), checkout, customer portal, and webhook handling.
 - **Plan gating** - Capability-based feature flags and usage limits (monthly quotas, team member caps). Single source of truth in one config file.
 - **Organization management** - Multi-organization support with roles (Owner, Admin, Member), invitations, and active organization switching.
 - **Dashboard shell** - Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
@@ -101,7 +101,7 @@ Your config decides what that plan gives.
 
 **To enforce a quota:** Call `assertLimit(planId, "yourLimit", currentUsage)` after checking usage.
 
-Three pricing models are supported out of the box: flat-rate subscriptions, per-seat billing, and one-time payments.
+Flat-rate monthly and yearly subscriptions are supported out of the box.
 
 ## Project structure
 

@@ -48,6 +48,6 @@ Not under `features/auth/server`, but central to access control:
 
 ## Billing capabilities (related)
 
-Plan checks live in `features/billing/plan-guards.ts` — `hasCapability`, `assertCapability`, `checkLimit`, `assertLimit` — backed by `getCurrentOrganizationEntitlements()`. Example: task creation asserts `task.create` and consumes monthly usage; invites assert `team.invite` and `teamMembers` limits.
+Plan checks live in `features/billing/plan-guards.ts` — `hasCapability`, `assertCapability`, `checkLimit`, `assertLimit` — backed by `getCurrentEntitlements()`. Example: task creation asserts `task.create` and consumes monthly usage; invites assert `team.invite` and `teamMembers` limits.
 
 > **Note:** Always enforce rules on the server (actions, mutations, webhooks). Client components may hide buttons, but authorization is duplicated in server actions and guards in this codebase.

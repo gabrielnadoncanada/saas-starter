@@ -13,7 +13,6 @@ export async function PricingSection() {
       description: plan.description,
       highlighted: plan.highlighted ?? false,
       features: plan.features,
-      pricingModel: plan.pricingModel,
       monthly: getPlanDisplayPrice(plan.id, "month"),
       yearly: getPlanDisplayPrice(plan.id, "year"),
       sortAmount: getPlanDisplayPrice(plan.id, "month")?.unitAmount ?? 0,

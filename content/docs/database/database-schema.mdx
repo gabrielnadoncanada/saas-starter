@@ -22,7 +22,7 @@ The database is PostgreSQL. Models are grouped into files under `prisma/models/`
 
 **Models**
 
-- **`Organization`** — Tenant: `id`, `name`, optional `slug`, `logo`, `metadata`, `stripeCustomerId`; relates to members, invitations, tasks, usage, purchases, AI conversations, files.
+- **`Organization`** — Tenant: `id`, `name`, optional `slug`, `logo`, `metadata`, `stripeCustomerId`; relates to members, invitations, tasks, usage, AI conversations, files.
 - **`Member`** — Membership: `userId`, `organizationId`, string `role` (Better Auth organization plugin); unique per org+user.
 - **`Invitation`** — Pending invites: email, role, status, `inviterId`, `expiresAt`.
 
@@ -30,9 +30,7 @@ The database is PostgreSQL. Models are grouped into files under `prisma/models/`
 
 **Models**
 
-- **`Subscription`** — Stripe-backed subscription: `plan`, `referenceId`, Stripe ids, status, period/trial/cancel fields, optional `seats`, `items` relation.
-- **`SubscriptionItem`** — Line items: `itemType`, `itemKey`, `componentKey`, Stripe price/item ids, quantity, status; unique per subscription + item dimensions.
-- **`Purchase`** — One-off purchases tied to `organizationId`: `purchaseType`, `itemKey`, Stripe checkout/payment ids, amount, currency, status.
+- **`Subscription`** — Stripe-backed subscription: `plan`, `referenceId`, Stripe ids (`stripeSubscriptionId`, `stripeCustomerId`, `stripePriceId`, `stripeSubscriptionItemId`), status, period/trial/cancel fields.
 
 ## `tasks.prisma`
 

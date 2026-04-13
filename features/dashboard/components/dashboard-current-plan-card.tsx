@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import {
   getPlanDisplayPrice,
-  hasCurrentStripeSubscription,
+  hasOngoingSubscription,
   isTrialingSubscription,
 } from "@/features/billing/plans";
 import { Badge } from "@/shared/components/ui/badge";
@@ -19,10 +19,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { Separator } from "@/shared/components/ui/separator";
-import type {
-  BillingInterval,
-  PricingModel,
-} from "@/shared/config/billing.config";
+import type { BillingInterval } from "@/shared/config/billing.config";
 import { routes } from "@/shared/constants/routes";
 
 type DashboardCurrentPlanCardProps = {
@@ -31,7 +28,6 @@ type DashboardCurrentPlanCardProps = {
   periodEnd: string | null;
   planId: string;
   planName: string;
-  pricingModel: PricingModel;
   subscriptionStatus: string | null;
   trialEnd: string | null;
 };
@@ -44,11 +40,7 @@ function formatPlanPrice(unitAmount: number) {
   }).format(unitAmount / 100);
 }
 
-function getPriceSuffix(interval: BillingInterval, pricingModel: PricingModel) {
-  if (pricingModel === "per_seat") {
-    return interval === "year" ? "/ seat / year" : "/ seat / month";
-  }
-
+function getPriceSuffix(interval: BillingInterval) {
   return interval === "year" ? "/ year" : "/ month";
 }
 
@@ -57,7 +49,7 @@ function getStatusLabel(planId: string, subscriptionStatus: string | null) {
     return "Trial";
   }
 
-  if (hasCurrentStripeSubscription(subscriptionStatus)) {
+  if (hasOngoingSubscription(subscriptionStatus)) {
     return "Active";
   }
 
@@ -102,7 +94,6 @@ export function DashboardCurrentPlanCard({
   periodEnd,
   planId,
   planName,
-  pricingModel,
   subscriptionStatus,
   trialEnd,
 }: DashboardCurrentPlanCardProps) {
@@ -118,7 +109,7 @@ export function DashboardCurrentPlanCard({
     ? getPlanDisplayPrice(planId, activeInterval)
     : null;
   const hasStripeSubscription =
-    hasCurrentStripeSubscription(subscriptionStatus);
+    hasOngoingSubscription(subscriptionStatus);
   const renewalText = getRenewalText({
     cancelAtPeriodEnd,
     hasStripeSubscription,
@@ -145,7 +136,7 @@ export function DashboardCurrentPlanCard({
             {activePrice ? formatPlanPrice(activePrice.unitAmount) : "Free"}
             {activeInterval ? (
               <span className="ml-2 text-sm font-normal text-muted-foreground">
-                {getPriceSuffix(activeInterval, pricingModel)}
+                {getPriceSuffix(activeInterval)}
               </span>
             ) : null}
           </p>

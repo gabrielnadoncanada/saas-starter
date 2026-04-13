@@ -7,7 +7,7 @@ import { ActiveOrganizationProvider } from "@/shared/components/providers/active
 import { UserProvider } from "@/shared/components/providers/user-provider";
 import {
   getCurrentUser,
-  toSidebarUser,
+  toDisplayUser,
 } from "@/shared/lib/auth/get-current-user";
 
 export default async function DashboardLayout({
@@ -27,7 +27,7 @@ export default async function DashboardLayout({
 
   return (
     <ActiveOrganizationProvider organizationId={organization?.id ?? null}>
-      <UserProvider user={toSidebarUser(user)}>
+      <UserProvider user={toDisplayUser(user)}>
         <AppShell defaultOpen={defaultOpen} sidebar={<DashboardSidebar />}>
           {children}
         </AppShell>

@@ -27,7 +27,7 @@ const tiers: Tier[] = [
     features: [
       "Full source code — Next.js 16, React 19, TypeScript",
       "Auth: magic link, Google, GitHub OAuth",
-      "Stripe billing: flat, per-seat, and one-time",
+      "Stripe billing: flat-rate monthly and yearly subscriptions",
       "Plan gating with capability checks and usage limits",
       "Team management with roles and invitations",
       "Dashboard shell with sidebar and settings",

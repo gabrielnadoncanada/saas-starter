@@ -3,7 +3,7 @@ import { ArrowRight, ListTodo, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 
 import { UpgradeCard } from "@/features/billing/components/upgrade-card";
-import { hasCapability } from "@/features/billing/plans";
+import { hasCapability } from "@/features/billing/entitlements";
 import { DashboardCurrentPlanCard } from "@/features/dashboard/components/dashboard-current-plan-card";
 import { DashboardMembersCard } from "@/features/dashboard/components/dashboard-members-card";
 import { DashboardOnboardingChecklist } from "@/features/dashboard/components/dashboard-onboarding-checklist";
@@ -224,7 +224,6 @@ export async function DashboardOverview() {
           periodEnd={organization?.periodEnd ?? null}
           planId={planId}
           planName={plan.name}
-          pricingModel={plan.pricingModel}
           subscriptionStatus={organization?.subscriptionStatus ?? null}
           trialEnd={organization?.trialEnd ?? null}
         />

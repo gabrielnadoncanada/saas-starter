@@ -1,7 +1,7 @@
 import { ArrowRight, Check, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-import { hasCapability } from "@/features/billing/plans";
+import { hasCapability } from "@/features/billing/entitlements";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {

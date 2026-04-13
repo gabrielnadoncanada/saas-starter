@@ -16,7 +16,7 @@ export class AssistantModelSelectionError extends Error {
   }
 }
 
-export async function resolveOrganizationAssistantModelSelection(
+export async function selectAssistantModel(
   _organizationId: string,
   requestedModelId?: string,
 ) {

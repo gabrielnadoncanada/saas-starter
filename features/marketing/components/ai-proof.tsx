@@ -55,7 +55,7 @@ const result = streamText({
                 // Tool-level billing stays real too
               </p>
               <pre className="whitespace-pre leading-relaxed">
-                {`const entitlements = await getCurrentOrganizationEntitlements();
+                {`const entitlements = await getCurrentEntitlements();
 assertCapability(entitlements, "task.create");
 
 await consumeMonthlyUsage(

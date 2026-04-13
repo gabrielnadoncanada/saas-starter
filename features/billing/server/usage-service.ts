@@ -4,7 +4,7 @@ import {
 } from "@/shared/config/billing.config";
 import { db } from "@/shared/lib/db/prisma";
 
-import { getPlanLimit, LimitReachedError } from "@/features/billing/plans";
+import { getPlanLimit, LimitReachedError } from "@/features/billing/entitlements";
 
 function getPeriodStart(date = new Date()) {
   return new Date(date.getFullYear(), date.getMonth(), 1);

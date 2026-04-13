@@ -7,31 +7,24 @@ process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
 vi.mock("@/shared/lib/db/prisma", () => ({
   db: {
-    purchase: {
-      upsert: vi.fn(),
-    },
     subscription: {
       findFirst: vi.fn(),
       upsert: vi.fn(),
-    },
-    subscriptionItem: {
-      upsert: vi.fn(),
-      updateMany: vi.fn(),
     },
   },
 }));
 
 vi.mock("@/features/billing/server/stripe/stripe-customers", () => ({
-  clearStripeCustomerBillingState: vi.fn(),
-  findOrganizationIdByStripeCustomerId: vi.fn(),
-  syncOrganizationStripeCustomer: vi.fn(),
+  clearBillingState: vi.fn(),
+  findOrganizationByCustomer: vi.fn(),
+  syncStripeCustomer: vi.fn(),
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
 const {
-  clearStripeCustomerBillingState,
-  findOrganizationIdByStripeCustomerId,
-  syncOrganizationStripeCustomer,
+  clearBillingState,
+  findOrganizationByCustomer,
+  syncStripeCustomer,
 } = await import("@/features/billing/server/stripe/stripe-customers");
 const { handleStripeWebhookEvent } =
   await import("@/features/billing/server/stripe/stripe-webhooks");
@@ -57,7 +50,7 @@ function createSubscriptionEvent(overrides: Record<string, unknown> = {}) {
           data: [
             {
               id: "si_plan",
-              quantity: 3,
+              quantity: 1,
               current_period_start: 1_710_000_000,
               current_period_end: 1_712_592_000,
               price: {
@@ -83,66 +76,44 @@ describe("handleStripeWebhookEvent", () => {
     vi.mocked(db.subscription.upsert).mockResolvedValue({
       id: "sub_123",
     } as never);
-    vi.mocked(db.subscriptionItem.upsert).mockResolvedValue({
-      id: "item_123",
-    } as never);
-    vi.mocked(db.subscriptionItem.updateMany).mockResolvedValue({
-      count: 0,
-    } as never);
-    vi.mocked(db.purchase.upsert).mockResolvedValue({
-      id: "purchase_123",
-    } as never);
-    vi.mocked(findOrganizationIdByStripeCustomerId).mockResolvedValue(
+    vi.mocked(findOrganizationByCustomer).mockResolvedValue(
       "org_123",
     );
-    vi.mocked(syncOrganizationStripeCustomer).mockResolvedValue(undefined);
-    vi.mocked(clearStripeCustomerBillingState).mockResolvedValue({
+    vi.mocked(syncStripeCustomer).mockResolvedValue(undefined);
+    vi.mocked(clearBillingState).mockResolvedValue({
       clearedOrganizations: 1,
       deletedSubscriptions: 1,
     });
   });
 
-  it("syncs the Stripe customer and records one-time purchases when checkout completes", async () => {
+  it("syncs the Stripe customer when checkout completes", async () => {
     await handleStripeWebhookEvent({
       id: "evt_checkout",
       type: "checkout.session.completed",
       data: {
         object: {
           id: "cs_123",
-          mode: "payment",
+          mode: "subscription",
           customer: "cus_123",
-          amount_total: 7900,
-          currency: "usd",
           metadata: {
-            checkoutType: "one_time_product",
-            itemKey: "ai_credit_boost",
+            checkoutType: "subscription",
             organizationId: "org_123",
           },
           client_reference_id: null,
-          payment_intent: "pi_123",
         },
       },
     } as never);
 
-    expect(syncOrganizationStripeCustomer).toHaveBeenCalledWith({
+    expect(syncStripeCustomer).toHaveBeenCalledWith({
       organizationId: "org_123",
       customerId: "cus_123",
     });
-    expect(db.purchase.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        create: expect.objectContaining({
-          organizationId: "org_123",
-          purchaseType: "one_time_product",
-          itemKey: "ai_credit_boost",
-        }),
-      }),
-    );
   });
 
-  it("syncs subscriptions from recurring price ids and mirrors subscription items", async () => {
+  it("syncs subscriptions from recurring price ids", async () => {
     await handleStripeWebhookEvent(createSubscriptionEvent() as never);
 
-    expect(syncOrganizationStripeCustomer).toHaveBeenCalledWith({
+    expect(syncStripeCustomer).toHaveBeenCalledWith({
       organizationId: "org_123",
       customerId: "cus_123",
     });
@@ -154,16 +125,8 @@ describe("handleStripeWebhookEvent", () => {
           stripeCustomerId: "cus_123",
           stripeSubscriptionId: "sub_123",
           billingInterval: "month",
-          seats: 3,
-        }),
-      }),
-    );
-    expect(db.subscriptionItem.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        create: expect.objectContaining({
-          itemKey: "pro",
-          itemType: "plan",
-          quantity: 3,
+          stripePriceId: "price_pro_monthly",
+          stripeSubscriptionItemId: "si_plan",
         }),
       }),
     );
@@ -178,7 +141,7 @@ describe("handleStripeWebhookEvent", () => {
           data: [
             {
               id: "si_unknown",
-              quantity: 8,
+              quantity: 1,
               current_period_start: 1_710_000_000,
               current_period_end: 1_712_592_000,
               price: {
@@ -191,7 +154,7 @@ describe("handleStripeWebhookEvent", () => {
       }) as never,
     );
 
-    expect(syncOrganizationStripeCustomer).toHaveBeenCalledWith({
+    expect(syncStripeCustomer).toHaveBeenCalledWith({
       organizationId: "org_456",
       customerId: "cus_456",
     });
@@ -217,7 +180,7 @@ describe("handleStripeWebhookEvent", () => {
       },
     } as never);
 
-    expect(clearStripeCustomerBillingState).toHaveBeenCalledWith("cus_123");
+    expect(clearBillingState).toHaveBeenCalledWith("cus_123");
   });
 
   it("keeps unrelated billing events as safe no-ops", async () => {
@@ -228,6 +191,5 @@ describe("handleStripeWebhookEvent", () => {
     } as never);
 
     expect(db.subscription.upsert).not.toHaveBeenCalled();
-    expect(db.purchase.upsert).not.toHaveBeenCalled();
   });
 });

@@ -64,6 +64,7 @@
     "fumadocs-core": "^16.7.10",
     "fumadocs-mdx": "^14.2.11",
     "fumadocs-ui": "^16.7.10",
+    "geist": "^1.7.0",
     "input-otp": "^1.4.2",
     "knip": "^6.1.1",
     "lucide-react": "^0.511.0",

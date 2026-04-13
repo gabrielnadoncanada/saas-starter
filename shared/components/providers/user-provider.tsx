@@ -2,15 +2,15 @@
 
 import { createContext, useContext } from "react";
 
-import type { SidebarUser } from "@/shared/lib/auth/get-current-user";
+import type { DisplayUser } from "@/shared/lib/auth/get-current-user";
 
-const UserContext = createContext<SidebarUser | null>(null);
+const UserContext = createContext<DisplayUser | null>(null);
 
 export function UserProvider({
   user,
   children,
 }: {
-  user: SidebarUser;
+  user: DisplayUser;
   children: React.ReactNode;
 }) {
   return <UserContext value={user}>{children}</UserContext>;

@@ -14,7 +14,7 @@ import type {
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plans";
+} from "@/features/billing/entitlements";
 import {
   createTask,
   updateTask,

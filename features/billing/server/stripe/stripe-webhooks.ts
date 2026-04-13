@@ -1,18 +1,17 @@
 import type Stripe from "stripe";
 
 import {
-  findCatalogRecurringPriceByPriceId,
+  findCatalogPrice,
   isPlanId,
 } from "@/features/billing/plans";
-import { syncSubscriptionItems } from "@/features/billing/server/stripe/stripe-subscriptions";
 import type { BillingInterval } from "@/shared/config/billing.config";
 import { logActivity } from "@/shared/lib/activity/log-activity";
 import { db } from "@/shared/lib/db/prisma";
 
 import {
-  clearStripeCustomerBillingState,
-  findOrganizationIdByStripeCustomerId,
-  syncOrganizationStripeCustomer,
+  clearBillingState,
+  findOrganizationByCustomer,
+  syncStripeCustomer,
 } from "./stripe-customers";
 
 function toDate(timestamp: number | null | undefined) {
@@ -35,7 +34,7 @@ function resolvePlanId(subscription: Stripe.Subscription) {
   }
 
   for (const item of subscription.items.data) {
-    const catalogItem = findCatalogRecurringPriceByPriceId(item.price.id);
+    const catalogItem = findCatalogPrice(item.price.id);
 
     if (catalogItem?.itemType === "plan" && isPlanId(catalogItem.itemKey)) {
       return catalogItem.itemKey;
@@ -45,7 +44,7 @@ function resolvePlanId(subscription: Stripe.Subscription) {
   return null;
 }
 
-async function resolveReferenceId(subscription: Stripe.Subscription) {
+async function resolveOrganizationId(subscription: Stripe.Subscription) {
   if (subscription.metadata.organizationId) {
     return subscription.metadata.organizationId;
   }
@@ -54,21 +53,21 @@ async function resolveReferenceId(subscription: Stripe.Subscription) {
     return null;
   }
 
-  return findOrganizationIdByStripeCustomerId(subscription.customer);
+  return findOrganizationByCustomer(subscription.customer);
 }
 
 async function syncSubscription(subscription: Stripe.Subscription) {
-  const referenceId = await resolveReferenceId(subscription);
+  const organizationId = await resolveOrganizationId(subscription);
   const planId = resolvePlanId(subscription);
   const customerId =
     typeof subscription.customer === "string" ? subscription.customer : null;
 
-  if (!referenceId || !planId || !customerId) {
+  if (!organizationId || !planId || !customerId) {
     return;
   }
 
-  await syncOrganizationStripeCustomer({
-    organizationId: referenceId,
+  await syncStripeCustomer({
+    organizationId,
     customerId,
   });
   const primaryItem = getPrimarySubscriptionItem(subscription);
@@ -86,15 +85,12 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     periodEnd: toDate(primaryItem?.current_period_end),
     periodStart: toDate(primaryItem?.current_period_start),
     plan: planId,
-    referenceId,
-    seats: primaryItem?.quantity ?? null,
+    referenceId: organizationId,
     status: subscription.status,
     stripeCustomerId: customerId,
-    stripeScheduleId:
-      typeof subscription.schedule === "string"
-        ? subscription.schedule
-        : (subscription.schedule?.id ?? null),
+    stripePriceId: primaryItem?.price?.id ?? null,
     stripeSubscriptionId: subscription.id,
+    stripeSubscriptionItemId: primaryItem?.id ?? null,
     trialEnd: toDate(subscription.trial_end),
     trialStart: toDate(subscription.trial_start),
   };
@@ -104,8 +100,6 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     update: subscriptionRecord,
     create: { id: subscriptionId, ...subscriptionRecord },
   });
-
-  await syncSubscriptionItems(subscriptionId, subscription);
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -118,41 +112,18 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
-  await syncOrganizationStripeCustomer({ organizationId, customerId });
-
-  if (session.mode === "payment") {
-    const itemKey = session.metadata?.itemKey ?? null;
-
-    await db.purchase.upsert({
-      where: { stripeCheckoutSessionId: session.id },
-      update: { status: "completed" },
-      create: {
-        organizationId,
-        purchaseType: "one_time_product",
-        itemKey: itemKey ?? "unknown",
-        stripeCheckoutSessionId: session.id,
-        stripePaymentIntentId:
-          typeof session.payment_intent === "string"
-            ? session.payment_intent
-            : null,
-        stripeCustomerId: customerId,
-        amount: session.amount_total ?? 0,
-        currency: session.currency ?? "usd",
-        status: "completed",
-      },
-    });
-  }
+  await syncStripeCustomer({ organizationId, customerId });
 }
 
 async function handleCustomerDeleted(customer: Stripe.Customer) {
-  await clearStripeCustomerBillingState(customer.id);
+  await clearBillingState(customer.id);
 }
 
 async function logSubscriptionActivity(
   event: Stripe.Event,
   subscription: Stripe.Subscription,
 ) {
-  const organizationId = await resolveReferenceId(subscription);
+  const organizationId = await resolveOrganizationId(subscription);
   if (!organizationId) return;
 
   const planId = resolvePlanId(subscription);

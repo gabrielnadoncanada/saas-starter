@@ -13,7 +13,6 @@ import { Button } from "@/shared/components/ui/button";
 import type {
   BillingInterval,
   PlanId,
-  PricingModel,
 } from "@/shared/config/billing.config";
 
 type PriceSchedule = { unitAmount: number; trialDays?: number };
@@ -24,7 +23,6 @@ type PricePlan = {
   description: string | null;
   features: string[];
   highlighted: boolean;
-  pricingModel: PricingModel;
   monthly: PriceSchedule | null;
   yearly: PriceSchedule | null;
 };
@@ -100,7 +98,7 @@ function PricingCard({
       <p className="mb-6 text-4xl font-medium text-foreground">
         {formatPriceAmount(schedule.unitAmount)}
         <span className="text-xl font-normal text-muted-foreground">
-          {getBillingIntervalSuffix(interval, plan.pricingModel)}
+          {getBillingIntervalSuffix(interval)}
         </span>
       </p>
       <ul className="mb-8 space-y-4">

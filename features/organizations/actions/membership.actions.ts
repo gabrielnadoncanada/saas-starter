@@ -3,8 +3,8 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import { assertCapability, assertLimit } from "@/features/billing/plans";
-import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
+import { assertCapability, assertLimit } from "@/features/billing/entitlements";
+import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
 import {
   invitationIdSchema,
   inviteOrganizationMemberSchema,
@@ -52,7 +52,7 @@ export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction(
     { email, role },
     { organizationId, user },
   ): Promise<InviteOrganizationMemberActionState> => {
-    const entitlements = await getCurrentOrganizationEntitlements();
+    const entitlements = await getCurrentEntitlements();
     if (!entitlements) {
       return { error: "Unable to determine organization plan" };
     }

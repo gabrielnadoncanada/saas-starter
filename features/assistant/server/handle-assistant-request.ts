@@ -13,14 +13,14 @@ import { z } from "zod";
 import { getAssistantConversation } from "@/features/assistant/server/assistant-conversations";
 import {
   AssistantModelSelectionError,
-  resolveOrganizationAssistantModelSelection,
+  selectAssistantModel,
 } from "@/features/assistant/server/assistant-model-selection";
 import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-access";
 import { assistantTools } from "@/features/assistant/server/tools";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plans";
+} from "@/features/billing/entitlements";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
@@ -164,7 +164,7 @@ export async function handleAssistantRequest(req: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   try {
-    const selection = await resolveOrganizationAssistantModelSelection(
+    const selection = await selectAssistantModel(
       entitlements.organizationId,
       modelId,
     );

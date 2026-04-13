@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { UpgradeRequiredError } from "@/features/billing/plans";
+import { UpgradeRequiredError } from "@/features/billing/entitlements";
 
 vi.mock("server-only", () => ({}));
 
@@ -43,7 +43,7 @@ vi.mock("@/features/assistant/server/assistant-model-selection", () => {
 
   return {
     AssistantModelSelectionError: MockAssistantModelSelectionError,
-    resolveOrganizationAssistantModelSelection: vi.fn(),
+    selectAssistantModel: vi.fn(),
   };
 });
 
@@ -66,7 +66,7 @@ const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
 const { assertOrganizationAiAccess } =
   await import("@/features/assistant/server/organization-ai-access");
-const { resolveOrganizationAssistantModelSelection } =
+const { selectAssistantModel } =
   await import("@/features/assistant/server/assistant-model-selection");
 const { getAssistantConversation } =
   await import("@/features/assistant/server/assistant-conversations");
@@ -84,14 +84,11 @@ describe("POST /api/assistant", () => {
       limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000 },
       capabilities: ["ai.assistant"],
       billingInterval: "month",
-      oneTimeProductIds: [],
-      pricingModel: "flat",
-      seats: null,
       stripeCustomerId: null,
       stripeSubscriptionId: null,
       subscriptionStatus: "active",
     } as never);
-    vi.mocked(resolveOrganizationAssistantModelSelection).mockResolvedValue({
+    vi.mocked(selectAssistantModel).mockResolvedValue({
       model: {
         id: "gemini-2.5-flash",
         name: "Gemini 2.5 Flash",
@@ -177,7 +174,7 @@ describe("POST /api/assistant", () => {
 
     expect(response.status).toBe(200);
     expect(streamText).toHaveBeenCalled();
-    expect(resolveOrganizationAssistantModelSelection).toHaveBeenCalledWith(
+    expect(selectAssistantModel).toHaveBeenCalledWith(
       "12",
       undefined,
     );

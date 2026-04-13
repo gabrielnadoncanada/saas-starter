@@ -8,110 +8,13 @@
 import {
   billingConfig,
   type BillingInterval,
+  type BillingIntervalPricing,
   type BillingPlan,
-  type BillingPlanDefinition,
-  type BillingPlanSchedule,
   type BillingPrice,
-  type Capability,
-  type LimitKey,
-  type OneTimeProductDefinition,
-  type OrganizationEntitlements,
   type PlanId,
 } from "@/shared/config/billing.config";
 
-export class LimitReachedError extends Error {
-  public readonly limitKey: LimitKey;
-  public readonly limit: number;
-  public readonly currentUsage: number;
-  public readonly currentPlan: string;
-
-  constructor(
-    limitKey: LimitKey,
-    limit: number,
-    currentUsage: number,
-    currentPlan: string,
-  ) {
-    super(
-      `Limit reached for "${limitKey}": ${currentUsage}/${limit} (plan: ${currentPlan})`,
-    );
-    this.name = "LimitReachedError";
-    this.limitKey = limitKey;
-    this.limit = limit;
-    this.currentUsage = currentUsage;
-    this.currentPlan = currentPlan;
-  }
-}
-
-export class UpgradeRequiredError extends Error {
-  public readonly capability: Capability;
-  public readonly currentPlan: string;
-
-  constructor(capability: Capability, currentPlan: string) {
-    super(
-      `Upgrade required to use "${capability}" (current plan: ${currentPlan})`,
-    );
-    this.name = "UpgradeRequiredError";
-    this.capability = capability;
-    this.currentPlan = currentPlan;
-  }
-}
-
-export function hasCapability(
-  entitlements: OrganizationEntitlements,
-  capability: Capability,
-): boolean {
-  return entitlements.capabilities.includes(capability);
-}
-
-export function getPlanLimit(
-  entitlements: OrganizationEntitlements,
-  limitKey: LimitKey,
-): number {
-  return entitlements.limits[limitKey];
-}
-
-export function assertCapability(
-  entitlements: OrganizationEntitlements,
-  capability: Capability,
-): void {
-  if (!hasCapability(entitlements, capability)) {
-    throw new UpgradeRequiredError(capability, entitlements.planName);
-  }
-}
-
-export function assertLimit(
-  entitlements: OrganizationEntitlements,
-  limitKey: LimitKey,
-  currentUsage: number,
-): void {
-  const limit = getPlanLimit(entitlements, limitKey);
-
-  if (currentUsage >= limit) {
-    throw new LimitReachedError(
-      limitKey,
-      limit,
-      currentUsage,
-      entitlements.planName,
-    );
-  }
-}
-
-export function checkLimit(
-  entitlements: OrganizationEntitlements,
-  limitKey: LimitKey,
-  currentUsage: number,
-) {
-  const limit = getPlanLimit(entitlements, limitKey);
-
-  return {
-    allowed: currentUsage < limit,
-    currentUsage,
-    limit,
-    remaining: Math.max(0, limit - currentUsage),
-  };
-}
-
-export const CURRENT_SUBSCRIPTION_STATUSES = [
+export const SUBSCRIPTION_EXISTS_STATUSES = [
   "active",
   "trialing",
   "past_due",
@@ -120,25 +23,25 @@ export const CURRENT_SUBSCRIPTION_STATUSES = [
   "paused",
 ] as const;
 
-const ACTIVE_BILLING_STATUSES = new Set(["active", "trialing"]);
+const PLAN_ACCESS_STATUSES = new Set(["active", "trialing"]);
 
 export function hasPlanAccess(subscriptionStatus: string | null | undefined) {
   if (!subscriptionStatus) {
     return false;
   }
 
-  return ACTIVE_BILLING_STATUSES.has(subscriptionStatus);
+  return PLAN_ACCESS_STATUSES.has(subscriptionStatus);
 }
 
-export function hasCurrentStripeSubscription(
+export function hasOngoingSubscription(
   subscriptionStatus: string | null | undefined,
 ) {
   if (!subscriptionStatus) {
     return false;
   }
 
-  return CURRENT_SUBSCRIPTION_STATUSES.includes(
-    subscriptionStatus as (typeof CURRENT_SUBSCRIPTION_STATUSES)[number],
+  return SUBSCRIPTION_EXISTS_STATUSES.includes(
+    subscriptionStatus as (typeof SUBSCRIPTION_EXISTS_STATUSES)[number],
   );
 }
 
@@ -148,23 +51,23 @@ export function isTrialingSubscription(
   return subscriptionStatus === "trialing";
 }
 
-export type RecurringCatalogPrice = {
+export type CatalogPriceMatch = {
   billingInterval: BillingInterval;
   componentKey: string;
   itemKey: string;
   itemType: "plan";
-  plan?: BillingPlanDefinition;
+  plan?: BillingPlan;
   price: BillingPrice;
 };
 
-export function findCatalogRecurringPriceByPriceId(priceId: string) {
+export function findCatalogPrice(priceId: string) {
   for (const plan of billingConfig.plans) {
-    for (const [interval, schedule] of Object.entries(plan.schedules)) {
-      for (const lineItem of schedule?.lineItems ?? []) {
+    for (const [interval, pricing] of Object.entries(plan.intervalPricing)) {
+      for (const lineItem of pricing?.lineItems ?? []) {
         if (lineItem.price.priceId === priceId) {
           return {
             billingInterval: interval as BillingInterval,
-            componentKey: lineItem.id,
+            componentKey: lineItem.component,
             itemKey: plan.id,
             itemType: "plan" as const,
             plan,
@@ -177,15 +80,15 @@ export function findCatalogRecurringPriceByPriceId(priceId: string) {
   return null;
 }
 
-function getPlanSchedule(
+function getIntervalPricing(
   plan: BillingPlan,
   billingInterval: BillingInterval,
-): BillingPlanSchedule | undefined {
-  const schedules = plan.schedules as Partial<
-    Record<BillingInterval, BillingPlanSchedule | undefined>
+): BillingIntervalPricing | undefined {
+  const pricing = plan.intervalPricing as Partial<
+    Record<BillingInterval, BillingIntervalPricing | undefined>
   >;
 
-  return schedules[billingInterval];
+  return pricing[billingInterval];
 }
 
 export function isPlanId(value: string): value is PlanId {
@@ -196,10 +99,6 @@ export function getPlan(planId: PlanId): BillingPlan {
   return (
     billingConfig.plans.find((p) => p.id === planId) ?? billingConfig.plans[0]
   );
-}
-
-export function getOneTimeProduct(productId: string) {
-  return billingConfig.oneTimeProducts.find((p) => p.id === productId) ?? null;
 }
 
 export function isBillingInterval(value: string): value is BillingInterval {
@@ -215,66 +114,41 @@ export function getPlanDisplayPrice(
   }
 
   return (
-    getPlanSchedule(getPlan(planId), billingInterval)?.lineItems[0]?.price ??
+    getIntervalPricing(getPlan(planId), billingInterval)?.lineItems[0]?.price ??
     null
   );
 }
 
-export function getPricingPlans(): BillingPlanDefinition[] {
+export function getPricingPlans(): BillingPlan[] {
   return billingConfig.plans.filter((plan) =>
     ["month", "year"].some((interval) =>
       Boolean(
-        getPlanSchedule(plan, interval as BillingInterval)?.lineItems[0]?.price,
+        getIntervalPricing(plan, interval as BillingInterval)?.lineItems[0]?.price,
       ),
     ),
-  ) as BillingPlanDefinition[];
-}
-
-export function listOneTimeProducts(): OneTimeProductDefinition[] {
-  return billingConfig.oneTimeProducts.filter((product) =>
-    Boolean(product.price),
-  ) as OneTimeProductDefinition[];
+  ) as BillingPlan[];
 }
 
 export function buildPlanCheckoutLineItems(params: {
   billingInterval: BillingInterval;
   planId: PlanId;
-  seatQuantity: number;
-}) {
-  return buildRecurringSelectionItems(params).map((item) => ({
-    price: item.priceId,
-    quantity: item.quantity,
-  }));
-}
-
-export function buildRecurringSelectionItems(params: {
-  billingInterval: BillingInterval;
-  planId: PlanId;
-  seatQuantity: number;
 }) {
   const plan = getPlan(params.planId);
-  const schedule = getPlanSchedule(plan, params.billingInterval);
+  const pricing = getIntervalPricing(plan, params.billingInterval);
 
-  if (!schedule) {
+  if (!pricing) {
     return [];
   }
 
-  return schedule.lineItems.map((lineItem) => ({
-    componentKey: lineItem.id,
-    itemKey: plan.id,
-    itemType: "plan" as const,
-    priceId: lineItem.price.priceId,
-    quantity:
-      lineItem.kind === "seat"
-        ? Math.max(1, params.seatQuantity - (lineItem.includedQuantity ?? 0))
-        : 1,
+  return pricing.lineItems.map((lineItem) => ({
+    price: lineItem.price.priceId,
+    quantity: 1,
   }));
 }
 
 export type SubscriptionFormSelection = {
   planId: PlanId;
   billingInterval: BillingInterval;
-  seatQuantity: number | null;
 };
 
 export function parseSubscriptionForm(
@@ -282,13 +156,10 @@ export function parseSubscriptionForm(
 ): SubscriptionFormSelection {
   const rawPlanId = formData.get("planId");
   const rawBillingInterval = formData.get("billingInterval");
-  const rawSeatQuantity = formData.get("seatQuantity");
 
   const planId = typeof rawPlanId === "string" ? rawPlanId : null;
   const billingInterval =
     typeof rawBillingInterval === "string" ? rawBillingInterval : null;
-  const seatQuantity =
-    typeof rawSeatQuantity === "string" ? Number(rawSeatQuantity) : NaN;
 
   if (
     !planId ||
@@ -304,30 +175,5 @@ export function parseSubscriptionForm(
   return {
     planId,
     billingInterval,
-    seatQuantity: Number.isFinite(seatQuantity)
-      ? Math.max(1, seatQuantity)
-      : null,
-  };
-}
-
-export function getDefaultEntitlements(params: {
-  organizationId: string;
-}): OrganizationEntitlements {
-  const plan = getPlan("free");
-
-  return {
-    billingInterval: null,
-    capabilities: [...plan.capabilities],
-    limits: { ...plan.limits },
-    oneTimeProductIds: [],
-    organizationId: params.organizationId,
-    planId: "free",
-    planName: plan.name,
-    pricingModel: plan.pricingModel,
-    seats: null,
-    stripeCustomerId: null,
-    stripeSubscriptionId: null,
-    subscriptionStatus: null,
-    trialEnd: null,
   };
 }

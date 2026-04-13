@@ -21,7 +21,7 @@ const features = [
     icon: CreditCard,
     title: "Stripe Billing",
     description:
-      "Subscriptions, one-time payments, per-seat billing, checkout, customer portal, and webhook handling. Three pricing models out of the box.",
+      "Flat-rate subscriptions, checkout, customer portal, and webhook handling. Monthly and yearly billing out of the box.",
   },
   {
     icon: Lock,

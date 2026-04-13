@@ -1,7 +1,4 @@
-import type {
-  BillingInterval,
-  PricingModel,
-} from "@/shared/config/billing.config";
+import type { BillingInterval } from "@/shared/config/billing.config";
 import type { OrgRole } from "@/shared/lib/db/enums";
 
 export type OrganizationUserView = {
@@ -33,9 +30,8 @@ export type CurrentOrganizationView = {
   name: string;
   billingInterval: BillingInterval | null;
   cancelAtPeriodEnd: boolean;
-  plan: string | null;
+  planId: string | null;
   periodEnd: string | null;
-  pricingModel: PricingModel | null;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   subscriptionStatus: string | null;

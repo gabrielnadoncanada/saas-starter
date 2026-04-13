@@ -6,7 +6,6 @@ type SeedStripePlan = {
   description: string;
   unitAmount: number;
   planId: Exclude<PlanId, "free">;
-  pricingModel: "flat";
 };
 
 const FREE_TRIAL_DAYS = 7;
@@ -17,14 +16,12 @@ const STRIPE_PLANS: SeedStripePlan[] = [
     description: "Base subscription plan",
     unitAmount: 800,
     planId: "pro",
-    pricingModel: "flat",
   },
   {
     name: "Plus",
     description: "Plus subscription plan",
     unitAmount: 1200,
     planId: "team",
-    pricingModel: "flat",
   },
 ];
 
@@ -52,7 +49,6 @@ async function ensureStripeProduct(plan: SeedStripePlan) {
       metadata: {
         ...existingProduct.metadata,
         plan_id: plan.planId,
-        pricing_model: plan.pricingModel,
       },
     });
   }
@@ -62,7 +58,6 @@ async function ensureStripeProduct(plan: SeedStripePlan) {
     description: plan.description,
     metadata: {
       plan_id: plan.planId,
-      pricing_model: plan.pricingModel,
     },
   });
 }

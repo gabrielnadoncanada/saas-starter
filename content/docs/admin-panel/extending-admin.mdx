@@ -11,7 +11,7 @@ All routes under `app/(app)/admin/` inherit `AdminLayout`, which calls `requireA
   const user = await requireAdmin();
 
   return (
-    <UserProvider user={toSidebarUser(user)}>
+    <UserProvider user={toDisplayUser(user)}>
       <AppShell defaultOpen={defaultOpen} sidebar={<AdminSidebar />}>
         {children}
       </AppShell>

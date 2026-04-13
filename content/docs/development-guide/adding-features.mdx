@@ -88,18 +88,18 @@ Schemas do double duty: they validate server-action input and produce the `TValu
 
 Server helpers go in `features/invoices/server/`. Add `import "server-only"` at the top so Next.js fails the build if a client component imports it by mistake.
 
-Use `getCurrentOrganizationEntitlements()` to get both the active organization **and** the billing plan in one call. The returned `entitlements` object is what you pass to `assertCapability`, `assertLimit`, and `consumeMonthlyUsage`.
+Use `getCurrentEntitlements()` to get both the active organization **and** the billing plan in one call. The returned `entitlements` object is what you pass to `assertCapability`, `assertLimit`, and `consumeMonthlyUsage`.
 
 ```ts title="features/invoices/server/invoice-mutations.ts"
 import "server-only";
 
-import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
+import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
 import { prisma } from "@/shared/lib/db/prisma";
 
 import type { CreateInvoiceValues } from "@/features/invoices/invoices.schema";
 
 export async function createInvoice(data: CreateInvoiceValues) {
-  const entitlements = await getCurrentOrganizationEntitlements();
+  const entitlements = await getCurrentEntitlements();
 
   return prisma.invoice.create({
     data: {
@@ -110,7 +110,7 @@ export async function createInvoice(data: CreateInvoiceValues) {
 }
 
 export async function listInvoices() {
-  const entitlements = await getCurrentOrganizationEntitlements();
+  const entitlements = await getCurrentEntitlements();
 
   return prisma.invoice.findMany({
     where: { organizationId: entitlements.organizationId },
@@ -130,7 +130,7 @@ import {
 } from "@/features/billing/server/billing-guards";
 
 export async function createInvoice(data: CreateInvoiceValues) {
-  const entitlements = await getCurrentOrganizationEntitlements();
+  const entitlements = await getCurrentEntitlements();
 
   assertCapability(entitlements, "invoices.create");
   await assertLimit(entitlements, "invoices.perMonth");
@@ -286,7 +286,7 @@ A new feature is "done" when all of these are true:
 
 - [ ] Prisma model carries `organizationId` and a compound index
 - [ ] Zod schema in `features/<name>/<name>.schema.ts` with exported `TValues` types
-- [ ] Server mutations `import "server-only"` and call `getCurrentOrganizationEntitlements()`
+- [ ] Server mutations `import "server-only"` and call `getCurrentEntitlements()`
 - [ ] Plan-gated paths call `assertCapability` / `assertLimit` / `consumeMonthlyUsage`
 - [ ] Server actions wrap bodies in `withBillingErrors` where billing errors can fire
 - [ ] Route file under `app/(app)/...` is thin and calls into `features/`

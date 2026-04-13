@@ -29,7 +29,7 @@ export function SidebarGroupSearch({
 }: SearchProps) {
   const { setOpen } = useSearch();
   return (
-    <SidebarGroup>
+    <SidebarGroup className="mt-2 border-b pb-2">
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">

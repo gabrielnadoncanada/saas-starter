@@ -40,7 +40,7 @@ const rows: ComparisonRow[] = [
     buildFromScratch: "no",
   },
   {
-    feature: "Three billing models (flat, per-seat, one-time)",
+    feature: "Flat-rate subscriptions with monthly and yearly billing",
     thisStarter: "yes",
     freeBoilerplate: "no",
     heavierStarter: "partial",

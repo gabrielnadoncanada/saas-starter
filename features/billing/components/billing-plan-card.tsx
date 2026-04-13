@@ -16,7 +16,6 @@ import type {
   BillingInterval,
   BillingPrice,
   PlanId,
-  PricingModel,
 } from "@/shared/config/billing.config";
 
 export type BillingPlanOption = {
@@ -24,7 +23,6 @@ export type BillingPlanOption = {
   name: string;
   description: string;
   features: string[];
-  pricingModel: PricingModel;
   monthly: BillingPrice | null;
   yearly: BillingPrice | null;
 };
@@ -39,11 +37,9 @@ export function getPlanPrice(
 function BillingPlanPrice({
   price,
   interval,
-  pricingModel,
 }: {
   price: BillingPrice | null;
   interval: BillingInterval;
-  pricingModel: PricingModel;
 }) {
   return (
     <div className="space-y-1 md:text-right">
@@ -55,7 +51,7 @@ function BillingPlanPrice({
 
       {price ? (
         <FieldDescription>
-          {getBillingIntervalSuffix(interval, pricingModel, "short")}
+          {getBillingIntervalSuffix(interval, "short")}
         </FieldDescription>
       ) : null}
     </div>
@@ -104,7 +100,6 @@ export function BillingPlanCard({
           <BillingPlanPrice
             price={price}
             interval={interval}
-            pricingModel={plan.pricingModel}
           />
         </div>
       </FieldContent>

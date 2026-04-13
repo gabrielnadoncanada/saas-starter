@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import {
-  getOneTimeProduct,
   getPlanDisplayPrice,
   isBillingInterval,
   isPlanId,
@@ -25,14 +24,6 @@ export const subscriptionCheckoutSchema = z
   .object({
     planId: paidPlanIdSchema,
     billingInterval: billingIntervalSchema,
-    seatQuantity: z
-      .string()
-      .optional()
-      .transform((value) => {
-        const seatQuantity = Number(value);
-
-        return Number.isFinite(seatQuantity) ? Math.max(1, seatQuantity) : null;
-      }),
   })
   .refine(
     ({ planId, billingInterval }) =>
@@ -42,13 +33,3 @@ export const subscriptionCheckoutSchema = z
       path: ["planId"],
     },
   );
-
-export const oneTimeCheckoutSchema = z.object({
-  itemKey: z
-    .string()
-    .refine(
-      (value) => Boolean(getOneTimeProduct(value)?.price),
-      "The selected purchase is not configured.",
-    ),
-  itemType: z.literal("one_time_product"),
-});

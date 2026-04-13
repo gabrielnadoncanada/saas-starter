@@ -13,7 +13,6 @@ model Organization {
   invitations     Invitation[]
   tasks           Task[]
   usageCounters   UsageCounter[]
-  purchases       Purchase[]
   aiConversations AiConversation[]
   storedFiles     StoredFile[]
   activityEvents  ActivityEvent[]

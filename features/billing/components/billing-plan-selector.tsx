@@ -4,8 +4,8 @@ import { CircleCheckBigIcon } from "lucide-react";
 import { useState } from "react";
 
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
-import { customerPortalAction } from "@/features/billing/actions/customer-portal.actions";
-import { updateSubscriptionConfigurationAction } from "@/features/billing/actions/subscription-configuration.actions";
+import { openBillingPortalAction } from "@/features/billing/actions/customer-portal.actions";
+import { changePlanAction } from "@/features/billing/actions/subscription-configuration.actions";
 import { BillingIntervalSelector } from "@/features/billing/components/billing-interval-selector";
 import {
   BillingPlanCard,
@@ -20,7 +20,6 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
 import {
   Item,
   ItemContent,
@@ -41,7 +40,6 @@ type BillingPlanSelectorProps = {
   canUpdateSubscription: boolean;
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
-  currentSeatQuantity: number;
   hasCurrentSubscription: boolean;
   plans: BillingPlanOption[];
 };
@@ -95,7 +93,6 @@ export function BillingPlanSelector({
   plans,
   currentBillingInterval,
   currentPlanId,
-  currentSeatQuantity,
   canManageBilling,
   hasCurrentSubscription,
   canManagePortal,
@@ -108,9 +105,6 @@ export function BillingPlanSelector({
   );
   const [interval, setInterval] = useState<BillingInterval>(
     currentBillingInterval ?? "month",
-  );
-  const [seatQuantity, setSeatQuantity] = useState(
-    Math.max(1, currentSeatQuantity),
   );
 
   if (!defaultPlan || !selectedPlanId) {
@@ -131,7 +125,7 @@ export function BillingPlanSelector({
   const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
   const subscriptionAction =
     hasCurrentSubscription && canUpdateSubscription
-      ? updateSubscriptionConfigurationAction
+      ? changePlanAction
       : startSubscriptionCheckoutAction;
 
   function getSubmitLabel() {
@@ -182,20 +176,6 @@ export function BillingPlanSelector({
         </ItemContent>
       </Item>
 
-      {selectedPlan.pricingModel === "per_seat" ? (
-        <label className="block space-y-2">
-          <span className="text-sm font-medium">Seat quantity</span>
-          <Input
-            min={1}
-            type="number"
-            value={seatQuantity}
-            onChange={(event) =>
-              setSeatQuantity(Math.max(1, Number(event.target.value) || 1))
-            }
-          />
-        </label>
-      ) : null}
-
       {!canManageBilling ? (
         <Button disabled className="h-11 rounded-xl px-5">
           Only the owner can manage billing
@@ -205,14 +185,13 @@ export function BillingPlanSelector({
           <form action={subscriptionAction} className="space-y-3">
             <input type="hidden" name="planId" value={selectedPlan.id} />
             <input type="hidden" name="billingInterval" value={interval} />
-            <input type="hidden" name="seatQuantity" value={seatQuantity} />
             <Button type="submit" disabled={!selectedPrice}>
               {getSubmitLabel()}
             </Button>
           </form>
 
           {canManagePortal ? (
-            <form action={customerPortalAction}>
+            <form action={openBillingPortalAction}>
               <Button type="submit" variant="outline">
                 Open billing portal
               </Button>

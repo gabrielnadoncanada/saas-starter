@@ -4,13 +4,12 @@ import {
   assertCapability,
   assertLimit,
   checkLimit,
-  getPlan,
   getPlanLimit,
   hasCapability,
-  isPlanId,
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plans";
+} from "@/features/billing/entitlements";
+import { getPlan, isPlanId } from "@/features/billing/plans";
 import type {
   OrganizationEntitlements,
   PlanId,
@@ -25,12 +24,9 @@ function createEntitlements(planId: PlanId): OrganizationEntitlements {
     billingInterval: planId === "free" ? null : "month",
     capabilities: [...plan.capabilities],
     limits: { ...plan.limits },
-    oneTimeProductIds: [],
     organizationId: "org_123",
     planId,
     planName: plan.name,
-    pricingModel: plan.pricingModel,
-    seats: plan.pricingModel === "per_seat" ? 3 : null,
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     subscriptionStatus: planId === "free" ? null : "active",
@@ -95,7 +91,7 @@ describe("plan guards", () => {
       expect.unreachable("expected upgrade error");
     } catch (error) {
       expect(error).toBeInstanceOf(UpgradeRequiredError);
-      expect((error as UpgradeRequiredError).currentPlan).toBe("Free");
+      expect((error as UpgradeRequiredError).planName).toBe("Free");
     }
   });
 
@@ -136,7 +132,7 @@ describe("plan guards", () => {
     } catch (error) {
       expect(error).toBeInstanceOf(LimitReachedError);
       expect((error as LimitReachedError).limit).toBe(1);
-      expect((error as LimitReachedError).currentPlan).toBe("Free");
+      expect((error as LimitReachedError).planName).toBe("Free");
     }
   });
 });

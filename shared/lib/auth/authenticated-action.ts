@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plans";
+} from "@/features/billing/entitlements";
 import {
   OrganizationMembershipError,
   requireActiveOrganizationRole,

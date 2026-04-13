@@ -15,7 +15,7 @@ Example from task creation tests: mock Prisma and billing modules, then **dynami
 
 ```ts title="test/tasks/create-task.test.ts"
 const { db } = await import("@/shared/lib/db/prisma");
-const { getCurrentOrganizationEntitlements } =
+const { getCurrentEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { assertCapability } =
   await import("@/features/billing/plan-guards");

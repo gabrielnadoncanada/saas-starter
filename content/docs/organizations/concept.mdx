@@ -22,7 +22,6 @@ model Organization {
   invitations         Invitation[]
   tasks               Task[]
   usageCounters       UsageCounter[]
-  purchases           Purchase[]
   aiConversations     AiConversation[]
   storedFiles         StoredFile[]
 }
@@ -81,5 +80,5 @@ export const accountFlags = {
 
 ## Multi-tenant behavior
 
-- **Tasks, usage, AI conversations, files, and purchases** are tied to an `organizationId` in the database (see relations on `Organization` in `teams.prisma`).
+- **Tasks, usage, AI conversations, and files** are tied to an `organizationId` in the database (see relations on `Organization` in `teams.prisma`).
 - Switching the active organization changes which rows apply for the current user session after navigation/refresh.

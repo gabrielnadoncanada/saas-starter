@@ -25,7 +25,6 @@ describe("DashboardCurrentPlanCard", () => {
         periodEnd: null,
         planId: "pro",
         planName: "Pro",
-        pricingModel: "flat",
         subscriptionStatus: "trialing",
         trialEnd: "2026-04-17T00:00:00.000Z",
       }),

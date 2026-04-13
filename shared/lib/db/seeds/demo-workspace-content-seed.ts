@@ -93,7 +93,7 @@ async function seedSubscription(organizationId: string) {
   const periodEnd = new Date(now);
   periodEnd.setDate(periodEnd.getDate() + 28);
 
-  const subscription = await db.subscription.upsert({
+  await db.subscription.upsert({
     where: { id: "seed-demo-subscription" },
     update: {
       plan: "pro",
@@ -104,7 +104,8 @@ async function seedSubscription(organizationId: string) {
       periodEnd,
       stripeCustomerId: null,
       stripeSubscriptionId: null,
-      seats: 2,
+      stripePriceId: "seed-pro-monthly",
+      stripeSubscriptionItemId: null,
     },
     create: {
       id: "seed-demo-subscription",
@@ -114,33 +115,6 @@ async function seedSubscription(organizationId: string) {
       billingInterval: "month",
       periodStart: subDays(now, 2),
       periodEnd,
-      seats: 2,
-    },
-  });
-
-  await db.subscriptionItem.upsert({
-    where: {
-      subscriptionId_itemType_itemKey_componentKey: {
-        subscriptionId: subscription.id,
-        itemType: "plan",
-        itemKey: "pro",
-        componentKey: "base",
-      },
-    },
-    update: {
-      billingInterval: "month",
-      quantity: 1,
-      status: "active",
-      stripePriceId: "seed-pro-monthly",
-    },
-    create: {
-      subscriptionId: subscription.id,
-      itemType: "plan",
-      itemKey: "pro",
-      componentKey: "base",
-      billingInterval: "month",
-      quantity: 1,
-      status: "active",
       stripePriceId: "seed-pro-monthly",
     },
   });

@@ -2,12 +2,9 @@ import "server-only";
 
 import { subDays } from "date-fns";
 
-import {
-  checkLimit,
-  getPlan,
-  hasCapability,
-} from "@/features/billing/plans";
-import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
+import { checkLimit, hasCapability } from "@/features/billing/entitlements";
+import { getPlan } from "@/features/billing/plans";
+import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
 import { getMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { routes } from "@/shared/constants/routes";
@@ -39,7 +36,7 @@ function buildUsageChart(tasks: { createdAt: Date }[]) {
 export async function getDashboardOverview() {
   const [organization, entitlements] = await Promise.all([
     getCurrentOrganization(),
-    getCurrentOrganizationEntitlements(),
+    getCurrentEntitlements(),
   ]);
   const plan = getPlan(entitlements?.planId ?? "free");
   const memberCount = organization?.members?.length ?? 0;

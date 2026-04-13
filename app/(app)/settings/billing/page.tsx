@@ -1,13 +1,11 @@
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
-import { startOneTimeCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 import { isTrialingSubscription } from "@/features/billing/plans";
 import { getBillingPageData } from "@/features/billing/server/get-billing-page-data";
 import { Page } from "@/shared/components/layout/page-layout";
 import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardAction,
@@ -25,8 +23,7 @@ export default async function SettingsBillingPage() {
     redirect(routes.auth.login);
   }
 
-  const { context, entitlements, hasSubscription, plans, oneTimeProducts } =
-    data;
+  const { context, entitlements, hasSubscription, plans } = data;
   const isTrialing = isTrialingSubscription(entitlements.subscriptionStatus);
   const trialEndsOn = entitlements.trialEnd
     ? format(entitlements.trialEnd, "MMM d, yyyy")
@@ -93,51 +90,11 @@ export default async function SettingsBillingPage() {
               }
               currentBillingInterval={entitlements.billingInterval}
               currentPlanId={entitlements.planId}
-              currentSeatQuantity={
-                entitlements.seats ?? context.organization.members.length
-              }
               hasCurrentSubscription={hasSubscription}
               plans={plans}
             />
           </CardContent>
         </Card>
-
-        {oneTimeProducts.length > 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>One-time products</CardTitle>
-              <CardDescription>
-                Sell one-time workspace upgrades without moving the team to a
-                recurring plan.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              {oneTimeProducts.map((product) => (
-                <form
-                  key={product.id}
-                  action={startOneTimeCheckoutAction}
-                  className="rounded-xl border p-4"
-                >
-                  <input type="hidden" name="itemKey" value={product.id} />
-                  <input
-                    type="hidden"
-                    name="itemType"
-                    value="one_time_product"
-                  />
-                  <div className="space-y-3">
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {product.description}
-                      </p>
-                    </div>
-                    <Button type="submit">Buy now</Button>
-                  </div>
-                </form>
-              ))}
-            </CardContent>
-          </Card>
-        ) : null}
       </div>
     </Page>
   );

@@ -7,18 +7,14 @@ vi.mock("@/features/organizations/server/organizations", () => ({
 }));
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
-  getCurrentOrganizationEntitlements: vi.fn(),
+  getCurrentEntitlements: vi.fn(),
 }));
 
 vi.mock("@/features/billing/server/usage-service", () => ({
   getMonthlyUsage: vi.fn(),
 }));
 
-vi.mock("@/features/billing/plans", () => ({
-  getPlan: vi.fn(() => ({
-    id: "pro",
-    name: "Pro",
-  })),
+vi.mock("@/features/billing/entitlements", () => ({
   checkLimit: vi.fn(() => ({
     allowed: true,
     limit: 100,
@@ -26,6 +22,14 @@ vi.mock("@/features/billing/plans", () => ({
     currentUsage: 10,
   })),
   hasCapability: vi.fn(() => true),
+  getDefaultEntitlements: vi.fn(),
+}));
+
+vi.mock("@/features/billing/plans", () => ({
+  getPlan: vi.fn(() => ({
+    id: "pro",
+    name: "Pro",
+  })),
 }));
 
 vi.mock("@/shared/lib/db/prisma", () => ({
@@ -42,7 +46,7 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 
 const { getCurrentOrganization } =
   await import("@/features/organizations/server/organizations");
-const { getCurrentOrganizationEntitlements } =
+const { getCurrentEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { getMonthlyUsage } =
   await import("@/features/billing/server/usage-service");
@@ -59,16 +63,13 @@ describe("getDashboardOverview", () => {
       name: "Acme",
       members: [{ id: "member_1" }],
     } as never);
-    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue({
+    vi.mocked(getCurrentEntitlements).mockResolvedValue({
       organizationId: "org_123",
       planId: "pro",
       planName: "Pro",
       limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000 },
       capabilities: ["ai.assistant", "team.invite"],
       billingInterval: "month",
-      oneTimeProductIds: [],
-      pricingModel: "flat",
-      seats: null,
       stripeCustomerId: null,
       stripeSubscriptionId: null,
       subscriptionStatus: "active",

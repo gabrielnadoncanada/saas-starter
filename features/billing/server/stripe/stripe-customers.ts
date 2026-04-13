@@ -2,7 +2,7 @@ import { routes } from "@/shared/constants/routes";
 import { db } from "@/shared/lib/db/prisma";
 import { stripe } from "@/shared/lib/stripe/client";
 
-export async function ensureOrganizationStripeCustomer(organizationId: string) {
+export async function ensureStripeCustomer(organizationId: string) {
   const organization = await db.organization.findUnique({
     where: { id: organizationId },
     select: {
@@ -36,7 +36,7 @@ export async function ensureOrganizationStripeCustomer(organizationId: string) {
   return customer.id;
 }
 
-export async function syncOrganizationStripeCustomer(params: {
+export async function syncStripeCustomer(params: {
   customerId: string;
   organizationId: string;
 }) {
@@ -46,7 +46,7 @@ export async function syncOrganizationStripeCustomer(params: {
   });
 }
 
-export async function findOrganizationIdByStripeCustomerId(customerId: string) {
+export async function findOrganizationByCustomer(customerId: string) {
   const organization = await db.organization.findFirst({
     where: { stripeCustomerId: customerId },
     select: { id: true },
@@ -55,7 +55,7 @@ export async function findOrganizationIdByStripeCustomerId(customerId: string) {
   return organization?.id ?? null;
 }
 
-export async function clearStripeCustomerBillingState(customerId: string) {
+export async function clearBillingState(customerId: string) {
   const [organizationResult, subscriptionResult] = await Promise.all([
     db.organization.updateMany({
       where: { stripeCustomerId: customerId },
@@ -72,7 +72,7 @@ export async function clearStripeCustomerBillingState(customerId: string) {
   };
 }
 
-export async function createOrganizationBillingPortalSession(
+export async function createBillingPortalSession(
   organizationId: string,
 ) {
   const [organization, latestSubscription] = await Promise.all([

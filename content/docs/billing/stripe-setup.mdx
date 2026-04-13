@@ -54,8 +54,8 @@ export async function POST(request: Request) {
 
 ## Customers and portal
 
-- **`ensureOrganizationStripeCustomer`** — Creates a Stripe Customer if the organization has none, stores `stripeCustomerId` on the org.
-- **`createOrganizationBillingPortalSession`** — Opens the Stripe Customer Portal with `return_url` back to `/settings/billing`.
+- **`ensureStripeCustomer`** — Creates a Stripe Customer if the organization has none, stores `stripeCustomerId` on the org.
+- **`createBillingPortalSession`** — Opens the Stripe Customer Portal with `return_url` back to `/settings/billing`.
 
 Point your Stripe webhook to `https://<your-domain>/api/stripe/webhook` and subscribe to the events handled in `stripe-webhooks.ts` (see the lifecycle hooks doc).
 

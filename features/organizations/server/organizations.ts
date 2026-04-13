@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
-import { getOrganizationSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
+import { getSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
 import type {
   CurrentOrganizationView,
   OrganizationMemberView,
@@ -174,16 +174,15 @@ function mapOrganizationMember(
 
 function mapCurrentOrganization(
   organization: FullOrganization,
-  subscription: Awaited<ReturnType<typeof getOrganizationSubscriptionSnapshot>>,
+  subscription: Awaited<ReturnType<typeof getSubscriptionSnapshot>>,
 ): CurrentOrganizationView {
   return {
     id: organization.id,
     name: organization.name,
     billingInterval: subscription.billingInterval,
     cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
-    plan: subscription.plan,
+    planId: subscription.planId,
     periodEnd: toIsoString(subscription.periodEnd),
-    pricingModel: subscription.pricingModel,
     stripeCustomerId:
       organization.stripeCustomerId ?? subscription.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId,
@@ -214,7 +213,7 @@ export const getCurrentOrganization = cache(
         query: { organizationId: orgId },
         headers: reqHeaders,
       }),
-      getOrganizationSubscriptionSnapshot(orgId),
+      getSubscriptionSnapshot(orgId),
     ]);
 
     if (!organization) {

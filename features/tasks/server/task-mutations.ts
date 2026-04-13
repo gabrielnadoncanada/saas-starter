@@ -2,8 +2,8 @@ import "server-only";
 
 import { Prisma, type Task } from "@prisma/client";
 
-import { assertCapability } from "@/features/billing/plans";
-import { getCurrentOrganizationEntitlements } from "@/features/billing/server/organization-entitlements";
+import { assertCapability } from "@/features/billing/entitlements";
+import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
 import type {
@@ -44,7 +44,7 @@ async function generateNextTaskCode(
 }
 
 export async function createTask(input: CreateTaskValues): Promise<Task> {
-  const entitlements = await getCurrentOrganizationEntitlements();
+  const entitlements = await getCurrentEntitlements();
 
   if (!entitlements) {
     throw new Error("Organization not found");

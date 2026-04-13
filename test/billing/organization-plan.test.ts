@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  hasCurrentStripeSubscription,
+  hasOngoingSubscription,
   hasPlanAccess,
   isTrialingSubscription,
 } from "@/features/billing/plans";
-import { applyOneTimePurchaseLimits } from "@/features/billing/server/organization-entitlements";
 
 describe("subscription status gating", () => {
   it("keeps paid access only for active billing states", () => {
@@ -17,43 +16,15 @@ describe("subscription status gating", () => {
   });
 
   it("tracks whether a Stripe subscription still exists", () => {
-    expect(hasCurrentStripeSubscription("active")).toBe(true);
-    expect(hasCurrentStripeSubscription("paused")).toBe(true);
-    expect(hasCurrentStripeSubscription("canceled")).toBe(false);
-    expect(hasCurrentStripeSubscription(null)).toBe(false);
+    expect(hasOngoingSubscription("active")).toBe(true);
+    expect(hasOngoingSubscription("paused")).toBe(true);
+    expect(hasOngoingSubscription("canceled")).toBe(false);
+    expect(hasOngoingSubscription(null)).toBe(false);
   });
 
   it("flags trial subscriptions explicitly", () => {
     expect(isTrialingSubscription("trialing")).toBe(true);
     expect(isTrialingSubscription("active")).toBe(false);
     expect(isTrialingSubscription(null)).toBe(false);
-  });
-});
-
-describe("one-time purchase limits", () => {
-  it("adds AI credits when ai_credit_boost was purchased", () => {
-    const limits = {
-      tasksPerMonth: 10,
-      teamMembers: 1,
-      storageMb: 100,
-      aiCredits: 100,
-    };
-
-    const next = applyOneTimePurchaseLimits(limits, ["ai_credit_boost"]);
-
-    expect(next.storageMb).toBe(100);
-    expect(next.tasksPerMonth).toBe(10);
-    expect(next.aiCredits).toBe(100 + 10_000);
-  });
-
-  it("leaves limits unchanged when no matching purchase", () => {
-    const limits = {
-      tasksPerMonth: 10,
-      teamMembers: 1,
-      storageMb: 100,
-      aiCredits: 100,
-    };
-
-    expect(applyOneTimePurchaseLimits(limits, [])).toEqual(limits);
   });
 });

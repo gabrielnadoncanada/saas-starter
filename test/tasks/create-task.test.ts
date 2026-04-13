@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LimitReachedError,
   UpgradeRequiredError,
-} from "@/features/billing/plans";
+} from "@/features/billing/entitlements";
 
 vi.mock("server-only", () => ({}));
 
@@ -18,12 +18,12 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 }));
 
 vi.mock("@/features/billing/server/organization-entitlements", () => ({
-  getCurrentOrganizationEntitlements: vi.fn(),
+  getCurrentEntitlements: vi.fn(),
 }));
 
-vi.mock("@/features/billing/plans", async (importOriginal) => {
+vi.mock("@/features/billing/entitlements", async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import("@/features/billing/plans")>();
+    await importOriginal<typeof import("@/features/billing/entitlements")>();
   return {
     ...actual,
     assertCapability: vi.fn(),
@@ -35,10 +35,10 @@ vi.mock("@/features/billing/server/usage-service", () => ({
 }));
 
 const { db } = await import("@/shared/lib/db/prisma");
-const { getCurrentOrganizationEntitlements } =
+const { getCurrentEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { assertCapability } =
-  await import("@/features/billing/plans");
+  await import("@/features/billing/entitlements");
 const { consumeMonthlyUsage } =
   await import("@/features/billing/server/usage-service");
 const { createTask } = await import("@/features/tasks/server/task-mutations");
@@ -50,9 +50,6 @@ const entitlements = {
   limits: { tasksPerMonth: 1000, teamMembers: 5, storageMb: 5000 },
   capabilities: ["task.create"],
   billingInterval: "month",
-  oneTimeProductIds: [],
-  pricingModel: "flat",
-  seats: null,
   stripeCustomerId: null,
   stripeSubscriptionId: null,
   subscriptionStatus: "active",
@@ -64,7 +61,7 @@ describe("createTask", () => {
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) =>
       callback(db),
     );
-    vi.mocked(getCurrentOrganizationEntitlements).mockResolvedValue(
+    vi.mocked(getCurrentEntitlements).mockResolvedValue(
       entitlements as never,
     );
     vi.mocked(assertCapability).mockImplementation(() => {});

@@ -1,7 +1,4 @@
-import type {
-  BillingInterval,
-  PricingModel,
-} from "@/shared/config/billing.config";
+import type { BillingInterval } from "@/shared/config/billing.config";
 
 export function formatPriceAmount(
   unitAmount: number,
@@ -16,16 +13,8 @@ export function formatPriceAmount(
 
 export function getBillingIntervalSuffix(
   interval: BillingInterval,
-  pricingModel: PricingModel,
   variant: "short" | "long" = "long",
 ) {
-  if (pricingModel === "per_seat") {
-    if (variant === "short") {
-      return interval === "year" ? "per seat / yr" : "per seat / mo";
-    }
-    return interval === "year" ? "per seat / year" : "per seat / month";
-  }
-
   if (variant === "short") {
     return interval === "year" ? "/ yr" : "/ mo";
   }
