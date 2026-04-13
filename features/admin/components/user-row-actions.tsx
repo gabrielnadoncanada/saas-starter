@@ -8,16 +8,16 @@ import {
   Trash2,
 } from "lucide-react";
 
-import type { AdminApiUser } from "@/shared/lib/auth/better-auth-inferred-types";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import { isPlatformAdmin } from "@/shared/lib/auth/roles";
+} from "@/components/ui/dropdown-menu";
+import type { AdminApiUser } from "@/lib/auth/better-auth-inferred-types";
+import { isPlatformAdmin } from "@/lib/auth/roles";
 
 type UserRowActionsProps = {
   user: AdminApiUser;

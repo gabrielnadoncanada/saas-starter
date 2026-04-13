@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { routes } from "@/constants/routes";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
-import { routes } from "@/shared/constants/routes";
-import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
+import type { AiModelDefinition, AiModelId } from "@/lib/ai/models";
 
 type AssistantWorkspaceProps = {
   initialConversation: AssistantConversation | null;

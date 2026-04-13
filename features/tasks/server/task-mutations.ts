@@ -12,8 +12,8 @@ import type {
   CreateTaskValues,
   UpdateTaskValues,
 } from "@/features/tasks/task.schema";
-import type { TaskStatus } from "@/shared/lib/db/enums";
-import { db } from "@/shared/lib/db/prisma";
+import type { TaskStatus } from "@/lib/db/enums";
+import { db } from "@/lib/db/prisma";
 
 const MAX_TASK_CODE_ATTEMPTS = 10;
 

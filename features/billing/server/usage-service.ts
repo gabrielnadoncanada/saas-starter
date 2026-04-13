@@ -1,10 +1,9 @@
 import {
   type LimitKey,
   type OrganizationEntitlements,
-} from "@/shared/config/billing.config";
-import { db } from "@/shared/lib/db/prisma";
-
+} from "@/config/billing.config";
 import { getPlanLimit, LimitReachedError } from "@/features/billing/entitlements";
+import { db } from "@/lib/db/prisma";
 
 function getPeriodStart(date = new Date()) {
   return new Date(date.getFullYear(), date.getMonth(), 1);

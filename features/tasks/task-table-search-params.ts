@@ -7,7 +7,7 @@ import {
   parseAsStringLiteral,
 } from "nuqs/server";
 
-import { TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
+import { TaskPriority, TaskStatus } from "@/lib/db/enums";
 
 export const TASK_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50] as const;
 export const TASK_TABLE_SORT_FIELDS = [

@@ -2,14 +2,14 @@
 
 import { Loader2, MoreHorizontal, Trash2 } from "lucide-react";
 
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import { SidebarMenuAction } from "@/shared/components/ui/sidebar";
+} from "@/components/ui/dropdown-menu";
+import { SidebarMenuAction } from "@/components/ui/sidebar";
 
 type AssistantConversationActionsMenuProps = {
   conversationId: string;

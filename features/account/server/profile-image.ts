@@ -1,8 +1,8 @@
 import "server-only";
 
-import { getFileStorage } from "@/shared/lib/storage/storage";
-import { isPlatformAdmin } from "@/shared/lib/auth/roles";
-import { db } from "@/shared/lib/db/prisma";
+import { isPlatformAdmin } from "@/lib/auth/roles";
+import { db } from "@/lib/db/prisma";
+import { getFileStorage } from "@/lib/storage/storage";
 
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 

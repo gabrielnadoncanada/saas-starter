@@ -2,11 +2,11 @@
 
 import { Sparkles } from "lucide-react";
 
-import { ConversationEmptyState } from "@/shared/components/ai-elements/conversation";
+import { ConversationEmptyState } from "@/components/ai-elements/conversation";
 import {
   Suggestion,
   Suggestions,
-} from "@/shared/components/ai-elements/suggestion";
+} from "@/components/ai-elements/suggestion";
 
 type EmptyStateProps = {
   onPromptClick: (text: string) => void;

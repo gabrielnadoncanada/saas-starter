@@ -1,12 +1,12 @@
-import { getCurrentOrganizationContext } from "@/features/organizations/server/organizations";
-import { ActivityFeed } from "@/shared/components/activity-feed";
+import { ActivityFeed } from "@/components/activity-feed";
 import {
   Page,
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page-layout";
-import { listOrganizationActivity } from "@/shared/lib/activity/list-activity";
+} from "@/components/layout/page-layout";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/organizations";
+import { listOrganizationActivity } from "@/lib/activity/list-activity";
 
 export default async function ActivityPage() {
   const context = await getCurrentOrganizationContext();

@@ -2,13 +2,13 @@
 
 import { format } from "date-fns";
 
-import type { OrgMember } from "@/features/admin/types/organizations.types";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import type { OrgMember } from "@/features/admin/types/organizations.types";
 
 type AdminOrganizationMembersListProps = {
   members: OrgMember[];

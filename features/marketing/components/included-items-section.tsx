@@ -43,7 +43,7 @@ const includedItems = [
   },
   {
     label: `${MARKETING_DOC_COUNT} docs`,
-    detail: "Setup, architecture, 31 customization guides, troubleshooting",
+    detail: "Setup, customization, auth, billing, deployment, and extension",
   },
 ];
 

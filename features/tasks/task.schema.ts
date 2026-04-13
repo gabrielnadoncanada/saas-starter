@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
+import { TaskLabel, TaskPriority, TaskStatus } from "@/lib/db/enums";
 
 const taskTitleSchema = z
   .string()

@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { OrganizationEntitlements } from "@/config/billing.config";
 import { LimitReachedError } from "@/features/billing/entitlements";
 import { getPlan } from "@/features/billing/plans";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
-import type { OrganizationEntitlements } from "@/shared/config/billing.config";
 
-vi.mock("@/shared/lib/db/prisma", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   db: {},
 }));
 

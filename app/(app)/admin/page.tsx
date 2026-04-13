@@ -1,19 +1,19 @@
 import { Building2, ShieldBan, ShieldCheck, Users } from "lucide-react";
 
-import { getAdminOverviewStats } from "@/features/admin/server/users";
 import {
   Page,
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page-layout";
+} from "@/components/layout/page-layout";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
+} from "@/components/ui/card";
+import { getAdminOverviewStats } from "@/features/admin/server/users";
 
 export default async function AdminDashboardPage() {
   const stats = await getAdminOverviewStats();

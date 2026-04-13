@@ -1,0 +1,64 @@
+---
+title: Customization
+description: The main files to edit when changing branding, navigation, pricing, and account mode
+---
+
+# Customization
+
+## Purpose
+
+Handle the common buyer edits without sending you through half the repo.
+
+## Files you will revisit often
+
+- `app/layout.tsx`
+- `app/globals.css`
+- `config/account.config.ts`
+- `config/billing.config.ts`
+- `components/navigation/settings-sidebar.tsx`
+- `app/(marketing)/page.tsx`
+
+## Most common edits
+
+### Change branding
+
+- Update site metadata in `app/layout.tsx`.
+- Update theme tokens in `app/globals.css`.
+- Update the marketing homepage copy in `app/(marketing)/page.tsx`.
+
+### Switch account mode
+
+Set `NEXT_PUBLIC_ACCOUNT_MODE` in `.env`:
+
+- `organizations-only` for a workspace-first SaaS
+- `personal-only` for a solo-account product
+
+The behavior is centralized in `config/account.config.ts`. That file drives whether team UI, organization creation, and the switcher are shown.
+
+### Change navigation
+
+Edit the settings sidebar links in `components/navigation/settings-sidebar.tsx`.
+
+If your product needs bigger route changes, follow the existing pattern:
+
+- route surface in `app/`
+- product behavior in `features/`
+- shared infrastructure in `lib/` or `components/`
+
+### Change plans and pricing
+
+Edit `config/billing.config.ts`.
+
+That file controls:
+
+- plan names
+- marketing feature bullets
+- capabilities
+- limits
+- Stripe price ids read from env
+
+For the billing flow itself, use [Plans and billing](/docs/plans-and-billing).
+
+## Rule of thumb
+
+For common customization, prefer editing the obvious file directly instead of building another abstraction layer around it.

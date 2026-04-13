@@ -1,7 +1,7 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse } from "next/server";
 
-import { routes } from "@/shared/constants/routes";
+import { routes } from "@/constants/routes";
 
 const protectedPrefixes = ["/dashboard", "/settings", "/admin"];
 

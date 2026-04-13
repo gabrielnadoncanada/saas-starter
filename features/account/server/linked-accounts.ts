@@ -1,10 +1,10 @@
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth/auth-config";
+import { auth } from "@/lib/auth/auth-config";
 import {
   isOAuthProviderId,
   type OAuthProviderId,
-} from "@/shared/lib/auth/oauth-config";
+} from "@/lib/auth/oauth-config";
 
 export type LinkedProviderOverview = {
   provider: OAuthProviderId;

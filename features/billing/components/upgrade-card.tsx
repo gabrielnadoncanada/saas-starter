@@ -3,15 +3,15 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
 
 type UpgradeCardProps = {
   feature: string;

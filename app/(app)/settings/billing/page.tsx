@@ -1,11 +1,8 @@
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
-import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
-import { isTrialingSubscription } from "@/features/billing/plans";
-import { getBillingPageData } from "@/features/billing/server/get-billing-page-data";
-import { Page } from "@/shared/components/layout/page-layout";
-import { Badge } from "@/shared/components/ui/badge";
+import { Page } from "@/components/layout/page-layout";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -13,8 +10,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
+import { isTrialingSubscription } from "@/features/billing/plans";
+import { getBillingPageData } from "@/features/billing/server/get-billing-page-data";
 
 export default async function SettingsBillingPage() {
   const data = await getBillingPageData();

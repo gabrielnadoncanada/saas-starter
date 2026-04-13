@@ -1,7 +1,7 @@
 import { ArrowRight, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -10,10 +10,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { Progress } from "@/shared/components/ui/progress";
-import { Separator } from "@/shared/components/ui/separator";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { routes } from "@/constants/routes";
 
 type DashboardUsageLimitsCardProps = {
   aiCreditsLimit: number;

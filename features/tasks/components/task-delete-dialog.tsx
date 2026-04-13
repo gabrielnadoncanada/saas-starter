@@ -4,10 +4,10 @@ import type { Task } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
 
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { deleteTaskAction } from "@/features/tasks/actions/task.actions";
-import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import type { FormActionState } from "@/shared/types/form-action-state";
+import { useToastMessage } from "@/hooks/use-toast-message";
+import type { FormActionState } from "@/types/form-action-state";
 
 type DeleteTaskFormValues = { taskId: number };
 

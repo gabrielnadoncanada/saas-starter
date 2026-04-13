@@ -1,1 +1,1 @@
-export { auth } from "@/shared/lib/auth/auth-config";
+export { auth } from "@/lib/auth/auth-config";

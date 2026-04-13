@@ -2,12 +2,12 @@
 
 import { useActionState } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   type ResendVerificationActionState,
   resendVerificationEmailAction,
 } from "@/features/auth/actions/public-auth.actions";
-import { Button } from "@/shared/components/ui/button";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
+import { useToastMessage } from "@/hooks/use-toast-message";
 
 type ResendVerificationFormProps = {
   email: string;

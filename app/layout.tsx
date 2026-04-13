@@ -1,10 +1,11 @@
-import "@/shared/lib/env";
+import "@/lib/env";
 import "./globals.css";
 
-import type { Metadata, Viewport } from "next";
 import { GeistPixelSquare } from "geist/font/pixel";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Providers } from "@/shared/components/providers/providers";
+
+import { Providers } from "@/components/providers/providers";
 
 export const metadata: Metadata = {
   title: {

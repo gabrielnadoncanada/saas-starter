@@ -1,16 +1,14 @@
 import type Stripe from "stripe";
 
-import {
-  findCatalogPrice,
-  getPlan,
-  isPlanId,
-} from "@/features/billing/plans";
 import type {
   BillingInterval,
   PlanId,
-} from "@/shared/config/billing.config";
-import { db } from "@/shared/lib/db/prisma";
-import { stripe } from "@/shared/lib/stripe/client";
+} from "@/config/billing.config";
+import {
+  getPlan,
+} from "@/features/billing/plans";
+import { db } from "@/lib/db/prisma";
+import { stripe } from "@/lib/stripe/client";
 
 // --- Subscription snapshot ---
 

@@ -3,20 +3,20 @@
 import Link from "next/link";
 import { useActionState } from "react";
 
-import {
-  resetPasswordAction,
-  type ResetPasswordActionState,
-} from "@/features/auth/actions/public-auth.actions";
-import { PasswordInput } from "@/shared/components/forms/password-input";
-import { Button } from "@/shared/components/ui/button";
+import { PasswordInput } from "@/components/forms/password-input";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/shared/components/ui/field";
-import { routes } from "@/shared/constants/routes";
-import { getFieldState } from "@/shared/lib/get-field-state";
+} from "@/components/ui/field";
+import { routes } from "@/constants/routes";
+import {
+  resetPasswordAction,
+  type ResetPasswordActionState,
+} from "@/features/auth/actions/public-auth.actions";
+import { getFieldState } from "@/lib/get-field-state";
 
 type ResetPasswordFormProps = {
   token: string;

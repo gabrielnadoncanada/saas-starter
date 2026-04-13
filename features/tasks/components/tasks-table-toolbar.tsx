@@ -5,14 +5,14 @@ import type { Table } from "@tanstack/react-table";
 import { XIcon } from "lucide-react";
 import { useQueryStates } from "nuqs";
 
-import { taskPriorities, taskStatuses } from "@/features/tasks/task-display";
-import { taskTableSearchParams } from "@/features/tasks/task-table-search-params";
 import {
   DataTableFacetedFilter,
   DataTableViewOptions,
-} from "@/shared/components/data-table";
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
+} from "@/components/data-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { taskPriorities, taskStatuses } from "@/features/tasks/task-display";
+import { taskTableSearchParams } from "@/features/tasks/task-table-search-params";
 
 type TasksTableToolbarProps = {
   table: Table<Task>;

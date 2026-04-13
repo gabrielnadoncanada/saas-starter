@@ -1,15 +1,15 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { routes } from "@/constants/routes";
 import { ensureUserWorkspace } from "@/features/auth/server/onboarding";
 import {
   isBillingInterval,
   isPlanId,
 } from "@/features/billing/plans";
 import { resumeCheckoutAfterSignIn } from "@/features/billing/server/resume-checkout-after-sign-in";
-import { routes } from "@/shared/constants/routes";
-import { getCallbackURL } from "@/shared/lib/auth/callback-url";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { getCallbackURL } from "@/lib/auth/callback-url";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 type PostSignInPageProps = {
   searchParams: Promise<{

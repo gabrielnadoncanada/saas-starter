@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   LimitReachedError,
-  UpgradeRequiredError,
 } from "@/features/billing/entitlements";
 
 const {
   headersMock,
+  getCurrentUserMock,
   getCurrentEntitlementsMock,
   assertCapabilityMock,
   assertLimitMock,
@@ -16,6 +16,7 @@ const {
   requireActiveOrganizationRoleMock,
 } = vi.hoisted(() => ({
   headersMock: vi.fn(),
+  getCurrentUserMock: vi.fn(),
   getCurrentEntitlementsMock: vi.fn(),
   assertCapabilityMock: vi.fn(),
   assertLimitMock: vi.fn(),
@@ -29,40 +30,8 @@ vi.mock("next/headers", () => ({
   headers: headersMock,
 }));
 
-vi.mock("@/shared/lib/auth/authenticated-action", () => ({
-  validatedOrganizationOwnerAction: (_schema: unknown, action: unknown) => {
-    const fn = action as (
-      data: { email: string; role: "member" | "admin" },
-      context: {
-        organizationId: string;
-        user: { id: string; email: string };
-        formData: FormData;
-      },
-    ) => Promise<unknown>;
-    return async (_prevState: unknown, formData: FormData) => {
-      try {
-        await requireActiveOrganizationRoleMock(["owner"]);
-        const raw = Object.fromEntries(formData.entries());
-        const data = {
-          email: String(raw.email ?? ""),
-          role: raw.role as "member" | "admin",
-        };
-        return await fn(data, {
-          formData,
-          organizationId: "org_1",
-          user: { id: "owner_1", email: "owner@example.com" },
-        });
-      } catch (error) {
-        if (error instanceof UpgradeRequiredError) {
-          return { error: error.message, errorCode: "UPGRADE_REQUIRED" };
-        }
-        if (error instanceof LimitReachedError) {
-          return { error: error.message, errorCode: "LIMIT_REACHED" };
-        }
-        throw error;
-      }
-    };
-  },
+vi.mock("@/lib/auth/get-current-user", () => ({
+  getCurrentUser: getCurrentUserMock,
 }));
 
 vi.mock("@/features/organizations/server/organizations", () => ({
@@ -92,7 +61,7 @@ vi.mock("@/features/organizations/server/organization-invitations", () => ({
   resendOrganizationInvitation: vi.fn(),
 }));
 
-vi.mock("@/shared/lib/auth/auth-config", () => ({
+vi.mock("@/lib/auth/auth-config", () => ({
   auth: {
     api: {
       listInvitations: listInvitationsMock,
@@ -123,6 +92,10 @@ describe("inviteOrganizationMemberAction", () => {
     vi.clearAllMocks();
 
     headersMock.mockResolvedValue(new Headers());
+    getCurrentUserMock.mockResolvedValue({
+      id: "owner_1",
+      email: "owner@example.com",
+    });
     requireActiveOrganizationRoleMock.mockResolvedValue({
       organizationId: "org_1",
       roles: ["owner"],

@@ -1,33 +1,37 @@
 ---
 title: Introduction
-description: Launch faster with the SaaS Starter
+description: Start with the small set of docs that actually helps you ship
 ---
 
-# SaaS Starter Documentation
+# SaaS Starter Docs
 
-Welcome to the documentation for the SaaS Starter.
+This docs section is intentionally short.
 
-This starter is built to help you launch quickly with a solid production-ready base.
+The old structure had too many pages, too many overlaps, and too much theory for common buyer tasks. The docs now focus on the few guides that matter when you are trying to get the starter running, customize it, and ship.
 
-## What is included
+## Start here
 
-- Authentication
-- Billing
-- Dashboard
-- Settings
-- Documentation-ready structure
-- Scalable feature-based organization
+- [Getting started](/docs/getting-started) for install, env, database, seed, and first run.
+- [Customization](/docs/customization) for branding, navigation, pricing, and account mode.
+- [Accounts and auth](/docs/accounts-and-auth) for sign-in methods, OAuth, email auth, and account behavior.
+- [Plans and billing](/docs/plans-and-billing) for Stripe setup, plans, capabilities, limits, and gating.
+- [Development](/docs/development) for how features are organized and where to extend the app.
+- [Deployment](/docs/deployment) for production env, launch checks, and rollout.
+- [Reference](/docs/reference) for the key files you will come back to often.
 
-## Quick start
+## How to use these docs
 
-Follow these steps to get started:
+Use the smallest guide that solves the job in front of you.
 
-1. Clone the repository
-2. Install dependencies
-3. Configure your environment variables
-4. Run the development server
+- If you have not run the app yet, start with `Getting started`.
+- If you want to change what the starter looks like or how it is positioned, go to `Customization`.
+- If you want to change sign-in, account behavior, or team flows, go to `Accounts and auth`.
+- If you want to edit plans or gate features, go to `Plans and billing`.
+- If you want to add product features, go to `Development`.
+- If you are about to launch, finish with `Deployment`.
 
-```bash
-pnpm install
-pnpm dev
-```
+## Philosophy
+
+This starter is for people who want to understand the code quickly.
+
+If a common change cannot be explained in a short recipe, the right fix is usually to simplify the code path, not to write a longer document.

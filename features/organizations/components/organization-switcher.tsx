@@ -13,8 +13,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import { authClient } from "@/shared/lib/auth/auth-client";
+} from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth/auth-client";
 
 type OrganizationSwitcherProps = {
   onCreateWorkspace: () => void;

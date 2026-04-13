@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { handleStripeWebhookEvent } from "@/features/billing/server/stripe/stripe-webhooks";
-import { stripe } from "@/shared/lib/stripe/client";
+import { stripe } from "@/lib/stripe/client";
 
 export async function POST(request: Request) {
   const payload = await request.text();

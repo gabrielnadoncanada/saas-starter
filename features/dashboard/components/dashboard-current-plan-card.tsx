@@ -2,13 +2,8 @@ import { format } from "date-fns";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import {
-  getPlanDisplayPrice,
-  hasOngoingSubscription,
-  isTrialingSubscription,
-} from "@/features/billing/plans";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -17,10 +12,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { Separator } from "@/shared/components/ui/separator";
-import type { BillingInterval } from "@/shared/config/billing.config";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import type { BillingInterval } from "@/config/billing.config";
+import { routes } from "@/constants/routes";
+import {
+  getPlanDisplayPrice,
+  hasOngoingSubscription,
+  isTrialingSubscription,
+} from "@/features/billing/plans";
 
 type DashboardCurrentPlanCardProps = {
   billingInterval: BillingInterval | null;

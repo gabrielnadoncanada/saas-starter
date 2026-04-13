@@ -22,8 +22,8 @@ import {
   UpgradeRequiredError,
 } from "@/features/billing/entitlements";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
-import { getAiModelInstance } from "@/shared/lib/ai/get-model-instance";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { getAiModelInstance } from "@/lib/ai/get-model-instance";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 const MAX_MESSAGES = 100;
 const MAX_MESSAGE_LENGTH = 10_000;

@@ -10,7 +10,7 @@ import {
   Timer,
 } from "lucide-react";
 
-import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
+import { TaskLabel, TaskPriority, TaskStatus } from "@/lib/db/enums";
 
 export const taskLabels: { value: TaskLabel; label: string }[] = [
   { value: TaskLabel.BUG, label: "Bug" },

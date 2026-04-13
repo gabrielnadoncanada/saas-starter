@@ -1,6 +1,6 @@
-import { routes } from "@/shared/constants/routes";
-import { db } from "@/shared/lib/db/prisma";
-import { stripe } from "@/shared/lib/stripe/client";
+import { routes } from "@/constants/routes";
+import { db } from "@/lib/db/prisma";
+import { stripe } from "@/lib/stripe/client";
 
 export async function ensureStripeCustomer(organizationId: string) {
   const organization = await db.organization.findUnique({

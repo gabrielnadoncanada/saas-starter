@@ -1,12 +1,12 @@
+import type { BillingInterval, PlanId } from "@/config/billing.config";
+import { routes } from "@/constants/routes";
 import {
   buildPlanCheckoutLineItems,
-  SUBSCRIPTION_EXISTS_STATUSES,
   getPlan,
+  SUBSCRIPTION_EXISTS_STATUSES,
 } from "@/features/billing/plans";
-import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
-import { routes } from "@/shared/constants/routes";
-import { db } from "@/shared/lib/db/prisma";
-import { stripe } from "@/shared/lib/stripe/client";
+import { db } from "@/lib/db/prisma";
+import { stripe } from "@/lib/stripe/client";
 
 import { ensureStripeCustomer } from "./stripe-customers";
 

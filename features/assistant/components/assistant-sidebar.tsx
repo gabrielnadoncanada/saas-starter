@@ -1,46 +1,40 @@
 "use client";
 
 import { ArrowLeftIcon, MessageSquarePlus } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import {
-  NavGroup,
-  SidebarMenuLink,
-} from "@/shared/components/navigation/nav-group";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-} from "@/shared/components/ui/sidebar";
+import { SidebarMenuLink } from "@/components/navigation/nav-group";
+import { SidebarGroupSearch } from "@/components/navigation/sidebar-group-search";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/shared/components/ui/collapsible";
-
+} from "@/components/ui/collapsible";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import { routes } from "@/constants/routes";
 import { AssistantSidebarNav } from "@/features/assistant/components/assistant-sidebar-nav";
-
-import { routes } from "@/shared/constants/routes";
-import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";
-
-import { ChevronRight } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 export function AssistantSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarMenuButton variant="ghost" asChild tooltip="Back">
+        <SidebarMenuButton variant="ghost" asChild tooltip="Back to dashboard">
           <Link
             href={routes.app.dashboard}
             className="justify-start whitespace-nowrap"
           >
             <ArrowLeftIcon className="size-4" />
-            Back
+            Back to dashboard
           </Link>
         </SidebarMenuButton>
       </SidebarHeader>

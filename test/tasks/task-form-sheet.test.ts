@@ -32,11 +32,11 @@ vi.mock("@/features/tasks/actions/task.actions", () => ({
   updateTaskAction: vi.fn(),
 }));
 
-vi.mock("@/shared/hooks/use-toast-message", () => ({
+vi.mock("@/hooks/use-toast-message", () => ({
   useToastMessage: useToastMessageMock,
 }));
 
-vi.mock("@/shared/components/ui/sheet", () => ({
+vi.mock("@/components/ui/sheet", () => ({
   Sheet: ({ children }: { children: React.ReactNode }) =>
     React.createElement("div", null, children),
   SheetContent: ({ children }: { children: React.ReactNode }) =>
@@ -53,11 +53,11 @@ vi.mock("@/shared/components/ui/sheet", () => ({
     React.createElement("div", null, children),
 }));
 
-vi.mock("@/shared/components/billing/upgrade-prompt", () => ({
+vi.mock("@/components/billing/upgrade-prompt", () => ({
   UpgradePrompt: () => null,
 }));
 
-vi.mock("@/shared/lib/get-field-state", () => ({
+vi.mock("@/lib/get-field-state", () => ({
   getFieldState: () => ({ error: undefined, invalid: false, value: "" }),
 }));
 

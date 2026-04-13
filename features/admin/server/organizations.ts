@@ -1,4 +1,4 @@
-import { db } from "@/shared/lib/db/prisma";
+import { db } from "@/lib/db/prisma";
 
 import type {
   ListAdminOrganizationsQuery,

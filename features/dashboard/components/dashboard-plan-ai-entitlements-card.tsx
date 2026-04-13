@@ -1,9 +1,8 @@
 import { ArrowRight, Check, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-import { hasCapability } from "@/features/billing/entitlements";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -12,17 +11,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
+} from "@/components/ui/card";
 import {
   Item,
   ItemContent,
   ItemGroup,
   ItemMedia,
   ItemTitle,
-} from "@/shared/components/ui/item";
-import { Progress } from "@/shared/components/ui/progress";
-import type { OrganizationEntitlements } from "@/shared/config/billing.config";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/item";
+import { Progress } from "@/components/ui/progress";
+import type { OrganizationEntitlements } from "@/config/billing.config";
+import { routes } from "@/constants/routes";
+import { hasCapability } from "@/features/billing/entitlements";
 
 type DashboardPlanAiEntitlementsCardProps = {
   aiCreditsLimit: number;

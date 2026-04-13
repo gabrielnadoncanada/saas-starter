@@ -1,8 +1,8 @@
 /**
  * Marketing page copy — single source for counts and seller profile.
- * Doc count: `(Get-ChildItem content/docs -Recurse -File).Count` (PowerShell)
+ * Curated guide count exposed on /docs.
  */
-export const MARKETING_DOC_COUNT = 113;
+export const MARKETING_DOC_COUNT = 8;
 
 export const marketingBuilder = {
   name: "Tenviq",

@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
-import { RootProvider } from "fumadocs-ui/provider/next";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
-import { docsSource } from "@/shared/lib/docs/source";
+import { RootProvider } from "fumadocs-ui/provider/next";
+import type { ReactNode } from "react";
+
+import { docsSource } from "@/lib/docs/source";
 
 export default function DocsRootLayout({ children }: { children: ReactNode }) {
   return (

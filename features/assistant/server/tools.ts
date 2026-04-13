@@ -15,6 +15,7 @@ import {
   LimitReachedError,
   UpgradeRequiredError,
 } from "@/features/billing/entitlements";
+import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
 import {
   createTask,
   updateTask,
@@ -23,9 +24,8 @@ import {
   createTaskSchema,
   type CreateTaskValues,
 } from "@/features/tasks/task.schema";
-import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
-import { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
-import { db } from "@/shared/lib/db/prisma";
+import { TaskLabel, TaskPriority, TaskStatus } from "@/lib/db/enums";
+import { db } from "@/lib/db/prisma";
 
 function toAssistantToolFailure(error: unknown): AssistantToolFailure {
   if (error instanceof UpgradeRequiredError) {

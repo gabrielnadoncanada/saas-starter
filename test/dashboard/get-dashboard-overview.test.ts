@@ -32,7 +32,7 @@ vi.mock("@/features/billing/plans", () => ({
   })),
 }));
 
-vi.mock("@/shared/lib/db/prisma", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   db: {
     task: {
       count: vi.fn(),
@@ -50,7 +50,7 @@ const { getCurrentEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { getMonthlyUsage } =
   await import("@/features/billing/server/usage-service");
-const { db } = await import("@/shared/lib/db/prisma");
+const { db } = await import("@/lib/db/prisma");
 const { getDashboardOverview } =
   await import("@/features/dashboard/server/get-dashboard-overview");
 

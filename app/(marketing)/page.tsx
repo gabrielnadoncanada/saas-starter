@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import { AiProof } from "@/features/marketing/components/ai-proof";
 import { BuilderSection } from "@/features/marketing/components/builder-section";
 import { BuyerFaq } from "@/features/marketing/components/buyer-faq";
@@ -12,7 +13,6 @@ import { MarketingFeatureGrid } from "@/features/marketing/components/marketing-
 import { ScreenshotsGallery } from "@/features/marketing/components/screenshots-gallery";
 import { StarterPricing } from "@/features/marketing/components/starter-pricing";
 import { MARKETING_DOC_COUNT } from "@/features/marketing/site";
-import { Button } from "@/shared/components/ui/button";
 
 export const metadata: Metadata = {
   title:
@@ -115,8 +115,8 @@ export default function HomePage() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
               Auth, billing, plan gating, teams, AI-ready monetization patterns,
-              and {MARKETING_DOC_COUNT} docs. Buy once, own the code, launch
-              your SaaS this week.
+              and {MARKETING_DOC_COUNT} focused docs. Buy once, own the code,
+              launch your SaaS this week.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Link href="#pricing">

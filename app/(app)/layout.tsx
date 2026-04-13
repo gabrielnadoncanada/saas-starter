@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { routes } from "@/shared/constants/routes";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { routes } from "@/constants/routes";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export default async function AppLayout({
   children,

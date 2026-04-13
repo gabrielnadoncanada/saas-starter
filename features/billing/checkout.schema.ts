@@ -1,11 +1,11 @@
 import { z } from "zod";
 
+import type { BillingInterval, PlanId } from "@/config/billing.config";
 import {
   getPlanDisplayPrice,
   isBillingInterval,
   isPlanId,
 } from "@/features/billing/plans";
-import type { BillingInterval, PlanId } from "@/shared/config/billing.config";
 
 const paidPlanIdSchema = z
   .string()

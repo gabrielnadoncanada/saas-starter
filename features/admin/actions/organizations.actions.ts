@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdminAction } from "@/features/auth/server/require-admin";
-import { db } from "@/shared/lib/db/prisma";
+import { db } from "@/lib/db/prisma";
 
 import { getAdminOrganizationDetail } from "../server/organizations";
 

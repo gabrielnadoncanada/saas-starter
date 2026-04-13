@@ -1,22 +1,17 @@
 import { KeyRound, Link2, Trash, UserIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
-import { EditPasswordDialog } from "@/features/account/components/settings/edit-password-dialog";
-import { EditProfileDialog } from "@/features/account/components/settings/edit-profile-dialog";
-import { LinkedAccountsCard } from "@/features/account/components/settings/linked-accounts-card";
-import { getLinkedAccountsOverview } from "@/features/account/server/linked-accounts";
 import {
   Page,
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page-layout";
+} from "@/components/layout/page-layout";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
+} from "@/components/ui/avatar";
 import {
   Card,
   CardAction,
@@ -24,14 +19,19 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import { DeleteAccountDialog } from "@/features/account/components/settings/delete-account-dialog";
+import { EditPasswordDialog } from "@/features/account/components/settings/edit-password-dialog";
+import { EditProfileDialog } from "@/features/account/components/settings/edit-profile-dialog";
+import { LinkedAccountsCard } from "@/features/account/components/settings/linked-accounts-card";
+import { getLinkedAccountsOverview } from "@/features/account/server/linked-accounts";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 import {
   getEnabledOAuthProviderIds,
   isOAuthProviderId,
   OAUTH_PROVIDER_LABELS,
-} from "@/shared/lib/auth/oauth-config";
+} from "@/lib/auth/oauth-config";
 
 type PageProps = {
   searchParams: Promise<{

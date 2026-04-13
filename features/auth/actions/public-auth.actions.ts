@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 
+import { routes } from "@/constants/routes";
 import {
   resendVerificationEmailSchema,
   type ResendVerificationEmailValues,
@@ -16,11 +17,10 @@ import {
   resetPasswordSchema,
   type ResetPasswordValues,
 } from "@/features/auth/password-change.schema";
-import { routes } from "@/shared/constants/routes";
-import { auth } from "@/shared/lib/auth/auth-config";
-import { validatedPublicAction } from "@/shared/lib/auth/authenticated-action";
-import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
-import type { FormActionState } from "@/shared/types/form-action-state";
+import { auth } from "@/lib/auth/auth-config";
+import { validatedPublicAction } from "@/lib/auth/authenticated-action";
+import { buildCallbackURL } from "@/lib/auth/callback-url";
+import type { FormActionState } from "@/types/form-action-state";
 
 type RedirectState<TValues extends Record<string, unknown>> =
   FormActionState<TValues> & {
@@ -78,57 +78,56 @@ function getAuthErrorMessage(error: unknown, fallback: string) {
 
 export const signInAction = validatedPublicAction(
   signInFormSchema,
-  async ({
-    callbackUrl,
-    email,
-    password,
-  }): Promise<SignInActionState> => {
-  const normalizedEmail = normalizeEmail(email);
+  async ({ callbackUrl, email, password }): Promise<SignInActionState> => {
+    const normalizedEmail = normalizeEmail(email);
 
-  try {
-    const result = await auth.api.signInEmail({
-      headers: await headers(),
-      body: {
-        email: normalizedEmail,
-        password,
-        callbackURL: callbackUrl,
-      },
-    });
-    const requiresTwoFactor =
-      typeof result === "object" &&
-      result !== null &&
-      "twoFactorRedirect" in result &&
-      Boolean(result.twoFactorRedirect);
+    try {
+      const result = await auth.api.signInEmail({
+        headers: await headers(),
+        body: {
+          email: normalizedEmail,
+          password,
+          callbackURL: callbackUrl,
+        },
+      });
+      const requiresTwoFactor =
+        typeof result === "object" &&
+        result !== null &&
+        "twoFactorRedirect" in result &&
+        Boolean(result.twoFactorRedirect);
 
-    return {
-      redirectTo: requiresTwoFactor
-        ? routes.auth.twoFactor
-        : (callbackUrl ?? routes.auth.postSignIn),
-    };
-  } catch (error) {
-    const code = getAuthErrorCode(error);
-
-    if (code === "EMAIL_NOT_VERIFIED") {
       return {
-        error: "Verify your email before signing in.",
-        requiresVerification: true,
+        redirectTo: requiresTwoFactor
+          ? routes.auth.twoFactor
+          : (callbackUrl ?? routes.auth.postSignIn),
+      };
+    } catch (error) {
+      const code = getAuthErrorCode(error);
+
+      if (code === "EMAIL_NOT_VERIFIED") {
+        return {
+          error: "Verify your email before signing in.",
+          requiresVerification: true,
+          values: { email: normalizedEmail, callbackUrl },
+        };
+      }
+
+      if (code === "INVALID_EMAIL_OR_PASSWORD") {
+        return {
+          error: "Invalid email or password.",
+          values: { email: normalizedEmail, callbackUrl },
+        };
+      }
+
+      return {
+        error: getAuthErrorMessage(
+          error,
+          "Unable to sign in. Please try again.",
+        ),
         values: { email: normalizedEmail, callbackUrl },
       };
     }
-
-    if (code === "INVALID_EMAIL_OR_PASSWORD") {
-      return {
-        error: "Invalid email or password.",
-        values: { email: normalizedEmail, callbackUrl },
-      };
-    }
-
-    return {
-      error: getAuthErrorMessage(error, "Unable to sign in. Please try again."),
-      values: { email: normalizedEmail, callbackUrl },
-    };
-  }
-},
+  },
 );
 
 export const signUpAction = validatedPublicAction(
@@ -181,52 +180,53 @@ export const signUpAction = validatedPublicAction(
 export const resendVerificationEmailAction = validatedPublicAction(
   resendVerificationEmailSchema,
   async ({ callbackUrl, email }) => {
-  const normalizedEmail = normalizeEmail(email);
+    const normalizedEmail = normalizeEmail(email);
 
-  try {
-    await auth.api.sendVerificationEmail({
-      headers: await headers(),
-      body: {
-        email: normalizedEmail,
-        callbackURL: callbackUrl,
-      },
-    });
+    try {
+      await auth.api.sendVerificationEmail({
+        headers: await headers(),
+        body: {
+          email: normalizedEmail,
+          callbackURL: callbackUrl,
+        },
+      });
 
-    return { success: "A new verification email has been sent." };
-  } catch (error) {
-    return {
-      error: getAuthErrorMessage(
-        error,
-        "Unable to send verification email. Please try again.",
-      ),
-      values: { email: normalizedEmail, callbackUrl },
-    };
-  }
-},
+      return { success: "A new verification email has been sent." };
+    } catch (error) {
+      return {
+        error: getAuthErrorMessage(
+          error,
+          "Unable to send verification email. Please try again.",
+        ),
+        values: { email: normalizedEmail, callbackUrl },
+      };
+    }
+  },
 );
 
 export const requestPasswordResetAction = validatedPublicAction(
   requestPasswordResetSchema,
   async ({ callbackUrl, email }) => {
-  const normalizedEmail = normalizeEmail(email);
+    const normalizedEmail = normalizeEmail(email);
 
-  await auth.api.requestPasswordReset({
-    headers: await headers(),
-    body: {
-      email: normalizedEmail,
-      redirectTo: callbackUrl ?? routes.auth.resetPassword,
-    },
-  });
+    await auth.api.requestPasswordReset({
+      headers: await headers(),
+      body: {
+        email: normalizedEmail,
+        redirectTo: callbackUrl ?? routes.auth.resetPassword,
+      },
+    });
 
-  return {
-    success:
-      "If an account exists for this email, a reset link has been sent. Check your inbox.",
-  };
-});
+    return {
+      success:
+        "If an account exists for this email, a reset link has been sent. Check your inbox.",
+    };
+  },
+);
 
 export const resetPasswordAction = validatedPublicAction(
   resetPasswordSchema,
-  async ({ confirmPassword: _, newPassword }, formData) => {
+  async ({ confirmPassword: _, newPassword }, { formData }) => {
     const token = String(formData.get("token") ?? "").trim();
 
     if (!token) {

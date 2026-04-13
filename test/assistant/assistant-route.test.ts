@@ -24,7 +24,7 @@ vi.mock("ai", () => ({
   })),
 }));
 
-vi.mock("@/shared/lib/auth/get-current-user", () => ({
+vi.mock("@/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
@@ -47,7 +47,7 @@ vi.mock("@/features/assistant/server/assistant-model-selection", () => {
   };
 });
 
-vi.mock("@/shared/lib/ai/get-model-instance", () => ({
+vi.mock("@/lib/ai/get-model-instance", () => ({
   getAiModelInstance: vi.fn(() => ({
     definition: { id: "gemini-2.5-flash" },
     model: { id: "assistant-model" },
@@ -63,7 +63,7 @@ vi.mock("@/features/billing/server/usage-service", () => ({
 }));
 
 const { streamText } = await import("ai");
-const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
+const { getCurrentUser } = await import("@/lib/auth/get-current-user");
 const { assertOrganizationAiAccess } =
   await import("@/features/assistant/server/organization-ai-access");
 const { selectAssistantModel } =

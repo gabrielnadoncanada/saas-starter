@@ -6,28 +6,21 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
-import {
-  cancelOrganizationInvitationAction,
-  type CancelOrganizationInvitationActionState,
-  resendOrganizationInvitationAction,
-  type ResendOrganizationInvitationActionState,
-} from "@/features/organizations/actions/membership.actions";
-import type { OrganizationInvitationView } from "@/features/organizations/types";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/shared/components/ui/empty";
+} from "@/components/ui/empty";
 import {
   Table,
   TableBody,
@@ -35,7 +28,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/components/ui/table";
+} from "@/components/ui/table";
+import {
+  cancelOrganizationInvitationAction,
+  type CancelOrganizationInvitationActionState,
+  resendOrganizationInvitationAction,
+  type ResendOrganizationInvitationActionState,
+} from "@/features/organizations/actions/membership.actions";
+import type { OrganizationInvitationView } from "@/features/organizations/types";
 
 type OrganizationInvitationsTableProps = {
   canManageInvitations: boolean;

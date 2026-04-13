@@ -4,10 +4,10 @@ vi.mock("server-only", () => ({}));
 vi.mock("next/headers", () => ({
   headers: vi.fn().mockResolvedValue({}),
 }));
-vi.mock("@/shared/lib/auth/get-current-user", () => ({
+vi.mock("@/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
-vi.mock("@/shared/lib/auth/auth-config", () => ({
+vi.mock("@/lib/auth/auth-config", () => ({
   auth: {
     api: {
       getActiveMember: vi.fn(),
@@ -15,8 +15,8 @@ vi.mock("@/shared/lib/auth/auth-config", () => ({
   },
 }));
 
-const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
-const { auth } = await import("@/shared/lib/auth/auth-config");
+const { getCurrentUser } = await import("@/lib/auth/get-current-user");
+const { auth } = await import("@/lib/auth/auth-config");
 const {
   getActiveOrganizationMembership,
   OrganizationMembershipError,

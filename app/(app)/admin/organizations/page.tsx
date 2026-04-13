@@ -1,13 +1,13 @@
-import { parseAdminOrganizationsTableSearchParams } from "@/features/admin/admin-organizations-table-search-params";
-import { AdminOrganizationsTable } from "@/features/admin/components/organizations-table";
-import { getAdminOrganizationsPage } from "@/features/admin/server/get-admin-organizations-page";
-import { requireAdmin } from "@/features/auth/server/require-admin";
 import {
   Page,
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page-layout";
+} from "@/components/layout/page-layout";
+import { parseAdminOrganizationsTableSearchParams } from "@/features/admin/admin-organizations-table-search-params";
+import { AdminOrganizationsTable } from "@/features/admin/components/organizations-table";
+import { getAdminOrganizationsPage } from "@/features/admin/server/get-admin-organizations-page";
+import { requireAdmin } from "@/features/auth/server/require-admin";
 
 type AdminOrganizationsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

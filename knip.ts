@@ -3,12 +3,17 @@ const config = {
   project: [
     "app/**/*.{ts,tsx}",
     "features/**/*.{ts,tsx}",
-    "shared/**/*.{ts,tsx}",
+    "components/**/*.{ts,tsx}",
+    "config/**/*.ts",
+    "constants/**/*.ts",
+    "hooks/**/*.{ts,tsx}",
+    "lib/**/*.{ts,tsx}",
+    "types/**/*.ts",
     "test/**/*.{ts,tsx}",
   ],
   ignore: [
-    "shared/components/ai-elements/**",
-    "shared/components/ui/**",
+    "components/ai-elements/**",
+    "components/ui/**",
   ],
 };
 

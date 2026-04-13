@@ -1,11 +1,11 @@
-import { getPlanDisplayPrice } from "@/features/billing/plans";
-import { createSubscriptionCheckout } from "@/features/billing/server/stripe/stripe-checkout";
 import {
   type BillingInterval,
   type PaidPlanId,
-} from "@/shared/config/billing.config";
-import { auth } from "@/shared/lib/auth/auth-config";
-import { hasOrgRole } from "@/shared/lib/db/enums";
+} from "@/config/billing.config";
+import { getPlanDisplayPrice } from "@/features/billing/plans";
+import { createSubscriptionCheckout } from "@/features/billing/server/stripe/stripe-checkout";
+import { auth } from "@/lib/auth/auth-config";
+import { hasOrgRole } from "@/lib/db/enums";
 
 type ResumeCheckoutAfterSignInParams = {
   billingInterval: BillingInterval;

@@ -1,7 +1,7 @@
 import { Check } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { MARKETING_DOC_COUNT } from "@/features/marketing/site";
-import { Button } from "@/shared/components/ui/button";
 
 const purchaseUrl =
   process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL?.trim() || "#pricing";
@@ -35,7 +35,7 @@ const tiers: Tier[] = [
       "AI-ready assistant module with real task actions and honest scaffolds",
       "PostgreSQL + Prisma with migrations and seed",
       "Email templates with Resend",
-      `${MARKETING_DOC_COUNT} documentation files including 31 customization guides`,
+      `${MARKETING_DOC_COUNT} focused docs for setup, customization, billing, deployment, and extension`,
       "Tenviq Commercial License — see LICENSE in the repo",
     ],
     cta: "Get the Starter",

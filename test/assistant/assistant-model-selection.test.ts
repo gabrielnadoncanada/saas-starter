@@ -4,7 +4,7 @@ vi.mock("server-only", () => ({}));
 
 const { selectAssistantModel } =
   await import("@/features/assistant/server/assistant-model-selection");
-const { defaultAiModelId } = await import("@/shared/lib/ai/models");
+const { defaultAiModelId } = await import("@/lib/ai/models");
 
 describe("selectAssistantModel", () => {
   it("falls back to the app default model", async () => {

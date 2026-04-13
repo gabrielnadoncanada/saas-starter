@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { requireAdminAction } from "@/features/auth/server/require-admin";
-import { auth } from "@/shared/lib/auth/auth-config";
-import type { ListUsersQueryInput } from "@/shared/lib/auth/better-auth-inferred-types";
+import { auth } from "@/lib/auth/auth-config";
+import type { ListUsersQueryInput } from "@/lib/auth/better-auth-inferred-types";
 
 import { getAdminUserDetail, listAdminUsers } from "../server/users";
 

@@ -5,23 +5,23 @@ import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { PasswordInput } from "@/components/forms/password-input";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { routes } from "@/constants/routes";
 import {
   signInAction,
   type SignInActionState,
 } from "@/features/auth/actions/public-auth.actions";
+import { emailSchema } from "@/features/auth/auth-forms.schema";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
 import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
-import { emailSchema } from "@/features/auth/auth-forms.schema";
-import { PasswordInput } from "@/shared/components/forms/password-input";
-import { Button } from "@/shared/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
-import { routes } from "@/shared/constants/routes";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import { authClient } from "@/shared/lib/auth/auth-client";
-import { buildCheckEmailHref } from "@/shared/lib/auth/callback-url";
-import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
-import { getFieldState } from "@/shared/lib/get-field-state";
+import { useToastMessage } from "@/hooks/use-toast-message";
+import { authClient } from "@/lib/auth/auth-client";
+import { buildCheckEmailHref } from "@/lib/auth/callback-url";
+import type { OAuthProviderId } from "@/lib/auth/oauth-config";
+import { getFieldState } from "@/lib/get-field-state";
 
 type SignInFormProps = {
   oauthProviders?: OAuthProviderId[];

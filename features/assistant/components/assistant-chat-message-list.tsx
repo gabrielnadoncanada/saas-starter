@@ -2,19 +2,19 @@
 
 import type { UIMessage } from "ai";
 
-import { AssistantChartArtifact } from "@/features/assistant/components/chart-artifact";
-import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
-import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
-import type {
-  ChartSpec,
-  GenerateChartToolResult,
-} from "@/features/assistant/types";
 import {
   Message,
   MessageContent,
   MessageResponse,
-} from "@/shared/components/ai-elements/message";
-import type { ToolPart } from "@/shared/components/ai-elements/tool";
+} from "@/components/ai-elements/message";
+import type { ToolPart } from "@/components/ai-elements/tool";
+import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
+import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
+import { AssistantChartArtifact } from "@/features/assistant/components/chart-artifact";
+import type {
+  ChartSpec,
+  GenerateChartToolResult,
+} from "@/features/assistant/types";
 
 function isToolPart(part: UIMessage["parts"][number]): part is ToolPart {
   return part.type === "dynamic-tool" || part.type.startsWith("tool-");

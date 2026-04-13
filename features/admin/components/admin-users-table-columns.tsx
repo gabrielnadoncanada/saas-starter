@@ -4,15 +4,15 @@ import type { ColumnDef, Row } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Copy } from "lucide-react";
 
-import type { AdminApiUser } from "@/shared/lib/auth/better-auth-inferred-types";
-import { DataTableColumnHeader } from "@/shared/components/data-table";
+import { DataTableColumnHeader } from "@/components/data-table";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { AdminApiUser } from "@/lib/auth/better-auth-inferred-types";
 
 import { UserRowActions } from "./user-row-actions";
 

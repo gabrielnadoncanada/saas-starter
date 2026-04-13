@@ -6,16 +6,16 @@ import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
-import { authClient } from "@/shared/lib/auth/auth-client";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import { authClient } from "@/lib/auth/auth-client";
 
 type OrganizationInvitationPageProps = {
   invitationId: string;

@@ -1,10 +1,10 @@
 import { headers } from "next/headers";
 
 import type { OrganizationInvitationView } from "@/features/organizations/types";
-import { auth } from "@/shared/lib/auth/auth-config";
-import type { OrganizationInvitationRow } from "@/shared/lib/auth/better-auth-inferred-types";
-import { toIsoString } from "@/shared/lib/date/to-iso-string";
-import { getPrimaryOrgRole, parseOrgRoles } from "@/shared/lib/db/enums";
+import { auth } from "@/lib/auth/auth-config";
+import type { OrganizationInvitationRow } from "@/lib/auth/better-auth-inferred-types";
+import { toIsoString } from "@/lib/date/to-iso-string";
+import { getPrimaryOrgRole, parseOrgRoles } from "@/lib/db/enums";
 
 function isPendingInvitation(invitation: OrganizationInvitationRow) {
   return invitation.status === "pending";

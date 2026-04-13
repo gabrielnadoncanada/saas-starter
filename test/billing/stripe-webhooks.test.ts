@@ -5,7 +5,7 @@ process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
 process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
 process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
-vi.mock("@/shared/lib/db/prisma", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   db: {
     subscription: {
       findFirst: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock("@/features/billing/server/stripe/stripe-customers", () => ({
   syncStripeCustomer: vi.fn(),
 }));
 
-const { db } = await import("@/shared/lib/db/prisma");
+const { db } = await import("@/lib/db/prisma");
 const {
   clearBillingState,
   findOrganizationByCustomer,

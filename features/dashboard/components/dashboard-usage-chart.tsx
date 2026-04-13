@@ -6,7 +6,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/shared/components/ui/chart";
+} from "@/components/ui/chart";
 
 const chartConfig = {
   tasks: {

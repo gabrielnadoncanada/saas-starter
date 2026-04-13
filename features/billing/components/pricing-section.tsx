@@ -1,9 +1,9 @@
+import type { PlanId } from "@/config/billing.config";
+import { PricingToggle } from "@/features/billing/components/pricing-toggle";
 import {
   getPlanDisplayPrice,
   getPricingPlans,
 } from "@/features/billing/plans";
-import { PricingToggle } from "@/features/billing/components/pricing-toggle";
-import type { PlanId } from "@/shared/config/billing.config";
 
 export async function PricingSection() {
   const paidPlans = getPricingPlans()

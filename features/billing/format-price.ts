@@ -1,4 +1,4 @@
-import type { BillingInterval } from "@/shared/config/billing.config";
+import type { BillingInterval } from "@/config/billing.config";
 
 export function formatPriceAmount(
   unitAmount: number,

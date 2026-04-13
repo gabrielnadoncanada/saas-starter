@@ -1,12 +1,20 @@
 import { redirect } from "next/navigation";
 
-import { TasksPage } from "@/features/tasks/components/tasks-page";
+import {
+  Page,
+  PageDescription,
+  PageHeader,
+  PageHeaderActions,
+  PageTitle,
+} from "@/components/layout/page-layout";
+import { routes } from "@/constants/routes";
+import { TasksContent } from "@/features/tasks/components/tasks-content";
+import { TasksPageActions } from "@/features/tasks/components/tasks-page-actions";
 import { getTasksPage } from "@/features/tasks/server/get-tasks-page";
 import {
   buildTasksTableHref,
   parseTaskTableSearchParams,
 } from "@/features/tasks/task-table-search-params";
-import { routes } from "@/shared/constants/routes";
 
 type DashboardTasksPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -28,5 +36,19 @@ export default async function DashboardTasksPage({
     );
   }
 
-  return <TasksPage tasksPage={tasksPage} />;
+  return (
+    <Page>
+      <PageHeader>
+        <PageTitle>Tasks</PageTitle>
+        <PageDescription>
+          Here&apos;s a list of your tasks for this month!
+        </PageDescription>
+        <PageHeaderActions>
+          <TasksPageActions />
+        </PageHeaderActions>
+      </PageHeader>
+
+      <TasksContent tasksPage={tasksPage} />
+    </Page>
+  );
 }

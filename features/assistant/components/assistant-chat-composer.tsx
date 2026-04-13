@@ -13,8 +13,8 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
-} from "@/shared/components/ai-elements/prompt-input";
-import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
+} from "@/components/ai-elements/prompt-input";
+import type { AiModelDefinition, AiModelId } from "@/lib/ai/models";
 
 type AssistantChatComposerProps = {
   isLoading: boolean;

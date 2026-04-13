@@ -9,7 +9,7 @@ const faqs = [
   {
     question: "What exactly do I get?",
     answer:
-      `You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions, PostgreSQL + Prisma setup, email templates, and ${MARKETING_DOC_COUNT} documentation files including 31 step-by-step customization guides.`,
+      `You get the full source code of a production-ready Next.js SaaS starter. That includes authentication (magic link + OAuth), Stripe billing with three pricing models, plan gating with capability checks and usage limits, team management with roles and invitations, a polished dashboard shell, a working tasks CRUD example, an AI-ready assistant module with real task actions, PostgreSQL + Prisma setup, email templates, and ${MARKETING_DOC_COUNT} focused docs for setup, customization, billing, deployment, and extension.`,
   },
   {
     question: "What is NOT included?",
@@ -29,7 +29,7 @@ const faqs = [
   {
     question: "What kind of support is included?",
     answer:
-      `Starter is documentation-only — the ${MARKETING_DOC_COUNT} included docs cover setup, architecture, customization, and troubleshooting. Pro includes priority email support for 6 months. Agency includes priority email support for 12 months. This is not an agency-style retainer — support covers questions about the starter itself, not custom feature development.`,
+      `Starter is documentation-only — the ${MARKETING_DOC_COUNT} included docs cover setup, customization, auth, billing, deployment, and extension. Pro includes priority email support for 6 months. Agency includes priority email support for 12 months. This is not an agency-style retainer — support covers questions about the starter itself, not custom feature development.`,
   },
   {
     question: "Is there a refund policy?",
@@ -44,7 +44,7 @@ const faqs = [
   {
     question: "How is this different from free boilerplates?",
     answer:
-      `Free boilerplates give you auth and maybe Stripe checkout. This starter gives you enforced plan gating — capability-based feature flags and usage limits that actually control what users can do based on their plan. It also includes three billing models, team management, ${MARKETING_DOC_COUNT} docs, a working CRUD example, and an AI-ready monetization pattern you can adapt instead of inventing from scratch.`,
+      `Free boilerplates give you auth and maybe Stripe checkout. This starter gives you enforced plan gating — capability-based feature flags and usage limits that actually control what users can do based on their plan. It also includes three billing models, team management, ${MARKETING_DOC_COUNT} focused docs, a working CRUD example, and an AI-ready monetization pattern you can adapt instead of inventing from scratch.`,
   },
   {
     question: "How is this different from ShipFast or MakerKit?",

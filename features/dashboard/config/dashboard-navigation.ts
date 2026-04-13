@@ -1,7 +1,7 @@
 import { LayoutDashboard, ListTodo, MessageSquarePlus } from "lucide-react";
 
-import type { SidebarData } from "@/shared/components/navigation/sidebar-types";
-import { routes } from "@/shared/constants/routes";
+import type { SidebarData } from "@/components/navigation/sidebar-types";
+import { routes } from "@/constants/routes";
 
 export const dashboardSidebarData: SidebarData = {
   navGroups: [

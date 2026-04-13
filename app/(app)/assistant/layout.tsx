@@ -1,14 +1,14 @@
 import { cookies } from "next/headers";
 
+import { AppShell } from "@/components/layout/shell/app-shell";
+import { ActiveOrganizationProvider } from "@/components/providers/active-organization-provider";
+import { UserProvider } from "@/components/providers/user-provider";
 import { AssistantSidebar } from "@/features/assistant/components/assistant-sidebar";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
-import { AppShell } from "@/shared/components/layout/shell/app-shell";
-import { ActiveOrganizationProvider } from "@/shared/components/providers/active-organization-provider";
-import { UserProvider } from "@/shared/components/providers/user-provider";
 import {
   getCurrentUser,
   toDisplayUser,
-} from "@/shared/lib/auth/get-current-user";
+} from "@/lib/auth/get-current-user";
 
 export default async function AssistantLayout({
   children,

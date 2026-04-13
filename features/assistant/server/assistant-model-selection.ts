@@ -5,7 +5,7 @@ import {
   defaultAiModelId,
   getAiModelDefinition,
   isAiModelId,
-} from "@/shared/lib/ai/models";
+} from "@/lib/ai/models";
 
 export class AssistantModelSelectionError extends Error {
   code: "UNKNOWN_MODEL";

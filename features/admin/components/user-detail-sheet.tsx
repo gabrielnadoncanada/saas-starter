@@ -11,26 +11,26 @@ import {
   XCircle,
 } from "lucide-react";
 
-import type {
-  AdminApiSession,
-  AdminApiUser,
-} from "@/shared/lib/auth/better-auth-inferred-types";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent } from "@/shared/components/ui/card";
-import { Separator } from "@/shared/components/ui/separator";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/shared/components/ui/sheet";
+} from "@/components/ui/sheet";
+import type {
+  AdminApiSession,
+  AdminApiUser,
+} from "@/lib/auth/better-auth-inferred-types";
 
 type UserDetailSheetProps = {
   currentUserId: string;

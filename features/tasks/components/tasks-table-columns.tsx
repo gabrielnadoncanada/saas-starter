@@ -4,15 +4,10 @@ import type { Task } from "@prisma/client";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import { MoreHorizontalIcon, Trash2 } from "lucide-react";
 
-import {
-  taskLabels,
-  taskPriorities,
-  taskStatuses,
-} from "@/features/tasks/task-display";
-import { DataTableColumnHeader } from "@/shared/components/data-table";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
-import { Checkbox } from "@/shared/components/ui/checkbox";
+import { DataTableColumnHeader } from "@/components/data-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +15,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import {
+  taskLabels,
+  taskPriorities,
+  taskStatuses,
+} from "@/features/tasks/task-display";
 
 type TasksTableColumnsOptions = {
   onEditTask: (task: Task) => void;

@@ -20,15 +20,15 @@ import {
   YAxis,
 } from "recharts";
 
-import type { ChartSpec } from "@/features/assistant/types";
 import {
+  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
-} from "@/shared/components/ui/chart";
+} from "@/components/ui/chart";
+import type { ChartSpec } from "@/features/assistant/types";
 
 const DEFAULT_PALETTE = [
   "#3b82f6",

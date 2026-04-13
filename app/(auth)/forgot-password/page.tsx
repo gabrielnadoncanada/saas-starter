@@ -1,14 +1,14 @@
 import Link from "next/link";
 
-import { ForgotPasswordForm } from "@/features/auth/components/password/forgot-password-form";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import { ForgotPasswordForm } from "@/features/auth/components/password/forgot-password-form";
 
 export default async function ForgotPasswordPage() {
   return (

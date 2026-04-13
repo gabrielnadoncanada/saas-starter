@@ -3,12 +3,9 @@
 import { format, parseISO } from "date-fns";
 import { useActionState, useState } from "react";
 
-import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.actions";
-import type { LinkedProviderOverview } from "@/features/account/server/linked-accounts";
-import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   Item,
   ItemActions,
@@ -16,16 +13,19 @@ import {
   ItemDescription,
   ItemGroup,
   ItemTitle,
-} from "@/shared/components/ui/item";
-import { routes } from "@/shared/constants/routes";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import { authClient } from "@/shared/lib/auth/auth-client";
+} from "@/components/ui/item";
+import { routes } from "@/constants/routes";
+import { unlinkAuthProviderAction } from "@/features/account/actions/unlink-auth-provider.actions";
+import type { LinkedProviderOverview } from "@/features/account/server/linked-accounts";
+import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
+import { useToastMessage } from "@/hooks/use-toast-message";
+import { authClient } from "@/lib/auth/auth-client";
 import {
   getOAuthProviderConfig,
   type OAuthProviderId,
-} from "@/shared/lib/auth/oauth-config";
-import { getFieldState } from "@/shared/lib/get-field-state";
-import type { FormActionState } from "@/shared/types/form-action-state";
+} from "@/lib/auth/oauth-config";
+import { getFieldState } from "@/lib/get-field-state";
+import type { FormActionState } from "@/types/form-action-state";
 
 function buildSettingsUrl(provider: OAuthProviderId, status?: string) {
   const searchParams = new URLSearchParams({ provider });

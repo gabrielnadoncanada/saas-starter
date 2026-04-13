@@ -22,7 +22,7 @@ vi.mock("next/headers", () => ({
   headers: headersMock,
 }));
 
-vi.mock("@/shared/lib/auth/get-current-user", () => ({
+vi.mock("@/lib/auth/get-current-user", () => ({
   getCurrentUser: getCurrentUserMock,
 }));
 
@@ -32,7 +32,7 @@ vi.mock("@/features/account/server/profile-image", () => ({
   shouldSaveAvatar: (file: File | null) => Boolean(file && file.size > 0),
 }));
 
-vi.mock("@/shared/lib/auth/auth-config", () => ({
+vi.mock("@/lib/auth/auth-config", () => ({
   auth: {
     api: {
       updateUser: updateUserMock,

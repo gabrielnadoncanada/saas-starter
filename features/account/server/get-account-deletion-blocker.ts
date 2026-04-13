@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 
 import { getSubscriptionSnapshot } from "@/features/billing/server/stripe/stripe-subscriptions";
-import { auth } from "@/shared/lib/auth/auth-config";
-import { hasOrgRole } from "@/shared/lib/db/enums";
+import { auth } from "@/lib/auth/auth-config";
+import { hasOrgRole } from "@/lib/db/enums";
 
 const ACTIVE_SUBSCRIPTION_STATUSES = ["active", "trialing"] as const;
 

@@ -1,13 +1,12 @@
 // Entitlements — gate features by plan capabilities and enforce usage quotas.
 // assertCapability() guards feature access. assertLimit() / checkLimit() enforce quotas.
-// Plan definitions live in shared/config/billing.config.ts.
+// Plan definitions live in config/billing.config.ts.
 
 import type {
   Capability,
   LimitKey,
   OrganizationEntitlements,
-} from "@/shared/config/billing.config";
-
+} from "@/config/billing.config";
 import { getPlan } from "@/features/billing/plans";
 
 export class LimitReachedError extends Error {

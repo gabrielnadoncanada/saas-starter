@@ -3,9 +3,9 @@
 import { AlertCircle, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent } from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { routes } from "@/constants/routes";
 
 type AssistantRouteError = {
   code?: string;

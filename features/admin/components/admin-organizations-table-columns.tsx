@@ -4,15 +4,15 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Building2, MoreVertical, Trash2, Users } from "lucide-react";
 
-import type { AdminOrganization } from "@/features/admin/types/organizations.types";
-import { DataTableColumnHeader } from "@/shared/components/data-table";
-import { Button } from "@/shared/components/ui/button";
+import { DataTableColumnHeader } from "@/components/data-table";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import type { AdminOrganization } from "@/features/admin/types/organizations.types";
 
 export type AdminOrganizationsRowHandlers = {
   currentUserId: string;

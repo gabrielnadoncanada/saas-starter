@@ -3,19 +3,19 @@
 import { format } from "date-fns";
 import { Building2, Calendar, Trash2, Users } from "lucide-react";
 
-import type {
-  AdminOrganization,
-  OrgSubscription,
-} from "@/features/admin/types/organizations.types";
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent } from "@/shared/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/shared/components/ui/sheet";
+} from "@/components/ui/sheet";
+import type {
+  AdminOrganization,
+  OrgSubscription,
+} from "@/features/admin/types/organizations.types";
 
 import { AdminOrganizationMembersList } from "./organization-members-list";
 import { AdminOrganizationSubscriptionCard } from "./organization-subscription-card";

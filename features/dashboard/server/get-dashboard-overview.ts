@@ -2,13 +2,13 @@ import "server-only";
 
 import { subDays } from "date-fns";
 
+import { routes } from "@/constants/routes";
 import { checkLimit, hasCapability } from "@/features/billing/entitlements";
 import { getPlan } from "@/features/billing/plans";
 import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
 import { getMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
-import { routes } from "@/shared/constants/routes";
-import { db } from "@/shared/lib/db/prisma";
+import { db } from "@/lib/db/prisma";
 
 function buildUsageChart(tasks: { createdAt: Date }[]) {
   const buckets = Array.from({ length: 7 }, (_, index) => {
@@ -130,3 +130,7 @@ export async function getDashboardOverview() {
     checklist,
   };
 }
+
+export type DashboardOverviewData = Awaited<
+  ReturnType<typeof getDashboardOverview>
+>;

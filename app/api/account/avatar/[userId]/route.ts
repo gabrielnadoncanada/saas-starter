@@ -4,7 +4,7 @@ import {
   canViewUserAvatar,
   getUserAvatar,
 } from "@/features/account/server/profile-image";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export async function GET(
   _request: Request,

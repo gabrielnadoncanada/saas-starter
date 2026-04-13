@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-vi.mock("@/shared/lib/auth/get-current-user", () => ({
+vi.mock("@/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
@@ -10,7 +10,7 @@ vi.mock("@/features/organizations/server/organizations", () => ({
   getCurrentOrganization: vi.fn(),
 }));
 
-vi.mock("@/shared/lib/db/prisma", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   db: {
     aiConversation: {
       create: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock("@/shared/lib/db/prisma", () => ({
   },
 }));
 
-const { getCurrentUser } = await import("@/shared/lib/auth/get-current-user");
+const { getCurrentUser } = await import("@/lib/auth/get-current-user");
 const { getCurrentOrganization } =
   await import("@/features/organizations/server/organizations");
 const { assistantConversationSurface } =
@@ -32,7 +32,7 @@ const {
   deleteAssistantConversation,
   listAssistantConversations,
 } = await import("@/features/assistant/server/assistant-conversations");
-const { db } = await import("@/shared/lib/db/prisma");
+const { db } = await import("@/lib/db/prisma");
 
 describe("ai conversations", () => {
   beforeEach(() => {

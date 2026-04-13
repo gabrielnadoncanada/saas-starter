@@ -2,15 +2,15 @@
 
 import { useActionState } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { routes } from "@/constants/routes";
 import {
   requestPasswordResetAction,
   type RequestPasswordResetActionState,
 } from "@/features/auth/actions/public-auth.actions";
-import { Button } from "@/shared/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
-import { routes } from "@/shared/constants/routes";
-import { getFieldState } from "@/shared/lib/get-field-state";
+import { getFieldState } from "@/lib/get-field-state";
 
 export function ForgotPasswordForm() {
   const [state, formAction, isPending] = useActionState<

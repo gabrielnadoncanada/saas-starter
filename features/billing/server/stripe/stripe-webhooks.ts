@@ -1,12 +1,12 @@
 import type Stripe from "stripe";
 
+import type { BillingInterval } from "@/config/billing.config";
 import {
   findCatalogPrice,
   isPlanId,
 } from "@/features/billing/plans";
-import type { BillingInterval } from "@/shared/config/billing.config";
-import { logActivity } from "@/shared/lib/activity/log-activity";
-import { db } from "@/shared/lib/db/prisma";
+import { logActivity } from "@/lib/activity/log-activity";
+import { db } from "@/lib/db/prisma";
 
 import {
   clearBillingState,

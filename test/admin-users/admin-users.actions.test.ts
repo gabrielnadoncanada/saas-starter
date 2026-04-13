@@ -28,7 +28,7 @@ vi.mock("@/features/auth/server/require-admin", () => ({
   requireAdminAction: requireAdminActionMock,
 }));
 
-vi.mock("@/shared/lib/auth/auth-config", () => ({
+vi.mock("@/lib/auth/auth-config", () => ({
   auth: {
     api: {
       banUser: banUserMock,

@@ -5,33 +5,22 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
 
-import {
-  createTaskAction,
-  type CreateTaskActionState,
-  updateTaskAction,
-} from "@/features/tasks/actions/task.actions";
-import {
-  taskLabels,
-  taskPriorities,
-  taskStatuses,
-} from "@/features/tasks/task-display";
-import type { UpdateTaskValues } from "@/features/tasks/task.schema";
-import { UpgradePrompt } from "@/shared/components/billing/upgrade-prompt";
-import { Button } from "@/shared/components/ui/button";
+import { UpgradePrompt } from "@/components/billing/upgrade-prompt";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/components/ui/select";
+} from "@/components/ui/select";
 import {
   Sheet,
   SheetClose,
@@ -40,10 +29,21 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/shared/components/ui/sheet";
-import { Textarea } from "@/shared/components/ui/textarea";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import type { FormActionState } from "@/shared/types/form-action-state";
+} from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  createTaskAction,
+  type CreateTaskActionState,
+  updateTaskAction,
+} from "@/features/tasks/actions/task.actions";
+import type { UpdateTaskValues } from "@/features/tasks/task.schema";
+import {
+  taskLabels,
+  taskPriorities,
+  taskStatuses,
+} from "@/features/tasks/task-display";
+import { useToastMessage } from "@/hooks/use-toast-message";
+import type { FormActionState } from "@/types/form-action-state";
 
 type TaskFormSheetProps = {
   open: boolean;

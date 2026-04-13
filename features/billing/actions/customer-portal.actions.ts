@@ -1,31 +1,32 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { z } from "zod";
 
+import { routes } from "@/constants/routes";
 import { createBillingPortalSession } from "@/features/billing/server/stripe/stripe-customers";
-import { getCurrentOrganization } from "@/features/organizations/server/organizations";
-import { routes } from "@/shared/constants/routes";
-import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
+import {
+  getCurrentOrganization,
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organizations";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
-const customerPortalSchema = z.object({});
+export async function openBillingPortalAction() {
+  const user = await getCurrentUser();
 
-export const openBillingPortalAction = validatedOrganizationOwnerAction(
-  customerPortalSchema,
-  async () => {
-    const organization = await getCurrentOrganization();
-    if (!organization?.stripeCustomerId || !organization?.subscriptionStatus) {
-      redirect(routes.marketing.pricing);
-    }
+  if (!user) {
+    redirect(routes.auth.login);
+  }
 
-    const url = await createBillingPortalSession(organization.id);
-
-    redirect(url);
-  },
-  {
+  await requireActiveOrganizationRole(["owner"], {
     redirectTo: routes.settings.members,
-    onUnauthenticated: () => {
-      redirect(routes.auth.login);
-    },
-  },
-);
+  });
+
+  const organization = await getCurrentOrganization();
+  if (!organization?.stripeCustomerId || !organization?.subscriptionStatus) {
+    redirect(routes.marketing.pricing);
+  }
+
+  const url = await createBillingPortalSession(organization.id);
+
+  redirect(url);
+}

@@ -4,10 +4,8 @@ import { Loader2, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { updateAccountAction } from "@/features/account/actions/update-account.actions";
-import type { UpdateAccountInput } from "@/features/account/schemas/account.schema";
-import { Button } from "@/shared/components/ui/button";
-import { CFileUpload } from "@/shared/components/ui/c-file-upload";
+import { Button } from "@/components/ui/button";
+import { CFileUpload } from "@/components/ui/c-file-upload";
 import {
   Dialog,
   DialogClose,
@@ -17,16 +15,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shared/components/ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Field,
   FieldError,
   FieldLabel,
-} from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import { getFieldState } from "@/shared/lib/get-field-state";
-import type { FormActionState } from "@/shared/types/form-action-state";
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { updateAccountAction } from "@/features/account/actions/update-account.actions";
+import type { UpdateAccountInput } from "@/features/account/schemas/account.schema";
+import { useToastMessage } from "@/hooks/use-toast-message";
+import { getFieldState } from "@/lib/get-field-state";
+import type { FormActionState } from "@/types/form-action-state";
 
 type EditProfileDialogProps = {
   image: string | null;

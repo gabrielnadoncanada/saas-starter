@@ -1,0 +1,56 @@
+---
+title: Deployment
+description: What to verify before pushing the starter to production
+---
+
+# Deployment
+
+## Purpose
+
+Ship the starter without carrying local assumptions into production.
+
+## Production checklist
+
+- Set production `BASE_URL`
+- Set a strong `AUTH_SECRET`
+- Use live Stripe keys
+- Set the live Stripe webhook secret
+- Configure email credentials for auth flows
+- Confirm OAuth callback URLs
+- Run migrations against the production database
+
+## Environment review
+
+Check these first:
+
+- auth secrets and base URL
+- Stripe keys and webhook secret
+- Resend sender configuration
+- OAuth credentials
+- account mode
+
+Use `.env.example` as the checklist, not memory.
+
+## Before go-live
+
+- Complete a sign-up flow
+- Complete a password reset flow
+- Complete a checkout flow
+- Open the billing portal
+- Verify at least one transactional email
+- Confirm the seeded local assumptions are gone from your production setup
+
+## Common mistake
+
+Do not treat local billing success as production readiness.
+
+The production path only counts once:
+
+- live keys are active
+- webhook delivery works
+- callback URLs match the real domain
+
+## Related guides
+
+- [Getting started](/docs/getting-started)
+- [Plans and billing](/docs/plans-and-billing)

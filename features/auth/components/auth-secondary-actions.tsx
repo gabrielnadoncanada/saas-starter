@@ -2,9 +2,9 @@
 
 import { Loader2, Mail } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { OAuthButtons } from "@/features/auth/components/oauth/oauth-buttons";
-import { Button } from "@/shared/components/ui/button";
-import type { OAuthProviderId } from "@/shared/lib/auth/oauth-config";
+import type { OAuthProviderId } from "@/lib/auth/oauth-config";
 
 type AuthSecondaryActionsProps = {
   allowMagicLink: boolean;

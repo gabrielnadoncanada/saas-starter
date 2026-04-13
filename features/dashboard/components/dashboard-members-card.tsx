@@ -1,16 +1,15 @@
 import { ArrowRight, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
 
-import type { OrganizationMemberView } from "@/features/organizations/types";
 import {
   Avatar,
   AvatarFallback,
   AvatarGroup,
   AvatarGroupCount,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -19,8 +18,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import type { OrganizationMemberView } from "@/features/organizations/types";
 
 type DashboardMembersCardProps = {
   members: OrganizationMemberView[];

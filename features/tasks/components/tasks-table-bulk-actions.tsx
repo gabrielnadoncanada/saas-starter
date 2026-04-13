@@ -11,6 +11,20 @@ import {
   useState,
 } from "react";
 
+import { DataTableBulkActions } from "@/components/data-table";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   bulkDeleteTasksAction,
   type BulkDeleteTasksActionState,
@@ -18,21 +32,7 @@ import {
   type BulkUpdateTaskStatusActionState,
 } from "@/features/tasks/actions/task.actions";
 import { taskStatuses } from "@/features/tasks/task-display";
-import { DataTableBulkActions } from "@/shared/components/data-table";
-import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
-import { Button } from "@/shared/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
+import { useToastMessage } from "@/hooks/use-toast-message";
 
 type TasksBulkActionsProps = {
   table: Table<Task>;

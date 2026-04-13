@@ -55,8 +55,8 @@ vi.mock("@/features/assistant/components/assistant-chat", () => ({
   },
 }));
 
+import { routes } from "@/constants/routes";
 import { AssistantWorkspace } from "@/features/assistant/components/assistant-workspace";
-import { routes } from "@/shared/constants/routes";
 
 describe("AssistantWorkspace", () => {
   it("keeps a locally created conversation selected until route props catch up", async () => {

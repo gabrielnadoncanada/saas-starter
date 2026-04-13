@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ArrowLeftIcon,
   ChevronsUpDown,
   Cog,
   LogOut,
@@ -10,15 +9,12 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-import { SignOutDialog } from "@/features/auth/components/sign-out-dialog";
-import { CreateOrganizationDialog } from "@/features/organizations/components/create-organization-dialog";
-import { OrganizationSwitcher } from "@/features/organizations/components/organization-switcher";
-import { useUser } from "@/shared/components/providers/user-provider";
+import { useUser } from "@/components/providers/user-provider";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
+} from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,17 +23,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/shared/components/ui/sidebar";
-import { accountFlags } from "@/shared/config/account.config";
-import { routes } from "@/shared/constants/routes";
-import { authClient } from "@/shared/lib/auth/auth-client";
-import { isPlatformAdmin } from "@/shared/lib/auth/roles";
+} from "@/components/ui/sidebar";
+import { accountFlags } from "@/config/account.config";
+import { routes } from "@/constants/routes";
+import { SignOutDialog } from "@/features/auth/components/sign-out-dialog";
+import { CreateOrganizationDialog } from "@/features/organizations/components/create-organization-dialog";
+import { OrganizationSwitcher } from "@/features/organizations/components/organization-switcher";
+import { authClient } from "@/lib/auth/auth-client";
+import { isPlatformAdmin } from "@/lib/auth/roles";
 
 export function DashboardSidebarUser() {
   const { state } = useSidebar();

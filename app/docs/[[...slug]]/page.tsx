@@ -1,13 +1,14 @@
-import { notFound } from "next/navigation";
+import { File, Files } from "fumadocs-ui/components/files";
+import defaultMdxComponents from "fumadocs-ui/mdx";
 import {
   DocsBody,
   DocsDescription,
   DocsPage,
   DocsTitle,
 } from "fumadocs-ui/page";
-import defaultMdxComponents from "fumadocs-ui/mdx";
-import { File, Files } from "fumadocs-ui/components/files";
-import { docsSource } from "@/shared/lib/docs/source";
+import { notFound } from "next/navigation";
+
+import { docsSource } from "@/lib/docs/source";
 
 export default async function DocsSlugPage(props: {
   params: Promise<{ slug?: string[] }>;

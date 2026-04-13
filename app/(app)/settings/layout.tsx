@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 
+import { AppShell } from "@/components/layout/shell/app-shell";
+import { SettingsSidebar } from "@/components/navigation/settings-sidebar";
+import { ActiveOrganizationProvider } from "@/components/providers/active-organization-provider";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
-import { SettingsSidebar } from "@/shared/components/navigation/settings-sidebar";
-import { AppShell } from "@/shared/components/layout/shell/app-shell";
-import { ActiveOrganizationProvider } from "@/shared/components/providers/active-organization-provider";
 
 export default async function SettingsLayout({
   children,

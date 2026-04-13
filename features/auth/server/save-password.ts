@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 
 import type { PasswordFormValues } from "@/features/auth/password-change.schema";
-import { auth } from "@/shared/lib/auth/auth-config";
-import type { FormActionState } from "@/shared/types/form-action-state";
+import { auth } from "@/lib/auth/auth-config";
+import type { FormActionState } from "@/types/form-action-state";
 
 type SavePasswordParams = Pick<
   PasswordFormValues,

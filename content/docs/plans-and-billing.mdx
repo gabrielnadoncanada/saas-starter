@@ -1,0 +1,68 @@
+---
+title: Plans And Billing
+description: Configure Stripe, define plans, and understand how gating works in the app
+---
+
+# Plans And Billing
+
+## Purpose
+
+Keep billing easy to reason about:
+
+- Stripe decides what the customer is paying for.
+- Your config decides what that plan unlocks.
+
+## Core files
+
+- `config/billing.config.ts`
+- `features/billing/entitlements.ts`
+- `features/billing/server/stripe/stripe-webhooks.ts`
+- `features/billing/actions/checkout.actions.ts`
+- `features/billing/actions/customer-portal.actions.ts`
+
+## Setup flow
+
+1. Create products and recurring prices in Stripe.
+2. Put the Stripe price ids in `.env`.
+3. Edit `config/billing.config.ts`.
+4. Forward Stripe webhooks to `/api/stripe/webhook` when testing locally.
+
+## What `config/billing.config.ts` controls
+
+- plan ids
+- plan names
+- marketing feature bullets
+- capabilities such as `task.create` or `ai.assistant`
+- limits such as `tasksPerMonth` or `teamMembers`
+- per-interval Stripe price ids
+
+This is the file to edit first when changing pricing or feature access.
+
+## How gating works
+
+Capabilities are boolean-style access checks.
+
+Limits are quota-style checks.
+
+Typical usage:
+
+- `assertCapability(...)` when a plan either can or cannot use a feature
+- `assertLimit(...)` when a plan can use a feature up to a quota
+
+The tasks feature is the reference example for both patterns.
+
+## Where to look for a real example
+
+- task mutations: `features/tasks/server/task-mutations.ts`
+- billing page: `app/(app)/settings/billing/page.tsx`
+
+## Local testing
+
+Use test keys and forward Stripe events locally before you trust a billing change.
+
+If billing looks wrong, verify these in order:
+
+- price ids in `.env`
+- webhook secret in `.env`
+- plan config in `config/billing.config.ts`
+- webhook sync logic in `features/billing/server/stripe/stripe-webhooks.ts`

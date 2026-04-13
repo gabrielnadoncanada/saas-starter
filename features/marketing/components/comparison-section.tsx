@@ -61,7 +61,7 @@ const rows: ComparisonRow[] = [
     buildFromScratch: "yes",
   },
   {
-    feature: `${MARKETING_DOC_COUNT} documentation files`,
+    feature: `${MARKETING_DOC_COUNT} focused docs`,
     thisStarter: "yes",
     freeBoilerplate: "no",
     heavierStarter: "partial",

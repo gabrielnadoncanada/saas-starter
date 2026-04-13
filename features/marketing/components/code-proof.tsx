@@ -53,7 +53,7 @@ export function CodeProof() {
             {/* Code example 2: plan config */}
             <div className="rounded-lg bg-gray-900 p-4 text-sm font-mono text-gray-100 overflow-x-auto">
               <p className="mb-1 text-xs text-gray-500">
-                // Simplified shape — real config: shared/config/billing.config.ts
+                // Simplified shape — real config: config/billing.config.ts
               </p>
               <pre className="whitespace-pre leading-relaxed">
                 {`export const plans = {

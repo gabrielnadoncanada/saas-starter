@@ -1,14 +1,14 @@
 import Link from "next/link";
 
-import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 
 type ResetPasswordPageProps = {
   searchParams: Promise<{

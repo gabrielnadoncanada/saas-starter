@@ -1,7 +1,7 @@
 import { CheckCircle2, Circle } from "lucide-react";
 import Link from "next/link";
 
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Item,
   ItemContent,
@@ -9,7 +9,7 @@ import {
   ItemHeader,
   ItemMedia,
   ItemTitle,
-} from "@/shared/components/ui/item";
+} from "@/components/ui/item";
 
 type ChecklistItem = {
   id: string;

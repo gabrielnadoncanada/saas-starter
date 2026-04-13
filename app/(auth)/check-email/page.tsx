@@ -1,15 +1,15 @@
 import Link from "next/link";
 
-import { ResendMagicLinkButton } from "@/features/auth/components/oauth/resend-magic-link-button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
-import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import { ResendMagicLinkButton } from "@/features/auth/components/oauth/resend-magic-link-button";
+import { buildCallbackURL } from "@/lib/auth/callback-url";
 
 type CheckEmailPageProps = {
   searchParams: Promise<{

@@ -9,18 +9,18 @@ import type {
   CurrentOrganizationView,
   OrganizationMemberView,
 } from "@/features/organizations/types";
-import { auth } from "@/shared/lib/auth/auth-config";
-import type { FullOrganization } from "@/shared/lib/auth/better-auth-inferred-types";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import { getAuthSession } from "@/shared/lib/auth/get-session";
-import { toIsoString } from "@/shared/lib/date/to-iso-string";
+import { auth } from "@/lib/auth/auth-config";
+import type { FullOrganization } from "@/lib/auth/better-auth-inferred-types";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { getAuthSession } from "@/lib/auth/get-session";
+import { toIsoString } from "@/lib/date/to-iso-string";
 import {
   getPrimaryOrgRole,
   hasAnyOrgRole,
   hasOrgRole,
   type OrgRole,
   parseOrgRoles,
-} from "@/shared/lib/db/enums";
+} from "@/lib/db/enums";
 
 // --- Active membership (session / guards) ---
 

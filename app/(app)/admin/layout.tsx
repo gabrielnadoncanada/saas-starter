@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 
+import { AppShell } from "@/components/layout/shell/app-shell";
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { requireAdmin } from "@/features/auth/server/require-admin";
-import { AppShell } from "@/shared/components/layout/shell/app-shell";
 
 export default async function AdminLayout({
   children,

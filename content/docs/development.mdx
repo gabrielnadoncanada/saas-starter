@@ -1,0 +1,64 @@
+---
+title: Development
+description: The shortest path to understanding how the app is organized and where new product code belongs
+---
+
+# Development
+
+## Purpose
+
+Show where new code should go so adding features stays boring and local.
+
+## The repo shape
+
+- `app/` owns routes only
+- `features/` owns product behavior by domain
+- `components/` owns shared UI
+- `lib/` owns infrastructure
+- `config/` owns app-wide config
+- `prisma/` owns schema, migrations, and seed
+
+## Read this as the default rule
+
+`app -> features -> lib`
+
+Keep route files thin. Put product logic in the owning feature.
+
+## Where to copy patterns from
+
+The `tasks` feature is the cleanest end-to-end example in the repo.
+
+It shows:
+
+- route surface
+- server data loading
+- server actions
+- Zod validation
+- data table UI
+- plan gating
+
+Start here:
+
+- `app/(app)/dashboard/tasks/page.tsx`
+- `features/tasks/`
+
+## Adding a new feature
+
+Use this sequence:
+
+1. Add the route in `app/`.
+2. Create the feature folder in `features/your-feature/`.
+3. Keep server logic, schema, and UI close to that feature.
+4. Only add shared code when it is truly shared.
+
+## Forms and actions
+
+Most interactive flows already use server actions and `useActionState`.
+
+Before creating a new form pattern, copy an existing feature and keep the same conventions.
+
+## Database work
+
+Edit the Prisma schema, run a local migration, then update the owning feature.
+
+Do not create parallel internal types for the same concept unless you are crossing a real boundary.

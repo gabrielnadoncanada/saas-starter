@@ -1,6 +1,5 @@
 "use client";
 
-import type { BillingInterval } from "@/shared/config/billing.config";
 import {
   Field,
   FieldContent,
@@ -9,8 +8,9 @@ import {
   FieldLegend,
   FieldSet,
   FieldTitle,
-} from "@/shared/components/ui/field";
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+} from "@/components/ui/field";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import type { BillingInterval } from "@/config/billing.config";
 
 function isBillingInterval(value: string): value is BillingInterval {
   return value === "month" || value === "year";

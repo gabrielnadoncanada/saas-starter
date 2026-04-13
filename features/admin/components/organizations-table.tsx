@@ -7,6 +7,12 @@ import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import {
+  DataTableContent,
+  DataTablePagination,
+} from "@/components/data-table";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { Input } from "@/components/ui/input";
+import {
   deleteOrganizationAction,
   getOrganizationDetailAction,
 } from "@/features/admin/actions/organizations.actions";
@@ -21,13 +27,7 @@ import type {
   AdminOrganization,
   OrgSubscription,
 } from "@/features/admin/types/organizations.types";
-import {
-  DataTableContent,
-  DataTablePagination,
-} from "@/shared/components/data-table";
-import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
-import { Input } from "@/shared/components/ui/input";
-import { useServerTable } from "@/shared/hooks/use-server-table";
+import { useServerTable } from "@/hooks/use-server-table";
 
 import { AdminOrganizationDetailSheet } from "./organization-detail-sheet";
 

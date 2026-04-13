@@ -4,16 +4,16 @@ import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
+import { Button } from "@/components/ui/button";
+import type {
+  BillingInterval,
+  PlanId,
+} from "@/config/billing.config";
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import {
   formatPriceAmount,
   getBillingIntervalSuffix,
 } from "@/features/billing/format-price";
-import { Button } from "@/shared/components/ui/button";
-import type {
-  BillingInterval,
-  PlanId,
-} from "@/shared/config/billing.config";
 
 type PriceSchedule = { unitAmount: number; trialDays?: number };
 

@@ -1,11 +1,11 @@
 import { headers } from "next/headers";
 
-import { auth } from "@/shared/lib/auth/auth-config";
+import { auth } from "@/lib/auth/auth-config";
 import type {
   ListUserSessionsResult,
   ListUsersQueryInput,
-} from "@/shared/lib/auth/better-auth-inferred-types";
-import { db } from "@/shared/lib/db/prisma";
+} from "@/lib/auth/better-auth-inferred-types";
+import { db } from "@/lib/db/prisma";
 
 export async function listAdminUsers(query: Partial<ListUsersQueryInput>) {
   return auth.api.listUsers({

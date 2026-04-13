@@ -7,7 +7,7 @@ import {
 
 vi.mock("server-only", () => ({}));
 
-vi.mock("@/shared/lib/db/prisma", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   db: {
     task: {
       findFirst: vi.fn(),
@@ -34,7 +34,7 @@ vi.mock("@/features/billing/server/usage-service", () => ({
   consumeMonthlyUsage: vi.fn(),
 }));
 
-const { db } = await import("@/shared/lib/db/prisma");
+const { db } = await import("@/lib/db/prisma");
 const { getCurrentEntitlements } =
   await import("@/features/billing/server/organization-entitlements");
 const { assertCapability } =

@@ -6,6 +6,12 @@ import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
 
 import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import { type PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
 } from "@/features/assistant/client/assistant-conversations-api";
@@ -13,13 +19,7 @@ import { AssistantChatComposer } from "@/features/assistant/components/assistant
 import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
 import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/shared/components/ai-elements/conversation";
-import { type PromptInputMessage } from "@/shared/components/ai-elements/prompt-input";
-import type { AiModelDefinition, AiModelId } from "@/shared/lib/ai/models";
+import type { AiModelDefinition, AiModelId } from "@/lib/ai/models";
 
 type AssistantChatProps = {
   conversationId: string | null;

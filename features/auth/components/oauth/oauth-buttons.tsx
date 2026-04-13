@@ -1,9 +1,9 @@
+import { Button } from "@/components/ui/button";
 import { OAuthProviderIcon } from "@/features/auth/components/oauth/oauth-provider-icon";
-import { Button } from "@/shared/components/ui/button";
 import {
   getOAuthProviderConfig,
   type OAuthProviderId,
-} from "@/shared/lib/auth/oauth-config";
+} from "@/lib/auth/oauth-config";
 
 type OAuthButtonsProps = {
   providers: OAuthProviderId[];

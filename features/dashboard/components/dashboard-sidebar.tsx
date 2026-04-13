@@ -1,26 +1,16 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
 
-import { AssistantSidebarNav } from "@/features/assistant/components/assistant-sidebar-nav";
-import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
-import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
-import { NavGroup } from "@/shared/components/navigation/nav-group";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shared/components/ui/collapsible";
+import { NavGroup } from "@/components/navigation/nav-group";
+import { SidebarGroupSearch } from "@/components/navigation/sidebar-group-search";
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
-  SidebarMenu,
   SidebarRail,
-} from "@/shared/components/ui/sidebar";
-import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";
+} from "@/components/ui/sidebar";
+import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
+import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
 
 export function DashboardSidebar() {
   const { navGroups } = dashboardSidebarData;

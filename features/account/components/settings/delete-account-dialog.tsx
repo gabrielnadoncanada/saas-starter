@@ -3,12 +3,7 @@
 import { KeyRound } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 
-import { deleteAccountAction } from "@/features/account/actions/delete-account.actions";
-import {
-  DELETE_CONFIRMATION_WORD,
-  type DeleteAccountInput,
-} from "@/features/account/schemas/account.schema";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -18,12 +13,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shared/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
-import { useToastMessage } from "@/shared/hooks/use-toast-message";
-import { getFieldState } from "@/shared/lib/get-field-state";
-import type { FormActionState } from "@/shared/types/form-action-state";
+} from "@/components/ui/dialog";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { deleteAccountAction } from "@/features/account/actions/delete-account.actions";
+import {
+  DELETE_CONFIRMATION_WORD,
+  type DeleteAccountInput,
+} from "@/features/account/schemas/account.schema";
+import { useToastMessage } from "@/hooks/use-toast-message";
+import { getFieldState } from "@/lib/get-field-state";
+import type { FormActionState } from "@/types/form-action-state";
 
 export function DeleteAccountDialog() {
   const [open, setOpen] = useState(false);

@@ -1,0 +1,81 @@
+---
+title: Accounts And Auth
+description: Configure sign-in methods, OAuth providers, email auth, and account behavior
+---
+
+# Accounts And Auth
+
+## Purpose
+
+Understand where auth behavior lives and how to change it without chasing wrappers.
+
+## Core files
+
+- `lib/auth/auth-config.ts`
+- `lib/auth/oauth-config.ts`
+- `config/account.config.ts`
+- `lib/email/templates/`
+
+## What lives where
+
+### `lib/auth/auth-config.ts`
+
+This is the main Better Auth setup.
+
+It defines:
+
+- email and password auth
+- email verification
+- magic-link sending
+- Google and GitHub providers
+- organization plugin behavior
+- two-factor auth
+- admin plugin setup
+
+If you need to change the actual auth behavior, start here.
+
+### `lib/auth/oauth-config.ts`
+
+This file controls which OAuth buttons are shown and whether a provider is enabled based on env vars.
+
+If you add or remove a provider from the UI layer, update this file.
+
+### `config/account.config.ts`
+
+This decides whether the product behaves like:
+
+- a personal-account app
+- an organization-first app
+
+It does not change the data model. It changes the visible product behavior and navigation.
+
+## Email auth
+
+Auth emails are rendered from:
+
+- `lib/email/templates/magic-link.tsx`
+- `lib/email/templates/reset-password.tsx`
+- `lib/email/templates/verify-email.tsx`
+- `lib/email/templates/team-invitation.tsx`
+
+Update these when you want to change copy or branding.
+
+## Common edits
+
+### Enable Google or GitHub
+
+Add the matching credentials to `.env`.
+
+The provider appears automatically once both values exist.
+
+### Disable magic link
+
+Remove the email credentials or remove the plugin from `lib/auth/auth-config.ts` if you want to stop shipping that path entirely.
+
+### Change team behavior
+
+If the product should stop exposing workspace creation or invitations, change `NEXT_PUBLIC_ACCOUNT_MODE` and confirm the flags in `config/account.config.ts`.
+
+## Related guide
+
+Use [Customization](/docs/customization) for account mode and product-level UI changes.

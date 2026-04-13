@@ -3,17 +3,16 @@
 import { ArrowLeftIcon, Building2, LayoutDashboard, Users } from "lucide-react";
 import Link from "next/link";
 
-import { NavGroup } from "@/shared/components/navigation/nav-group";
-import type { SidebarData } from "@/shared/components/navigation/sidebar-types";
+import { NavGroup } from "@/components/navigation/nav-group";
+import { SidebarGroupSearch } from "@/components/navigation/sidebar-group-search";
+import type { SidebarData } from "@/components/navigation/sidebar-types";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenuButton,
-} from "@/shared/components/ui/sidebar";
-
-import { routes } from "@/shared/constants/routes";
-import { SidebarGroupSearch } from "@/shared/components/navigation/sidebar-group-search";
+} from "@/components/ui/sidebar";
+import { routes } from "@/constants/routes";
 
 const adminSidebarData: SidebarData = {
   navGroups: [

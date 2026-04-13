@@ -1,6 +1,5 @@
 "use client";
 
-import type { AssistantToolFailure } from "@/features/assistant/types";
 import {
   Tool,
   ToolContent,
@@ -8,7 +7,8 @@ import {
   ToolInput,
   ToolOutput,
   type ToolPart,
-} from "@/shared/components/ai-elements/tool";
+} from "@/components/ai-elements/tool";
+import type { AssistantToolFailure } from "@/features/assistant/types";
 
 type AssistantToolResultProps = {
   part: ToolPart;

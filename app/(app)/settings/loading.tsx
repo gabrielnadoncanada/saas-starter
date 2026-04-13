@@ -3,8 +3,8 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page-layout";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+} from "@/components/layout/page-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsLoading() {
   return (

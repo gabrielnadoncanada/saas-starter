@@ -4,8 +4,8 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { Button } from "@/shared/components/ui/button";
-import { routes } from "@/shared/constants/routes";
+import { Button } from "@/components/ui/button";
+import { routes } from "@/constants/routes";
 
 const marketingSectionHrefs = {
   compare: "/#compare",

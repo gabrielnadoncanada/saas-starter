@@ -5,12 +5,8 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import {
-  inviteOrganizationMemberAction,
-  type InviteOrganizationMemberActionState,
-} from "@/features/organizations/actions/membership.actions";
-import { UpgradePrompt } from "@/shared/components/billing/upgrade-prompt";
-import { Button } from "@/shared/components/ui/button";
+import { UpgradePrompt } from "@/components/billing/upgrade-prompt";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -20,12 +16,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shared/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
-import { getFieldState } from "@/shared/lib/get-field-state";
+} from "@/components/ui/dialog";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  inviteOrganizationMemberAction,
+  type InviteOrganizationMemberActionState,
+} from "@/features/organizations/actions/membership.actions";
+import { getFieldState } from "@/lib/get-field-state";
 
 type InviteOrganizationMemberDialogProps = {
   canInviteMembers: boolean;

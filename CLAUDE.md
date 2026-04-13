@@ -7,7 +7,7 @@ Next.js SaaS boilerplate with multi-tenant organizations, billing, AI assistant,
 - Framework: Next.js 16 (App Router, Turbopack)
 - Language: TypeScript (strict)
 - Database: PostgreSQL with Prisma ORM (multi-file schema in `prisma/models/`)
-- Auth: better-auth (config in `shared/lib/auth/`)
+- Auth: better-auth (config in `lib/auth/`)
 - Payments: Stripe via @better-auth/stripe
 - AI: Vercel AI SDK with Google, OpenAI, Groq providers
 - UI: shadcn/ui (Radix), Tailwind CSS v4, ai-elements
@@ -33,14 +33,12 @@ features/         → feature modules, each with actions/, components/, server/,
   organizations/  → multi-tenant orgs
   tasks/          → task management (CRUD example)
   users/          → user management (admin)
-shared/
-  components/     → shared UI components (ui/, layout/, navigation/)
-  config/         → app-wide configuration
-  constants/      → shared constants
-  hooks/          → shared React hooks
-  lib/            → core libraries (auth, db, email, stripe, crypto)
-  styles/         → global styles
-  types/          → shared type definitions
+components/       → shared UI components (ui/, layout/, navigation/)
+config/           → app-wide configuration
+constants/        → shared constants
+hooks/            → shared React hooks
+lib/              → core libraries (auth, db, email, stripe, crypto)
+types/            → shared type definitions
 prisma/
   models/         → split schema files (auth, billing, tasks, teams, usage, assistant)
 test/             → test files by feature (assistant, billing, tasks)
@@ -50,9 +48,9 @@ test/             → test files by feature (assistant, billing, tasks)
 
 - Imports: absolute paths via `@/*` alias
 - Feature structure: `features/<name>/` with `actions/`, `components/`, `server/`, `schemas/`, `types/`
-- App routes are thin — logic lives in `features/` and `shared/`
+- App routes are thin — logic lives in `features/`, `components/`, `lib/`, and other root app folders
 - Prisma schema split across `prisma/models/*.prisma`
-- Auth config in `shared/lib/auth/auth-config.ts`, re-exported from root `auth.ts`
+- Auth config in `lib/auth/auth-config.ts`, re-exported from root `auth.ts`
 
 ## Commands
 

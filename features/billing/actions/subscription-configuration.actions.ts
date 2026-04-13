@@ -2,33 +2,40 @@
 
 import { redirect } from "next/navigation";
 
+import { routes } from "@/constants/routes";
 import { subscriptionCheckoutSchema } from "@/features/billing/checkout.schema";
 import { changeSubscription } from "@/features/billing/server/stripe/stripe-subscriptions";
-import { getCurrentOrganization } from "@/features/organizations/server/organizations";
-import { routes } from "@/shared/constants/routes";
-import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
+import {
+  getCurrentOrganization,
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organizations";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
-export const changePlanAction =
-  validatedOrganizationOwnerAction(
-    subscriptionCheckoutSchema,
-    async ({ billingInterval, planId }) => {
-      const organization = await getCurrentOrganization();
-      if (!organization) {
-        throw new Error("Organization not found");
-      }
+export async function changePlanAction(formData: FormData) {
+  const user = await getCurrentUser();
 
-      await changeSubscription({
-        billingInterval,
-        organizationId: organization.id,
-        planId,
-      });
+  if (!user) {
+    redirect(routes.auth.login);
+  }
 
-      redirect(routes.settings.billing);
-    },
-    {
-      redirectTo: routes.settings.members,
-      onUnauthenticated: () => {
-        redirect(routes.auth.login);
-      },
-    },
+  await requireActiveOrganizationRole(["owner"], {
+    redirectTo: routes.settings.members,
+  });
+
+  const { billingInterval, planId } = subscriptionCheckoutSchema.parse(
+    Object.fromEntries(formData),
   );
+
+  const organization = await getCurrentOrganization();
+  if (!organization) {
+    throw new Error("Organization not found");
+  }
+
+  await changeSubscription({
+    billingInterval,
+    organizationId: organization.id,
+    planId,
+  });
+
+  redirect(routes.settings.billing);
+}

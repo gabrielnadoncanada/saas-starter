@@ -4,7 +4,7 @@ import { requireActiveOrganizationMembership } from "@/features/organizations/se
 import {
   getStoredFileRecord,
   readStoredFileBody,
-} from "@/shared/lib/storage/storage-service";
+} from "@/lib/storage/storage-service";
 
 export async function GET(
   _request: Request,

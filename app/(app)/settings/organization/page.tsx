@@ -1,22 +1,22 @@
 import { Trash } from "lucide-react";
 
-import { DeleteOrganizationDialog } from "@/features/organizations/components/delete-organization-panel";
-import { RenameOrganizationPanel } from "@/features/organizations/components/rename-organization-panel";
-import { getCurrentOrganizationContext } from "@/features/organizations/server/organizations";
 import {
   Page,
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/shared/components/layout/page-layout";
-import { Button } from "@/shared/components/ui/button";
+} from "@/components/layout/page-layout";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
+} from "@/components/ui/card";
+import { DeleteOrganizationDialog } from "@/features/organizations/components/delete-organization-panel";
+import { RenameOrganizationPanel } from "@/features/organizations/components/rename-organization-panel";
+import { getCurrentOrganizationContext } from "@/features/organizations/server/organizations";
 
 export default async function SettingsPage() {
   const context = await getCurrentOrganizationContext();

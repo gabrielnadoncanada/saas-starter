@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { oauthProviderIdSchema } from "@/shared/lib/auth/oauth-config";
+import { oauthProviderIdSchema } from "@/lib/auth/oauth-config";
 
 export const DELETE_CONFIRMATION_WORD = "DELETE";
 

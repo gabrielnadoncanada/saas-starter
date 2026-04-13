@@ -1,34 +1,32 @@
 "use client";
 
-import { ChevronRight, HistoryIcon } from "lucide-react";
+import { HistoryIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { routes } from "@/constants/routes";
 import {
   deleteAssistantConversationRequest,
   listAssistantConversationsRequest,
 } from "@/features/assistant/client/assistant-conversations-api";
 import { AssistantConversationActionsMenu } from "@/features/assistant/components/assistant-conversation-actions-menu";
 import type { AssistantConversationListItem } from "@/features/assistant/schemas/conversation-api.schema";
-import { Button } from "@/shared/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/shared/components/ui/sidebar";
-import { routes } from "@/shared/constants/routes";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/lib/utils";
 
 function getConversationHref(conversationId: string) {
   return `${routes.app.assistant}?conversationId=${conversationId}`;

@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type {
+  OrganizationEntitlements,
+  PlanId,
+} from "@/config/billing.config";
 import {
   assertCapability,
   assertLimit,
@@ -10,10 +14,6 @@ import {
   UpgradeRequiredError,
 } from "@/features/billing/entitlements";
 import { getPlan, isPlanId } from "@/features/billing/plans";
-import type {
-  OrganizationEntitlements,
-  PlanId,
-} from "@/shared/config/billing.config";
 
 vi.mock("server-only", () => ({}));
 

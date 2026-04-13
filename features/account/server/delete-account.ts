@@ -1,7 +1,7 @@
 import { getAccountDeletionBlocker } from "@/features/account/server/get-account-deletion-blocker";
 import { deleteUserAvatar } from "@/features/account/server/profile-image";
-import { auth } from "@/shared/lib/auth/auth-config";
-import { db } from "@/shared/lib/db/prisma";
+import { auth } from "@/lib/auth/auth-config";
+import { db } from "@/lib/db/prisma";
 
 type DeleteAccountParams = {
   userId: string;

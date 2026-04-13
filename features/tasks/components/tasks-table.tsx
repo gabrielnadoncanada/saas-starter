@@ -3,6 +3,10 @@
 import type { Task } from "@prisma/client";
 import { useMemo } from "react";
 
+import {
+  DataTableContent,
+  DataTablePagination,
+} from "@/components/data-table";
 import { TasksBulkActions } from "@/features/tasks/components/tasks-table-bulk-actions";
 import { getTasksColumns } from "@/features/tasks/components/tasks-table-columns";
 import { TasksTableToolbar } from "@/features/tasks/components/tasks-table-toolbar";
@@ -11,12 +15,8 @@ import {
   TASK_TABLE_PAGE_SIZES,
   type TaskTableSearchParams,
 } from "@/features/tasks/task-table-search-params";
-import {
-  DataTableContent,
-  DataTablePagination,
-} from "@/shared/components/data-table";
-import { useServerTable } from "@/shared/hooks/use-server-table";
-import { cn } from "@/shared/lib/utils";
+import { useServerTable } from "@/hooks/use-server-table";
+import { cn } from "@/lib/utils";
 
 type TasksPageData = TaskTableSearchParams & {
   rows: Task[];

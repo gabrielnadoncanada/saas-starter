@@ -9,8 +9,8 @@ import type {
 } from "@/features/assistant/schemas/conversation-api.schema";
 import { assistantConversationSurface } from "@/features/assistant/types";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
-import { getCurrentUser } from "@/shared/lib/auth/get-current-user";
-import { db } from "@/shared/lib/db/prisma";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { db } from "@/lib/db/prisma";
 
 const DEFAULT_TITLE = "New conversation";
 const TITLE_MAX_LENGTH = 72;

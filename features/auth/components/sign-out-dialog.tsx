@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ConfirmDialog } from "@/shared/components/dialogs/confirm-dialog";
-import { routes } from "@/shared/constants/routes";
-import { authClient } from "@/shared/lib/auth/auth-client";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { routes } from "@/constants/routes";
+import { authClient } from "@/lib/auth/auth-client";
 
 interface SignOutDialogProps {
   open: boolean;

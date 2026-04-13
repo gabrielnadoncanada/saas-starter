@@ -2,10 +2,10 @@
 
 import { redirect } from "next/navigation";
 
+import { routes } from "@/constants/routes";
 import { unlinkAuthProviderSchema } from "@/features/account/schemas/account.schema";
 import { unlinkOAuthAccountForUser } from "@/features/account/server/linked-accounts";
-import { routes } from "@/shared/constants/routes";
-import { validatedAuthenticatedAction } from "@/shared/lib/auth/authenticated-action";
+import { validatedAuthenticatedAction } from "@/lib/auth/authenticated-action";
 
 export const unlinkAuthProviderAction = validatedAuthenticatedAction(
   unlinkAuthProviderSchema,

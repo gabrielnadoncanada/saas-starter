@@ -3,6 +3,25 @@
 import { CircleCheckBigIcon } from "lucide-react";
 import { useState } from "react";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import {
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item";
+import { RadioGroup } from "@/components/ui/radio-group";
+import type {
+  BillingInterval,
+  PlanId,
+} from "@/config/billing.config";
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import { openBillingPortalAction } from "@/features/billing/actions/customer-portal.actions";
 import { changePlanAction } from "@/features/billing/actions/subscription-configuration.actions";
@@ -12,25 +31,6 @@ import {
   type BillingPlanOption,
   getPlanPrice,
 } from "@/features/billing/components/billing-plan-card";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardDescription, CardHeader } from "@/shared/components/ui/card";
-import {
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/shared/components/ui/field";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/shared/components/ui/item";
-import { RadioGroup } from "@/shared/components/ui/radio-group";
-import type {
-  BillingInterval,
-  PlanId,
-} from "@/shared/config/billing.config";
 
 export type { BillingPlanOption } from "@/features/billing/components/billing-plan-card";
 

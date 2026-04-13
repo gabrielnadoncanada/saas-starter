@@ -1,4 +1,4 @@
-import type { TaskLabel, TaskPriority, TaskStatus } from "@/shared/lib/db/enums";
+import type { TaskLabel, TaskPriority, TaskStatus } from "@/lib/db/enums";
 
 /** DB filter for ai conversations; single surface in this app. */
 export const assistantConversationSurface = "assistant";

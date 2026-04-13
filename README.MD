@@ -39,19 +39,14 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 
 ```bash
 pnpm install
-pnpm setup   # interactive: writes .env, runs migrations, seeds demo data
-pnpm dev
-```
-
-`pnpm setup` walks you through Postgres (local Docker or remote), Stripe keys, optional Stripe CLI webhook setup, then runs `db:migrate` and `db:seed`. If you prefer to configure everything by hand, skip it and run each step manually:
-
-```bash
-cp .env.example .env   # fill in Postgres, Stripe, auth secrets, OAuth creds
-docker compose up -d   # or point POSTGRES_URL at your own instance
+cp .env.example .env
+docker compose up -d
 pnpm db:migrate
 pnpm db:seed
 pnpm dev
 ```
+
+Fill in Postgres, auth, Stripe, and optional OAuth credentials in `.env` before the first run.
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
@@ -80,22 +75,22 @@ Copy `.env.example` and configure:
 | `ALLOW_EMAIL_ACCOUNT_LINKING`               | Set `true` to link OAuth accounts by verified email                                  |
 | `EMAIL_REPLY_TO`                            | Optional reply-to for transactional email                                            |
 
-See the [Installation docs](/docs/installation/environment-variables) for the full checklist and the [Stripe Setup guide](/docs/billing/stripe-setup) for the billing flow. The authoritative list is `.env.example`.
+See the [Getting Started guide](/docs/getting-started) for the first-run path and the [Plans and Billing guide](/docs/plans-and-billing) for the billing flow. The authoritative list is `.env.example`.
 
-Auth emails and organization invitation emails ship in English by default. To customize the copy, edit the React Email templates in `shared/lib/email/templates/` and the related email subjects in `shared/lib/auth/auth-config.ts`.
+Auth emails and organization invitation emails ship in English by default. To customize the copy, edit the React Email templates in `lib/email/templates/` and the related email subjects in `lib/auth/auth-config.ts`.
 
 ## How billing works
 
-Plans are defined in `shared/config/billing.config.ts`. Stripe price IDs from env select the checkout targets, and the billing config decides what each plan unlocks.
+Plans are defined in `config/billing.config.ts`. Stripe price IDs from env select the checkout targets, and the billing config decides what each plan unlocks.
 
 ```
 Stripe decides which plan is active.
 Your config decides what that plan gives.
 ```
 
-**To add a plan:** Create the prices in Stripe, add their `STRIPE_PRICE_*` env vars, then define capabilities, limits, and pricing behavior in `shared/config/billing.config.ts`.
+**To add a plan:** Create the prices in Stripe, add their `STRIPE_PRICE_*` env vars, then define capabilities, limits, and pricing behavior in `config/billing.config.ts`.
 
-**To test billing locally:** Follow the [Stripe Setup guide](/docs/billing/stripe-setup) and forward Stripe webhooks to `/api/stripe/webhook`.
+**To test billing locally:** Follow the [Plans and Billing guide](/docs/plans-and-billing) and forward Stripe webhooks to `/api/stripe/webhook`.
 
 **To gate a feature:** Call `assertCapability(planId, "your.capability")` in your server action.
 
@@ -114,11 +109,12 @@ features/           -> Product code organized by domain
   tasks/            -> CRUD example with plan gating
   organizations/    -> Organization management, invitations, roles
   account/          -> Profile, settings, account deletion
-shared/             -> Cross-feature infrastructure
-  components/       -> UI components, layout, navigation
-  lib/              -> Auth, database, email, Stripe clients
-  hooks/            -> Reusable React hooks
-  constants/        -> Routes, terminology
+components/         -> Shared UI components, layout, navigation
+lib/                -> Auth, database, email, Stripe clients
+hooks/              -> Reusable React hooks
+config/             -> App-wide typed configuration
+constants/          -> Routes, terminology
+types/              -> Shared app types
 prisma/             -> Schema, migrations, seed
 content/docs/       -> Full documentation (Fumadocs MDX)
 ```
@@ -128,24 +124,25 @@ content/docs/       -> Full documentation (Fumadocs MDX)
 - **Launch faster** - Auth, billing, organizations, and a dashboard shell are already wired together. Start building your product features on day one.
 - **Understand quickly** - Feature-organized code, thin routes, and short files. No custom frameworks to learn.
 - **Modify safely** - Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
-- **Customize freely** - The repo includes focused docs for environment setup, feature creation, testing, and extending assistant tools.
+- **Customize freely** - The repo includes focused docs for setup, customization, billing, deployment, and feature extension.
 - **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
 
 ## Documentation
 
-Full documentation is available at `/docs` when the app is running, or browse `content/docs/` in the repo. Key sections:
+Focused documentation is available at `/docs` when the app is running, or browse `content/docs/` in the repo. Start with:
 
-- [Installation](/docs/installation) — prerequisites, setup, environment variables
-- [Billing](/docs/billing) — Stripe setup, pricing, entitlements, usage
-- [Development Guide](/docs/development-guide) — adding features, server actions, forms
-- [Testing](/docs/testing) — unit testing, writing tests
+- [Getting Started](/docs/getting-started)
+- [Customization](/docs/customization)
+- [Accounts and Auth](/docs/accounts-and-auth)
+- [Plans and Billing](/docs/plans-and-billing)
+- [Development](/docs/development)
+- [Deployment](/docs/deployment)
 - [Assistant tool integration](features/assistant/TOOL_INTEGRATION.md)
 
 ## Scripts
 
 | Command           | Purpose                                                    |
 | ----------------- | ---------------------------------------------------------- |
-| `pnpm setup`      | One-command install: .env, migrations, seed                |
 | `pnpm dev`        | Start dev server with Turbopack                            |
 | `pnpm build`      | Production build                                           |
 | `pnpm test`       | Run tests                                                  |

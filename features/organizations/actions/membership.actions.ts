@@ -3,7 +3,12 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import { assertCapability, assertLimit } from "@/features/billing/entitlements";
+import {
+  assertCapability,
+  assertLimit,
+  LimitReachedError,
+  UpgradeRequiredError,
+} from "@/features/billing/entitlements";
 import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
 import {
   invitationIdSchema,
@@ -15,10 +20,14 @@ import {
   inviteOrganizationMember,
   resendOrganizationInvitation,
 } from "@/features/organizations/server/organization-invitations";
-import { logActivity } from "@/shared/lib/activity/log-activity";
-import { auth } from "@/shared/lib/auth/auth-config";
-import { validatedOrganizationOwnerAction } from "@/shared/lib/auth/authenticated-action";
-import type { FormActionState } from "@/shared/types/form-action-state";
+import {
+  OrganizationMembershipError,
+  requireActiveOrganizationRole,
+} from "@/features/organizations/server/organizations";
+import { logActivity } from "@/lib/activity/log-activity";
+import { auth } from "@/lib/auth/auth-config";
+import { validatedAuthenticatedAction } from "@/lib/auth/authenticated-action";
+import type { FormActionState } from "@/types/form-action-state";
 
 type RefreshableActionState<
   TValues extends Record<string, unknown> = Record<string, never>,
@@ -46,76 +55,94 @@ type RemoveOrganizationMemberValues = z.infer<
 export type RemoveOrganizationMemberActionState =
   RefreshableActionState<RemoveOrganizationMemberValues>;
 
-export const inviteOrganizationMemberAction = validatedOrganizationOwnerAction(
+function membershipActionError(error: unknown) {
+  if (error instanceof OrganizationMembershipError) {
+    return { error: error.message };
+  }
+
+  if (error instanceof UpgradeRequiredError) {
+    return { error: error.message, errorCode: "UPGRADE_REQUIRED" as const };
+  }
+
+  if (error instanceof LimitReachedError) {
+    return { error: error.message, errorCode: "LIMIT_REACHED" as const };
+  }
+
+  return null;
+}
+
+export const inviteOrganizationMemberAction = validatedAuthenticatedAction(
   inviteOrganizationMemberSchema,
   async (
     { email, role },
-    { organizationId, user },
+    { user },
   ): Promise<InviteOrganizationMemberActionState> => {
-    const entitlements = await getCurrentEntitlements();
-    if (!entitlements) {
-      return { error: "Unable to determine organization plan" };
-    }
-
-    assertCapability(entitlements, "team.invite");
-
-    const requestHeaders = await headers();
-    const [members, invitations] = await Promise.all([
-      auth.api.listMembers({
-        query: { organizationId },
-        headers: requestHeaders,
-      }),
-      auth.api.listInvitations({
-        query: { organizationId },
-        headers: requestHeaders,
-      }),
-    ]);
-
-    const memberCount = members?.members.length ?? 0;
-    const pendingCount = (invitations ?? []).filter(
-      (invitation: { status: string }) => invitation.status === "pending",
-    ).length;
-
-    assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
-
     try {
+      const membership = await requireActiveOrganizationRole(["owner"]);
+      const organizationId = membership.organizationId;
+      const entitlements = await getCurrentEntitlements();
+      if (!entitlements) {
+        return { error: "Unable to determine organization plan" };
+      }
+
+      assertCapability(entitlements, "team.invite");
+
+      const requestHeaders = await headers();
+      const [members, invitations] = await Promise.all([
+        auth.api.listMembers({
+          query: { organizationId },
+          headers: requestHeaders,
+        }),
+        auth.api.listInvitations({
+          query: { organizationId },
+          headers: requestHeaders,
+        }),
+      ]);
+
+      const memberCount = members?.members.length ?? 0;
+      const pendingCount = (invitations ?? []).filter(
+        (invitation: { status: string }) => invitation.status === "pending",
+      ).length;
+
+      assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
+
       await inviteOrganizationMember({ organizationId, email, role });
+      await logActivity({
+        action: "member.invited",
+        organizationId,
+        actorUserId: user.id,
+        targetType: "invitation",
+        metadata: { email, role },
+      });
+
+      return {
+        success: "Invitation sent successfully",
+        refreshKey: Date.now(),
+      };
     } catch (error) {
+      const mapped = membershipActionError(error);
+      if (mapped) {
+        return mapped;
+      }
+
       return {
         error:
           error instanceof Error ? error.message : "Failed to send invitation",
       };
     }
-
-    await logActivity({
-      action: "member.invited",
-      organizationId,
-      actorUserId: user.id,
-      targetType: "invitation",
-      metadata: { email, role },
-    });
-
-    return { success: "Invitation sent successfully", refreshKey: Date.now() };
   },
 );
 
-export const cancelOrganizationInvitationAction =
-  validatedOrganizationOwnerAction(
-    invitationIdSchema,
-    async (
-      { invitationId },
-      { organizationId, user },
-    ): Promise<CancelOrganizationInvitationActionState> => {
-      try {
-        await cancelOrganizationInvitation({ invitationId });
-      } catch (error) {
-        return {
-          error:
-            error instanceof Error
-              ? error.message
-              : "Failed to cancel invitation",
-        };
-      }
+export const cancelOrganizationInvitationAction = validatedAuthenticatedAction(
+  invitationIdSchema,
+  async (
+    { invitationId },
+    { user },
+  ): Promise<CancelOrganizationInvitationActionState> => {
+    try {
+      const membership = await requireActiveOrganizationRole(["owner"]);
+      const organizationId = membership.organizationId;
+      await cancelOrganizationInvitation({ invitationId });
 
       await logActivity({
         action: "invitation.cancelled",
@@ -126,16 +153,31 @@ export const cancelOrganizationInvitationAction =
       });
 
       return { success: "Invitation canceled", refreshKey: Date.now() };
-    },
-  );
+    } catch (error) {
+      const mapped = membershipActionError(error);
+      if (mapped) {
+        return mapped;
+      }
 
-export const resendOrganizationInvitationAction =
-  validatedOrganizationOwnerAction(
-    invitationIdSchema,
-    async (
-      { invitationId },
-      { organizationId, user },
-    ): Promise<ResendOrganizationInvitationActionState> => {
+      return {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to cancel invitation",
+      };
+    }
+  },
+);
+
+export const resendOrganizationInvitationAction = validatedAuthenticatedAction(
+  invitationIdSchema,
+  async (
+    { invitationId },
+    { user },
+  ): Promise<ResendOrganizationInvitationActionState> => {
+    try {
+      const membership = await requireActiveOrganizationRole(["owner"]);
+      const organizationId = membership.organizationId;
       const result = await resendOrganizationInvitation({
         invitationId,
         organizationId,
@@ -154,38 +196,52 @@ export const resendOrganizationInvitationAction =
       });
 
       return { ...result, refreshKey: Date.now() };
-    },
-  );
+    } catch (error) {
+      const mapped = membershipActionError(error);
+      if (mapped) {
+        return mapped;
+      }
 
-export const removeOrganizationMemberAction = validatedOrganizationOwnerAction(
+      throw error;
+    }
+  },
+);
+
+export const removeOrganizationMemberAction = validatedAuthenticatedAction(
   removeOrganizationMemberSchema,
   async (
     { memberId },
-    { organizationId, user },
+    { user },
   ): Promise<RemoveOrganizationMemberActionState> => {
     try {
+      const membership = await requireActiveOrganizationRole(["owner"]);
+      const organizationId = membership.organizationId;
       await auth.api.removeMember({
         headers: await headers(),
         body: { memberIdOrEmail: memberId, organizationId },
       });
+      await logActivity({
+        action: "member.removed",
+        organizationId,
+        actorUserId: user.id,
+        targetType: "member",
+        targetId: memberId,
+      });
+
+      return {
+        success: "Organization member removed successfully",
+        refreshKey: Date.now(),
+      };
     } catch (error) {
+      const mapped = membershipActionError(error);
+      if (mapped) {
+        return mapped;
+      }
+
       return {
         error:
           error instanceof Error ? error.message : "Failed to remove member",
       };
     }
-
-    await logActivity({
-      action: "member.removed",
-      organizationId,
-      actorUserId: user.id,
-      targetType: "member",
-      targetId: memberId,
-    });
-
-    return {
-      success: "Organization member removed successfully",
-      refreshKey: Date.now(),
-    };
   },
 );

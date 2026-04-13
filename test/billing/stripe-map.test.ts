@@ -5,7 +5,7 @@ process.env.STRIPE_PRICE_PRO_YEARLY = "price_pro_yearly";
 process.env.STRIPE_PRICE_TEAM_MONTHLY = "price_team_monthly";
 process.env.STRIPE_PRICE_TEAM_YEARLY = "price_team_yearly";
 
-const { billingConfig } = await import("@/shared/config/billing.config");
+const { billingConfig } = await import("@/config/billing.config");
 const { findCatalogPrice, getPlan, getPlanDisplayPrice } =
   await import("@/features/billing/plans");
 

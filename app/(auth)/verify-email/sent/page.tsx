@@ -6,9 +6,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { routes } from "@/shared/constants/routes";
-import { buildCallbackURL } from "@/shared/lib/auth/callback-url";
+} from "@/components/ui/card";
+import { routes } from "@/constants/routes";
+import { buildCallbackURL } from "@/lib/auth/callback-url";
 
 type VerifyEmailSentPageProps = {
   searchParams: Promise<{

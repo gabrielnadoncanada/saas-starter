@@ -1,22 +1,22 @@
 "use client";
 
-import {
-  formatPriceAmount,
-  getBillingIntervalSuffix,
-} from "@/features/billing/format-price";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldTitle,
-} from "@/shared/components/ui/field";
-import { RadioGroupItem } from "@/shared/components/ui/radio-group";
+} from "@/components/ui/field";
+import { RadioGroupItem } from "@/components/ui/radio-group";
 import type {
   BillingInterval,
   BillingPrice,
   PlanId,
-} from "@/shared/config/billing.config";
+} from "@/config/billing.config";
+import {
+  formatPriceAmount,
+  getBillingIntervalSuffix,
+} from "@/features/billing/format-price";
 
 export type BillingPlanOption = {
   id: string;

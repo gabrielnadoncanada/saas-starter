@@ -1,7 +1,7 @@
 // HOW TO ADD A NEW PLAN:
 //   1. Create a product + prices in Stripe Dashboard (monthly and/or yearly).
 //   2. Add STRIPE_PRICE_<NAME>_MONTHLY / STRIPE_PRICE_<NAME>_YEARLY to .env.
-//   3. Add a new entry in the `plans` array in shared/config/billing.config.ts.
+//   3. Add a new entry in the `plans` array in config/billing.config.ts.
 //      Copy the "pro" block and change: id, name, description, features, capabilities, limits, price env vars.
 //   4. Done — the pricing page, checkout, and entitlements will pick it up automatically.
 
@@ -12,7 +12,7 @@ import {
   type BillingPlan,
   type BillingPrice,
   type PlanId,
-} from "@/shared/config/billing.config";
+} from "@/config/billing.config";
 
 export const SUBSCRIPTION_EXISTS_STATUSES = [
   "active",

@@ -1,5 +1,9 @@
 import "server-only";
 
+import type {
+  OrganizationEntitlements,
+  PlanId,
+} from "@/config/billing.config";
 import { getDefaultEntitlements } from "@/features/billing/entitlements";
 import {
   getPlan,
@@ -7,11 +11,7 @@ import {
   isPlanId,
 } from "@/features/billing/plans";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
-import type {
-  OrganizationEntitlements,
-  PlanId,
-} from "@/shared/config/billing.config";
-import { db } from "@/shared/lib/db/prisma";
+import { db } from "@/lib/db/prisma";
 
 export async function resolveEntitlements(
   organizationId: string,

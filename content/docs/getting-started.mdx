@@ -1,0 +1,75 @@
+---
+title: Getting Started
+description: Install the starter, configure the minimum env, migrate, seed, and run it locally
+---
+
+# Getting Started
+
+## Purpose
+
+Get the app running locally with the smallest reliable setup path.
+
+## What you need
+
+- Node.js 20+
+- `pnpm`
+- PostgreSQL
+- Stripe test keys if you want to test billing
+- Resend credentials only if you want email and magic-link flows to work end to end
+
+## Files to touch
+
+- `.env`
+- `.env.example`
+
+## First run
+
+```bash
+pnpm install
+cp .env.example .env
+docker compose up -d
+pnpm db:migrate
+pnpm db:seed
+pnpm dev
+```
+
+If you already have Postgres, skip Docker and point `POSTGRES_URL` at your own instance.
+
+## Minimum environment variables
+
+These are the values to care about first:
+
+- `POSTGRES_URL`
+- `AUTH_SECRET`
+- `BASE_URL`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+
+Optional but commonly needed:
+
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+- `NEXT_PUBLIC_ACCOUNT_MODE`
+
+The full source of truth is `.env.example`.
+
+## Seeded users
+
+After `pnpm db:seed`, you can sign in with:
+
+- `demo@starter.local` / `demo123`
+- `admin@admin.com` / `admin123`
+
+## If something fails
+
+- Database issues: reset your local state instead of fighting drift. Use `pnpm db:reset` when the schema is broken locally.
+- Auth issues: check `AUTH_SECRET` and `BASE_URL`.
+- Billing issues: confirm the Stripe test keys are set before you test checkout or the customer portal.
+
+## Next step
+
+Once the app boots, go straight to [Customization](/docs/customization).

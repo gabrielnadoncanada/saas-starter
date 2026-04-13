@@ -1,5 +1,5 @@
-import type { BillingInterval } from "@/shared/config/billing.config";
-import type { OrgRole } from "@/shared/lib/db/enums";
+import type { BillingInterval } from "@/config/billing.config";
+import type { OrgRole } from "@/lib/db/enums";
 
 export type OrganizationUserView = {
   id: string;

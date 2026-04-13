@@ -7,23 +7,18 @@ import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
 import {
-  removeOrganizationMemberAction,
-  type RemoveOrganizationMemberActionState,
-} from "@/features/organizations/actions/membership.actions";
-import type { OrganizationMemberView } from "@/features/organizations/types";
-import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -31,8 +26,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/components/ui/table";
-import { hasOrgRole } from "@/shared/lib/db/enums";
+} from "@/components/ui/table";
+import {
+  removeOrganizationMemberAction,
+  type RemoveOrganizationMemberActionState,
+} from "@/features/organizations/actions/membership.actions";
+import type { OrganizationMemberView } from "@/features/organizations/types";
+import { hasOrgRole } from "@/lib/db/enums";
 
 type OrganizationMembersTableProps = {
   currentUserId: string;

@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-vi.mock("@/shared/lib/storage/storage", () => ({
+vi.mock("@/lib/storage/storage", () => ({
   getFileStorage: vi.fn(),
 }));
 
-vi.mock("@/shared/lib/db/prisma", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   db: {
     storedFile: {
       create: vi.fn(),
@@ -17,9 +17,9 @@ vi.mock("@/shared/lib/db/prisma", () => ({
 }));
 
 const { saveStoredFile, deleteStoredFile, readStoredFileBody } =
-  await import("@/shared/lib/storage/storage-service");
-const { getFileStorage } = await import("@/shared/lib/storage/storage");
-const { db } = await import("@/shared/lib/db/prisma");
+  await import("@/lib/storage/storage-service");
+const { getFileStorage } = await import("@/lib/storage/storage");
+const { db } = await import("@/lib/db/prisma");
 
 describe("storage-service", () => {
   beforeEach(() => {

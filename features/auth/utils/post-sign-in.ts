@@ -1,9 +1,9 @@
 import type {
   BillingInterval,
   PaidPlanId,
-} from "@/shared/config/billing.config";
-import { routes } from "@/shared/constants/routes";
-import { getCallbackURL } from "@/shared/lib/auth/callback-url";
+} from "@/config/billing.config";
+import { routes } from "@/constants/routes";
+import { getCallbackURL } from "@/lib/auth/callback-url";
 
 type PostSignInCallbackParams = {
   billingInterval?: BillingInterval | null;

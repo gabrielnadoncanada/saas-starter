@@ -14,7 +14,7 @@ vi.mock("@/features/account/server/delete-account", () => ({
   deleteAccount: deleteAccountMock,
 }));
 
-vi.mock("@/shared/lib/auth/auth-config", () => ({
+vi.mock("@/lib/auth/auth-config", () => ({
   auth: {
     api: {
       signOut: signOutMock,
@@ -22,15 +22,23 @@ vi.mock("@/shared/lib/auth/auth-config", () => ({
   },
 }));
 
-vi.mock("@/shared/lib/auth/authenticated-action", () => ({
+vi.mock("@/lib/auth/authenticated-action", () => ({
   validatedAuthenticatedAction: (_schema: unknown, action: unknown) => {
     const fn = action as (
       data: unknown,
-      formData: FormData,
-      user: { id: string; email: string },
+      context: {
+        formData: FormData;
+        user: { id: string; email: string };
+      },
     ) => Promise<unknown>;
     return async (_prevState: unknown, formData: FormData) =>
-      fn({}, formData, { id: "user_1", email: "user@example.com" });
+      fn(
+        {},
+        {
+          formData,
+          user: { id: "user_1", email: "user@example.com" },
+        },
+      );
   },
 }));
 
