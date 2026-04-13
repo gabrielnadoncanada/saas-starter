@@ -2,8 +2,8 @@ import "@/shared/lib/env";
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
+import { GeistPixelSquare } from "geist/font/pixel";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/shared/components/providers/providers";
 
 export const metadata: Metadata = {
@@ -23,6 +23,16 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+const fontSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const fontMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
+
 export default async function RootLayout({
   children,
 }: {
@@ -31,7 +41,7 @@ export default async function RootLayout({
   return (
     <html lang={"en"} suppressHydrationWarning>
       <body
-        className={`${GeistSans.variable} ${GeistMono.variable} font-sans`}
+        className={`${fontSans.variable} ${fontMono.variable} ${GeistPixelSquare.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <Providers>{children}</Providers>

@@ -77,37 +77,41 @@ const tiers: Tier[] = [
 function TierCard({ tier }: { tier: Tier }) {
   return (
     <div
-      className={`relative flex flex-col rounded-xl border p-6 ${
+      className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-200 ${
         tier.highlighted
-          ? "border-orange-500 ring-1 ring-orange-500 shadow-md"
-          : "border-border"
+          ? "border-violet-500/50 bg-violet-500/[0.03] shadow-xl shadow-violet-500/10 scale-[1.02]"
+          : "border-border/60 bg-card/60 hover:border-border"
       }`}
     >
       {tier.badge && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-orange-500 px-3 py-0.5 text-xs font-semibold text-white">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-violet-500 to-violet-600 px-4 py-1 text-xs font-semibold text-white shadow-lg shadow-violet-500/25">
           {tier.badge}
         </span>
       )}
       <div>
-        <h3 className="text-xl font-semibold text-foreground">{tier.name}</h3>
+        <h3 className="text-lg font-semibold text-foreground">{tier.name}</h3>
         <p className="mt-1 text-sm text-muted-foreground">{tier.tagline}</p>
       </div>
-      <p className="mt-4 text-4xl font-semibold text-foreground">
-        ${tier.price}
-        <span className="ml-1 text-base font-normal text-muted-foreground">
-          one-time
+      <p className="mt-6">
+        <span className="text-5xl font-bold tracking-tight text-foreground">
+          ${tier.price}
         </span>
+        <span className="ml-2 text-sm text-muted-foreground">one-time</span>
       </p>
-      <p className="mt-3 text-sm text-muted-foreground">{tier.bestFor}</p>
-      <ul className="mt-6 flex-1 space-y-3">
+      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+        {tier.bestFor}
+      </p>
+      <ul className="mt-8 flex-1 space-y-3">
         {tier.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-sm">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
+          <li key={feature} className="flex items-start gap-3 text-sm">
+            <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-500/10">
+              <Check className="h-3 w-3 text-violet-500" />
+            </div>
             <span className="text-muted-foreground">{feature}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-8">
+      <div className="mt-10">
         <a
           href={purchaseUrl}
           className="block"
@@ -119,8 +123,8 @@ function TierCard({ tier }: { tier: Tier }) {
             size="lg"
             className={`w-full rounded-full text-base ${
               tier.highlighted
-                ? ""
-                : "bg-foreground text-background hover:bg-foreground/90"
+                ? "shadow-lg shadow-violet-500/20"
+                : ""
             }`}
             variant={tier.highlighted ? "default" : "outline"}
           >
@@ -134,26 +138,32 @@ function TierCard({ tier }: { tier: Tier }) {
 
 export function StarterPricing() {
   return (
-    <section id="pricing" className="py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-14 text-center">
-          <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+    <section id="pricing" className="relative py-24">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[600px] rounded-full bg-violet-500/5 blur-[120px]" />
+      </div>
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-16 text-center">
+          <p className="text-sm font-medium uppercase tracking-widest text-violet-500">
+            Pricing
+          </p>
+          <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
             One purchase. Full source code. Ship this week.
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
             No subscriptions. No recurring fees. Buy once, own the code, build
             your product.
           </p>
         </div>
-        <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
+        <div className="mx-auto grid max-w-5xl items-start gap-8 md:grid-cols-3">
           {tiers.map((tier) => (
             <TierCard key={tier.name} tier={tier} />
           ))}
         </div>
-        <p className="mx-auto mt-8 max-w-xl text-center text-sm text-muted-foreground">
+        <p className="mx-auto mt-10 max-w-xl text-center text-sm text-muted-foreground">
           All tiers include lifetime access to the purchased version. 30-day
-          refund policy — if the code doesn't match what's described, get your
-          money back.
+          refund policy — if the code doesn&apos;t match what&apos;s described,
+          get your money back.
         </p>
       </div>
     </section>
