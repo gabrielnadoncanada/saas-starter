@@ -33,8 +33,8 @@ export function DashboardOverview({ overview }: DashboardOverviewProps) {
   const completedChecklistCount = checklist.filter((item) => item.done).length;
 
   return (
-    <>
-      <div className="grid gap-4 xl:grid-cols-3">
+    <div className="grid gap-4 grid-cols-12">
+      <div className="col-span-12 xl:col-span-8">
         <DashboardWorkspacePulseCard
           planName={plan.name}
           workspaceName={workspaceName}
@@ -47,7 +47,8 @@ export function DashboardOverview({ overview }: DashboardOverviewProps) {
           tasksUsage={tasksUsage}
           aiCreditsUsage={aiCreditsUsage}
         />
-
+      </div>
+      <div className="col-span-12 xl:col-span-4">
         <DashboardCurrentPlanCard
           billingInterval={organization?.billingInterval ?? null}
           cancelAtPeriodEnd={organization?.cancelAtPeriodEnd ?? false}
@@ -58,40 +59,40 @@ export function DashboardOverview({ overview }: DashboardOverviewProps) {
           trialEnd={organization?.trialEnd ?? null}
         />
       </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="col-span-12 xl:col-span-4">
         <DashboardUsageLimitsCard
           tasksUsage={tasksUsage}
           taskLimit={taskLimit.limit}
           aiCreditsUsage={aiCreditsUsage}
           aiCreditsLimit={aiCreditsLimit.limit}
         />
-
+      </div>
+      <div className="col-span-12 xl:col-span-4">
         <DashboardMembersCard members={organization?.members ?? []} />
-
+      </div>
+      <div className="col-span-12 xl:col-span-4">
+        <DashboardRecentTasksCard
+          tasks={recentTasks}
+          workspaceName={workspaceName}
+        />
+        <DashboardGettingStartedCard items={checklist} />
+      </div>
+      <div className="col-span-12 xl:col-span-8">
+        <DashboardPlanAiEntitlementsCard
+          aiCreditsUsage={aiCreditsUsage}
+          aiCreditsLimit={aiCreditsLimit.limit}
+          entitlements={entitlements}
+          planName={plan.name}
+          taskLimit={taskLimit.limit}
+        />
+      </div>
+      <div className="col-span-12 xl:col-span-8">
         {canUseAI ? (
           <DashboardAiAssistantCard
             assistantConversationCount={assistantConversationCount}
           />
         ) : null}
       </div>
-
-      <DashboardPlanAiEntitlementsCard
-        aiCreditsUsage={aiCreditsUsage}
-        aiCreditsLimit={aiCreditsLimit.limit}
-        entitlements={entitlements}
-        planName={plan.name}
-        taskLimit={taskLimit.limit}
-      />
-
-      <div className="grid gap-4 xl:grid-cols-5">
-        <DashboardGettingStartedCard items={checklist} />
-      </div>
-
-      <DashboardRecentTasksCard
-        tasks={recentTasks}
-        workspaceName={workspaceName}
-      />
-    </>
+    </div>
   );
 }
