@@ -1,5 +1,28 @@
-import { Footer } from "@/features/marketing/components/footer";
-import { Header } from "@/features/marketing/components/header";
+import { MarketingFooter } from "@/features/marketing/components/marketing-footer";
+import { MarketingHeader } from "@/features/marketing/components/marketing-header";
+
+const navigationLinks = [
+  { href: "/", label: "Home" },
+  { href: "#features", label: "Features" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "#contact", label: "Contact" },
+];
+
+const footerSections = [
+  { title: "Company", links: [{ href: "/about", label: "About" }] },
+  { title: "Resources", links: [{ href: "/blog", label: "Blog" }] },
+  {
+    title: "Legal",
+    links: [
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
+    ],
+  },
+];
+
+function AppLogo() {
+  return <span className="text-lg font-semibold tracking-tight">Tenviq</span>;
+}
 
 export default function MarketingLayout({
   children,
@@ -8,9 +31,19 @@ export default function MarketingLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      <MarketingHeader
+        logo={<AppLogo />}
+        links={navigationLinks}
+        signInHref="/auth/sign-in"
+        signUpHref="/auth/sign-up"
+      />
       <div className="flex-1">{children}</div>
-      <Footer />
+      <MarketingFooter
+        logo={<AppLogo />}
+        description="Built for solo founders, consultants, indie hackers, and small technical teams who want to ship quickly without rebuilding the same product foundation again."
+        copyright="© 2026 StarterKit. All rights reserved."
+        sections={footerSections}
+      />
     </div>
   );
 }
