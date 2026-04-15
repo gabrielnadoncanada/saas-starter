@@ -1,14 +1,7 @@
 import Link from "next/link";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { routes } from "@/constants/routes";
+import { AuthShell } from "@/features/auth/components/auth-shell";
 import { SignInForm } from "@/features/auth/components/sign-in-form";
 import {
   buildCallbackURL,
@@ -33,47 +26,45 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const signUpHref = buildCallbackURL(routes.auth.signup, callbackUrl);
 
   return (
-    <Card className="gap-4">
-      <CardHeader>
-        <CardTitle className="text-lg tracking-tight">Sign in</CardTitle>
-        <CardDescription>
-          Don't have an account?
+    <AuthShell
+      eyebrow="Sign in · Returning"
+      title="Welcome back"
+      description="Continue where you left off. One click to your workspace."
+      footer={
+        <p className="text-center text-xs text-muted-foreground">
+          New here?{" "}
           <Link
             href={signUpHref}
-            className="underline underline-offset-4 hover:text-primary"
+            className="font-medium text-foreground underline underline-offset-4 decoration-brand/50 hover:decoration-brand"
           >
-            Sign up
-          </Link>
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-3">
-        <SignInForm
-          callbackUrl={callbackUrl}
-          oauthProviders={oauthProviders}
-          allowMagicLink={allowMagicLink}
-        />
-      </CardContent>
-
-      <CardFooter>
-        <p className="w-full text-center text-sm text-muted-foreground">
-          By clicking sign in, you agree to our
-          <Link
-            href={routes.marketing.terms}
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            Terms of Service
-          </Link>
-          and
-          <Link
-            href={routes.marketing.privacy}
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            Privacy Policy
+            Create an account
           </Link>
           .
         </p>
-      </CardFooter>
-    </Card>
+      }
+    >
+      <SignInForm
+        callbackUrl={callbackUrl}
+        oauthProviders={oauthProviders}
+        allowMagicLink={allowMagicLink}
+      />
+      <p className="mt-6 border-t border-border pt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
+        By signing in, you agree to our{" "}
+        <Link
+          href={routes.marketing.terms}
+          className="underline underline-offset-4 hover:text-foreground"
+        >
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link
+          href={routes.marketing.privacy}
+          className="underline underline-offset-4 hover:text-foreground"
+        >
+          Privacy Policy
+        </Link>
+        .
+      </p>
+    </AuthShell>
   );
 }

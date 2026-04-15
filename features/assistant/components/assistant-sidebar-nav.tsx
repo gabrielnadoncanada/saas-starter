@@ -100,8 +100,8 @@ export function AssistantSidebarNav() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-72" side="right">
             {conversations.length === 0 ? (
-              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                No conversations yet.
+              <DropdownMenuLabel className="label-mono py-2">
+                No conversations yet
               </DropdownMenuLabel>
             ) : (
               <div className="space-y-1 p-1">

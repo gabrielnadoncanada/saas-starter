@@ -86,7 +86,10 @@ export async function createSubscriptionCheckout(params: {
       `${routes.settings.billing}?checkout=success`,
       process.env.BASE_URL,
     ).toString(),
-    cancel_url: new URL(routes.marketing.pricing, process.env.BASE_URL).toString(),
+    cancel_url: new URL(
+      `${routes.settings.billing}?checkout=cancelled`,
+      process.env.BASE_URL,
+    ).toString(),
     metadata: {
       billingInterval: params.billingInterval,
       checkoutType: "subscription",

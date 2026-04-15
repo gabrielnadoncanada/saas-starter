@@ -1,3 +1,4 @@
+import { subDays } from "date-fns";
 import { hashPassword } from "better-auth/crypto";
 
 import { db } from "@/lib/db/prisma";
@@ -84,6 +85,7 @@ async function ensureMembership(input: {
   organizationId: string;
   userId: string;
   role: "owner" | "member";
+  createdAt?: Date;
 }) {
   await db.member.upsert({
     where: {
@@ -94,12 +96,14 @@ async function ensureMembership(input: {
     },
     update: {
       role: input.role,
+      ...(input.createdAt ? { createdAt: input.createdAt } : {}),
     },
     create: {
       id: crypto.randomUUID(),
       organizationId: input.organizationId,
       userId: input.userId,
       role: input.role,
+      ...(input.createdAt ? { createdAt: input.createdAt } : {}),
     },
   });
 }
@@ -122,15 +126,18 @@ export async function seedDemoWorkspace() {
     organizationId: organization.id,
     userId: owner.id,
     role: "owner",
+    createdAt: subDays(new Date(), 30),
   });
   await ensureMembership({
     organizationId: organization.id,
     userId: teammate.id,
     role: "member",
+    createdAt: subDays(new Date(), 4),
   });
 
   await seedDemoWorkspaceContent({
     organizationId: organization.id,
+    ownerUserId: owner.id,
   });
 
   console.log(`Demo workspace ready: ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);

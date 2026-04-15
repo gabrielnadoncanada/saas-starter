@@ -22,7 +22,7 @@ export default async function AdminUsersPage({
 
   return (
     <Page>
-      <PageHeader>
+      <PageHeader eyebrow="Admin · Users">
         <PageTitle>Users</PageTitle>
         <PageDescription>
           Manage platform users, roles, and access.

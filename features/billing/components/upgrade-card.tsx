@@ -29,7 +29,7 @@ export function UpgradeCard({ feature, description }: UpgradeCardProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Link href={routes.marketing.pricing}>
+        <Link href={routes.settings.billing}>
           <Button>
             View Plans
             <ArrowRight className="ml-2 h-4 w-4" />

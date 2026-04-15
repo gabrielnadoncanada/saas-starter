@@ -1,9 +1,10 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
 
 type ResendMagicLinkButtonProps = {
@@ -39,20 +40,24 @@ export function ResendMagicLinkButton({
   }
 
   return (
-    <button
+    <Button
       type="button"
-      className="font-medium underline underline-offset-4 hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
+      variant="outline"
+      size="sm"
       onClick={() => void handleResend()}
       disabled={isPending}
     >
       {isPending ? (
-        <span className="inline-flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
+        <>
+          <Loader2 className="mr-1.5 size-3 animate-spin" strokeWidth={1.75} />
           Sending...
-        </span>
+        </>
       ) : (
-        "Resend a new one"
+        <>
+          <RotateCcw className="mr-1.5 size-3" strokeWidth={1.75} />
+          Resend link
+        </>
       )}
-    </button>
+    </Button>
   );
 }

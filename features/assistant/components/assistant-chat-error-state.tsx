@@ -1,10 +1,9 @@
 "use client";
 
-import { AlertCircle, RotateCcw } from "lucide-react";
+import { AlertTriangle, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { routes } from "@/constants/routes";
 
 type AssistantRouteError = {
@@ -38,28 +37,39 @@ function AssistantChatErrorState({
         ? "Upgrade required"
         : "Something went wrong";
 
+  const tone = isUpgradeError
+    ? "border-brand/40 bg-brand/5"
+    : "border-destructive/40 bg-destructive/5";
+
+  const iconTone = isUpgradeError ? "text-brand" : "text-destructive";
+
+  const labelTone = isUpgradeError
+    ? "text-brand"
+    : "text-destructive";
+
   return (
-    <Card className="border-destructive/50 bg-destructive/5">
-      <CardContent className="flex items-start gap-3 py-3">
-        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-destructive">{title}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {errorInfo.error}
-          </p>
+    <div className={`border ${tone}`}>
+      <div className="flex items-start gap-3 px-4 py-3">
+        <AlertTriangle
+          className={`mt-0.5 size-4 shrink-0 ${iconTone}`}
+          strokeWidth={1.75}
+        />
+        <div className="min-w-0 flex-1 space-y-1">
+          <span className={`label-mono block ${labelTone}`}>{title}</span>
+          <p className="text-sm text-foreground">{errorInfo.error}</p>
         </div>
         {isUpgradeError ? (
           <Button size="sm" variant="outline" asChild>
-            <Link href={routes.marketing.pricing}>Upgrade</Link>
+            <Link href={routes.settings.billing}>Upgrade</Link>
           </Button>
         ) : (
           <Button size="sm" variant="outline" onClick={onDismiss}>
-            <RotateCcw className="mr-1 h-3 w-3" />
+            <RotateCcw className="mr-1 size-3" strokeWidth={1.75} />
             Dismiss
           </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

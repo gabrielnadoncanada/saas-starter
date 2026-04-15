@@ -1,16 +1,12 @@
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
-import { Page } from "@/components/layout/page-layout";
-import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Page,
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/components/layout/page-layout";
 import { routes } from "@/constants/routes";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 import { isTrialingSubscription } from "@/features/billing/plans";
@@ -29,72 +25,69 @@ export default async function SettingsBillingPage() {
     ? format(entitlements.trialEnd, "MMM d, yyyy")
     : null;
 
+  const billingStatusText = isTrialing
+    ? trialEndsOn
+      ? `Trial active until ${trialEndsOn}`
+      : "Trial active"
+    : hasSubscription && entitlements.stripeCustomerId
+      ? "Manage subscription and invoices in the customer portal"
+      : "Pick a plan below to enable subscription billing";
+
   return (
     <Page>
-      <div className="max-w-5xl space-y-5">
-        <Card>
-          <CardHeader>
-            <CardTitle>Manage your team plan</CardTitle>
-            <CardDescription>
-              Choose a plan that fits your team's needs. You can upgrade or
-              downgrade at any time.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardDescription>Current plan</CardDescription>
-                  {isTrialing ? (
-                    <CardAction>
-                      <Badge variant="secondary">Trial</Badge>
-                    </CardAction>
-                  ) : null}
-                  <CardTitle>{entitlements.planName}</CardTitle>
-                  {isTrialing ? (
-                    <CardDescription>
-                      {trialEndsOn
-                        ? `Trial active until ${trialEndsOn}.`
-                        : "Trial active."}
-                    </CardDescription>
-                  ) : null}
-                </CardHeader>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardDescription>Billing</CardDescription>
-                  <CardTitle className="text-base font-normal text-muted-foreground">
-                    {isTrialing
-                      ? trialEndsOn
-                        ? `This workspace is currently in trial until ${trialEndsOn}.`
-                        : "This workspace is currently in trial."
-                      : hasSubscription && entitlements.stripeCustomerId
-                      ? "Manage subscription and invoices in the customer portal when available."
-                      : "Pick a plan below to enable subscription billing."}
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            </div>
+      <PageHeader eyebrow="Settings · Billing">
+        <PageTitle>Billing</PageTitle>
+        <PageDescription>
+          Choose a plan that fits your team. Upgrade or downgrade any time.
+        </PageDescription>
+      </PageHeader>
 
-            <BillingPlanSelector
-              canManageBilling={context.isOwner}
-              canManagePortal={
-                context.isOwner &&
-                hasSubscription &&
-                Boolean(entitlements.stripeCustomerId)
-              }
-              canUpdateSubscription={
-                context.isOwner &&
-                hasSubscription &&
-                Boolean(entitlements.stripeSubscriptionId)
-              }
-              currentBillingInterval={entitlements.billingInterval}
-              currentPlanId={entitlements.planId}
-              hasCurrentSubscription={hasSubscription}
-              plans={plans}
-            />
-          </CardContent>
-        </Card>
+      <div className="max-w-5xl space-y-5">
+        <div className="grid gap-px border border-border bg-border md:grid-cols-2">
+          <div className="bg-card p-5">
+            <div className="flex items-start justify-between gap-3">
+              <p className="label-mono">Current plan</p>
+              {isTrialing ? (
+                <span className="inline-flex items-center gap-1.5 border border-brand/40 bg-brand/5 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-brand">
+                  <span aria-hidden className="size-1.5 bg-brand" />
+                  Trial
+                </span>
+              ) : null}
+            </div>
+            <p className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
+              {entitlements.planName}
+            </p>
+            {isTrialing && trialEndsOn ? (
+              <p className="mt-1 font-mono text-xs tabular-nums text-muted-foreground">
+                Trial ends {trialEndsOn}
+              </p>
+            ) : null}
+          </div>
+          <div className="bg-card p-5">
+            <p className="label-mono">Billing status</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {billingStatusText}.
+            </p>
+          </div>
+        </div>
+
+        <BillingPlanSelector
+          canManageBilling={context.isOwner}
+          canManagePortal={
+            context.isOwner &&
+            hasSubscription &&
+            Boolean(entitlements.stripeCustomerId)
+          }
+          canUpdateSubscription={
+            context.isOwner &&
+            hasSubscription &&
+            Boolean(entitlements.stripeSubscriptionId)
+          }
+          currentBillingInterval={entitlements.billingInterval}
+          currentPlanId={entitlements.planId}
+          hasCurrentSubscription={hasSubscription}
+          plans={plans}
+        />
       </div>
     </Page>
   );

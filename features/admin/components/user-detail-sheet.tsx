@@ -11,11 +11,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -98,8 +94,7 @@ export function UserDetailSheet({
             Comprehensive information about this user
           </SheetDescription>
         </SheetHeader>
-
-        <div className="space-y-6 px-4">
+        <div className="no-scrollbar overflow-y-auto pb-4 space-y-6 px-4">
           <div className="flex items-center gap-3">
             <Avatar className="size-12">
               <AvatarImage
@@ -126,7 +121,7 @@ export function UserDetailSheet({
                   {selectedUser.banned ? (
                     <Badge variant="destructive">Banned</Badge>
                   ) : (
-                    <Badge className="bg-green-500/15 text-green-600 hover:bg-green-500/15">
+                    <Badge className="border-brand/40 bg-brand/10 text-brand hover:bg-brand/10">
                       Active
                     </Badge>
                   )}
@@ -142,7 +137,7 @@ export function UserDetailSheet({
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Email Verified</span>
                   {selectedUser.emailVerified ? (
-                    <CheckCircle2 className="size-5 text-green-500" />
+                    <CheckCircle2 className="size-5 text-brand" />
                   ) : (
                     <XCircle className="size-5 text-muted-foreground" />
                   )}

@@ -19,7 +19,7 @@ export default async function ActivityPage() {
 
   return (
     <Page>
-      <PageHeader>
+      <PageHeader eyebrow="Settings · Activity">
         <PageTitle>Activity</PageTitle>
         <PageDescription>
           Audit log of member, invitation, and billing changes in this

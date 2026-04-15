@@ -93,7 +93,7 @@ export default async function SettingsPage({ searchParams }: PageProps) {
 
   return (
     <Page>
-      <PageHeader>
+      <PageHeader eyebrow="Settings · Account">
         <PageTitle>Account Settings</PageTitle>
         <PageDescription>
           Manage your personal account settings and preferences.

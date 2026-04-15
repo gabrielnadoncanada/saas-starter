@@ -140,24 +140,28 @@ export function TwoFactorSettingsCard({
         ) : null}
 
         {totpUri ? (
-          <div className="space-y-4 rounded-lg border p-4">
+          <div className="space-y-4 border border-border bg-muted/30 p-4">
+            <p className="label-mono">Step 1 · Scan</p>
             {qrCodeDataUrl ? (
               <Image
                 src={qrCodeDataUrl}
                 alt="Authenticator QR code"
-                className="rounded-md border bg-white p-3"
+                className="border border-border bg-white p-3"
                 width={192}
                 height={192}
               />
             ) : null}
             <div className="space-y-2">
-              <Label htmlFor="two-factor-code">Verification code</Label>
+              <Label htmlFor="two-factor-code" className="label-mono">
+                Step 2 · Verification code
+              </Label>
               <Input
                 id="two-factor-code"
                 inputMode="numeric"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
                 placeholder="123456"
+                className="font-mono tabular-nums tracking-[0.2em]"
               />
             </div>
             <Button
@@ -170,14 +174,19 @@ export function TwoFactorSettingsCard({
         ) : null}
 
         {enabled ? (
-          <div className="space-y-3 rounded-lg border p-4">
+          <div className="space-y-3 border border-border bg-muted/30 p-4">
+            <div className="flex items-center gap-2">
+              <span aria-hidden className="size-1.5 bg-brand" />
+              <p className="label-mono text-foreground">Active</p>
+            </div>
             <p className="text-sm text-muted-foreground">
-              Two-factor authentication is active for this account.
+              Two-factor authentication is protecting this account.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 pt-1">
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
                 disabled={!password || isPending}
                 onClick={() =>
                   startTransition(() => void regenerateBackupCodes())
@@ -188,6 +197,7 @@ export function TwoFactorSettingsCard({
               <Button
                 type="button"
                 variant="destructive"
+                size="sm"
                 disabled={!password || isPending}
                 onClick={() => startTransition(() => void disableTwoFactor())}
               >
@@ -198,18 +208,26 @@ export function TwoFactorSettingsCard({
         ) : null}
 
         {backupCodes.length > 0 ? (
-          <div className="space-y-2 rounded-lg border p-4">
-            <p className="text-sm font-medium">Backup codes</p>
-            <div className="grid gap-2 sm:grid-cols-2">
+          <div className="border border-dashed border-brand/40 bg-brand/5 p-4">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="label-mono text-brand">Backup codes</p>
+              <p className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                {backupCodes.length} codes
+              </p>
+            </div>
+            <div className="mt-3 grid gap-px bg-border sm:grid-cols-2">
               {backupCodes.map((backupCode) => (
                 <code
                   key={backupCode}
-                  className="rounded bg-muted px-3 py-2 text-sm"
+                  className="bg-background px-3 py-2 font-mono text-sm tabular-nums tracking-[0.1em]"
                 >
                   {backupCode}
                 </code>
               ))}
             </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Store these somewhere safe — each code can be used once.
+            </p>
           </div>
         ) : null}
       </CardContent>

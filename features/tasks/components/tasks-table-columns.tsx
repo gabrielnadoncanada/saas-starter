@@ -5,7 +5,6 @@ import type { ColumnDef, Row } from "@tanstack/react-table";
 import { MoreHorizontalIcon, Trash2 } from "lucide-react";
 
 import { DataTableColumnHeader } from "@/components/data-table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -21,6 +20,8 @@ import {
   taskPriorities,
   taskStatuses,
 } from "@/features/tasks/task-display";
+import { TaskPriority, TaskStatus } from "@/lib/db/enums";
+import { cn } from "@/lib/utils";
 
 type TasksTableColumnsOptions = {
   onEditTask: (task: Task) => void;
@@ -99,7 +100,11 @@ export function getTasksColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Task" />
       ),
-      cell: ({ row }) => <div className="w-[96px]">{row.getValue("code")}</div>,
+      cell: ({ row }) => (
+        <div className="w-[96px] font-mono text-xs tabular-nums text-muted-foreground">
+          {row.getValue("code")}
+        </div>
+      ),
       enableSorting: false,
       enableHiding: false,
     },
@@ -115,8 +120,12 @@ export function getTasksColumns({
         );
 
         return (
-          <div className="flex space-x-2">
-            {label ? <Badge variant="outline">{label.label}</Badge> : null}
+          <div className="flex items-center gap-2">
+            {label ? (
+              <span className="inline-flex shrink-0 border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                {label.label}
+              </span>
+            ) : null}
             <span className="truncate font-medium">
               {row.getValue("title")}
             </span>
@@ -139,10 +148,20 @@ export function getTasksColumns({
           return null;
         }
 
+        const isActive =
+          status.value === TaskStatus.IN_PROGRESS ||
+          status.value === TaskStatus.DONE;
+
         return (
-          <div className="flex w-[100px] items-center gap-2">
-            <status.icon className="size-4 text-muted-foreground" />
-            <span>{status.label}</span>
+          <div className="flex w-[120px] items-center gap-2">
+            <status.icon
+              className={cn(
+                "size-4",
+                isActive ? "text-brand" : "text-muted-foreground",
+              )}
+              strokeWidth={2}
+            />
+            <span className="text-sm">{status.label}</span>
           </div>
         );
       },
@@ -163,10 +182,18 @@ export function getTasksColumns({
           return null;
         }
 
+        const isHigh = priority.value === TaskPriority.HIGH;
+
         return (
           <div className="flex items-center gap-2">
-            <priority.icon className="size-4 text-muted-foreground" />
-            <span>{priority.label}</span>
+            <priority.icon
+              className={cn(
+                "size-4",
+                isHigh ? "text-brand" : "text-muted-foreground",
+              )}
+              strokeWidth={2}
+            />
+            <span className="text-sm">{priority.label}</span>
           </div>
         );
       },

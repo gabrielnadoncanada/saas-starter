@@ -31,12 +31,10 @@ export function AuthSecondaryActions({
     <div className="space-y-3">
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t" />
+          <div className="w-full border-t border-border" />
         </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="bg-card px-2 text-muted-foreground">
-            Or continue with
-          </span>
+        <div className="relative flex justify-center">
+          <span className="label-mono bg-card px-3">Or continue with</span>
         </div>
       </div>
 

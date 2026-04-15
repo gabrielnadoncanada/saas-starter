@@ -31,7 +31,7 @@ export function OAuthButtons({
             key={provider}
             type="button"
             variant="outline"
-            className="w-full "
+            className="w-full"
             disabled={pendingProvider !== null}
             onClick={() => onProviderClick(provider)}
           >

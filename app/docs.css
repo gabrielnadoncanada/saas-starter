@@ -1,0 +1,101 @@
+/* Fumadocs editorial theme — remap fd-* tokens to our palette. */
+:root {
+  --color-fd-background: var(--background);
+  --color-fd-foreground: var(--foreground);
+  --color-fd-muted: var(--muted);
+  --color-fd-muted-foreground: var(--muted-foreground);
+  --color-fd-popover: var(--popover);
+  --color-fd-popover-foreground: var(--popover-foreground);
+  --color-fd-card: var(--card);
+  --color-fd-card-foreground: var(--card-foreground);
+  --color-fd-border: var(--border);
+  --color-fd-primary: var(--brand);
+  --color-fd-primary-foreground: var(--brand-foreground);
+  --color-fd-secondary: var(--secondary);
+  --color-fd-secondary-foreground: var(--secondary-foreground);
+  --color-fd-accent: var(--accent);
+  --color-fd-accent-foreground: var(--accent-foreground);
+  --color-fd-ring: var(--brand);
+}
+
+.dark {
+  --color-fd-background: var(--background);
+  --color-fd-foreground: var(--foreground);
+  --color-fd-muted: var(--muted);
+  --color-fd-muted-foreground: var(--muted-foreground);
+  --color-fd-popover: var(--popover);
+  --color-fd-popover-foreground: var(--popover-foreground);
+  --color-fd-card: var(--card);
+  --color-fd-card-foreground: var(--card-foreground);
+  --color-fd-border: var(--border);
+  --color-fd-primary: var(--brand);
+  --color-fd-primary-foreground: var(--brand-foreground);
+  --color-fd-secondary: var(--secondary);
+  --color-fd-secondary-foreground: var(--secondary-foreground);
+  --color-fd-accent: var(--accent);
+  --color-fd-accent-foreground: var(--accent-foreground);
+  --color-fd-ring: var(--brand);
+}
+
+/* Flatten fumadocs surfaces to match the rest of the app (sharp corners, hairline borders). */
+#nd-docs-layout,
+#nd-page {
+  --fd-radius: 0px;
+}
+
+#nd-docs-layout [data-radix-scroll-area-viewport] figure,
+#nd-docs-layout pre,
+#nd-docs-layout code,
+#nd-docs-layout .fd-codeblock,
+#nd-docs-layout [data-card],
+#nd-docs-layout [data-callout],
+#nd-docs-layout button[data-accordion-trigger],
+#nd-docs-layout [data-tab-trigger],
+#nd-docs-layout [data-tab-content] {
+  border-radius: 0 !important;
+}
+
+#nd-sidebar {
+  border-right: 1px solid var(--color-fd-border);
+  background: var(--color-fd-background);
+}
+
+#nd-sidebar [data-collapsible-trigger],
+#nd-sidebar p.inline-flex {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+#nd-sidebar a[data-active="true"] {
+  position: relative;
+  background: hsl(var(--brand-hsl) / 0.08);
+  color: var(--foreground);
+}
+
+#nd-sidebar a[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--brand);
+}
+
+#nd-tocnav [data-active="true"] {
+  color: var(--brand);
+}
+
+#nd-nav {
+  border-bottom: 1px solid var(--color-fd-border);
+  backdrop-filter: blur(8px);
+}
+
+/* Docs page title — editorial serif-ish treatment through weight + tracking. */
+#nd-page article h1:first-of-type {
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}

@@ -19,7 +19,7 @@ export default async function SecuritySettingsPage() {
 
   return (
     <Page>
-      <PageHeader>
+      <PageHeader eyebrow="Settings · Security">
         <PageTitle>Security</PageTitle>
         <PageDescription>
           Review the security controls that protect your account.

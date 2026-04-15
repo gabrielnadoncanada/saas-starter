@@ -23,7 +23,7 @@ export async function openBillingPortalAction() {
 
   const organization = await getCurrentOrganization();
   if (!organization?.stripeCustomerId || !organization?.subscriptionStatus) {
-    redirect(routes.marketing.pricing);
+    redirect(routes.settings.billing);
   }
 
   const url = await createBillingPortalSession(organization.id);

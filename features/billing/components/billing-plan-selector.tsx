@@ -168,7 +168,7 @@ export function BillingPlanSelector({
           <div className="mt-1 flex w-full flex-wrap gap-2">
             {selectedPlan.features.map((feature) => (
               <Badge key={feature} variant="outline">
-                <CircleCheckBigIcon className="size-4 text-green-500" />
+                <CircleCheckBigIcon className="size-4 text-brand" />
                 {feature}
               </Badge>
             ))}
@@ -177,7 +177,7 @@ export function BillingPlanSelector({
       </Item>
 
       {!canManageBilling ? (
-        <Button disabled className="h-11 rounded-xl px-5">
+        <Button disabled className="h-11 px-5">
           Only the owner can manage billing
         </Button>
       ) : (

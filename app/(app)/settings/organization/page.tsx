@@ -23,7 +23,7 @@ export default async function SettingsPage() {
 
   return (
     <Page>
-      <PageHeader>
+      <PageHeader eyebrow="Settings · Organization">
         <PageTitle>Organization Settings</PageTitle>
         <PageDescription>
           Manage your organization details and subscription.

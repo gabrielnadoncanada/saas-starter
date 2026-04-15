@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 export type SectionHeadingProps = {
   /** Deprecated display hint. Prefer `eyebrow` on the parent Section. */
   badge?: string;
+  index?: string;
+  eyebrow?: string;
+  variant?: "default" | "muted" | "inverted";
   title: React.ReactNode;
   description?: React.ReactNode;
   align?: "left" | "center";
@@ -16,6 +19,9 @@ export type SectionHeadingProps = {
 
 export function SectionHeading({
   badge,
+  index,
+  eyebrow,
+  variant = "default",
   title,
   description,
   align = "left",
@@ -34,12 +40,38 @@ export function SectionHeading({
         className,
       )}
     >
-      {label ? (
-        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+      {index || eyebrow ? (
+        <div
+          className={cn(
+            "mb-2 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.22em]",
+            variant === "inverted"
+              ? "text-background/60"
+              : "text-muted-foreground",
+          )}
+        >
+          {index ? (
+            <span
+              className={cn(
+                "tabular-nums",
+                variant === "inverted" ? "text-background" : "text-foreground",
+              )}
+            >
+              {index.padStart(2, "0")}
+            </span>
+          ) : null}
           <span
-            className="size-1.5 bg-brand animate-brand-pulse"
+            className={cn(
+              "h-px flex-none w-10",
+              variant === "inverted" ? "bg-background/30" : "bg-border",
+            )}
             aria-hidden
           />
+          {eyebrow ? <span>{eyebrow}</span> : null}
+        </div>
+      ) : null}
+      {label ? (
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="size-1.5 bg-brand animate-brand-pulse" aria-hidden />
           {label}
         </span>
       ) : null}

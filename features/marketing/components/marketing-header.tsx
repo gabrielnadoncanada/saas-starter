@@ -39,19 +39,12 @@ export function MarketingHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-border/80 bg-background/70 backdrop-blur-xl",
+        "fixed w-full  top-0 z-50 border-b border-border/80 bg-background/70 backdrop-blur-xl",
         className,
       )}
     >
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6 md:px-10">
-        <Link
-          href="/"
-          className="group relative flex shrink-0 items-center gap-2"
-        >
-          <span
-            className="size-2 bg-brand transition-transform group-hover:scale-125"
-            aria-hidden
-          />
+        <Link href="/" className="group relative flex shrink-0 items-center">
           {logo}
         </Link>
 
@@ -123,7 +116,10 @@ export function MarketingHeader({
                     </Button>
                   </DrawerClose>
                   <DrawerClose asChild>
-                    <Button asChild className="bg-brand text-brand-foreground hover:bg-brand/90">
+                    <Button
+                      asChild
+                      className="bg-brand text-brand-foreground hover:bg-brand/90"
+                    >
                       <Link href={signUpHref}>Get the starter</Link>
                     </Button>
                   </DrawerClose>

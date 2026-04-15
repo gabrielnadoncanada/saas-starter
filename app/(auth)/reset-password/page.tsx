@@ -1,13 +1,7 @@
 import Link from "next/link";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { routes } from "@/constants/routes";
+import { AuthShell } from "@/features/auth/components/auth-shell";
 import { ResetPasswordForm } from "@/features/auth/components/password/reset-password-form";
 
 type ResetPasswordPageProps = {
@@ -23,29 +17,41 @@ export default async function ResetPasswordPage({
   const token = rawToken?.trim();
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Reset password</CardTitle>
-        <CardDescription>
-          {token
-            ? "Choose a new password for your account."
-            : "This reset link is invalid or incomplete."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {token ? (
-          <ResetPasswordForm token={token} />
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            <Link
-              href={routes.auth.forgotPassword}
-              className="underline underline-offset-4"
-            >
-              Request a new reset link
-            </Link>
-          </p>
-        )}
-      </CardContent>
-    </Card>
+    <AuthShell
+      eyebrow="Recovery · New password"
+      title={token ? "Choose a new password" : "Link expired"}
+      description={
+        token
+          ? "Pick something strong. You'll sign in with this next time."
+          : "This reset link is invalid or has already been used."
+      }
+      footer={
+        <p className="text-center text-xs text-muted-foreground">
+          Need a new link?{" "}
+          <Link
+            href={routes.auth.forgotPassword}
+            className="font-medium text-foreground underline underline-offset-4 decoration-brand/50 hover:decoration-brand"
+          >
+            Request another reset
+          </Link>
+          .
+        </p>
+      }
+    >
+      {token ? (
+        <ResetPasswordForm token={token} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Head back to the{" "}
+          <Link
+            href={routes.auth.forgotPassword}
+            className="font-medium text-foreground underline underline-offset-4 decoration-brand/50 hover:decoration-brand"
+          >
+            password reset page
+          </Link>{" "}
+          to start over.
+        </p>
+      )}
+    </AuthShell>
   );
 }

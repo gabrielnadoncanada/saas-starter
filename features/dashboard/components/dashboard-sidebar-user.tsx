@@ -74,7 +74,7 @@ export function DashboardSidebarUser() {
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
               side={state === "collapsed" ? "right" : "bottom"}
               align={state === "collapsed" ? "start" : "end"}
               alignOffset={state === "collapsed" ? -8 : 0}

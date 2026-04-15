@@ -31,14 +31,14 @@ import {
 import type { ChartSpec } from "@/features/assistant/types";
 
 const DEFAULT_PALETTE = [
-  "#3b82f6",
-  "#10b981",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
-  "#ec4899",
-  "#f97316",
+  "hsl(var(--brand-hsl))",
+  "hsl(var(--brand-hsl) / 0.7)",
+  "hsl(var(--brand-hsl) / 0.45)",
+  "hsl(215 25% 55%)",
+  "hsl(160 55% 42%)",
+  "hsl(260 50% 58%)",
+  "hsl(40 85% 55%)",
+  "hsl(340 70% 55%)",
 ];
 
 function getSeriesColor(series: ChartSpec["series"], index: number): string {
@@ -70,14 +70,20 @@ function BarChartRenderer({
   return (
     <ChartContainer config={config} className="min-h-[280px] w-full">
       <BarChart data={chart.data} accessibilityLayer>
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray="2 4" />
         <XAxis
           dataKey={chart.xAxisKey}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
+          className="font-mono text-[10px]"
         />
-        <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          className="font-mono text-[10px] tabular-nums"
+        />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         {chart.series.map((s, i) => (
@@ -85,7 +91,7 @@ function BarChartRenderer({
             key={s.dataKey}
             dataKey={s.dataKey}
             fill={getSeriesColor(chart.series, i)}
-            radius={4}
+            radius={0}
           />
         ))}
       </BarChart>
@@ -103,14 +109,20 @@ function LineChartRenderer({
   return (
     <ChartContainer config={config} className="min-h-[280px] w-full">
       <LineChart data={chart.data} accessibilityLayer>
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray="2 4" />
         <XAxis
           dataKey={chart.xAxisKey}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
+          className="font-mono text-[10px]"
         />
-        <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          className="font-mono text-[10px] tabular-nums"
+        />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         {chart.series.map((s, i) => (
@@ -119,8 +131,8 @@ function LineChartRenderer({
             dataKey={s.dataKey}
             type="monotone"
             stroke={getSeriesColor(chart.series, i)}
-            strokeWidth={2}
-            dot={{ r: 4 }}
+            strokeWidth={1.75}
+            dot={{ r: 3, strokeWidth: 0 }}
           />
         ))}
       </LineChart>
@@ -138,14 +150,20 @@ function AreaChartRenderer({
   return (
     <ChartContainer config={config} className="min-h-[280px] w-full">
       <AreaChart data={chart.data} accessibilityLayer>
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray="2 4" />
         <XAxis
           dataKey={chart.xAxisKey}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
+          className="font-mono text-[10px]"
         />
-        <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          className="font-mono text-[10px] tabular-nums"
+        />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         {chart.series.map((s, i) => {
@@ -157,8 +175,8 @@ function AreaChartRenderer({
               type="monotone"
               fill={color}
               stroke={color}
-              fillOpacity={0.2}
-              strokeWidth={2}
+              fillOpacity={0.18}
+              strokeWidth={1.75}
             />
           );
         })}
@@ -189,6 +207,8 @@ function PieChartRenderer({
           cy="50%"
           outerRadius="70%"
           label
+          stroke="hsl(var(--background))"
+          strokeWidth={2}
         >
           {chart.data.map((row, i) => (
             <Cell
@@ -213,7 +233,10 @@ function RadarChartRenderer({
     <ChartContainer config={config} className="min-h-[280px] w-full">
       <RadarChart data={chart.data} cx="50%" cy="50%" outerRadius="70%">
         <PolarGrid />
-        <PolarAngleAxis dataKey={chart.xAxisKey} />
+        <PolarAngleAxis
+          dataKey={chart.xAxisKey}
+          className="font-mono text-[10px]"
+        />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         {chart.series.map((s, i) => {
@@ -223,9 +246,9 @@ function RadarChartRenderer({
               key={s.dataKey}
               dataKey={s.dataKey}
               fill={color}
-              fillOpacity={0.2}
+              fillOpacity={0.18}
               stroke={color}
-              strokeWidth={2}
+              strokeWidth={1.75}
             />
           );
         })}
@@ -250,14 +273,27 @@ export function AssistantChartArtifact({ chart }: { chart: ChartSpec }) {
   const Renderer = renderers[chart.type] ?? BarChartRenderer;
 
   return (
-    <div className="w-full space-y-3 rounded-xl border bg-card p-4">
-      <div className="space-y-1">
-        <h4 className="text-sm font-semibold">{chart.title}</h4>
-        {chart.description ? (
-          <p className="text-xs text-muted-foreground">{chart.description}</p>
-        ) : null}
+    <div className="w-full border border-border bg-card">
+      <div className="flex items-start justify-between gap-4 border-b border-border px-4 py-3">
+        <div className="min-w-0 space-y-1">
+          <span className="label-mono block">
+            {chart.type} chart · artifact
+          </span>
+          <h4 className="truncate text-sm font-semibold tracking-[-0.01em]">
+            {chart.title}
+          </h4>
+          {chart.description ? (
+            <p className="text-xs text-muted-foreground">{chart.description}</p>
+          ) : null}
+        </div>
+        <span
+          aria-hidden
+          className="mt-1 block size-2 shrink-0 bg-brand"
+        />
       </div>
-      <Renderer chart={chart} config={config} />
+      <div className="p-4">
+        <Renderer chart={chart} config={config} />
+      </div>
     </div>
   );
 }

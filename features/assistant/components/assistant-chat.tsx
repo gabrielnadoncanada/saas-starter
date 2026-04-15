@@ -176,7 +176,7 @@ export function AssistantChat({
   return (
     <div className="flex flex-1 flex-col">
       <Conversation>
-        <ConversationContent className="mx-auto w-full max-w-3xl gap-4 px-4 py-6">
+        <ConversationContent className="mx-auto w-full max-w-3xl gap-6 px-4 py-6">
           <AssistantChatMessageList
             error={error}
             isLoading={isLoading}
@@ -187,20 +187,24 @@ export function AssistantChat({
         <ConversationScrollButton />
       </Conversation>
 
-      {error ? (
-        <AssistantChatErrorState error={error} onDismiss={clearError} />
-      ) : null}
-
-      <div className="mx-auto w-full max-w-3xl px-4 pb-4 sticky bottom-0 bg-background">
-        <AssistantChatComposer
-          isLoading={isLoading}
-          modelId={modelId}
-          modelOptions={modelOptions}
-          onModelChange={setModelId}
-          onSubmit={sendAssistantMessage}
-          status={status}
-          stop={stop}
-        />
+      <div className="sticky bottom-0 border-t border-border bg-background">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 px-4 py-4">
+          {error ? (
+            <AssistantChatErrorState error={error} onDismiss={clearError} />
+          ) : null}
+          <AssistantChatComposer
+            isLoading={isLoading}
+            modelId={modelId}
+            modelOptions={modelOptions}
+            onModelChange={setModelId}
+            onSubmit={sendAssistantMessage}
+            status={status}
+            stop={stop}
+          />
+          <p className="label-mono text-center">
+            Assistant may produce inaccurate information · review before acting
+          </p>
+        </div>
       </div>
     </div>
   );

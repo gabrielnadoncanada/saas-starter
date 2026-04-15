@@ -10,8 +10,8 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { AdminApiUser } from "@/lib/auth/better-auth-inferred-types";
 
 import { UserRowActions } from "./user-row-actions";
@@ -36,18 +36,18 @@ function UserCell({
 
   return (
     <div className="flex items-center gap-3">
-      <Avatar>
+      <Avatar className="border border-border">
         <AvatarImage
           src={user.image ?? undefined}
           alt={user.name ?? user.email}
         />
-        <AvatarFallback>
+        <AvatarFallback className="text-xs">
           {(user.name || user.email)[0].toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
         <p className="truncate font-medium">{user.name || "No name"}</p>
-        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+        <div className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
           <span className="truncate">{user.email}</span>
           <Button
             variant="ghost"
@@ -63,6 +63,37 @@ function UserCell({
         </div>
       </div>
     </div>
+  );
+}
+
+function MetaTag({
+  children,
+  tone = "neutral",
+}: {
+  children: React.ReactNode;
+  tone?: "neutral" | "brand" | "danger";
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em]",
+        tone === "brand" && "border-brand/40 bg-brand/5 text-brand",
+        tone === "danger" &&
+          "border-destructive/40 bg-destructive/5 text-destructive",
+        tone === "neutral" && "border-border bg-background text-foreground",
+      )}
+    >
+      <span
+        aria-hidden
+        className={cn(
+          "size-1.5",
+          tone === "brand" && "bg-brand",
+          tone === "danger" && "bg-destructive",
+          tone === "neutral" && "bg-muted-foreground/50",
+        )}
+      />
+      {children}
+    </span>
   );
 }
 
@@ -82,18 +113,23 @@ export function getAdminUsersColumns(
     {
       accessorKey: "role",
       header: "Role",
-      cell: ({ row }) => (
-        <Badge variant="secondary">{row.original.role ?? "user"}</Badge>
-      ),
+      cell: ({ row }) => {
+        const role = row.original.role ?? "user";
+        return (
+          <MetaTag tone={role === "admin" ? "brand" : "neutral"}>
+            {role}
+          </MetaTag>
+        );
+      },
       enableSorting: false,
     },
     {
       id: "status",
       header: "Status",
       cell: ({ row }) => (
-        <Badge variant={row.original.banned ? "destructive" : "secondary"}>
+        <MetaTag tone={row.original.banned ? "danger" : "neutral"}>
           {row.original.banned ? "Banned" : "Active"}
-        </Badge>
+        </MetaTag>
       ),
       enableSorting: false,
     },
@@ -103,7 +139,7 @@ export function getAdminUsersColumns(
         <DataTableColumnHeader column={column} title="Created" />
       ),
       cell: ({ row }) => (
-        <span className="text-muted-foreground">
+        <span className="font-mono text-xs tabular-nums text-muted-foreground">
           {format(new Date(row.original.createdAt), "MMM d, yyyy")}
         </span>
       ),

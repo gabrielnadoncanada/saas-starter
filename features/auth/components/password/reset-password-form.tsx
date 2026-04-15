@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useActionState } from "react";
 
@@ -61,19 +62,28 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       </FieldGroup>
 
       {state.error ? (
-        <p className="text-sm text-destructive">{state.error}</p>
+        <div className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          {state.error}
+        </div>
       ) : null}
 
       {state.success ? (
-        <p className="text-sm text-emerald-600">
-          {state.success}{" "}
-          <Link
-            href={routes.auth.login}
-            className="underline underline-offset-4"
-          >
-            Go to sign in
-          </Link>
-        </p>
+        <div className="flex items-start gap-3 border border-brand/30 bg-brand/5 px-4 py-3">
+          <CheckCircle2
+            className="mt-0.5 size-4 shrink-0 text-brand"
+            strokeWidth={1.75}
+          />
+          <p className="text-sm">
+            {state.success}{" "}
+            <Link
+              href={routes.auth.login}
+              className="font-medium underline underline-offset-4 decoration-brand/50 hover:decoration-brand"
+            >
+              Go to sign in
+            </Link>
+            .
+          </p>
+        </div>
       ) : null}
 
       <Button

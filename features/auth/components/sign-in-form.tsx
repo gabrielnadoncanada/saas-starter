@@ -153,7 +153,7 @@ export function SignInForm({
             <FieldLabel htmlFor="sign-in-password">Password</FieldLabel>
             <Link
               href={routes.auth.forgotPassword}
-              className="text-sm text-muted-foreground underline underline-offset-4"
+              className="text-xs text-muted-foreground underline underline-offset-4 decoration-brand/40 hover:text-foreground hover:decoration-brand"
             >
               Forgot password?
             </Link>
@@ -169,7 +169,9 @@ export function SignInForm({
         </Field>
 
         {formError ? (
-          <p className="text-sm text-destructive">{formError}</p>
+          <div className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            {formError}
+          </div>
         ) : null}
 
         <Button type="submit" className="w-full" disabled={isPending}>

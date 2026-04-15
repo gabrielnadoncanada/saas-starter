@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircle2 } from "lucide-react";
 import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,15 @@ export function ForgotPasswordForm() {
   const emailField = getFieldState(state, "email");
 
   if (state.success) {
-    return <p className="text-sm text-muted-foreground">{state.success}</p>;
+    return (
+      <div className="flex items-start gap-3 border border-brand/30 bg-brand/5 px-4 py-3">
+        <CheckCircle2
+          className="mt-0.5 size-4 shrink-0 text-brand"
+          strokeWidth={1.75}
+        />
+        <p className="text-sm">{state.success}</p>
+      </div>
+    );
   }
 
   return (
@@ -45,7 +54,9 @@ export function ForgotPasswordForm() {
       </Field>
 
       {state.error ? (
-        <p className="text-sm text-destructive">{state.error}</p>
+        <div className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          {state.error}
+        </div>
       ) : null}
 
       <Button type="submit" className="w-full" disabled={isPending}>

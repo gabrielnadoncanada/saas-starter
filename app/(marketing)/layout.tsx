@@ -1,3 +1,4 @@
+import { LogoPeriod } from "@/features/marketing/components/logo-period";
 import { MarketingFooter } from "@/features/marketing/components/marketing-footer";
 import { MarketingHeader } from "@/features/marketing/components/marketing-header";
 
@@ -20,14 +21,6 @@ const footerSections = [
   },
 ];
 
-function AppLogo() {
-  return (
-    <span className="text-lg font-semibold tracking-[-0.02em]">
-      Ten<span className="font-serif italic font-normal text-brand">v</span>iq
-    </span>
-  );
-}
-
 export default function MarketingLayout({
   children,
 }: {
@@ -36,16 +29,16 @@ export default function MarketingLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <MarketingHeader
-        logo={<AppLogo />}
+        logo={<LogoPeriod />}
         links={navigationLinks}
         signInHref="/auth/sign-in"
         signUpHref="/auth/sign-up"
       />
       <div className="flex-1">{children}</div>
       <MarketingFooter
-        logo={<AppLogo />}
+        logo={<LogoPeriod />}
         description="Built for solo founders, consultants, indie hackers, and small technical teams who want to ship quickly without rebuilding the same product foundation again."
-        copyright="© 2026 StarterKit. All rights reserved."
+        copyright="© 2026 Tenviq. All rights reserved."
         sections={footerSections}
       />
     </div>

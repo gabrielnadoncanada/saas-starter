@@ -1,17 +1,7 @@
-import {
-  Code2,
-  CreditCard,
-  LayoutDashboard,
-  Lock,
-  Rocket,
-  Shield,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
+import { Code2, LayoutDashboard, Rocket, Shield } from "lucide-react";
 
 import {
   AnnouncementPill,
-  CheckList,
   FaqSection,
   FeatureGrid,
   FinalCtaSection,
@@ -23,6 +13,7 @@ import {
   SectionHeading,
   SplitShowcase,
 } from "@/features/marketing/components";
+import { cn } from "@/lib/utils";
 
 const featureItems = [
   {
@@ -51,201 +42,133 @@ const featureItems = [
   },
 ];
 
-const includedBlocks = [
+const featureColumns = [
   {
+    label: "Core",
     title: "Core foundations",
-    icon: Shield,
-    children: [
-      <CheckList
-        key="core-foundations"
-        items={[
-          "Authentication flows",
-          "Protected application area",
-          "Account management",
-          "Product-ready settings foundation",
-          "Database-backed structure",
-        ]}
-      />,
+    items: [
+      "Authentication flows",
+      "Protected application area",
+      "Account management",
+      "Product-ready settings foundation",
+      "Database-backed structure",
     ],
   },
   {
+    label: "Money",
     title: "Monetization",
-    icon: CreditCard,
-    children: [
-      <CheckList
-        key="monetization"
-        items={[
-          "Subscription billing",
-          "Plan structure",
-          "Feature gating foundation",
-          "Usage limit extensibility",
-          "Billing-ready product model",
-        ]}
-      />,
+    items: [
+      "Subscription billing",
+      "Plan structure",
+      "Feature gating foundation",
+      "Usage limit extensibility",
+      "Billing-ready product model",
     ],
   },
   {
+    label: "Structure",
     title: "SaaS structure",
-    icon: Users,
-    children: [
-      <CheckList
-        key="saas-structure"
-        items={[
-          "Dashboard shell",
-          "Team and workspace support",
-          "Navigation foundations",
-          "Extendable product architecture",
-          "Real app starting point",
-        ]}
-      />,
+    items: [
+      "Dashboard shell",
+      "Team and workspace support",
+      "Navigation foundations",
+      "Extendable product architecture",
+      "Real app starting point",
     ],
   },
   {
+    label: "DX",
     title: "Developer experience",
-    icon: Code2,
-    children: [
-      <CheckList
-        key="developer-experience"
-        items={[
-          "Predictable file ownership",
-          "Obvious naming patterns",
-          "Straightforward feature extension",
-          "Low-ceremony code organization",
-          "Documentation for setup and customization",
-        ]}
-      />,
+    items: [
+      "Predictable file ownership",
+      "Obvious naming patterns",
+      "Straightforward feature extension",
+      "Low-ceremony code organization",
+      "Documentation for setup and customization",
     ],
   },
 ];
 
-const proofBlocks = [
+const workflows = [
   {
+    label: "Build",
     title: "Add a feature",
     description:
-      "Create the schema, add the page, connect the action, and ship without wiring a mini-framework.",
-    children: [
-      <CheckList
-        key="add-a-feature"
-        items={["Create schema", "Add page", "Connect action", "Ship"]}
-      />,
-    ],
+      "Create the schema, add the page, connect the action, and ship — no mini-framework to wire.",
+    steps: ["Create schema", "Add page", "Connect action", "Ship"],
   },
   {
+    label: "Bill",
     title: "Extend billing",
     description:
       "Adjust plans, update feature gating, and evolve monetization without hunting through layers.",
-    children: [
-      <CheckList
-        key="extend-billing"
-        items={["Adjust plan", "Update gating", "Review limits", "Go live"]}
-      />,
-    ],
+    steps: ["Adjust plan", "Update gating", "Review limits", "Go live"],
   },
   {
+    label: "Tune",
     title: "Customize settings",
     description:
       "Edit account and workspace flows where you expect them, with direct ownership and fewer jumps.",
-    children: [
-      <CheckList
-        key="customize-settings"
-        items={["Edit section", "Save flow", "Validate UI", "Done"]}
-      />,
-    ],
+    steps: ["Edit section", "Save flow", "Validate UI", "Done"],
   },
 ];
 
-const comparisonBlocks = [
+const comparisonColumns = [
   {
-    title: "Other boilerplates",
+    label: "Other boilerplates",
     description:
       "Often save too little time and still need lots of rebuilding.",
-    children: [
-      <CheckList
-        key="other-boilerplates"
-        items={[
-          "Save too little time",
-          "Look unfinished",
-          "Need lots of rebuilding",
-          "Weak monetization foundations",
-          "Poor launch credibility",
-        ]}
-      />,
+    items: [
+      "Save too little time",
+      "Look unfinished",
+      "Need lots of rebuilding",
+      "Weak monetization foundations",
+      "Poor launch credibility",
     ],
+    tone: "weak" as const,
   },
   {
-    title: "Heavy starters",
+    label: "Heavy starters",
     description:
       "Look complete, but cost more time to understand and customize.",
-    children: [
-      <CheckList
-        key="heavy-starters"
-        items={[
-          "Harder to understand",
-          "Too much ceremony",
-          "Too many internal patterns",
-          "Slower to customize",
-          "Higher cognitive load",
-        ]}
-      />,
+    items: [
+      "Harder to understand",
+      "Too much ceremony",
+      "Too many internal patterns",
+      "Slower to customize",
+      "Higher cognitive load",
     ],
+    tone: "weak" as const,
   },
   {
-    title: "This starter",
-    description: "Built for real buyer needs, with a stronger launch-ready base.",
-    className:
-      "relative border-brand ring-2 ring-brand bg-gradient-to-br from-brand-soft/60 via-background to-background shadow-[0_30px_80px_-30px_hsl(var(--brand-hsl)/0.5)]",
-    children: [
-      <CheckList
-        key="this-starter"
-        items={[
-          "Strong launch-ready base",
-          "Clear product foundations",
-          "Faster time to understand",
-          "Faster time to modify",
-          "Built for real buyer needs",
-        ]}
-      />,
+    label: "This starter",
+    description:
+      "Built for real buyer needs, with a stronger launch-ready base.",
+    items: [
+      "Strong launch-ready base",
+      "Clear product foundations",
+      "Faster time to understand",
+      "Faster time to modify",
+      "Built for real buyer needs",
     ],
+    tone: "brand" as const,
   },
 ];
 
-const extraContextBlocks = [
-  {
-    title: "Use it to build",
-    icon: Lock,
-    description:
-      "Start from a foundation that already solves the expensive, repetitive parts.",
-    children: [
-      <CheckList
-        key="use-it-to-build"
-        items={[
-          "B2B SaaS products",
-          "Client portals",
-          "AI-powered SaaS tools",
-          "Internal business software",
-          "Niche vertical products",
-          "Paid MVPs with real monetization foundations",
-        ]}
-      />,
-    ],
-  },
-  {
-    title: "A better starter is not the one with the most layers",
-    icon: ShieldCheck,
-    description:
-      "It is the one that helps you launch with less hesitation and faster progress.",
-    children: [
-      <CheckList
-        key="starter-philosophy"
-        items={[
-          "Obviousness over purity",
-          "Boundaries without ceremony",
-          "Complexity only where it is earned",
-          "Visible value over invisible sophistication",
-        ]}
-      />,
-    ],
-  },
+const useCases = [
+  "B2B SaaS products",
+  "Client portals",
+  "AI-powered SaaS tools",
+  "Internal business software",
+  "Niche vertical products",
+  "Paid MVPs with real monetization foundations",
+];
+
+const principles = [
+  "Obviousness over purity",
+  "Boundaries without ceremony",
+  "Complexity only where it is earned",
+  "Visible value over invisible sophistication",
 ];
 
 const pricingPlans = [
@@ -357,9 +280,9 @@ export default function MarketingPage() {
             }
             title={
               <>
-                Launch your Next.js SaaS{" "}
-                <BrandItalic>faster</BrandItalic> — without rebuilding the same
-                foundation <BrandItalic>again</BrandItalic>.
+                Launch your Next.js SaaS <BrandItalic>faster</BrandItalic> —
+                without rebuilding the same foundation{" "}
+                <BrandItalic>again</BrandItalic>.
               </>
             }
             description={
@@ -375,7 +298,7 @@ export default function MarketingPage() {
                 primaryHref="/auth/sign-up"
                 secondaryLabel="See pricing"
                 secondaryHref="#pricing"
-                note="14-day refund · Lifetime updates"
+                note="Lifetime updates"
               />
             }
             stack={[
@@ -406,9 +329,11 @@ export default function MarketingPage() {
         />
       </Section>
 
-      <Section id="positioning" index="01" eyebrow="Positioning">
+      <Section id="positioning">
         <div className="grid gap-16 lg:grid-cols-[1.1fr_1fr] lg:items-start">
           <SectionHeading
+            index="01"
+            eyebrow="Positioning"
             title={
               <>
                 Most SaaS starters are either{" "}
@@ -443,13 +368,15 @@ export default function MarketingPage() {
         </div>
       </Section>
 
-      <Section id="showcase" index="02" eyebrow="Product previews">
+      <Section id="showcase">
         <SectionHeading
+          index="02"
+          eyebrow="Product previews"
           align="center"
           title={
             <>
-              A starter that looks{" "}
-              <BrandItalic>credible</BrandItalic> from day one.
+              A starter that looks <BrandItalic>credible</BrandItalic> from day
+              one.
             </>
           }
           description="Good foundations matter. But perceived quality matters too. This starter ships with product-ready surfaces that help your SaaS feel trustworthy immediately."
@@ -501,7 +428,7 @@ export default function MarketingPage() {
               id: "team-structure",
               title: "Built for real SaaS usage",
               description:
-                "Mbrands, roles, and invitations — not just solo demo flows.",
+                "Members, roles, and invitations — not just solo demo flows.",
               media: {
                 type: "image",
                 src: "/marketing/screenshots/team.png",
@@ -553,8 +480,10 @@ export default function MarketingPage() {
         />
       </Section>
 
-      <Section id="features" index="03" eyebrow="What's included">
+      <Section id="features">
         <SectionHeading
+          index="03"
+          eyebrow="What's included"
           align="center"
           title={
             <>
@@ -566,14 +495,38 @@ export default function MarketingPage() {
           className="mb-14"
         />
 
-        <FeatureGrid
-          items={includedBlocks}
-          className="md:grid-cols-2 xl:grid-cols-2"
-        />
+        <div className="grid grid-cols-1 gap-px border border-border bg-border md:grid-cols-2 xl:grid-cols-4">
+          {featureColumns.map((col, i) => (
+            <div key={col.label} className="bg-card p-8">
+              <div className="mb-6 flex items-center gap-3">
+                <span className="font-mono text-[11px] tabular-nums text-foreground">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span aria-hidden className="h-px flex-1 bg-border" />
+                <span className="label-mono">{col.label}</span>
+              </div>
+              <h3 className="mb-6 text-lg font-semibold tracking-[-0.015em]">
+                {col.title}
+              </h3>
+              <ul className="divide-y divide-border border-t border-border">
+                {col.items.map((item) => (
+                  <li
+                    key={item}
+                    className="py-3 text-sm leading-relaxed text-foreground"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </Section>
 
-      <Section id="proof" index="04" eyebrow="Proof" variant="muted">
+      <Section id="proof">
         <SectionHeading
+          index="04"
+          eyebrow="Proof"
           align="center"
           title={
             <>
@@ -584,12 +537,50 @@ export default function MarketingPage() {
           className="mb-14"
         />
 
-        <FeatureGrid items={proofBlocks} className="xl:grid-cols-3" />
+        <div className="grid grid-cols-1 gap-px border border-border bg-border lg:grid-cols-3">
+          {workflows.map((wf) => (
+            <div key={wf.label} className="flex flex-col bg-card p-8">
+              <div className="mb-6 flex items-center gap-3">
+                <span aria-hidden className="size-1.5 bg-brand" />
+                <span className="label-mono">{wf.label}</span>
+              </div>
+
+              <h3 className="mb-3 text-lg font-semibold tracking-[-0.015em]">
+                {wf.title}
+              </h3>
+              <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
+                {wf.description}
+              </p>
+
+              <ol className="mt-auto divide-y divide-border border-t border-border">
+                {wf.steps.map((step, j) => {
+                  const isLast = j === wf.steps.length - 1;
+                  return (
+                    <li key={step} className="flex items-center gap-4 py-3">
+                      <span className="w-6 font-mono text-[10px] tabular-nums text-muted-foreground">
+                        {String(j + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-sm text-foreground">{step}</span>
+                      {isLast ? (
+                        <span
+                          aria-hidden
+                          className="ml-auto size-1.5 bg-brand"
+                        />
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          ))}
+        </div>
       </Section>
 
-      <Section id="comparison" index="05" eyebrow="Comparison">
+      <Section id="comparison">
         <SectionHeading
           align="center"
+          index="05"
+          eyebrow="Comparison"
           title={
             <>
               Why this starter feels <BrandItalic>different</BrandItalic>.
@@ -598,13 +589,74 @@ export default function MarketingPage() {
           description="A stronger base without the usual tradeoff of extra complexity."
           className="mb-14"
         />
+        <div className="grid grid-cols-1 gap-px border border-border bg-border lg:grid-cols-3">
+          {comparisonColumns.map((col) => {
+            const isBrand = col.tone === "brand";
+            return (
+              <div
+                key={col.label}
+                className="relative flex flex-col bg-card p-8"
+              >
+                {isBrand ? (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-0 top-0 h-px bg-brand"
+                  />
+                ) : null}
 
-        <FeatureGrid items={comparisonBlocks} className="xl:grid-cols-3" />
+                <div className="mb-6 flex items-center gap-3">
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "size-1.5",
+                      isBrand ? "bg-brand" : "bg-muted-foreground/40",
+                    )}
+                  />
+                  <span className={cn("label-mono", isBrand && "text-brand")}>
+                    {col.label}
+                  </span>
+                </div>
+
+                <p
+                  className={cn(
+                    "mb-8 text-sm leading-relaxed",
+                    isBrand ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {col.description}
+                </p>
+
+                <ul className="mt-auto divide-y divide-border border-t border-border">
+                  {col.items.map((item) => (
+                    <li
+                      key={item}
+                      className={cn(
+                        "flex items-baseline gap-3 py-3 text-sm",
+                        isBrand ? "text-foreground" : "text-muted-foreground",
+                      )}
+                    >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "mt-[6px] size-1 shrink-0",
+                          isBrand ? "bg-brand" : "bg-muted-foreground/30",
+                        )}
+                      />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
       </Section>
 
-      <Section id="use-cases" index="06" eyebrow="Use cases" variant="muted">
+      <Section id="use-cases">
         <SectionHeading
           align="center"
+          index="06"
+          eyebrow="Use cases"
           title={
             <>
               More than a <BrandItalic>nicer boilerplate</BrandItalic>.
@@ -614,15 +666,65 @@ export default function MarketingPage() {
           className="mb-14"
         />
 
-        <FeatureGrid
-          items={extraContextBlocks}
-          className="md:grid-cols-2 xl:grid-cols-2"
-        />
+        <div className="grid grid-cols-1 gap-px border border-border bg-border lg:grid-cols-[1.4fr_1fr]">
+          <div className="bg-card p-8 md:p-10">
+            <div className="mb-8 flex items-center gap-3">
+              <span aria-hidden className="size-1.5 bg-brand" />
+              <span className="label-mono">Use it to build</span>
+            </div>
+
+            <p className="mb-10 max-w-md text-base leading-relaxed text-muted-foreground">
+              Start from a foundation that already solves the expensive,
+              repetitive parts.
+            </p>
+
+            <ul className="divide-y divide-border border-t border-border">
+              {useCases.map((item, i) => (
+                <li key={item} className="flex items-baseline gap-6 py-4">
+                  <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-base text-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-col bg-card p-8 md:p-10">
+            <div className="mb-8 flex items-center gap-3">
+              <span aria-hidden className="size-1.5 bg-brand" />
+              <span className="label-mono">Editorial note</span>
+            </div>
+
+            <blockquote className="font-serif text-2xl leading-[1.15] tracking-[-0.01em] md:text-[28px]">
+              <span aria-hidden className="text-brand">
+                &ldquo;
+              </span>
+              A better starter is not the one with the most layers — it is the
+              one that helps you launch with less hesitation and faster
+              progress.
+              <span aria-hidden className="text-brand">
+                &rdquo;
+              </span>
+            </blockquote>
+
+            <ul className="mt-auto space-y-3 border-t border-border pt-8">
+              {principles.map((item) => (
+                <li key={item} className="flex items-center gap-3 text-sm">
+                  <span aria-hidden className="size-1 bg-brand" />
+                  <span className="text-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </Section>
 
-      <Section id="pricing" index="07" eyebrow="Pricing">
+      <Section id="pricing">
         <SectionHeading
           align="center"
+          index="07"
+          eyebrow="Pricing"
           title={
             <>
               Pick the package that matches the{" "}
@@ -636,8 +738,10 @@ export default function MarketingPage() {
         <PricingSection plans={pricingPlans} />
       </Section>
 
-      <Section id="faq" index="08" eyebrow="FAQ">
+      <Section id="faq">
         <SectionHeading
+          index="08"
+          eyebrow="FAQ"
           align="center"
           title={
             <>

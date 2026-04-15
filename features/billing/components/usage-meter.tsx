@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 type UsageMeterProps = {
   label: string;
   current: number;
@@ -11,16 +13,20 @@ export function UsageMeter({ label, current, limit }: UsageMeterProps) {
   const displayLimit = limit === Infinity ? "Unlimited" : limit;
 
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">
-          {current} / {displayLimit}
+    <div className="space-y-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="label-mono">{label}</span>
+        <span className="font-mono text-[11px] tabular-nums">
+          <span className="font-semibold">{current}</span>
+          <span className="text-muted-foreground"> / {displayLimit}</span>
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-muted">
+      <div className="h-1 w-full overflow-hidden bg-muted">
         <div
-          className={`h-full rounded-full transition-all ${isNearLimit ? "bg-orange-500" : "bg-primary"}`}
+          className={cn(
+            "h-full transition-[width]",
+            isNearLimit ? "bg-destructive" : "bg-brand",
+          )}
           style={{ width: `${percentage}%` }}
         />
       </div>

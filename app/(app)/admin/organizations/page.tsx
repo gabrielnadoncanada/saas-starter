@@ -22,7 +22,7 @@ export default async function AdminOrganizationsPage({
 
   return (
     <Page>
-      <PageHeader>
+      <PageHeader eyebrow="Admin · Organizations">
         <PageTitle>Organizations</PageTitle>
         <PageDescription>
           View and manage all platform organizations.

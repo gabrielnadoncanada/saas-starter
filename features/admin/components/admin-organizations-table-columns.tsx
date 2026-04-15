@@ -32,12 +32,12 @@ export function getAdminOrganizationsColumns(
         const organization = row.original;
         return (
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-md border bg-muted">
+            <div className="flex size-9 items-center justify-center border border-border bg-muted">
               <Building2 className="size-4 text-muted-foreground" />
             </div>
             <div className="min-w-0">
               <p className="truncate font-medium">{organization.name}</p>
-              <p className="truncate text-sm text-muted-foreground">
+              <p className="truncate font-mono text-xs text-muted-foreground">
                 {organization.slug}
               </p>
             </div>
@@ -50,8 +50,8 @@ export function getAdminOrganizationsColumns(
       header: "Members",
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex items-center gap-1.5 text-sm">
-          <Users className="size-4 text-muted-foreground" />
+        <div className="flex items-center gap-1.5 font-mono text-xs tabular-nums">
+          <Users className="size-3.5 text-muted-foreground" />
           {row.original._count.members}
         </div>
       ),
@@ -62,7 +62,7 @@ export function getAdminOrganizationsColumns(
         <DataTableColumnHeader column={column} title="Created" />
       ),
       cell: ({ row }) => (
-        <span className="text-muted-foreground">
+        <span className="font-mono text-xs tabular-nums text-muted-foreground">
           {format(new Date(row.original.createdAt), "MMM d, yyyy")}
         </span>
       ),

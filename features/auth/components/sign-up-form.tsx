@@ -172,7 +172,9 @@ export function SignUpForm({
         </Field>
 
         {formError ? (
-          <p className="text-sm text-destructive">{formError}</p>
+          <div className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            {formError}
+          </div>
         ) : null}
 
         <Button type="submit" className="w-full" disabled={isPending}>

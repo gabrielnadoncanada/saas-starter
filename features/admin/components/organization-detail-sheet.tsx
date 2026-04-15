@@ -56,7 +56,7 @@ export function AdminOrganizationDetailSheet({
               </div>
             </SheetHeader>
 
-            <div className="space-y-6 overflow-y-auto">
+            <div className="no-scrollbar overflow-y-auto pb-4 space-y-6 px-4">
               <Card>
                 <CardContent>
                   <div className="space-y-3">

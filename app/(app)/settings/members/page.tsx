@@ -24,7 +24,7 @@ export default async function MembersPage() {
 
   return (
     <Page>
-      <PageHeader>
+      <PageHeader eyebrow="Settings · Members">
         <PageTitle>Members</PageTitle>
         <PageDescription>
           Manage your organization members and invitations.
@@ -42,14 +42,17 @@ export default async function MembersPage() {
         />
 
         <section className="space-y-3">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Pending Invitations
-            </h2>
-            <p className="text-muted-foreground">
+          <div className="flex items-baseline justify-between gap-3 border-b border-border pb-3">
+            <div>
+              <p className="label-mono">Pending invitations</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-[-0.01em]">
+                Awaiting acceptance
+              </h2>
+            </div>
+            <p className="font-mono text-xs tabular-nums text-muted-foreground">
               {invitations.length === 1
-                ? "1 invitation pending"
-                : `${invitations.length} invitations pending`}
+                ? "1 invitation"
+                : `${invitations.length} invitations`}
             </p>
           </div>
           <OrganizationInvitationsTable
