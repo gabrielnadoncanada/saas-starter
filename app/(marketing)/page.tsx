@@ -175,7 +175,7 @@ const comparisonBlocks = [
   {
     title: "Heavy starters",
     description:
-      "They can look complete, but cost more time to understand and customize.",
+      "Look complete, but cost more time to understand and customize.",
     children: [
       <CheckList
         key="heavy-starters"
@@ -191,9 +191,9 @@ const comparisonBlocks = [
   },
   {
     title: "This starter",
-    description:
-      "Built for real buyer needs, with a stronger launch-ready base.",
-    className: "border-primary shadow-sm",
+    description: "Built for real buyer needs, with a stronger launch-ready base.",
+    className:
+      "relative border-brand ring-2 ring-brand bg-gradient-to-br from-brand-soft/60 via-background to-background shadow-[0_30px_80px_-30px_hsl(var(--brand-hsl)/0.5)]",
     children: [
       <CheckList
         key="this-starter"
@@ -253,7 +253,7 @@ const pricingPlans = [
     name: "Starter",
     description: "For solo founders shipping a focused SaaS fast.",
     price: "$49",
-    period: "/ one-time",
+    period: "one-time",
     href: "/auth/sign-up",
     ctaLabel: "Buy Starter",
     features: [
@@ -269,7 +269,7 @@ const pricingPlans = [
     description:
       "For consultants and small teams building client-facing products.",
     price: "$149",
-    period: "/ one-time",
+    period: "one-time",
     href: "/auth/sign-up",
     ctaLabel: "Buy Pro",
     features: [
@@ -285,7 +285,7 @@ const pricingPlans = [
     name: "Agency",
     description: "For repeated client delivery and internal acceleration.",
     price: "$349",
-    period: "/ one-time",
+    period: "one-time",
     href: "/contact",
     ctaLabel: "Contact Sales",
     features: [
@@ -294,6 +294,7 @@ const pricingPlans = [
       "Priority support",
       "Launch help",
     ],
+    badge: "Teams",
   },
 ];
 
@@ -335,23 +336,30 @@ const faqItems = [
   },
 ];
 
+const BrandItalic = ({ children }: { children: React.ReactNode }) => (
+  <em className="font-serif italic font-normal text-brand tracking-[-0.01em]">
+    {children}
+  </em>
+);
+
 export default function MarketingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <main className="flex-1">
-        <Section className="pt-10 md:pt-16">
+    <main className="flex-1">
+      <section className="relative">
+        <div className="container mx-auto max-w-7xl px-6 pt-20 pb-32 md:px-10 md:pt-28 md:pb-40">
           <Hero
             pill={
               <AnnouncementPill
-                label="New"
-                text="A boring SaaS starter that stays fast to understand and fast to edit"
+                label="v1.0"
+                text="A boring SaaS starter that stays fast to edit"
                 href="/auth/sign-up"
               />
             }
             title={
               <>
-                Launch your Next.js SaaS faster without rebuilding the same
-                foundation again.
+                Launch your Next.js SaaS{" "}
+                <BrandItalic>faster</BrandItalic> — without rebuilding the same
+                foundation <BrandItalic>again</BrandItalic>.
               </>
             }
             description={
@@ -365,38 +373,51 @@ export default function MarketingPage() {
               <HeroActions
                 primaryLabel="Buy the Starter"
                 primaryHref="/auth/sign-up"
-                secondaryLabel="See Pricing"
+                secondaryLabel="See pricing"
                 secondaryHref="#pricing"
+                note="14-day refund · Lifetime updates"
               />
             }
-            imageSrc="/marketing/screenshots/dashboard.png"
-            imageAlt="Launch from a product that already feels real"
-          />
-        </Section>
-
-        <Section className="pt-0">
-          <LogoCloud
-            title={<>Everything you need to launch with confidence</>}
-            logos={[
-              "Production-ready authentication",
-              "Real subscription billing",
-              "Team and workspace foundations",
-              "Credible dashboard and settings",
-              "Clear customization paths",
-              "Built for fast product work",
+            stack={[
+              "Next.js 16",
+              "TypeScript",
+              "Prisma",
+              "Stripe",
+              "Resend",
+              "Vercel AI",
             ]}
+            imageSrc="/marketing/screenshots/dashboard.png"
+            imageAlt="A dashboard that feels like a real product, not a demo"
           />
-        </Section>
+        </div>
+      </section>
 
-        <Section
-          id="features"
-          containerClassName="mx-auto grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-start"
-        >
+      <Section containerClassName="py-14 md:py-16">
+        <LogoCloud
+          title="Everything you need to launch with confidence"
+          logos={[
+            "Production auth",
+            "Subscription billing",
+            "Team workspaces",
+            "Dashboard & settings",
+            "Clear conventions",
+            "Real product surfaces",
+          ]}
+        />
+      </Section>
+
+      <Section id="positioning" index="01" eyebrow="Positioning">
+        <div className="grid gap-16 lg:grid-cols-[1.1fr_1fr] lg:items-start">
           <SectionHeading
-            badge="Positioning"
-            title={<>Most SaaS starters are either too bare or too heavy</>}
+            title={
+              <>
+                Most SaaS starters are either{" "}
+                <BrandItalic>too bare</BrandItalic> or{" "}
+                <BrandItalic>too heavy</BrandItalic>.
+              </>
+            }
           >
-            <div className="text-muted-foreground space-y-4 text-base sm:text-lg">
+            <div className="max-w-xl space-y-4 text-base leading-relaxed text-muted-foreground">
               <p>
                 Some starters save too little time. Others come with so much
                 abstraction that modifying simple product flows becomes slower
@@ -407,7 +428,7 @@ export default function MarketingPage() {
                 builders launch faster with a codebase that feels obvious,
                 credible, and safe to extend.
               </p>
-              <p>
+              <p className="border-l-2 border-brand pl-4 text-foreground">
                 No framework-within-a-framework. No unnecessary ceremony. Just a
                 strong foundation you can actually build on.
               </p>
@@ -416,267 +437,235 @@ export default function MarketingPage() {
 
           <FeatureGrid
             items={featureItems}
-            className="sm:grid-cols-2 xl:grid-cols-2"
+            className="md:grid-cols-2 xl:grid-cols-2"
+            numbered
           />
-        </Section>
+        </div>
+      </Section>
 
-        <Section>
-          <SectionHeading
-            badge="Product previews"
-            title={<>A starter that looks credible from day one</>}
-            description={
-              <>
-                Good foundations matter. But perceived quality matters too. This
-                starter ships with product-ready surfaces that help your SaaS
-                feel trustworthy immediately.
-              </>
-            }
-            align="center"
-            className="mb-10"
-          />
-          <SplitShowcase
-            defaultItemId="dashboard-overview"
-            items={[
-              {
-                id: "dashboard-overview",
-                title: <>Dashboard that already feels real</>,
-                description: (
-                  <>
-                    Product-ready layout with stats, activity, and navigation.
-                  </>
-                ),
-                media: {
-                  type: "image",
-                  src: "/marketing/screenshots/dashboard.png",
-                  alt: "Launch from a product that already feels real",
-                  width: 1600,
-                  height: 1000,
-                },
+      <Section id="showcase" index="02" eyebrow="Product previews">
+        <SectionHeading
+          align="center"
+          title={
+            <>
+              A starter that looks{" "}
+              <BrandItalic>credible</BrandItalic> from day one.
+            </>
+          }
+          description="Good foundations matter. But perceived quality matters too. This starter ships with product-ready surfaces that help your SaaS feel trustworthy immediately."
+          className="mb-14"
+        />
+        <SplitShowcase
+          defaultItemId="dashboard-overview"
+          items={[
+            {
+              id: "dashboard-overview",
+              title: "Dashboard that feels real",
+              description:
+                "Product-ready layout with stats, activity, and navigation.",
+              media: {
+                type: "image",
+                src: "/marketing/screenshots/dashboard.png",
+                alt: "Launch from a product that already feels real",
+                width: 1600,
+                height: 1000,
               },
-              {
-                id: "production-auth",
-                title: <>Production-ready authentication</>,
-                description: (
-                  <>
-                    Email, password, OAuth, and magic links — not demo-level
-                    auth.
-                  </>
-                ),
-                media: {
-                  type: "image",
-                  src: "/marketing/screenshots/login.png",
-                  alt: "Production-ready authentication, not demo-level auth",
-                  width: 1600,
-                  height: 1000,
-                },
+            },
+            {
+              id: "production-auth",
+              title: "Production-ready auth",
+              description:
+                "Email, password, OAuth, and magic links — not demo-level auth.",
+              media: {
+                type: "image",
+                src: "/marketing/screenshots/login.png",
+                alt: "Production-ready authentication, not demo-level auth",
+                width: 1600,
+                height: 1000,
               },
-              {
-                id: "billing-foundations",
-                title: <>Real monetization foundations</>,
-                description: (
-                  <>
-                    Plans, subscriptions, and feature gating that work from day
-                    one.
-                  </>
-                ),
-                media: {
-                  type: "image",
-                  src: "/marketing/screenshots/billing.png",
-                  alt: "Real monetization foundations from day one",
-                  width: 1600,
-                  height: 1000,
-                },
+            },
+            {
+              id: "billing-foundations",
+              title: "Real monetization",
+              description:
+                "Plans, subscriptions, and feature gating that work from day one.",
+              media: {
+                type: "image",
+                src: "/marketing/screenshots/billing.png",
+                alt: "Real monetization foundations from day one",
+                width: 1600,
+                height: 1000,
               },
-              {
-                id: "team-structure",
-                title: <>Built for real SaaS usage</>,
-                description: (
-                  <>
-                    Members, roles, and invitations — not just solo demo flows.
-                  </>
-                ),
-                media: {
-                  type: "image",
-                  src: "/marketing/screenshots/team.png",
-                  alt: "Built for real SaaS usage, not just solo demo flows",
-                  width: 1600,
-                  height: 1000,
-                },
+            },
+            {
+              id: "team-structure",
+              title: "Built for real SaaS usage",
+              description:
+                "Mbrands, roles, and invitations — not just solo demo flows.",
+              media: {
+                type: "image",
+                src: "/marketing/screenshots/team.png",
+                alt: "Built for real SaaS usage, not just solo demo flows",
+                width: 1600,
+                height: 1000,
               },
-              {
-                id: "launch-ready",
-                title: <>Launch-ready settings</>,
-                description: (
-                  <>
-                    Account, security, and workspace surfaces that feel
-                    complete.
-                  </>
-                ),
-                media: {
-                  type: "image",
-                  src: "/marketing/screenshots/settings.png",
-                  alt: "Launch-ready settings that make the product feel complete",
-                  width: 1600,
-                  height: 1000,
-                },
+            },
+            {
+              id: "launch-ready",
+              title: "Launch-ready settings",
+              description:
+                "Account, security, and workspace surfaces that feel complete.",
+              media: {
+                type: "image",
+                src: "/marketing/screenshots/settings.png",
+                alt: "Launch-ready settings that make the product feel complete",
+                width: 1600,
+                height: 1000,
               },
-              {
-                id: "core-app",
-                title: <>A real app foundation</>,
-                description: (
-                  <>
-                    Core product surfaces, not just infrastructure screens.
-                  </>
-                ),
-                media: {
-                  type: "image",
-                  src: "/marketing/screenshots/tasks.png",
-                  alt: "A real app foundation, not just infrastructure screens",
-                  width: 1600,
-                  height: 1000,
-                },
+            },
+            {
+              id: "core-app",
+              title: "A real app foundation",
+              description:
+                "Core product surfaces, not just infrastructure screens.",
+              media: {
+                type: "image",
+                src: "/marketing/screenshots/tasks.png",
+                alt: "A real app foundation, not just infrastructure screens",
+                width: 1600,
+                height: 1000,
               },
-              {
-                id: "customization",
-                title: <>Built to be modified quickly</>,
-                description: (
-                  <>
-                    Documented setup and customization paths — not a codebase
-                    to decode.
-                  </>
-                ),
-                media: {
-                  type: "image",
-                  src: "/marketing/screenshots/docs.png",
-                  alt: "Built to be modified quickly, not decoded slowly",
-                  width: 1600,
-                  height: 1000,
-                },
+            },
+            {
+              id: "customization",
+              title: "Built to be modified",
+              description:
+                "Documented setup and customization paths — not a codebase to decode.",
+              media: {
+                type: "image",
+                src: "/marketing/screenshots/docs.png",
+                alt: "Built to be modified quickly, not decoded slowly",
+                width: 1600,
+                height: 1000,
               },
-            ]}
-          />
-        </Section>
+            },
+          ]}
+        />
+      </Section>
 
-        <Section id="features">
-          <SectionHeading
-            badge="Positioning"
-            align="center"
-            title={<>What's included</>}
-            description={
-              <>
-                Everything you need to stop rebuilding the same SaaS basics and
-                start shipping faster.
-              </>
-            }
-            className="mb-10"
-          />
+      <Section id="features" index="03" eyebrow="What's included">
+        <SectionHeading
+          align="center"
+          title={
+            <>
+              Everything you need to stop rebuilding the{" "}
+              <BrandItalic>same SaaS basics</BrandItalic>.
+            </>
+          }
+          description="Auth, billing, dashboards, teams, and the product surfaces your buyers expect — all designed to be extended, not fought."
+          className="mb-14"
+        />
 
-          <FeatureGrid
-            items={includedBlocks}
-            className="sm:grid-cols-2 xl:grid-cols-2 "
-          />
-        </Section>
+        <FeatureGrid
+          items={includedBlocks}
+          className="md:grid-cols-2 xl:grid-cols-2"
+        />
+      </Section>
 
-        <Section className="bg-muted/40">
-          <SectionHeading
-            badge="Proof"
-            align="center"
-            title={<>Built to be modified, not admired</>}
-            description={
-              <>
-                The promise is not just cleaner code. It is faster product work
-                when you need to add features, extend billing, or customize
-                settings.
-              </>
-            }
-            className="mb-10"
-          />
+      <Section id="proof" index="04" eyebrow="Proof" variant="muted">
+        <SectionHeading
+          align="center"
+          title={
+            <>
+              Built to be <BrandItalic>modified</BrandItalic>, not admired.
+            </>
+          }
+          description="The promise is not just cleaner code. It is faster product work when you need to add features, extend billing, or customize settings."
+          className="mb-14"
+        />
 
-          <FeatureGrid items={proofBlocks} className="xl:grid-cols-3" />
-        </Section>
+        <FeatureGrid items={proofBlocks} className="xl:grid-cols-3" />
+      </Section>
 
-        <Section>
-          <SectionHeading
-            badge="Comparison"
-            align="center"
-            title={<>Why this starter feels different</>}
-            description={
-              <>
-                The goal is a stronger base without the usual tradeoff of extra
-                complexity.
-              </>
-            }
-            className="mb-10"
-          />
+      <Section id="comparison" index="05" eyebrow="Comparison">
+        <SectionHeading
+          align="center"
+          title={
+            <>
+              Why this starter feels <BrandItalic>different</BrandItalic>.
+            </>
+          }
+          description="A stronger base without the usual tradeoff of extra complexity."
+          className="mb-14"
+        />
 
-          <FeatureGrid items={comparisonBlocks} className="xl:grid-cols-3" />
-        </Section>
+        <FeatureGrid items={comparisonBlocks} className="xl:grid-cols-3" />
+      </Section>
 
-        <Section className="bg-muted/40">
-          <SectionHeading
-            badge="Use cases"
-            align="center"
-            title={<>More than a nicer boilerplate</>}
-            description={
-              <>
-                This starter is meant to help technical buyers ship real
-                products faster, not just browse prettier screenshots.
-              </>
-            }
-            className="mb-10"
-          />
+      <Section id="use-cases" index="06" eyebrow="Use cases" variant="muted">
+        <SectionHeading
+          align="center"
+          title={
+            <>
+              More than a <BrandItalic>nicer boilerplate</BrandItalic>.
+            </>
+          }
+          description="Meant to help technical buyers ship real products faster, not just browse prettier screenshots."
+          className="mb-14"
+        />
 
-          <FeatureGrid
-            items={extraContextBlocks}
-            className="sm:grid-cols-2 xl:grid-cols-2"
-          />
-        </Section>
+        <FeatureGrid
+          items={extraContextBlocks}
+          className="md:grid-cols-2 xl:grid-cols-2"
+        />
+      </Section>
 
-        <Section id="pricing">
-          <SectionHeading
-            badge="Pricing"
-            title={<>Pick the package that matches the buyer you want</>}
-            description={
-              <>
-                Show pricing simply. The landing page should clarify value fast,
-                not force people to decode a pricing engine.
-              </>
-            }
-            align="center"
-            className="mb-10"
-          />
+      <Section id="pricing" index="07" eyebrow="Pricing">
+        <SectionHeading
+          align="center"
+          title={
+            <>
+              Pick the package that matches the{" "}
+              <BrandItalic>buyer you want</BrandItalic>.
+            </>
+          }
+          description="Show pricing simply. The landing page should clarify value fast, not force people to decode a pricing engine."
+          className="mb-14"
+        />
 
-          <PricingSection plans={pricingPlans} />
-        </Section>
+        <PricingSection plans={pricingPlans} />
+      </Section>
 
-        <Section id="faq">
-          <SectionHeading
-            badge="FAQ"
-            title={<>Frequently asked questions</>}
-            align="center"
-            className="mb-10"
-          />
+      <Section id="faq" index="08" eyebrow="FAQ">
+        <SectionHeading
+          align="center"
+          title={
+            <>
+              Questions, <BrandItalic>answered</BrandItalic>.
+            </>
+          }
+          className="mb-14"
+        />
 
-          <FaqSection items={faqItems} />
-        </Section>
+        <FaqSection items={faqItems} />
+      </Section>
 
-        <Section>
-          <FinalCtaSection
-            badge="Ready to launch"
-            title={<>Stop rebuilding the same SaaS foundation</>}
-            description={
-              <>
-                Launch faster with a starter built to help you understand
-                quickly, customize safely, and ship with confidence.
-              </>
-            }
-            primaryLabel="Start now"
-            primaryHref="/auth/sign-up"
-            secondaryLabel="Read docs"
-            secondaryHref="/docs"
-          />
-        </Section>
-      </main>
-    </div>
+      <Section>
+        <FinalCtaSection
+          badge="Ready to launch"
+          title={
+            <>
+              Stop rebuilding the{" "}
+              <BrandItalic>same SaaS foundation</BrandItalic>.
+            </>
+          }
+          description="Launch faster with a starter built to help you understand quickly, customize safely, and ship with confidence."
+          primaryLabel="Get the starter"
+          primaryHref="/auth/sign-up"
+          secondaryLabel="Read docs"
+          secondaryHref="/docs"
+        />
+      </Section>
+    </main>
   );
 }

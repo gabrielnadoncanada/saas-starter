@@ -39,34 +39,55 @@ export function MarketingHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b bg-background/95 backdrop-blur",
+        "sticky top-0 z-50 border-b border-border/80 bg-background/70 backdrop-blur-xl",
         className,
       )}
     >
-      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between gap-4 px-4">
-        <Link href="/" className="shrink-0">
+      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6 md:px-10">
+        <Link
+          href="/"
+          className="group relative flex shrink-0 items-center gap-2"
+        >
+          <span
+            className="size-2 bg-brand transition-transform group-hover:scale-125"
+            aria-hidden
+          />
           {logo}
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-8 md:flex">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-muted-foreground hover:text-foreground text-sm font-medium"
+              className="group relative text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
+              <span
+                aria-hidden
+                className="absolute -bottom-1 left-0 h-px w-0 bg-brand transition-all group-hover:w-full"
+              />
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost">
-            <Link href={signInHref}>Sign In</Link>
+        <div className="hidden items-center gap-1 md:flex">
+          <Button
+            asChild
+            variant="ghost"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+          >
+            <Link href={signInHref}>Sign in</Link>
           </Button>
-          <Button asChild>
-            <Link href={signUpHref}>Sign Up</Link>
-          </Button>
+          <Link
+            href={signUpHref}
+            className="group relative inline-flex items-center gap-2 bg-foreground px-4 py-2 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+          >
+            Get the starter
+            <span className="text-brand transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
+          </Link>
         </div>
 
         <div className="md:hidden">
@@ -84,10 +105,10 @@ export function MarketingHeader({
                 </DrawerDescription>
               </DrawerHeader>
 
-              <nav className="flex flex-col gap-4 px-4">
+              <nav className="flex flex-col gap-4 px-6">
                 {links.map((link) => (
                   <DrawerClose key={link.href} asChild>
-                    <Link href={link.href} className="text-sm font-medium">
+                    <Link href={link.href} className="text-lg font-medium">
                       {link.label}
                     </Link>
                   </DrawerClose>
@@ -102,8 +123,8 @@ export function MarketingHeader({
                     </Button>
                   </DrawerClose>
                   <DrawerClose asChild>
-                    <Button asChild>
-                      <Link href={signUpHref}>Sign Up</Link>
+                    <Button asChild className="bg-brand text-brand-foreground hover:bg-brand/90">
+                      <Link href={signUpHref}>Get the starter</Link>
                     </Button>
                   </DrawerClose>
                 </div>

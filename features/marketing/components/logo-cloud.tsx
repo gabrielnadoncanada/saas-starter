@@ -9,18 +9,25 @@ export type LogoCloudProps = {
 
 export function LogoCloud({ title, logos, className }: LogoCloudProps) {
   return (
-    <div className={cn("flex flex-col gap-6", className)}>
-      <p className="text-muted-foreground text-center text-sm font-medium uppercase tracking-[0.2em]">
-        {title}
-      </p>
+    <div className={cn("flex flex-col gap-8", className)}>
+      {title ? (
+        <div className="flex items-center justify-center gap-4 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="h-px w-8 bg-border" aria-hidden />
+          <span>{title}</span>
+          <span className="h-px w-8 bg-border" aria-hidden />
+        </div>
+      ) : null}
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-        {logos.map((logo) => (
+      <div className="grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-3 lg:grid-cols-6">
+        {logos.map((logo, i) => (
           <div
             key={logo}
-            className="text-center text-muted-foreground flex h-14 items-center justify-center rounded-lg border bg-background px-4 text-sm font-medium"
+            className="group relative flex h-16 items-center justify-center bg-background px-4 text-center text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            {logo}
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] opacity-40">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="ml-3 max-w-[16ch]">{logo}</span>
           </div>
         ))}
       </div>

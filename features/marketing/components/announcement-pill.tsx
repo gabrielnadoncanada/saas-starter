@@ -1,9 +1,7 @@
 import Link from "next/link";
 import * as React from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export type AnnouncementPillProps = {
@@ -19,23 +17,36 @@ export function AnnouncementPill({
   href,
   className,
 }: AnnouncementPillProps) {
-  return (
-    <div
-      className={cn(
-        "inline-flex items-center gap-2 rounded-full border bg-background px-2 py-1",
-        className,
-      )}
-    >
-      <Badge className="rounded-full">{label}</Badge>
-      <span className="text-muted-foreground text-sm">{text}</span>
-
+  const content = (
+    <>
+      <span className="flex items-center gap-2 border-r border-border/80 pr-3 font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
+        <span
+          className="size-1.5 bg-brand animate-brand-pulse"
+          aria-hidden
+        />
+        {label}
+      </span>
+      <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+        {text}
+      </span>
       {href ? (
-        <Button asChild size="icon" variant="ghost" className="size-7 rounded-full">
-          <Link href={href} aria-label={text}>
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
+        <ArrowUpRight className="size-3.5 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
       ) : null}
-    </div>
+    </>
   );
+
+  const baseClasses = cn(
+    "group inline-flex items-center gap-3 border border-border bg-background/60 backdrop-blur px-3 py-1.5 text-xs shadow-[0_1px_0_hsl(0_0%_100%/0.5)_inset] transition-colors hover:border-foreground/40",
+    className,
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={baseClasses}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={baseClasses}>{content}</div>;
 }

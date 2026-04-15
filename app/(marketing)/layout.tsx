@@ -21,7 +21,11 @@ const footerSections = [
 ];
 
 function AppLogo() {
-  return <span className="text-lg font-semibold tracking-tight">Tenviq</span>;
+  return (
+    <span className="text-lg font-semibold tracking-[-0.02em]">
+      Ten<span className="font-serif italic font-normal text-brand">v</span>iq
+    </span>
+  );
 }
 
 export default function MarketingLayout({

@@ -3,7 +3,7 @@ import "./globals.css";
 
 import { GeistPixelSquare } from "geist/font/pixel";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
 import { Providers } from "@/components/providers/providers";
 
@@ -34,6 +34,13 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 });
 
+const fontSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+});
+
 export default async function RootLayout({
   children,
 }: {
@@ -42,7 +49,7 @@ export default async function RootLayout({
   return (
     <html lang={"en"} suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} ${GeistPixelSquare.variable} font-sans antialiased`}
+        className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable} ${GeistPixelSquare.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <Providers>{children}</Providers>

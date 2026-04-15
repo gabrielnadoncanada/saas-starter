@@ -3,7 +3,6 @@
 import Image from "next/image";
 import * as React from "react";
 
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export type SplitShowcaseItem = {
@@ -33,56 +32,18 @@ export type SplitShowcaseProps = {
 };
 
 export function SplitShowcase({
-  title,
-  description,
-  imageSrc,
-  imageAlt,
-  imageWidth = 1200,
-  imageHeight = 900,
-  reverse = false,
   items,
   defaultItemId,
+  reverse = false,
 }: SplitShowcaseProps) {
-  if (items?.length) {
-    return (
-      <TabbedSplitShowcase
-        items={items}
-        defaultItemId={defaultItemId}
-        reverse={reverse}
-      />
-    );
-  }
-
-  if (!imageSrc) {
-    return null;
-  }
+  if (!items?.length) return null;
 
   return (
-    <Card className="p-6 md:p-8">
-      <div
-        className={cn(
-          "grid items-center gap-8 lg:grid-cols-2",
-          reverse && "lg:[&>*:first-child]:order-2",
-        )}
-      >
-        <div className="space-y-4">
-          <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            {title}
-          </h3>
-          <p className="text-muted-foreground text-base leading-7 md:text-lg">
-            {description}
-          </p>
-        </div>
-
-        <Image
-          src={imageSrc}
-          alt={imageAlt ?? "Showcase image"}
-          width={imageWidth}
-          height={imageHeight}
-          className="w-full rounded-lg border"
-        />
-      </div>
-    </Card>
+    <TabbedSplitShowcase
+      items={items}
+      defaultItemId={defaultItemId}
+      reverse={reverse}
+    />
   );
 }
 
@@ -99,89 +60,117 @@ function TabbedSplitShowcase({
 }: TabbedSplitShowcaseProps) {
   const initialItem =
     items.find((item) => item.id === defaultItemId) ?? items[0];
-
   const [activeItemId, setActiveItemId] = React.useState(initialItem.id);
-
   const activeItem = items.find((item) => item.id === activeItemId) ?? items[0];
+  const activeIndex = items.findIndex((i) => i.id === activeItem.id);
 
   return (
-    <Card className="bg-muted/20 p-4 md:p-6">
-      <div
-        className={cn(
-          "grid grid-cols-1 gap-4 md:grid-cols-[1fr_2fr] md:gap-8 xl:gap-16 2xl:gap-20",
-          reverse && "md:[&>*:first-child]:order-2",
-        )}
-      >
-        <div className="flex flex-col">
-          {items.map((item, index) => {
-            const isActive = item.id === activeItem.id;
+    <div
+      className={cn(
+        "grid grid-cols-1 gap-px border border-border bg-border md:grid-cols-[minmax(280px,1fr)_2fr]",
+        reverse && "md:[&>*:first-child]:order-2",
+      )}
+    >
+      <div className="flex flex-col bg-background">
+        {items.map((item, index) => {
+          const isActive = item.id === activeItem.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActiveItemId(item.id)}
+              className={cn(
+                "group relative flex cursor-pointer flex-col gap-2 border-b border-border px-6 py-5 text-left outline-none transition-colors last:border-b-0",
+                isActive ? "bg-brand-soft/40" : "hover:bg-muted/40",
+              )}
+              aria-pressed={isActive}
+            >
+              {isActive ? (
+                <span
+                  aria-hidden
+                  className="absolute left-0 top-0 h-full w-0.5 bg-brand"
+                />
+              ) : null}
 
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setActiveItemId(item.id)}
-                className={cn(
-                  "cursor-pointer rounded-lg px-3 py-4 text-left outline-none transition-all duration-200",
-                  index !== items.length - 1 && "border-b border-border/50",
-                  isActive ? "bg-muted md:bg-transparent" : "hover:bg-muted/50",
-                )}
-                aria-pressed={isActive}
-              >
+              <div className="flex items-center gap-3">
+                <span
+                  className={cn(
+                    "font-mono text-[10px] uppercase tracking-[0.22em] transition-colors",
+                    isActive ? "text-brand" : "text-muted-foreground",
+                  )}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <h3
                   className={cn(
-                    "text-2xl font-medium tracking-tight transition-colors",
+                    "text-base font-semibold tracking-[-0.01em] transition-colors",
                     isActive
                       ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground",
+                      : "text-muted-foreground group-hover:text-foreground",
                   )}
                 >
                   {item.title}
                 </h3>
+              </div>
 
-                <div
-                  className={cn(
-                    "overflow-hidden text-lg leading-6 font-medium text-muted-foreground transition-all duration-200",
-                    isActive
-                      ? "mt-1 max-h-40 opacity-100"
-                      : "mt-0 max-h-0 opacity-0",
-                  )}
-                >
-                  <p>{item.description}</p>
-                </div>
-              </button>
-            );
-          })}
+              <div
+                className={cn(
+                  "overflow-hidden pl-7 text-sm leading-relaxed text-muted-foreground transition-all duration-300",
+                  isActive
+                    ? "max-h-40 opacity-100"
+                    : "max-h-0 opacity-0",
+                )}
+              >
+                <p>{item.description}</p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="relative bg-background p-4 md:p-8">
+        <div className="absolute inset-x-8 top-6 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          <span>Preview</span>
+          <span className="text-brand">
+            {String(activeIndex + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
+          </span>
         </div>
 
-        <div className="relative">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-8 -z-0 bg-brand-soft/40 blur-2xl"
+        />
+
+        <div className="relative mt-10 border border-border bg-muted/40 shadow-[0_30px_80px_-30px_hsl(var(--brand-hsl)/0.25)]">
+          <div className="flex items-center gap-1.5 border-b border-border bg-muted/60 px-3 py-2">
+            <span className="size-2 rounded-full bg-destructive/60" />
+            <span className="size-2 rounded-full bg-muted-foreground/40" />
+            <span className="size-2 rounded-full bg-muted-foreground/40" />
+          </div>
           <div
             key={activeItem.id}
-            className="animate-in fade-in-0 zoom-in-95 block w-full duration-200"
+            className="animate-in fade-in-0 zoom-in-[0.98] block w-full duration-300"
           >
             <ShowcaseMedia item={activeItem} />
           </div>
-
-          {items.map((item) => {
-            if (item.media.type !== "image") {
-              return null;
-            }
-
-            return (
-              <Image
-                key={`${item.id}-preload`}
-                aria-hidden="true"
-                alt=""
-                src={item.media.src}
-                width={item.media.width ?? 1600}
-                height={item.media.height ?? 1000}
-                className="sr-only"
-              />
-            );
-          })}
         </div>
+
+        {items.map((item) => {
+          if (item.media.type !== "image") return null;
+          return (
+            <Image
+              key={`${item.id}-preload`}
+              aria-hidden="true"
+              alt=""
+              src={item.media.src}
+              width={item.media.width ?? 1600}
+              height={item.media.height ?? 1000}
+              className="sr-only"
+            />
+          );
+        })}
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -190,7 +179,7 @@ function ShowcaseMedia({ item }: { item: SplitShowcaseItem }) {
     return (
       <video
         key={item.media.src}
-        className="w-full rounded-lg border"
+        className="block w-full"
         width={item.media.width ?? 1600}
         height={item.media.height ?? 1000}
         playsInline
@@ -212,7 +201,7 @@ function ShowcaseMedia({ item }: { item: SplitShowcaseItem }) {
       alt={item.media.alt ?? "Showcase image"}
       width={item.media.width ?? 1600}
       height={item.media.height ?? 1000}
-      className="w-full rounded-lg border"
+      className="block w-full"
     />
   );
 }
