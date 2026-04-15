@@ -1,7 +1,6 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
 import { Building2, MoreVertical, Trash2, Users } from "lucide-react";
 
 import { DataTableColumnHeader } from "@/components/data-table";
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { AdminOrganization } from "@/features/admin/types/organizations.types";
+import { formatShortDate } from "@/lib/date/format-date";
 
 export type AdminOrganizationsRowHandlers = {
   currentUserId: string;
@@ -63,7 +63,7 @@ export function getAdminOrganizationsColumns(
       ),
       cell: ({ row }) => (
         <span className="font-mono text-xs tabular-nums text-muted-foreground">
-          {format(new Date(row.original.createdAt), "MMM d, yyyy")}
+          {formatShortDate(row.original.createdAt)}
         </span>
       ),
     },

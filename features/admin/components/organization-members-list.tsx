@@ -1,7 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
-
 import {
   Avatar,
   AvatarFallback,
@@ -9,6 +7,8 @@ import {
 } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { OrgMember } from "@/features/admin/types/organizations.types";
+import { formatMonthYear } from "@/lib/date/format-date";
+import { getInitials } from "@/lib/user/get-initials";
 
 type AdminOrganizationMembersListProps = {
   members: OrgMember[];
@@ -26,9 +26,7 @@ export function AdminOrganizationMembersList({
               src={member.user.image ?? undefined}
               alt={member.user.name ?? member.user.email}
             />
-            <AvatarFallback>
-              {(member.user.name || member.user.email)[0].toUpperCase()}
-            </AvatarFallback>
+            <AvatarFallback>{getInitials(member.user)}</AvatarFallback>
           </Avatar>
 
           <div className="min-w-0 flex-1">
@@ -43,7 +41,7 @@ export function AdminOrganizationMembersList({
           <div className="text-right">
             <Badge variant="secondary">{member.role}</Badge>
             <p className="mt-1 text-xs text-muted-foreground">
-              Joined {format(new Date(member.createdAt), "MMM yyyy")}
+              Joined {formatMonthYear(member.createdAt)}
             </p>
           </div>
         </div>

@@ -4,10 +4,14 @@ import type { OrganizationInvitationView } from "@/features/organizations/types"
 import { auth } from "@/lib/auth/auth-config";
 import type { OrganizationInvitationRow } from "@/lib/auth/better-auth-inferred-types";
 import { toIsoString } from "@/lib/date/to-iso-string";
-import { getPrimaryOrgRole, parseOrgRoles } from "@/lib/db/enums";
+import {
+  getPrimaryOrgRole,
+  isInvitationPending,
+  parseOrgRoles,
+} from "@/lib/db/enums";
 
 function isPendingInvitation(invitation: OrganizationInvitationRow) {
-  return invitation.status === "pending";
+  return isInvitationPending(invitation.status);
 }
 
 function mapPendingInvitation(
@@ -73,7 +77,7 @@ export async function resendOrganizationInvitation(input: {
   });
   const invitation = (invitations ?? []).find(
     (item: OrganizationInvitationRow) =>
-      item.id === input.invitationId && item.status === "pending",
+      item.id === input.invitationId && isInvitationPending(item.status),
   );
 
   if (!invitation) {

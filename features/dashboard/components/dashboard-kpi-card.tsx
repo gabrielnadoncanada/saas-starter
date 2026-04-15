@@ -35,9 +35,7 @@ export function DashboardKpiCard({
       ) : null}
 
       <div className="flex items-start justify-between gap-3">
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-          {label}
-        </p>
+        <p className="label-mono">{label}</p>
         {delta ? <DeltaBadge delta={delta} /> : null}
       </div>
 

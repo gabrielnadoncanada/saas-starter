@@ -11,10 +11,7 @@ import {
 } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { BillingInterval } from "@/config/billing.config";
-
-function isBillingInterval(value: string): value is BillingInterval {
-  return value === "month" || value === "year";
-}
+import { isBillingInterval } from "@/features/billing/plans";
 
 export function BillingIntervalSelector({
   interval,

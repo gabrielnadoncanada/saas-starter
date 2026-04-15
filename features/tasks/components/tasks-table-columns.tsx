@@ -122,7 +122,7 @@ export function getTasksColumns({
         return (
           <div className="flex items-center gap-2">
             {label ? (
-              <span className="inline-flex shrink-0 border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="inline-flex shrink-0 border border-border px-1.5 py-0.5 label-mono">
                 {label.label}
               </span>
             ) : null}

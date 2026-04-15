@@ -7,7 +7,6 @@ import {
   MessageContent,
   MessageResponse,
 } from "@/components/ai-elements/message";
-import type { ToolPart } from "@/components/ai-elements/tool";
 import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
 import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
 import { AssistantChartArtifact } from "@/features/assistant/components/chart-artifact";
@@ -15,16 +14,10 @@ import type {
   ChartSpec,
   GenerateChartToolResult,
 } from "@/features/assistant/types";
-
-function isToolPart(part: UIMessage["parts"][number]): part is ToolPart {
-  return part.type === "dynamic-tool" || part.type.startsWith("tool-");
-}
-
-function getToolName(part: ToolPart) {
-  return part.type === "dynamic-tool"
-    ? part.toolName
-    : part.type.replace("tool-", "");
-}
+import {
+  getToolName,
+  isToolPart,
+} from "@/features/assistant/utils/message-parts";
 
 function getChartArtifact(part: UIMessage["parts"][number]) {
   if (!isToolPart(part)) {

@@ -42,3 +42,24 @@ export function getPrimaryOrgRole(
   const parsed = parseOrgRoles(value);
   return ORG_ROLES.find((role) => parsed.includes(role)) ?? fallback;
 }
+
+export const INVITATION_STATUSES = [
+  "pending",
+  "accepted",
+  "rejected",
+  "canceled",
+] as const;
+
+export type InvitationStatus = (typeof INVITATION_STATUSES)[number];
+
+export function isInvitationPending(status: string | null | undefined) {
+  return status === "pending";
+}
+
+export function isInvitationAccepted(status: string | null | undefined) {
+  return status === "accepted";
+}
+
+export function isInvitationRejected(status: string | null | undefined) {
+  return status === "rejected";
+}

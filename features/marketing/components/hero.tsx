@@ -81,7 +81,7 @@ export function Hero({
               <span className="size-2.5 rounded-full bg-destructive/70" />
               <span className="size-2.5 rounded-full bg-muted-foreground/40" />
               <span className="size-2.5 rounded-full bg-muted-foreground/40" />
-              <span className="ml-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="ml-3 label-mono">
                 app.yourdomain.com
               </span>
             </div>

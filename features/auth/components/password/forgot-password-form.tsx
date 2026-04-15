@@ -1,10 +1,10 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
 import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { FormAlert } from "@/components/ui/form-alert";
 import { Input } from "@/components/ui/input";
 import { routes } from "@/constants/routes";
 import {
@@ -21,15 +21,7 @@ export function ForgotPasswordForm() {
   const emailField = getFieldState(state, "email");
 
   if (state.success) {
-    return (
-      <div className="flex items-start gap-3 border border-brand/30 bg-brand/5 px-4 py-3">
-        <CheckCircle2
-          className="mt-0.5 size-4 shrink-0 text-brand"
-          strokeWidth={1.75}
-        />
-        <p className="text-sm">{state.success}</p>
-      </div>
-    );
+    return <FormAlert tone="success">{state.success}</FormAlert>;
   }
 
   return (
@@ -53,11 +45,7 @@ export function ForgotPasswordForm() {
         <FieldError>{emailField.error}</FieldError>
       </Field>
 
-      {state.error ? (
-        <div className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-          {state.error}
-        </div>
-      ) : null}
+      {state.error ? <FormAlert>{state.error}</FormAlert> : null}
 
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? "Sending reset link..." : "Send reset link"}

@@ -29,7 +29,7 @@ export function TwoFactorVerificationForm({
   const [trustDevice, setTrustDevice] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  async function completeSignIn() {
+  function completeSignIn() {
     router.replace(callbackUrl || routes.app.dashboard);
     router.refresh();
   }
@@ -46,7 +46,7 @@ export function TwoFactorVerificationForm({
     }
 
     toast.success("Verification complete.");
-    await completeSignIn();
+    completeSignIn();
   }
 
   async function verifyBackupCode() {
@@ -61,7 +61,7 @@ export function TwoFactorVerificationForm({
     }
 
     toast.success("Verification complete.");
-    await completeSignIn();
+    completeSignIn();
   }
 
   const isTotp = method === "totp";

@@ -23,7 +23,6 @@ export default async function AuthLayout(props: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-dvh bg-background">
       <div className="grid min-h-dvh grid-cols-1 lg:grid-cols-[minmax(0,_5fr)_minmax(0,_7fr)]">
-        {/* Form column */}
         <div className="relative flex flex-col">
           <header className="flex items-center justify-between gap-4 px-6 py-5 md:px-10">
             <Link
@@ -67,7 +66,6 @@ export default async function AuthLayout(props: { children: React.ReactNode }) {
           </footer>
         </div>
 
-        {/* Brand / marketing column — hidden on small screens */}
         <aside className="relative hidden overflow-hidden border-l border-border bg-muted/30 lg:block">
           <div
             aria-hidden

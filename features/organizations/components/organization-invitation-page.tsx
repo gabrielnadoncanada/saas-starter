@@ -16,6 +16,10 @@ import {
 } from "@/components/ui/card";
 import { routes } from "@/constants/routes";
 import { authClient } from "@/lib/auth/auth-client";
+import {
+  isInvitationAccepted,
+  isInvitationRejected,
+} from "@/lib/db/enums";
 
 type OrganizationInvitationPageProps = {
   invitationId: string;
@@ -140,7 +144,7 @@ export function OrganizationInvitationPage({
     );
   }
 
-  if (invitation.status === "accepted") {
+  if (isInvitationAccepted(invitation.status)) {
     return (
       <InvitationCard
         title="Invitation accepted"
@@ -154,7 +158,7 @@ export function OrganizationInvitationPage({
     );
   }
 
-  if (invitation.status === "rejected") {
+  if (isInvitationRejected(invitation.status)) {
     return (
       <InvitationCard
         title="Invitation declined"

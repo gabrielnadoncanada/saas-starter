@@ -555,7 +555,7 @@ function LegalSection({ id, index, label, title, body }: PrivacySection) {
     <section id={id} className="scroll-mt-24">
       <div className="grid gap-6 md:grid-cols-[140px_1fr] md:gap-10">
         <div className="md:pt-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="label-mono">
             {index} &mdash; {label}
           </p>
         </div>

@@ -10,6 +10,7 @@ import {
   formatPriceAmount,
   getBillingIntervalSuffix,
 } from "@/features/billing/format-price";
+import { hasAnnualPlans } from "@/features/billing/plans";
 import { cn } from "@/lib/utils";
 
 type PriceSchedule = { unitAmount: number; trialDays?: number };
@@ -162,7 +163,7 @@ function PricingCard({
 }
 
 export function PricingToggle({ plans }: PricingToggleProps) {
-  const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
+  const annualEnabled = hasAnnualPlans(plans);
   const [interval, setInterval] = useState<BillingInterval>("month");
   const visiblePlans = plans.filter((plan) =>
     interval === "year" ? Boolean(plan.yearly) : Boolean(plan.monthly),

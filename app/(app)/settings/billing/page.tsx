@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
 import {
@@ -11,6 +10,7 @@ import { routes } from "@/constants/routes";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 import { isTrialingSubscription } from "@/features/billing/plans";
 import { getBillingPageData } from "@/features/billing/server/get-billing-page-data";
+import { formatShortDate } from "@/lib/date/format-date";
 
 export default async function SettingsBillingPage() {
   const data = await getBillingPageData();
@@ -21,9 +21,7 @@ export default async function SettingsBillingPage() {
 
   const { context, entitlements, hasSubscription, plans } = data;
   const isTrialing = isTrialingSubscription(entitlements.subscriptionStatus);
-  const trialEndsOn = entitlements.trialEnd
-    ? format(entitlements.trialEnd, "MMM d, yyyy")
-    : null;
+  const trialEndsOn = formatShortDate(entitlements.trialEnd);
 
   const billingStatusText = isTrialing
     ? trialEndsOn
@@ -48,7 +46,7 @@ export default async function SettingsBillingPage() {
             <div className="flex items-start justify-between gap-3">
               <p className="label-mono">Current plan</p>
               {isTrialing ? (
-                <span className="inline-flex items-center gap-1.5 border border-brand/40 bg-brand/5 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-brand">
+                <span className="inline-flex items-center gap-1.5 border border-brand/40 bg-brand/5 px-2 py-0.5 label-mono text-brand">
                   <span aria-hidden className="size-1.5 bg-brand" />
                   Trial
                 </span>

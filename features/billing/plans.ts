@@ -105,6 +105,18 @@ export function isBillingInterval(value: string): value is BillingInterval {
   return value === "month" || value === "year";
 }
 
+export function normalizeBillingInterval(
+  value: string | null | undefined,
+): BillingInterval | null {
+  return value && isBillingInterval(value) ? value : null;
+}
+
+export function hasAnnualPlans(
+  plans: readonly { yearly?: unknown }[],
+): boolean {
+  return plans.some((plan) => Boolean(plan.yearly));
+}
+
 export function getPlanDisplayPrice(
   planId: string,
   billingInterval: BillingInterval,

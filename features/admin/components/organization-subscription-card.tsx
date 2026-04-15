@@ -1,10 +1,9 @@
 "use client";
 
-import { format } from "date-fns";
-
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { OrgSubscription } from "@/features/admin/types/organizations.types";
+import { formatLongDate } from "@/lib/date/format-date";
 
 type AdminOrganizationSubscriptionCardProps = {
   loading: boolean;
@@ -29,8 +28,7 @@ export function AdminOrganizationSubscriptionCard({
 
             {subscription.periodEnd ? (
               <p className="text-sm text-muted-foreground">
-                Renews{" "}
-                {format(new Date(subscription.periodEnd), "MMMM d, yyyy")}
+                Renews {formatLongDate(subscription.periodEnd)}
               </p>
             ) : null}
           </div>

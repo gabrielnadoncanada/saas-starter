@@ -4,44 +4,15 @@ import { subDays } from "date-fns";
 
 import { billingConfig } from "@/config/billing.config";
 import { getAdminOverviewStats } from "@/features/admin/server/users";
+import {
+  buildDailyBuckets,
+  fillDailyBucket,
+} from "@/lib/date/daily-buckets";
 import { db } from "@/lib/db/prisma";
 
 const WINDOW_DAYS = 30;
 const RECENT_LIMIT = 8;
-
-type DailyBucket = {
-  dateKey: string;
-  label: string;
-  users: number;
-  orgs: number;
-};
-
-function buildBuckets(): DailyBucket[] {
-  return Array.from({ length: WINDOW_DAYS }, (_, index) => {
-    const date = subDays(new Date(), WINDOW_DAYS - 1 - index);
-    return {
-      dateKey: date.toISOString().slice(0, 10),
-      label: date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-      users: 0,
-      orgs: 0,
-    };
-  });
-}
-
-function fillBuckets(
-  buckets: DailyBucket[],
-  rows: { createdAt: Date }[],
-  field: "users" | "orgs",
-) {
-  for (const row of rows) {
-    const key = row.createdAt.toISOString().slice(0, 10);
-    const bucket = buckets.find((b) => b.dateKey === key);
-    if (bucket) bucket[field] += 1;
-  }
-}
+const BUCKET_FIELDS = ["users", "orgs"] as const;
 
 export type AdminSignupsSeries = {
   label: string;
@@ -86,7 +57,7 @@ export async function getAdminDashboardOverview() {
     stats,
     userHistory,
     orgHistory,
-    activeSubs,
+    planGroups,
     recentUsers,
     recentOrgs,
   ] = await Promise.all([
@@ -99,9 +70,10 @@ export async function getAdminDashboardOverview() {
       where: { createdAt: { gte: since } },
       select: { createdAt: true },
     }),
-    db.subscription.findMany({
+    db.subscription.groupBy({
+      by: ["plan"],
       where: { status: { in: ["active", "trialing"] } },
-      select: { plan: true },
+      _count: { _all: true },
     }),
     db.user.findMany({
       orderBy: { createdAt: "desc" },
@@ -115,19 +87,18 @@ export async function getAdminDashboardOverview() {
     }),
   ]);
 
-  const buckets = buildBuckets();
-  fillBuckets(buckets, userHistory, "users");
-  fillBuckets(buckets, orgHistory, "orgs");
+  const buckets = buildDailyBuckets(WINDOW_DAYS, BUCKET_FIELDS);
+  fillDailyBucket(buckets.byKey, userHistory, "users");
+  fillDailyBucket(buckets.byKey, orgHistory, "orgs");
 
-  const series: AdminSignupsSeries[] = buckets.map(
+  const series: AdminSignupsSeries[] = buckets.list.map(
     ({ dateKey: _k, ...rest }) => rest,
   );
 
-  const paidCounts = new Map<string, number>();
-  for (const sub of activeSubs) {
-    paidCounts.set(sub.plan, (paidCounts.get(sub.plan) ?? 0) + 1);
-  }
-  const paidTotal = activeSubs.length;
+  const paidCounts = new Map<string, number>(
+    planGroups.map((g) => [g.plan, g._count._all]),
+  );
+  const paidTotal = planGroups.reduce((sum, g) => sum + g._count._all, 0);
   const freeCount = Math.max(0, stats.totalOrganizations - paidTotal);
   const totalForPercent = stats.totalOrganizations || 1;
 

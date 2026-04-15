@@ -8,43 +8,23 @@ import { getPlan } from "@/features/billing/plans";
 import { getCurrentEntitlements } from "@/features/billing/server/organization-entitlements";
 import { getMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
+import {
+  buildDailyBuckets,
+  fillDailyBucket,
+  type DailyBucket,
+} from "@/lib/date/daily-buckets";
 import { db } from "@/lib/db/prisma";
 
 const ACTIVITY_DAYS = 14;
 const ACTIVITY_FEED_LIMIT = 8;
+const BUCKET_FIELDS = ["tasks", "ai"] as const;
+type BucketField = (typeof BUCKET_FIELDS)[number];
 
-type DailyBucket = {
-  dateKey: string;
-  label: string;
-  tasks: number;
-  ai: number;
-};
-
-function buildDailyBuckets(): DailyBucket[] {
-  return Array.from({ length: ACTIVITY_DAYS }, (_, index) => {
-    const date = subDays(new Date(), ACTIVITY_DAYS - 1 - index);
-    return {
-      dateKey: date.toISOString().slice(0, 10),
-      label: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      tasks: 0,
-      ai: 0,
-    };
-  });
-}
-
-function fillBuckets(
-  buckets: DailyBucket[],
-  events: { createdAt: Date }[],
-  field: "tasks" | "ai",
+function sumLastN(
+  buckets: DailyBucket<BucketField>[],
+  days: number,
+  field: BucketField,
 ) {
-  for (const event of events) {
-    const key = event.createdAt.toISOString().slice(0, 10);
-    const bucket = buckets.find((b) => b.dateKey === key);
-    if (bucket) bucket[field] += 1;
-  }
-}
-
-function sumLastN(buckets: DailyBucket[], days: number, field: "tasks" | "ai") {
   return buckets.slice(-days).reduce((acc, b) => acc + b[field], 0);
 }
 
@@ -177,14 +157,18 @@ export async function getDashboardOverview() {
     ? checkLimit(entitlements, "aiCredits", aiCreditsUsage)
     : { allowed: false, limit: 0, currentUsage: 0, remaining: 0 };
 
-  const buckets = buildDailyBuckets();
-  fillBuckets(buckets, taskHistory, "tasks");
-  fillBuckets(buckets, aiHistory, "ai");
+  const buckets = buildDailyBuckets(ACTIVITY_DAYS, BUCKET_FIELDS);
+  fillDailyBucket(buckets.byKey, taskHistory, "tasks");
+  fillDailyBucket(buckets.byKey, aiHistory, "ai");
 
-  const tasksLast7 = sumLastN(buckets, 7, "tasks");
-  const tasksPrev7 = sumLastN(buckets.slice(0, ACTIVITY_DAYS - 7), 7, "tasks");
-  const aiLast7 = sumLastN(buckets, 7, "ai");
-  const aiPrev7 = sumLastN(buckets.slice(0, ACTIVITY_DAYS - 7), 7, "ai");
+  const tasksLast7 = sumLastN(buckets.list, 7, "tasks");
+  const tasksPrev7 = sumLastN(
+    buckets.list.slice(0, ACTIVITY_DAYS - 7),
+    7,
+    "tasks",
+  );
+  const aiLast7 = sumLastN(buckets.list, 7, "ai");
+  const aiPrev7 = sumLastN(buckets.list.slice(0, ACTIVITY_DAYS - 7), 7, "ai");
 
   const tasksDelta = computeDelta(tasksLast7, tasksPrev7);
   const aiDelta = computeDelta(aiLast7, aiPrev7);
@@ -192,7 +176,9 @@ export async function getDashboardOverview() {
     (m) => m.createdAt >= subDays(new Date(), 7),
   ).length;
 
-  const series: DashboardActivitySeries[] = buckets.map(({ dateKey: _k, ...rest }) => rest);
+  const series: DashboardActivitySeries[] = buckets.list.map(
+    ({ dateKey: _k, ...rest }) => rest,
+  );
 
   const taskFeedItems: ActivityFeedItem[] = feedTasks.map((t) => ({
     kind: "task.created",

@@ -6,6 +6,7 @@ import type {
 } from "@/config/billing.config";
 import {
   getPlan,
+  normalizeBillingInterval,
 } from "@/features/billing/plans";
 import { db } from "@/lib/db/prisma";
 import { stripe } from "@/lib/stripe/client";
@@ -55,10 +56,7 @@ export async function getSubscriptionSnapshot(
     stripeCustomerId: sub.stripeCustomerId ?? null,
     stripeSubscriptionId: sub.stripeSubscriptionId ?? null,
     planId: sub.plan,
-    billingInterval:
-      sub.billingInterval === "month" || sub.billingInterval === "year"
-        ? sub.billingInterval
-        : null,
+    billingInterval: normalizeBillingInterval(sub.billingInterval),
     subscriptionStatus: sub.status ?? null,
     trialEnd: sub.trialEnd ?? null,
   };

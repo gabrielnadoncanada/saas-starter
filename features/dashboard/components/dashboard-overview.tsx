@@ -136,9 +136,7 @@ function ChecklistStrip({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2 border border-dashed border-brand/40 bg-brand/5 px-4 py-3">
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-brand">
-        Next up
-      </p>
+      <p className="label-mono text-brand">Next up</p>
       <div className="flex flex-wrap gap-2 items-center">
         {items.map((item) => (
           <Link

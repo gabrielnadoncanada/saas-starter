@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PasswordInput } from "@/components/forms/password-input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { FormAlert } from "@/components/ui/form-alert";
 import { Input } from "@/components/ui/input";
 import { routes } from "@/constants/routes";
 import {
@@ -17,6 +18,7 @@ import {
 import { emailSchema } from "@/features/auth/auth-forms.schema";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
 import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
+import { useAuthRedirect } from "@/features/auth/hooks/use-auth-redirect";
 import { useToastMessage } from "@/hooks/use-toast-message";
 import { authClient } from "@/lib/auth/auth-client";
 import { buildCheckEmailHref } from "@/lib/auth/callback-url";
@@ -35,7 +37,6 @@ export function SignInForm({
   callbackUrl = routes.auth.postSignIn,
 }: SignInFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const lastRedirectRef = useRef<string | null>(null);
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const [pendingProvider, setPendingProvider] =
@@ -59,15 +60,7 @@ export function SignInForm({
   const formError = state.error && !state.fieldErrors ? state.error : null;
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });
-
-  useEffect(() => {
-    if (!state.redirectTo || lastRedirectRef.current === state.redirectTo) {
-      return;
-    }
-
-    lastRedirectRef.current = state.redirectTo;
-    window.location.assign(state.redirectTo);
-  }, [state.redirectTo]);
+  useAuthRedirect(state.redirectTo);
 
   async function handleMagicLink() {
     if (!formRef.current) {
@@ -168,11 +161,7 @@ export function SignInForm({
           <FieldError>{passwordField.error}</FieldError>
         </Field>
 
-        {formError ? (
-          <div className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-            {formError}
-          </div>
-        ) : null}
+        {formError ? <FormAlert>{formError}</FormAlert> : null}
 
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? "Signing in..." : "Sign in"}

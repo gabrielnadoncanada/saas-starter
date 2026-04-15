@@ -1,7 +1,6 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import { format } from "date-fns";
 import { Copy } from "lucide-react";
 
 import { DataTableColumnHeader } from "@/components/data-table";
@@ -11,8 +10,10 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { AdminApiUser } from "@/lib/auth/better-auth-inferred-types";
+import { formatShortDate } from "@/lib/date/format-date";
+import { getInitials } from "@/lib/user/get-initials";
+import { cn } from "@/lib/utils";
 
 import { UserRowActions } from "./user-row-actions";
 
@@ -41,9 +42,7 @@ function UserCell({
           src={user.image ?? undefined}
           alt={user.name ?? user.email}
         />
-        <AvatarFallback className="text-xs">
-          {(user.name || user.email)[0].toUpperCase()}
-        </AvatarFallback>
+        <AvatarFallback className="text-xs">{getInitials(user)}</AvatarFallback>
       </Avatar>
       <div className="min-w-0">
         <p className="truncate font-medium">{user.name || "No name"}</p>
@@ -140,7 +139,7 @@ export function getAdminUsersColumns(
       ),
       cell: ({ row }) => (
         <span className="font-mono text-xs tabular-nums text-muted-foreground">
-          {format(new Date(row.original.createdAt), "MMM d, yyyy")}
+          {formatShortDate(row.original.createdAt)}
         </span>
       ),
     },

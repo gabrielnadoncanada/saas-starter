@@ -1,6 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
 import {
   Calendar,
   CheckCircle2,
@@ -27,6 +26,8 @@ import type {
   AdminApiSession,
   AdminApiUser,
 } from "@/lib/auth/better-auth-inferred-types";
+import { formatLongDate } from "@/lib/date/format-date";
+import { getInitials } from "@/lib/user/get-initials";
 
 type UserDetailSheetProps = {
   currentUserId: string;
@@ -102,7 +103,7 @@ export function UserDetailSheet({
                 alt={selectedUser.name ?? selectedUser.email}
               />
               <AvatarFallback className="text-lg">
-                {(selectedUser.name || selectedUser.email)[0].toUpperCase()}
+                {getInitials(selectedUser)}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -175,10 +176,7 @@ export function UserDetailSheet({
                     <div>
                       <p className="text-xs text-muted-foreground">Created</p>
                       <span className="text-sm">
-                        {format(
-                          new Date(selectedUser.createdAt),
-                          "MMMM d, yyyy",
-                        )}
+                        {formatLongDate(selectedUser.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -191,10 +189,7 @@ export function UserDetailSheet({
                           Last Updated
                         </p>
                         <span className="text-sm">
-                          {format(
-                            new Date(selectedUser.updatedAt),
-                            "MMMM d, yyyy",
-                          )}
+                          {formatLongDate(selectedUser.updatedAt)}
                         </span>
                       </div>
                     </div>

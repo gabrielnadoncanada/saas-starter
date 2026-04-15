@@ -1,6 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
 import { Building2, Calendar, Trash2, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import type {
   AdminOrganization,
   OrgSubscription,
 } from "@/features/admin/types/organizations.types";
+import { formatLongDate } from "@/lib/date/format-date";
 
 import { AdminOrganizationMembersList } from "./organization-members-list";
 import { AdminOrganizationSubscriptionCard } from "./organization-subscription-card";
@@ -67,8 +67,7 @@ export function AdminOrganizationDetailSheet({
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="size-4 text-muted-foreground" />
-                      Created{" "}
-                      {format(new Date(organization.createdAt), "MMMM d, yyyy")}
+                      Created {formatLongDate(organization.createdAt)}
                     </div>
                   </div>
                 </CardContent>

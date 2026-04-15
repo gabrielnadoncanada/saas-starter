@@ -9,6 +9,7 @@ import {
   getPlan,
   hasPlanAccess,
   isPlanId,
+  normalizeBillingInterval,
 } from "@/features/billing/plans";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { db } from "@/lib/db/prisma";
@@ -32,11 +33,7 @@ export async function resolveEntitlements(
   const plan = getPlan(subscription.plan);
 
   return {
-    billingInterval:
-      subscription.billingInterval === "month" ||
-      subscription.billingInterval === "year"
-        ? subscription.billingInterval
-        : null,
+    billingInterval: normalizeBillingInterval(subscription.billingInterval),
     capabilities: [...plan.capabilities],
     limits: { ...plan.limits },
     organizationId,

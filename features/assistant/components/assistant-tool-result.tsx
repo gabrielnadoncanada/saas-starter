@@ -14,10 +14,6 @@ type AssistantToolResultProps = {
   part: ToolPart;
 };
 
-function getToolName(part: ToolPart) {
-  return part.type === "dynamic-tool" ? part.toolName : part.type.replace("tool-", "");
-}
-
 function getErrorText(output: unknown) {
   if (
     typeof output === "object" &&

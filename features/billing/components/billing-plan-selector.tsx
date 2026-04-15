@@ -31,6 +31,7 @@ import {
   type BillingPlanOption,
   getPlanPrice,
 } from "@/features/billing/components/billing-plan-card";
+import { hasAnnualPlans } from "@/features/billing/plans";
 
 export type { BillingPlanOption } from "@/features/billing/components/billing-plan-card";
 
@@ -122,7 +123,7 @@ export function BillingPlanSelector({
   const selectedPlan =
     plans.find((plan) => plan.id === selectedPlanId) ?? defaultPlan;
   const selectedPrice = getPlanPrice(selectedPlan, interval);
-  const annualEnabled = plans.some((plan) => Boolean(plan.yearly));
+  const annualEnabled = hasAnnualPlans(plans);
   const subscriptionAction =
     hasCurrentSubscription && canUpdateSubscription
       ? changePlanAction

@@ -24,16 +24,15 @@ export async function deleteAccount({
     headers: requestHeaders,
   });
 
-  for (const organization of organizations ?? []) {
-    await auth.api.leaveOrganization({
-      headers: requestHeaders,
-      body: {
-        organizationId: organization.id,
-      },
-    });
-  }
-
-  await deleteUserAvatar(userId);
+  await Promise.all([
+    ...(organizations ?? []).map((organization) =>
+      auth.api.leaveOrganization({
+        headers: requestHeaders,
+        body: { organizationId: organization.id },
+      }),
+    ),
+    deleteUserAvatar(userId),
+  ]);
 
   await db.$transaction(async (tx) => {
     await tx.user.update({

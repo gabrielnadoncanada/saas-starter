@@ -37,7 +37,7 @@ export function AdminPlanBreakdown({
           />
         ))}
         {slices.length === 0 ? (
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="label-mono">
             No organizations yet
           </p>
         ) : null}

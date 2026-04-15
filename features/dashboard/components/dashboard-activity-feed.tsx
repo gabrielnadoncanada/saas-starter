@@ -42,7 +42,7 @@ export function DashboardActivityFeed({ items }: DashboardActivityFeedProps) {
 function Header() {
   return (
     <div className="flex items-center justify-between border-b border-border px-5 py-3">
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+      <p className="label-mono">
         Activity · Last 14 days
       </p>
     </div>
@@ -76,7 +76,7 @@ function ActivityRow({ item }: { item: ActivityFeedItem }) {
             </p>
             <TimeStamp value={timeAgo} />
           </div>
-          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="mt-0.5 label-mono">
             Task · {statusLabel}
           </p>
         </div>
@@ -100,7 +100,7 @@ function ActivityRow({ item }: { item: ActivityFeedItem }) {
             </p>
             <TimeStamp value={timeAgo} />
           </div>
-          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="mt-0.5 label-mono">
             AI · {item.surface}
           </p>
         </div>
@@ -123,7 +123,7 @@ function ActivityRow({ item }: { item: ActivityFeedItem }) {
           </p>
           <TimeStamp value={timeAgo} />
         </div>
-        <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="mt-0.5 truncate label-mono">
           Joined · {item.role}
         </p>
       </div>
@@ -153,7 +153,7 @@ function IconBadge({
 
 function TimeStamp({ value }: { value: string }) {
   return (
-    <span className="shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+    <span className="shrink-0 whitespace-nowrap label-mono">
       {value}
     </span>
   );

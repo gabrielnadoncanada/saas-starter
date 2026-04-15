@@ -32,6 +32,7 @@ import type {
   ActivityAction,
   ActivityFeedItem,
 } from "@/lib/activity/activity.types";
+import { getInitials } from "@/lib/user/get-initials";
 
 const ACTION_DEFINITIONS: Record<
   ActivityAction,
@@ -53,16 +54,6 @@ const ACTION_DEFINITIONS: Record<
   "user.deleted": { label: "deleted their account", icon: LogOut },
 };
 
-function getInitials(name: string | null, email: string | null) {
-  const source = name ?? email ?? "";
-  const parts = source.split(/\s+|@/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  return parts
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 function ActorAvatar({ actor }: { actor: ActivityFeedItem["actor"] }) {
   if (!actor) {
     return (
@@ -80,7 +71,7 @@ function ActorAvatar({ actor }: { actor: ActivityFeedItem["actor"] }) {
         <AvatarImage src={actor.image} alt={actor.name ?? actor.email ?? ""} />
       ) : null}
       <AvatarFallback className="text-xs">
-        {getInitials(actor.name, actor.email)}
+        {getInitials(actor)}
       </AvatarFallback>
     </Avatar>
   );

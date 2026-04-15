@@ -12,7 +12,7 @@ export function AdminRecentActivity({ items }: { items: AdminRecentItem[] }) {
 
       {items.length === 0 ? (
         <div className="flex flex-1 items-center justify-center p-10">
-          <p className="max-w-[22ch] text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="max-w-[22ch] text-center label-mono">
             No signups or new orgs yet
           </p>
         </div>
@@ -45,7 +45,7 @@ function ActivityRow({ item }: { item: AdminRecentItem }) {
             </p>
             <Time value={timeAgo} />
           </div>
-          <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="mt-0.5 truncate label-mono">
             Signup · {item.email}
           </p>
         </div>
@@ -63,7 +63,7 @@ function ActivityRow({ item }: { item: AdminRecentItem }) {
           <p className="truncate text-sm font-medium">{item.name}</p>
           <Time value={timeAgo} />
         </div>
-        <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="mt-0.5 truncate label-mono">
           New org{item.slug ? ` · ${item.slug}` : ""}
         </p>
       </div>
@@ -73,7 +73,7 @@ function ActivityRow({ item }: { item: AdminRecentItem }) {
 
 function Time({ value }: { value: string }) {
   return (
-    <span className="shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+    <span className="shrink-0 whitespace-nowrap label-mono">
       {value}
     </span>
   );

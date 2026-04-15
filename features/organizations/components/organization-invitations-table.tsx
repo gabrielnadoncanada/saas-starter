@@ -1,6 +1,5 @@
 "use client";
 
-import { format, parseISO } from "date-fns";
 import { Mail, MoreVertical, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
@@ -36,19 +35,12 @@ import {
   type ResendOrganizationInvitationActionState,
 } from "@/features/organizations/actions/membership.actions";
 import type { OrganizationInvitationView } from "@/features/organizations/types";
+import { formatShortDate } from "@/lib/date/format-date";
 
 type OrganizationInvitationsTableProps = {
   canManageInvitations: boolean;
   invitations: OrganizationInvitationView[];
 };
-
-function formatDate(value?: string | null) {
-  if (!value) {
-    return "Pending";
-  }
-
-  return format(parseISO(value), "MMM d, yyyy");
-}
 
 function InvitationActions({
   invitation,
@@ -167,7 +159,7 @@ export function OrganizationInvitationsTable({
                   <Badge variant="outline">Pending</Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatDate(invitation.expiresAt)}
+                  {formatShortDate(invitation.expiresAt) ?? "Pending"}
                 </TableCell>
                 {canManageInvitations ? (
                   <TableCell className="text-right">

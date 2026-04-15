@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -10,6 +10,7 @@ import {
   XAxis,
 } from "recharts";
 
+import { ChartTooltip } from "@/components/ui/chart-tooltip";
 import { cn } from "@/lib/utils";
 
 type Series = {
@@ -20,27 +21,26 @@ type Series = {
 
 type Metric = "tasks" | "ai" | "both";
 
-const metricMeta: Record<
-  Exclude<Metric, "both">,
-  { label: string; color: string }
-> = {
-  tasks: { label: "Tasks", color: "var(--brand)" },
-  ai: { label: "AI calls", color: "hsl(var(--brand-hsl) / 0.55)" },
-};
-
 export function DashboardActivityChart({ data }: { data: Series[] }) {
-  const [metric, setMetric] = React.useState<Metric>("both");
+  const [metric, setMetric] = useState<Metric>("both");
 
-  const tasksTotal = data.reduce((acc, d) => acc + d.tasks, 0);
-  const aiTotal = data.reduce((acc, d) => acc + d.ai, 0);
+  const { tasksTotal, aiTotal } = useMemo(
+    () =>
+      data.reduce(
+        (acc, d) => ({
+          tasksTotal: acc.tasksTotal + d.tasks,
+          aiTotal: acc.aiTotal + d.ai,
+        }),
+        { tasksTotal: 0, aiTotal: 0 },
+      ),
+    [data],
+  );
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            Workspace activity · Last 14 days
-          </p>
+          <p className="label-mono">Workspace activity · Last 14 days</p>
           <div className="mt-2 flex items-baseline gap-6">
             <Metric
               active={metric === "tasks" || metric === "both"}
@@ -109,7 +109,7 @@ export function DashboardActivityChart({ data }: { data: Series[] }) {
               <Area
                 type="monotone"
                 dataKey="ai"
-                name={metricMeta.ai.label}
+                name="AI calls"
                 stroke="hsl(var(--brand-hsl) / 0.55)"
                 strokeWidth={1.5}
                 fill="url(#grad-ai)"
@@ -120,7 +120,7 @@ export function DashboardActivityChart({ data }: { data: Series[] }) {
               <Area
                 type="monotone"
                 dataKey="tasks"
-                name={metricMeta.tasks.label}
+                name="Tasks"
                 stroke="var(--brand)"
                 strokeWidth={1.75}
                 fill="url(#grad-tasks)"
@@ -162,9 +162,7 @@ function Metric({
           className="size-1.5"
           style={{ backgroundColor: color }}
         />
-        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-          {label}
-        </span>
+        <span className="label-mono">{label}</span>
       </span>
       <span className="text-2xl font-semibold tracking-[-0.02em] tabular-nums">
         {value}
@@ -173,40 +171,3 @@ function Metric({
   );
 }
 
-function ChartTooltip({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: Array<{ name?: string; value?: number; color?: string }>;
-  label?: string;
-}) {
-  if (!active || !payload?.length) return null;
-
-  return (
-    <div className="border border-border bg-popover px-3 py-2">
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-        {label}
-      </p>
-      <div className="mt-2 space-y-1">
-        {payload.map((entry) => (
-          <div
-            key={entry.name}
-            className="flex items-center justify-between gap-4 text-xs"
-          >
-            <span className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5"
-                style={{ backgroundColor: entry.color }}
-              />
-              <span className="text-muted-foreground">{entry.name}</span>
-            </span>
-            <span className="font-medium tabular-nums">{entry.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}

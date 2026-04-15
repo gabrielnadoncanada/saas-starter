@@ -1,6 +1,7 @@
 import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
 
+import { FormAlert } from "@/components/ui/form-alert";
 import { routes } from "@/constants/routes";
 import { AuthShell } from "@/features/auth/components/auth-shell";
 
@@ -34,16 +35,17 @@ export default async function VerifyEmailPage({
           </p>
         }
       >
-        <div className="flex items-start gap-3 border border-destructive/40 bg-destructive/5 px-4 py-3">
-          <XCircle
-            className="mt-0.5 size-4 shrink-0 text-destructive"
-            strokeWidth={1.75}
-          />
-          <p className="text-sm">
-            The link has been used or has expired. Request a new verification
-            email from the sign-up page.
-          </p>
-        </div>
+        <FormAlert
+          icon={
+            <XCircle
+              className="mt-0.5 size-4 shrink-0 text-destructive"
+              strokeWidth={1.75}
+            />
+          }
+        >
+          The link has been used or has expired. Request a new verification
+          email from the sign-up page.
+        </FormAlert>
       </AuthShell>
     );
   }

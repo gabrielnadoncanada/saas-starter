@@ -1,6 +1,5 @@
 "use client";
 
-import { format, parseISO } from "date-fns";
 import { MoreVertical, UserMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
@@ -32,7 +31,9 @@ import {
   type RemoveOrganizationMemberActionState,
 } from "@/features/organizations/actions/membership.actions";
 import type { OrganizationMemberView } from "@/features/organizations/types";
+import { formatShortDate } from "@/lib/date/format-date";
 import { hasOrgRole } from "@/lib/db/enums";
+import { getInitials } from "@/lib/user/get-initials";
 
 type OrganizationMembersTableProps = {
   currentUserId: string;
@@ -44,21 +45,8 @@ function getDisplayName(member: OrganizationMemberView) {
   return member.user.name || member.user.email || "Unknown User";
 }
 
-function getInitials(member: OrganizationMemberView) {
-  return getDisplayName(member)
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
 function formatJoinedAt(joinedAt?: string | null) {
-  if (!joinedAt) {
-    return "Unknown";
-  }
-
-  return format(parseISO(joinedAt), "MMM d, yyyy");
+  return formatShortDate(joinedAt) ?? "Unknown";
 }
 
 function MemberActions({
@@ -161,7 +149,7 @@ export function OrganizationMembersTable({
                       src={member.user.image ?? undefined}
                       alt={getDisplayName(member)}
                     />
-                    <AvatarFallback>{getInitials(member)}</AvatarFallback>
+                    <AvatarFallback>{getInitials(member.user)}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
