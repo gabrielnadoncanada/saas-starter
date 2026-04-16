@@ -2,6 +2,14 @@ import "server-only";
 
 import { z } from "zod";
 
+if (!process.env.POSTGRES_URL && process.env.DATABASE_URL) {
+  process.env.POSTGRES_URL = process.env.DATABASE_URL;
+}
+
+if (!process.env.BASE_URL && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+  process.env.BASE_URL = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+}
+
 const requiredEnvSchema = z.object({
   POSTGRES_URL: z.string().min(1, "Database connection string is required"),
   AUTH_SECRET: z.string().min(1, "Auth secret is required (generate with: openssl rand -base64 32)"),

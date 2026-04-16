@@ -35,7 +35,29 @@ A production-ready Next.js SaaS starter with authentication, Stripe billing, pla
 | Validation | Zod                                 |
 | Testing    | Vitest                              |
 
-## Quick start
+## Deploy to Vercel
+
+Click the button to clone the repo to your GitHub, provision a Postgres database via the Neon integration, and deploy a demo instance in about two minutes:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgabrielnadoncanada%2Fsaas-starter&project-name=saas-starter&repository-name=saas-starter&env=AUTH_SECRET&envDescription=A%2032-byte%20random%20string.%20Generate%20one%20with%3A%20openssl%20rand%20-base64%2032&envLink=https%3A%2F%2Fgithub.com%2Fgabrielnadoncanada%2Fsaas-starter%2Fblob%2Fmaster%2F.env.example&stores=%5B%7B%22type%22%3A%22postgres%22%7D%5D)
+
+The demo deploy runs with auth and dashboard enabled. Stripe billing, email, OAuth, and Sentry stay off until you add their keys in the Vercel dashboard — see [Deployment](/docs/deployment) for the full production checklist.
+
+## Quick start (local)
+
+Interactive setup:
+
+```bash
+pnpm install
+pnpm setup
+pnpm db:migrate
+pnpm db:seed
+pnpm dev
+```
+
+`pnpm setup` walks you through every required and optional env var and writes `.env` for you.
+
+Manual setup:
 
 ```bash
 pnpm install
@@ -45,8 +67,6 @@ pnpm db:migrate
 pnpm db:seed
 pnpm dev
 ```
-
-Fill in Postgres, auth, Stripe, and optional OAuth credentials in `.env` before the first run.
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
