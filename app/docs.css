@@ -99,3 +99,52 @@
   letter-spacing: -0.025em;
   font-weight: 600;
 }
+
+/* Pin prose colors to our palette so @tailwindcss/typography defaults (blue links, slate body) don't leak into docs. */
+#nd-page .prose {
+  --tw-prose-body: var(--color-fd-foreground);
+  --tw-prose-headings: var(--color-fd-foreground);
+  --tw-prose-lead: var(--color-fd-foreground);
+  --tw-prose-links: var(--brand);
+  --tw-prose-bold: var(--color-fd-foreground);
+  --tw-prose-counters: var(--color-fd-muted-foreground);
+  --tw-prose-bullets: var(--color-fd-muted-foreground);
+  --tw-prose-hr: var(--color-fd-border);
+  --tw-prose-quotes: var(--color-fd-foreground);
+  --tw-prose-quote-borders: var(--color-fd-border);
+  --tw-prose-captions: var(--color-fd-muted-foreground);
+  --tw-prose-code: var(--color-fd-foreground);
+  --tw-prose-pre-code: var(--color-fd-foreground);
+  --tw-prose-pre-bg: var(--color-fd-muted);
+  --tw-prose-th-borders: var(--color-fd-border);
+  --tw-prose-td-borders: var(--color-fd-border);
+  --tw-prose-kbd: var(--color-fd-foreground);
+  --tw-prose-kbd-shadows: var(--brand-hsl);
+  --tw-prose-invert-body: var(--color-fd-foreground);
+  --tw-prose-invert-headings: var(--color-fd-foreground);
+  --tw-prose-invert-lead: var(--color-fd-foreground);
+  --tw-prose-invert-links: var(--brand);
+  --tw-prose-invert-bold: var(--color-fd-foreground);
+  --tw-prose-invert-counters: var(--color-fd-muted-foreground);
+  --tw-prose-invert-bullets: var(--color-fd-muted-foreground);
+  --tw-prose-invert-hr: var(--color-fd-border);
+  --tw-prose-invert-quotes: var(--color-fd-foreground);
+  --tw-prose-invert-quote-borders: var(--color-fd-border);
+  --tw-prose-invert-captions: var(--color-fd-muted-foreground);
+  --tw-prose-invert-code: var(--color-fd-foreground);
+  --tw-prose-invert-pre-code: var(--color-fd-foreground);
+  --tw-prose-invert-pre-bg: var(--color-fd-muted);
+  --tw-prose-invert-th-borders: var(--color-fd-border);
+  --tw-prose-invert-td-borders: var(--color-fd-border);
+  --tw-prose-invert-kbd: var(--color-fd-foreground);
+  --tw-prose-invert-kbd-shadows: var(--brand-hsl);
+}
+
+#nd-page .prose a {
+  text-decoration-color: hsl(var(--brand-hsl) / 0.5);
+  text-underline-offset: 2px;
+}
+
+#nd-page .prose a:hover {
+  text-decoration-color: var(--brand);
+}
