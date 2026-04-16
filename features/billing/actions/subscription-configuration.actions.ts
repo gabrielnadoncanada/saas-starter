@@ -4,16 +4,16 @@ import { redirect } from "next/navigation";
 
 import { routes } from "@/constants/routes";
 import { subscriptionCheckoutSchema } from "@/features/billing/checkout.schema";
+import { applyDemoSubscriptionChange } from "@/features/billing/server/demo-subscription";
 import { changeSubscription } from "@/features/billing/server/stripe/stripe-subscriptions";
 import {
   getCurrentOrganization,
   requireActiveOrganizationRole,
 } from "@/features/organizations/server/organizations";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { throwIfDemo } from "@/lib/demo";
+import { isDemoMode } from "@/lib/demo";
 
 export async function changePlanAction(formData: FormData) {
-  throwIfDemo("Plan changes are disabled in demo mode.");
   const user = await getCurrentUser();
 
   if (!user) {
@@ -31,6 +31,15 @@ export async function changePlanAction(formData: FormData) {
   const organization = await getCurrentOrganization();
   if (!organization) {
     throw new Error("Organization not found");
+  }
+
+  if (isDemoMode()) {
+    await applyDemoSubscriptionChange({
+      billingInterval,
+      organizationId: organization.id,
+      planId,
+    });
+    redirect(routes.settings.billing);
   }
 
   await changeSubscription({

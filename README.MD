@@ -47,10 +47,8 @@ The demo deploy runs with auth and dashboard enabled. Stripe billing, email, OAu
 
 To run a public demo instance that prospects can try without breaking it, set these in your Vercel project:
 
-- `DEMO_MODE=true` — shows a banner and blocks destructive actions (account/org/plan/member deletion, bulk task delete, admin user/org deletion, checkout).
+- `DEMO_MODE=true` — shows a banner and blocks destructive actions (account/org/plan/member deletion, bulk task delete, admin user/org deletion). Plan selection stays open so visitors can explore plan gating; Stripe is skipped and a fake active subscription is written directly to the DB.
 - `CRON_SECRET=<random>` — authorizes the daily DB reset. Vercel Cron hits `/api/demo/reset` every day at 04:00 UTC (see `vercel.json`), wiping and re-seeding the database.
-
-Use Stripe test keys so demo visitors see the checkout flow without real charges.
 
 ## Quick start (local)
 

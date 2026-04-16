@@ -6,6 +6,7 @@ import { routes } from "@/constants/routes";
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { subscriptionCheckoutSchema } from "@/features/billing/checkout.schema";
 import { isBillingInterval, isPlanId } from "@/features/billing/plans";
+import { applyDemoSubscriptionChange } from "@/features/billing/server/demo-subscription";
 import { createSubscriptionCheckout } from "@/features/billing/server/stripe/stripe-checkout";
 import {
   getCurrentOrganization,
@@ -13,11 +14,10 @@ import {
 } from "@/features/organizations/server/organizations";
 import { buildCallbackURL } from "@/lib/auth/callback-url";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { throwIfDemo } from "@/lib/demo";
+import { isDemoMode } from "@/lib/demo";
 import { enforceActionRateLimit } from "@/lib/rate-limit";
 
 export async function startSubscriptionCheckoutAction(formData: FormData) {
-  throwIfDemo("Checkout is disabled in demo mode.");
   const rawValues = Object.fromEntries(formData);
   const user = await getCurrentUser();
 
@@ -61,6 +61,15 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
 
   if (!organization) {
     throw new Error("Organization not found");
+  }
+
+  if (isDemoMode()) {
+    await applyDemoSubscriptionChange({
+      billingInterval,
+      organizationId: organization.id,
+      planId,
+    });
+    redirect(`${routes.settings.billing}?checkout=success`);
   }
 
   const url = await createSubscriptionCheckout({

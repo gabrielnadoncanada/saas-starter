@@ -2,10 +2,13 @@ import {
   type BillingInterval,
   type PaidPlanId,
 } from "@/config/billing.config";
+import { routes } from "@/constants/routes";
 import { getPlanDisplayPrice } from "@/features/billing/plans";
+import { applyDemoSubscriptionChange } from "@/features/billing/server/demo-subscription";
 import { createSubscriptionCheckout } from "@/features/billing/server/stripe/stripe-checkout";
 import { auth } from "@/lib/auth/auth-config";
 import { hasOrgRole } from "@/lib/db/enums";
+import { isDemoMode } from "@/lib/demo";
 
 type ResumeCheckoutAfterSignInParams = {
   billingInterval: BillingInterval;
@@ -39,6 +42,15 @@ export async function resumeCheckoutAfterSignIn({
 
   if (!currentMember) {
     return null;
+  }
+
+  if (isDemoMode()) {
+    await applyDemoSubscriptionChange({
+      billingInterval,
+      organizationId: organization.id,
+      planId,
+    });
+    return `${routes.settings.billing}?checkout=success`;
   }
 
   return createSubscriptionCheckout({
