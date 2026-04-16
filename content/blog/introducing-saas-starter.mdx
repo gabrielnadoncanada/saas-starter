@@ -9,23 +9,23 @@ tags:
   - product
 ---
 
-Most "SaaS starters" give you auth and a pricing page, then leave the hard part — enforcing plans across your product — as an exercise for the reader. SaaS Starter takes the opposite approach. Plan gating is a first-class concern, wired from Stripe all the way into your server actions and UI.
+Most "SaaS starters" give you auth and a pricing page, then leave the hard part — enforcing plans across your product — as an exercise for the reader. SaaS Starter takes the opposite approach. Plan gating is a first-class concern, wired from Stripe all the way into your server actions.
 
 ## What's in the box
 
-- **Auth**: email/password, magic links, OAuth, passkeys, 2FA. All built on better-auth.
-- **Billing**: Stripe subscriptions with webhook-synced plan state, usage tracking, and customer portal.
-- **Plan gating**: server-side capability checks, client-side conditional UI, upgrade prompts.
-- **Multi-tenant organizations**: invitations, roles, per-org billing.
-- **Admin panel**: user management, impersonation, role changes, session revocation.
-- **AI assistant**: streaming chat with tool use, conversation history, per-plan model access.
+- **Auth**: email/password, magic links, Google/GitHub OAuth, and 2FA (TOTP). All built on better-auth.
+- **Billing**: Stripe subscriptions with webhook-synced plan state, per-organization usage counters, and the Stripe customer portal.
+- **Plan gating**: typed capabilities and limits declared once, checked on the server with `assertCapability` and `consumeMonthlyUsage`.
+- **Multi-tenant organizations**: invitations, member roles, per-org billing and entitlements.
+- **Admin panel**: user management, impersonation, ban/unban, and role changes.
+- **AI assistant**: streaming chat with tool use, conversation history, and plan-gated access via the `ai.assistant` capability.
 
 ## Why another starter?
 
 Because the existing ones stop at "logged-in user can see a dashboard." That's the easy part. The hard part is answering: *when a user's subscription lapses, which features stop working, and where in the code do I enforce that?*
 
-SaaS Starter answers that question with a single capability system used across the entire app. Check `user.can("ai.pro")` on the server, render `<Gated capability="ai.pro">` on the client, and forget the rest.
+SaaS Starter answers that question with a single capability system used across the entire app. Capabilities and limits are declared once in `config/billing.config.ts`. Server actions call `assertCapability(entitlements, "ai.assistant")` or `consumeMonthlyUsage({ limitKey: "tasksPerMonth", ... })`. Everything reads from the same typed source of truth, so adding a capability makes TypeScript point at every callsite that needs updating.
 
 ## Get started
 
-Clone the repo, run `pnpm install`, fill in your Stripe keys, and `pnpm dev`. The docs walk you through the first hour. You own the code — fork it, customize it, ship it.
+Clone the repo, run `pnpm install`, then `pnpm setup` to walk through an interactive wizard for your env. Run `pnpm db:migrate && pnpm db:seed && pnpm dev` and you're in. You own the code — fork it, customize it, ship it.

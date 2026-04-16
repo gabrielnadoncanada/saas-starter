@@ -1,6 +1,6 @@
 ---
 title: Plan gating that actually works
-description: A short walkthrough of the capability system — how plan checks flow from Stripe webhooks into your server actions and React components without duplicating logic.
+description: A short walkthrough of the capability system — how plan checks flow from Stripe webhooks into your server actions without duplicating logic.
 date: 2026-04-10
 author:
   name: Gabriel Nadon
@@ -9,48 +9,68 @@ tags:
   - architecture
 ---
 
-Plan gating is the part of every SaaS that silently rots. You ship a feature, guard it behind a capability, then six months later someone bypasses the check because the new page forgot to call `assertCan()`. SaaS Starter treats this as a type-safe concern, not a convention.
+Plan gating is the part of every SaaS that silently rots. You ship a feature, guard it behind a capability, then six months later someone bypasses the check because the new page forgot to call it. SaaS Starter treats this as a type-safe concern, not a convention.
 
 ## One source of truth
 
-Capabilities are declared once in `config/plans.ts`:
+Capabilities and limits are declared once in `config/billing.config.ts`:
 
 ```ts
-export const plans = {
-  free: { ai: { messagesPerDay: 20 } },
-  pro:  { ai: { messagesPerDay: 1000 } },
-};
+export const capabilities = [
+  "task.create",
+  "task.export",
+  "team.invite",
+  "team.analytics",
+  "billing.portal",
+  "ai.assistant",
+] as const;
+
+export const limitKeys = [
+  "tasksPerMonth",
+  "teamMembers",
+  "storageMb",
+  "aiCredits",
+] as const;
 ```
 
-Stripe is the authority on which plan a user is on. The webhook handler syncs plan state into Prisma, and `getCurrentUser()` exposes it as a typed capability map.
+Each plan declares which capabilities it grants and the numeric limits it allows. Stripe is the authority on which plan a workspace is on — the webhook handler syncs plan state into Prisma, and the entitlements loader projects it into an `OrganizationEntitlements` object.
 
-## Server side
+## Guarding a feature
 
-In server actions or route handlers, ask the user object:
+In server actions or route handlers, call `assertCapability` with the active entitlements:
 
 ```ts
-const user = await getCurrentUser();
-if (!user.can("ai.send")) {
-  throw new ForbiddenError("Upgrade to Pro");
-}
+import { assertCapability } from "@/features/billing/entitlements";
+
+assertCapability(entitlements, "ai.assistant");
 ```
 
-The `can()` method is generated from the plan config, so typos are compile errors.
+The capability argument is typed against the `capabilities` tuple, so typos are compile errors. A missing capability throws `UpgradeRequiredError`, which the action state layer catches and turns into an upgrade prompt.
 
-## Client side
+For conditional UI on the server, use `hasCapability` instead:
 
-React components use the same capability names:
+```ts
+import { hasCapability } from "@/features/billing/entitlements";
 
-```tsx
-<Gated capability="ai.send" fallback={<UpgradePrompt />}>
-  <AIInput />
-</Gated>
+const canUseAI = hasCapability(entitlements, "ai.assistant");
 ```
 
-The `<Gated>` component reads from session context — no new fetches.
+## Enforcing quotas
 
-## Usage limits
+Metered features (tasks per month, team members, AI credits) go through the usage service. `consumeMonthlyUsage` atomically reserves one unit and throws `LimitReachedError` if the quota is already full:
 
-For metered features (AI messages, tasks, seats), the `usage` table tracks consumption per billing period. A single `enforceUsageLimit()` helper checks the limit, increments the counter, and returns an upgrade URL when the quota is hit.
+```ts
+import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 
-That's it. No per-route middleware, no scattered `if (plan === "pro")` checks, no desync between what the UI shows and what the server enforces.
+await consumeMonthlyUsage({
+  organizationId,
+  limitKey: "tasksPerMonth",
+  entitlements,
+});
+```
+
+For non-atomic checks (e.g. deciding whether to show an upsell), `checkLimit` returns `{ allowed, currentUsage, limit, remaining }` without touching the counter.
+
+## Why this works
+
+No per-route middleware. No scattered `if (plan === "pro")` checks. One config file owns the capability list, and every gate — server actions, dashboard widgets, UI flags — reads from the same typed source. When you add a capability, TypeScript tells you every callsite that needs updating.
