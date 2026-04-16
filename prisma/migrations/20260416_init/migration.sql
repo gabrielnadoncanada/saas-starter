@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateEnum
 CREATE TYPE "PlatformRole" AS ENUM ('USER', 'SUPER_ADMIN');
 
