@@ -3,14 +3,12 @@ import { MarketingFooter } from "@/features/marketing/components/marketing-foote
 import { MarketingHeader } from "@/features/marketing/components/marketing-header";
 
 const navigationLinks = [
-  { href: "/", label: "Home" },
-  { href: "#features", label: "Features" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#features", label: "Features" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const footerSections = [
-  { title: "Company", links: [{ href: "/about", label: "About" }] },
   { title: "Resources", links: [{ href: "/blog", label: "Blog" }] },
   {
     title: "Legal",
@@ -32,8 +30,11 @@ export default function MarketingLayout({
       <MarketingHeader
         logo={<LogoPeriod />}
         links={navigationLinks}
-        signInHref="/auth/sign-in"
-        signUpHref="/auth/sign-up"
+        secondaryAction={{
+          label: "Demo",
+          href: process.env.NEXT_PUBLIC_DEMO_URL ?? "/sign-in",
+        }}
+        primaryAction={{ label: "Get the starter", href: "/#pricing" }}
       />
       <div className="flex-1">{children}</div>
       <MarketingFooter

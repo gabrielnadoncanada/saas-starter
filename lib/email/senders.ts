@@ -1,5 +1,8 @@
 import { sendEmail } from "@/lib/email/client";
-import { buildTeamInvitationEmail } from "@/lib/email/templates";
+import {
+  buildContactMessageEmail,
+  buildTeamInvitationEmail,
+} from "@/lib/email/templates";
 
 function logEmailResult(event: string, details: Record<string, unknown>) {
   console.info(`[email:${event}]`, details);
@@ -32,6 +35,33 @@ export async function sendTeamInvitationEmail(input: {
     logEmailError("team-invitation.failed", {
       email: input.email,
       invitationToken: input.invitationToken,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    throw error;
+  }
+}
+
+export async function sendContactMessageEmail(input: {
+  to: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}) {
+  const payload = buildContactMessageEmail(input);
+
+  try {
+    const result = await sendEmail(payload);
+
+    logEmailResult("contact-message.sent", {
+      from: input.email,
+      subject: input.subject,
+      resendEmailId: result.id,
+    });
+  } catch (error) {
+    logEmailError("contact-message.failed", {
+      from: input.email,
+      subject: input.subject,
       error: error instanceof Error ? error.message : "Unknown error",
     });
     throw error;

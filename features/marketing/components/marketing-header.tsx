@@ -21,19 +21,24 @@ export type MarketingLink = {
   href: string;
 };
 
+export type MarketingHeaderAction = {
+  label: string;
+  href: string;
+};
+
 export type MarketingHeaderProps = {
   logo: React.ReactNode;
   links: MarketingLink[];
-  signInHref: string;
-  signUpHref: string;
+  primaryAction?: MarketingHeaderAction;
+  secondaryAction?: MarketingHeaderAction;
   className?: string;
 };
 
 export function MarketingHeader({
   logo,
   links,
-  signInHref,
-  signUpHref,
+  primaryAction,
+  secondaryAction,
   className,
 }: MarketingHeaderProps) {
   return (
@@ -64,24 +69,30 @@ export function MarketingHeader({
           ))}
         </nav>
 
-        <div className="hidden items-center gap-1 md:flex">
-          <Button
-            asChild
-            variant="ghost"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground"
-          >
-            <Link href={signInHref}>Sign in</Link>
-          </Button>
-          <Link
-            href={signUpHref}
-            className="group relative inline-flex items-center gap-2 bg-foreground px-4 py-2 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
-          >
-            Get the starter
-            <span className="text-brand transition-transform group-hover:translate-x-0.5">
-              →
-            </span>
-          </Link>
-        </div>
+        {primaryAction || secondaryAction ? (
+          <div className="hidden items-center gap-1 md:flex">
+            {secondaryAction ? (
+              <Button
+                asChild
+                variant="ghost"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
+              </Button>
+            ) : null}
+            {primaryAction ? (
+              <Link
+                href={primaryAction.href}
+                className="group relative inline-flex items-center gap-2 bg-foreground px-4 py-2 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+              >
+                {primaryAction.label}
+                <span className="text-brand transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="md:hidden">
           <Drawer>
@@ -108,23 +119,33 @@ export function MarketingHeader({
                 ))}
               </nav>
 
-              <DrawerFooter>
-                <div className="flex flex-col gap-2">
-                  <DrawerClose asChild>
-                    <Button asChild variant="outline">
-                      <Link href={signInHref}>Sign In</Link>
-                    </Button>
-                  </DrawerClose>
-                  <DrawerClose asChild>
-                    <Button
-                      asChild
-                      className="bg-brand text-brand-foreground hover:bg-brand/90"
-                    >
-                      <Link href={signUpHref}>Get the starter</Link>
-                    </Button>
-                  </DrawerClose>
-                </div>
-              </DrawerFooter>
+              {primaryAction || secondaryAction ? (
+                <DrawerFooter>
+                  <div className="flex flex-col gap-2">
+                    {secondaryAction ? (
+                      <DrawerClose asChild>
+                        <Button asChild variant="outline">
+                          <Link href={secondaryAction.href}>
+                            {secondaryAction.label}
+                          </Link>
+                        </Button>
+                      </DrawerClose>
+                    ) : null}
+                    {primaryAction ? (
+                      <DrawerClose asChild>
+                        <Button
+                          asChild
+                          className="bg-brand text-brand-foreground hover:bg-brand/90"
+                        >
+                          <Link href={primaryAction.href}>
+                            {primaryAction.label}
+                          </Link>
+                        </Button>
+                      </DrawerClose>
+                    ) : null}
+                  </div>
+                </DrawerFooter>
+              ) : null}
             </DrawerContent>
           </Drawer>
         </div>
