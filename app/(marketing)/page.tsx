@@ -171,13 +171,18 @@ const principles = [
   "Visible value over invisible sophistication",
 ];
 
+const soloPurchaseHref =
+  process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL_SOLO || "#pricing";
+const teamPurchaseHref =
+  process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL_TEAM || "#pricing";
+
 const pricingPlans = [
   {
     name: "Solo",
     description: "For one developer shipping unlimited projects.",
     price: "$249",
     period: "one-time",
-    href: "/auth/sign-up",
+    href: soloPurchaseHref,
     ctaLabel: "Buy Solo",
     features: [
       "1 developer seat",
@@ -194,7 +199,7 @@ const pricingPlans = [
       "For small teams and consultants building client-facing products.",
     price: "$599",
     period: "one-time",
-    href: "/auth/sign-up",
+    href: teamPurchaseHref,
     ctaLabel: "Buy Team",
     features: [
       "Up to 5 developer seats",
@@ -302,10 +307,10 @@ export default function MarketingPage() {
             }
             actions={
               <HeroActions
-                primaryLabel="Buy the Starter"
-                primaryHref="/auth/sign-up"
-                secondaryLabel="See pricing"
-                secondaryHref="#pricing"
+                primaryLabel="See pricing"
+                primaryHref="#pricing"
+                secondaryLabel="View docs"
+                secondaryHref="/docs/getting-started"
                 note="Lifetime updates"
               />
             }
@@ -773,7 +778,7 @@ export default function MarketingPage() {
           }
           description="Launch faster with a starter built to help you understand quickly, customize safely, and ship with confidence."
           primaryLabel="Get the starter"
-          primaryHref="/auth/sign-up"
+          primaryHref="#pricing"
           secondaryLabel="Read docs"
           secondaryHref="/docs"
         />

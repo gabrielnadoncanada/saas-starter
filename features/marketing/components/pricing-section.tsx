@@ -38,6 +38,7 @@ export function PricingSection({ plans, className }: PricingSectionProps) {
 
 function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
   const { highlighted } = plan;
+  const isExternal = /^https?:\/\//.test(plan.href);
 
   return (
     <div
@@ -124,6 +125,9 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
 
       <Link
         href={plan.href}
+        {...(isExternal
+          ? { target: "_blank", rel: "noreferrer" }
+          : {})}
         className={cn(
           "relative mt-10 group/cta inline-flex items-center justify-between gap-2 border px-5 py-3.5 text-sm font-medium transition-all",
           highlighted
