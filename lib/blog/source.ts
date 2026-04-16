@@ -26,10 +26,10 @@ export type BlogPage = {
 
 const rawSource = loader({
   baseUrl: "/blog",
-  source: toFumadocsSource(blog, []),
+  source: toFumadocsSource(blog as never, []),
 });
 
-export const blogSource = rawSource as Omit<
+export const blogSource = rawSource as unknown as Omit<
   typeof rawSource,
   "getPages" | "getPage"
 > & {

@@ -1,5 +1,3 @@
-import "server-only";
-
 // HOW TO EDIT YOUR PLANS
 // 1. Create products and prices in your Stripe dashboard.
 // 2. Copy each price ID into the matching STRIPE_PRICE_* variable in .env.
