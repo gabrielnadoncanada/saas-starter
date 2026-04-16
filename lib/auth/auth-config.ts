@@ -39,7 +39,8 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification:
+      process.env.SKIP_EMAIL_VERIFICATION === "false",
     minPasswordLength: 8,
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
@@ -53,7 +54,7 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
-    sendOnSignUp: true,
+    sendOnSignUp: process.env.SKIP_EMAIL_VERIFICATION === "false",
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
