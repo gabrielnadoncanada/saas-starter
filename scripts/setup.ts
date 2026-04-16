@@ -159,6 +159,25 @@ const groups: EnvGroup[] = [
     },
   },
   {
+    name: "Demo mode",
+    description: "Public demo deploys only (banner + daily DB reset). Optional.",
+    optional: true,
+    collect: async () => {
+      const enabled = await askYesNo("Enable DEMO_MODE?", false);
+      if (!enabled) {
+        const result: Record<string, string> = { DEMO_MODE: "false" };
+        return result;
+      }
+      const cronSecret = crypto.randomBytes(32).toString("base64url");
+      info("CRON_SECRET generated automatically.");
+      const result: Record<string, string> = {
+        DEMO_MODE: "true",
+        CRON_SECRET: cronSecret,
+      };
+      return result;
+    },
+  },
+  {
     name: "Error tracking (Sentry)",
     description: "Optional. Only the DSN is required at runtime.",
     optional: true,

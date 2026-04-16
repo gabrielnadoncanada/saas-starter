@@ -5,6 +5,7 @@ import { GeistPixelSquare } from "geist/font/pixel";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
+import { DemoBanner } from "@/components/demo-banner";
 import { Providers } from "@/components/providers/providers";
 
 export const metadata: Metadata = {
@@ -58,7 +59,10 @@ export default async function RootLayout({
         className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable} ${GeistPixelSquare.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <DemoBanner />
+          {children}
+        </Providers>
       </body>
     </html>
   );

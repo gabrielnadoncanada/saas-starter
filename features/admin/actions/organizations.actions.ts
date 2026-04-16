@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { db } from "@/lib/db/prisma";
+import { throwIfDemo } from "@/lib/demo";
 
 import { getAdminOrganizationDetail } from "../server/organizations";
 
@@ -13,6 +14,7 @@ export async function getOrganizationDetailAction(organizationId: string) {
 }
 
 export async function deleteOrganizationAction(organizationId: string) {
+  throwIfDemo();
   const adminId = await requireAdminAction();
 
   const membership = await db.member.findFirst({

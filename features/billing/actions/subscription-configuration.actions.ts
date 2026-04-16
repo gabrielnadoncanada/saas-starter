@@ -10,8 +10,10 @@ import {
   requireActiveOrganizationRole,
 } from "@/features/organizations/server/organizations";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { throwIfDemo } from "@/lib/demo";
 
 export async function changePlanAction(formData: FormData) {
+  throwIfDemo("Plan changes are disabled in demo mode.");
   const user = await getCurrentUser();
 
   if (!user) {

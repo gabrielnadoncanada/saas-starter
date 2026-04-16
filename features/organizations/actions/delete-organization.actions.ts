@@ -12,10 +12,14 @@ import {
 import { auth } from "@/lib/auth/auth-config";
 import { validatedAuthenticatedAction } from "@/lib/auth/authenticated-action";
 import { db } from "@/lib/db/prisma";
+import { assertNotDemo } from "@/lib/demo";
 
 export const deleteOrganizationAction = validatedAuthenticatedAction(
   deleteOrganizationSchema,
   async () => {
+    const demoBlock = assertNotDemo();
+    if (demoBlock) return demoBlock;
+
     try {
       const membership = await requireActiveOrganizationRole(["owner"]);
       const organizationId = membership.organizationId;

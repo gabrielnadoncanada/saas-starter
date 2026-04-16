@@ -13,9 +13,11 @@ import {
 } from "@/features/organizations/server/organizations";
 import { buildCallbackURL } from "@/lib/auth/callback-url";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { throwIfDemo } from "@/lib/demo";
 import { enforceActionRateLimit } from "@/lib/rate-limit";
 
 export async function startSubscriptionCheckoutAction(formData: FormData) {
+  throwIfDemo("Checkout is disabled in demo mode.");
   const rawValues = Object.fromEntries(formData);
   const user = await getCurrentUser();
 

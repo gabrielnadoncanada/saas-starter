@@ -28,6 +28,7 @@ import {
   updateTaskStatusSchema,
 } from "@/features/tasks/task.schema";
 import { validatedAuthenticatedAction } from "@/lib/auth/authenticated-action";
+import { assertNotDemo } from "@/lib/demo";
 import type { FormActionState } from "@/types/form-action-state";
 
 export type CreateTaskActionState = FormActionState<CreateTaskValues> & {
@@ -132,6 +133,9 @@ export const updateTaskStatusAction = validatedAuthenticatedAction(
 export const bulkDeleteTasksAction = validatedAuthenticatedAction(
   bulkDeleteTasksSchema,
   async ({ taskIds }): Promise<BulkDeleteTasksActionState> => {
+    const demoBlock = assertNotDemo<BulkDeleteTasksActionState>();
+    if (demoBlock) return demoBlock;
+
     try {
       const deletedCount = await bulkDeleteTasks(taskIds);
       revalidatePath(routes.app.tasks);

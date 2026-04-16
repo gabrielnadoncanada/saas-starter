@@ -9,6 +9,7 @@ import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { auth } from "@/lib/auth/auth-config";
 import type { ListUsersQueryInput } from "@/lib/auth/better-auth-inferred-types";
 import { db } from "@/lib/db/prisma";
+import { throwIfDemo } from "@/lib/demo";
 
 import { getAdminUserDetail, listAdminUsers } from "../server/users";
 
@@ -34,6 +35,7 @@ export async function banUserAction(
   banReason?: string,
   banExpiresIn?: number,
 ) {
+  throwIfDemo();
   const adminId = await requireAdminAction();
 
   if (userId === adminId) {
@@ -64,6 +66,7 @@ export async function unbanUserAction(userId: string) {
 }
 
 export async function removeUserAction(userId: string) {
+  throwIfDemo();
   const adminId = await requireAdminAction();
 
   if (userId === adminId) {

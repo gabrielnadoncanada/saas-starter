@@ -43,6 +43,15 @@ Click the button to clone the repo to your GitHub, provision a Postgres database
 
 The demo deploy runs with auth and dashboard enabled. Stripe billing, email, OAuth, and Sentry stay off until you add their keys in the Vercel dashboard — see [Deployment](/docs/deployment) for the full production checklist.
 
+### Public demo mode
+
+To run a public demo instance that prospects can try without breaking it, set these in your Vercel project:
+
+- `DEMO_MODE=true` — shows a banner and blocks destructive actions (account/org/plan/member deletion, bulk task delete, admin user/org deletion, checkout).
+- `CRON_SECRET=<random>` — authorizes the daily DB reset. Vercel Cron hits `/api/demo/reset` every day at 04:00 UTC (see `vercel.json`), wiping and re-seeding the database.
+
+Use Stripe test keys so demo visitors see the checkout flow without real charges.
+
 ## Quick start (local)
 
 Interactive setup:
