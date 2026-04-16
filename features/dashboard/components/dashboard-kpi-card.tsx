@@ -1,8 +1,8 @@
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import type { DashboardDelta } from "@/features/dashboard/server/get-dashboard-overview";
+import { cn } from "@/lib/utils";
 
 type DashboardKpiCardProps = {
   label: string;

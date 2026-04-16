@@ -40,6 +40,10 @@ vi.mock("@/lib/db/prisma", () => ({
     },
     aiConversation: {
       count: vi.fn(),
+      findMany: vi.fn(),
+    },
+    member: {
+      findMany: vi.fn(),
     },
   },
 }));
@@ -80,7 +84,10 @@ describe("getDashboardOverview", () => {
       .mockResolvedValueOnce([
         { id: 1, title: "Recent", createdAt: new Date() },
       ] as never)
-      .mockResolvedValueOnce([{ createdAt: new Date() }] as never);
+      .mockResolvedValueOnce([{ createdAt: new Date() }] as never)
+      .mockResolvedValueOnce([] as never);
+    vi.mocked(db.aiConversation.findMany).mockResolvedValue([] as never);
+    vi.mocked(db.member.findMany).mockResolvedValue([] as never);
     vi.mocked(getMonthlyUsage).mockResolvedValue(3 as never);
   });
 

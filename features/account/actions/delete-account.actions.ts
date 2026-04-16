@@ -7,10 +7,14 @@ import { deleteAccount } from "@/features/account/server/delete-account";
 import { logActivity } from "@/lib/activity/log-activity";
 import { auth } from "@/lib/auth/auth-config";
 import { validatedAuthenticatedAction } from "@/lib/auth/authenticated-action";
+import { enforceActionRateLimit } from "@/lib/rate-limit";
 
 export const deleteAccountAction = validatedAuthenticatedAction(
   deleteAccountSchema,
   async (_, { user }) => {
+    const limited = await enforceActionRateLimit("action");
+    if (limited) return limited;
+
     const requestHeaders = await headers();
 
     await logActivity({

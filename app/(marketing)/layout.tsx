@@ -15,6 +15,7 @@ const footerSections = [
   {
     title: "Legal",
     links: [
+      { href: "/license", label: "License" },
       { href: "/privacy", label: "Privacy" },
       { href: "/terms", label: "Terms" },
     ],

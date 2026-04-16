@@ -5,6 +5,7 @@ import {
   getUserAvatar,
 } from "@/features/account/server/profile-image";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { rateLimit, rateLimitHeaders, resolveIdentity } from "@/lib/rate-limit";
 
 export async function GET(
   _request: Request,
@@ -14,6 +15,14 @@ export async function GET(
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const rl = await rateLimit("public", await resolveIdentity());
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers: rateLimitHeaders(rl) },
+    );
   }
 
   const { userId } = await context.params;

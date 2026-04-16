@@ -6,6 +6,7 @@ import {
   ShieldCheck,
   ShieldOff,
   Trash2,
+  UserCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ type UserRowActionsProps = {
   onBan: (userId: string) => void;
   onUnban: (userId: string) => void;
   onRemove: (userId: string) => void;
+  onImpersonate: (userId: string) => void;
 };
 
 export function UserRowActions({
@@ -33,8 +35,10 @@ export function UserRowActions({
   onBan,
   onUnban,
   onRemove,
+  onImpersonate,
 }: UserRowActionsProps) {
   const isAdmin = isPlatformAdmin(user.role);
+  const canImpersonate = !isAdmin && !user.banned;
 
   return (
     <DropdownMenu>
@@ -45,6 +49,16 @@ export function UserRowActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        {canImpersonate ? (
+          <>
+            <DropdownMenuItem onClick={() => onImpersonate(user.id)}>
+              <UserCheck className="size-4" />
+              Impersonate
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        ) : null}
+
         {isAdmin ? (
           <DropdownMenuItem onClick={() => onSetRole(user.id, "user")}>
             <ShieldOff className="size-4" />

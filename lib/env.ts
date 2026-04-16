@@ -29,6 +29,16 @@ const optionalFeatureGroups = [
     vars: ["RESEND_API_KEY", "EMAIL_FROM"],
     hint: "Email sending (invitations, password reset, verification) is disabled.",
   },
+  {
+    name: "Rate limiting (Upstash Redis)",
+    vars: ["UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"],
+    hint: "Rate limiting is disabled; AI and sensitive endpoints are not throttled.",
+  },
+  {
+    name: "Error tracking (Sentry)",
+    vars: ["NEXT_PUBLIC_SENTRY_DSN"],
+    hint: "Errors will not be reported. Set NEXT_PUBLIC_SENTRY_DSN to enable.",
+  },
 ] as const;
 
 function validateEnv() {

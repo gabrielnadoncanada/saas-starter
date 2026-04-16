@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { routes } from "@/constants/routes";
+import { ImpersonationBanner } from "@/features/admin/components/impersonation-banner";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { identifySentryUser } from "@/lib/sentry";
 
 export default async function AppLayout({
   children,
@@ -14,5 +16,12 @@ export default async function AppLayout({
     redirect(routes.auth.login);
   }
 
-  return children;
+  identifySentryUser(user);
+
+  return (
+    <>
+      <ImpersonationBanner />
+      {children}
+    </>
+  );
 }

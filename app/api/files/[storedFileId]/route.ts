@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
+import { rateLimit, rateLimitHeaders, resolveIdentity } from "@/lib/rate-limit";
 import {
   getStoredFileRecord,
   readStoredFileBody,
@@ -12,6 +13,15 @@ export async function GET(
 ) {
   try {
     const membership = await requireActiveOrganizationMembership();
+
+    const rl = await rateLimit("public", await resolveIdentity());
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: rateLimitHeaders(rl) },
+      );
+    }
+
     const { storedFileId } = await context.params;
     const storedFile = await getStoredFileRecord(
       storedFileId,

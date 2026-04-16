@@ -1,6 +1,6 @@
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
-import { ArrowUpRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 

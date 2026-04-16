@@ -4,6 +4,8 @@ export const routes = {
     pricing: "/pricing",
     privacy: "/privacy",
     terms: "/terms",
+    license: "/license",
+    blog: "/blog",
   },
   auth: {
     login: "/sign-in",

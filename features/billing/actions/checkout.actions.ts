@@ -13,6 +13,7 @@ import {
 } from "@/features/organizations/server/organizations";
 import { buildCallbackURL } from "@/lib/auth/callback-url";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { enforceActionRateLimit } from "@/lib/rate-limit";
 
 export async function startSubscriptionCheckoutAction(formData: FormData) {
   const rawValues = Object.fromEntries(formData);
@@ -46,6 +47,11 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
   await requireActiveOrganizationRole(["owner"], {
     redirectTo: routes.settings.members,
   });
+
+  const limited = await enforceActionRateLimit("checkout");
+  if (limited) {
+    throw new Error(limited.error);
+  }
 
   const { billingInterval, planId } =
     subscriptionCheckoutSchema.parse(rawValues);

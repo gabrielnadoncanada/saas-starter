@@ -24,6 +24,7 @@ import {
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getAiModelInstance } from "@/lib/ai/get-model-instance";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 const MAX_MESSAGES = 100;
 const MAX_MESSAGE_LENGTH = 10_000;
@@ -77,6 +78,17 @@ export async function handleAssistantRequest(req: Request) {
   const user = await getCurrentUser();
   if (!user) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  const rl = await rateLimit("ai", `user:${user.id}`);
+  if (!rl.success) {
+    return Response.json(
+      {
+        error: `Rate limit exceeded. Try again in ${rl.retryAfterSeconds}s.`,
+        code: "RATE_LIMITED",
+      },
+      { status: 429, headers: rateLimitHeaders(rl) },
+    );
   }
 
   let entitlements: Awaited<ReturnType<typeof assertOrganizationAiAccess>>;

@@ -173,49 +173,52 @@ const principles = [
 
 const pricingPlans = [
   {
-    name: "Starter",
-    description: "For solo founders shipping a focused SaaS fast.",
-    price: "$49",
+    name: "Solo",
+    description: "For one developer shipping unlimited projects.",
+    price: "$249",
     period: "one-time",
     href: "/auth/sign-up",
-    ctaLabel: "Buy Starter",
+    ctaLabel: "Buy Solo",
     features: [
-      "Auth and protected dashboard",
-      "Billing foundation",
-      "Settings and account flows",
-      "Marketing landing page",
+      "1 developer seat",
+      "Unlimited end products",
+      "Commercial usage",
+      "Lifetime updates",
+      "Private GitHub access",
     ],
-    badge: "Simple",
+    badge: "Individual",
   },
   {
-    name: "Pro",
+    name: "Team",
     description:
-      "For consultants and small teams building client-facing products.",
-    price: "$149",
+      "For small teams and consultants building client-facing products.",
+    price: "$599",
     period: "one-time",
     href: "/auth/sign-up",
-    ctaLabel: "Buy Pro",
+    ctaLabel: "Buy Team",
     features: [
-      "Everything in Starter",
-      "Teams and workspace support",
-      "Feature gating foundation",
-      "Example product patterns",
+      "Up to 5 developer seats",
+      "Unlimited end products",
+      "Commercial usage",
+      "Lifetime updates",
+      "Priority email support",
     ],
     badge: "Best value",
     highlighted: true,
   },
   {
     name: "Agency",
-    description: "For repeated client delivery and internal acceleration.",
-    price: "$349",
+    description: "For agencies delivering client projects at scale.",
+    price: "$1,299",
     period: "one-time",
     href: "/contact",
     ctaLabel: "Contact Sales",
     features: [
-      "Everything in Pro",
-      "Extended usage rights",
+      "Up to 10 developer seats",
+      "White-label rights",
+      "Unlimited end products",
+      "Lifetime updates",
       "Priority support",
-      "Launch help",
     ],
     badge: "Teams",
   },
@@ -225,37 +228,42 @@ const faqItems = [
   {
     question: "Who is this for?",
     answer:
-      "This starter is built for solo founders, consultants, freelancers, indie hackers, and small technical teams who want a fast path to a launchable SaaS.",
+      "Solo founders, consultants, freelancers, indie hackers, and small technical teams who want a fast path to a launchable SaaS without rebuilding auth, billing, and plan gating from scratch.",
   },
   {
-    question: "Is this just a boilerplate?",
+    question: "What do I get when I buy?",
     answer:
-      "No. It is a product-ready SaaS foundation designed to save meaningful time on the parts builders repeatedly rebuild: auth, billing, dashboard structure, settings, and core product flows.",
-  },
-  {
-    question: "How easy is it to customize?",
-    answer:
-      "The starter is designed to keep common changes straightforward. File ownership is obvious, naming is predictable, and simple work should not require unnecessary layers.",
-  },
-  {
-    question: "Does it include real billing foundations?",
-    answer:
-      "Yes. Billing, plans, and feature gating are treated as real product foundations, not demo-only placeholders.",
-  },
-  {
-    question: "Will I need to learn a custom architecture first?",
-    answer:
-      "No. The goal is to avoid framework-within-a-framework drift and keep the codebase fast to understand.",
+      "Immediate access to a private GitHub repository with the full source code, plus all future updates for the lifetime of the product. You own your copy of the code and can ship it to production the same day.",
   },
   {
     question: "Can I use it for client projects or multiple products?",
     answer:
-      "Yes, depending on your license. Replace this answer with your exact license terms.",
+      "Yes. Every tier includes unlimited end products and full commercial usage. Build for yourself, for your startup, or for clients — no per-project fees, ever.",
   },
   {
-    question: "Why not just use a free starter?",
+    question: "What's the difference between Solo, Team, and Agency?",
     answer:
-      "Because free starters often save less time, feel less credible, and create more modification friction later. This product is built to reduce that cost up front.",
+      "Tiers are based on seats. Solo is for one developer. Team covers up to 5 developers in one company. Agency covers up to 10 developers and adds white-label rights for client delivery at scale. All tiers include unlimited projects.",
+  },
+  {
+    question: "Do I get future updates?",
+    answer:
+      "Yes. Every tier includes lifetime updates. When we ship new features, upgrades, or framework bumps, you get them in your private repo at no extra cost.",
+  },
+  {
+    question: "What's NOT allowed under the license?",
+    answer:
+      "You cannot resell or redistribute the starter codebase itself, sublicense it, or use it to build a competing starter kit or template product. Seats are per developer and cannot be shared. Full terms at /license.",
+  },
+  {
+    question: "Do you offer refunds?",
+    answer:
+      "Because the product is delivered as source code and GitHub access is granted immediately after purchase, all sales are final. If you have questions before buying, reach out first and we'll help you decide.",
+  },
+  {
+    question: "Is this just a boilerplate?",
+    answer:
+      "No. It is a product-ready SaaS foundation with real auth, Stripe billing with enforced plan gating, teams, admin panel, and an AI assistant — the things most starters leave as an exercise for the reader.",
   },
 ];
 

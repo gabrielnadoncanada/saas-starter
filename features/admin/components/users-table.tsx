@@ -12,9 +12,11 @@ import {
 } from "@/components/data-table";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { Input } from "@/components/ui/input";
+import { routes } from "@/constants/routes";
 import {
   banUserAction,
   getAdminUserDetailAction,
+  impersonateUserAction,
   removeUserAction,
   revokeAllUserSessionsAction,
   setUserRoleAction,
@@ -172,8 +174,17 @@ export function AdminUsersTable({
               closeUserDetailAndRefresh();
             },
           ),
+        onImpersonate: (userId) =>
+          openConfirmation(
+            "Impersonate user",
+            "You will be signed in as this user until you stop impersonating. All actions will be logged against your admin account.",
+            async () => {
+              await impersonateUserAction(userId);
+              toast.success("Impersonation started");
+              window.location.assign(routes.app.dashboard);
+            },
+          ),
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUserId],
   );
 

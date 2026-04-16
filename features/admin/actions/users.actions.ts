@@ -2,10 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
+import { routes } from "@/constants/routes";
 import { requireAdminAction } from "@/features/auth/server/require-admin";
 import { auth } from "@/lib/auth/auth-config";
 import type { ListUsersQueryInput } from "@/lib/auth/better-auth-inferred-types";
+import { db } from "@/lib/db/prisma";
 
 import { getAdminUserDetail, listAdminUsers } from "../server/users";
 
@@ -117,4 +120,37 @@ export async function revokeAllUserSessionsAction(userId: string) {
   });
 
   revalidateAdminUsersPage();
+}
+
+export async function impersonateUserAction(userId: string) {
+  const adminId = await requireAdminAction();
+
+  if (userId === adminId) {
+    throw new Error("You cannot impersonate yourself");
+  }
+
+  const target = await db.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  if (!target) {
+    throw new Error("User not found");
+  }
+
+  if (target.role === "admin") {
+    throw new Error("You cannot impersonate another admin");
+  }
+
+  await auth.api.impersonateUser({
+    body: { userId },
+    headers: await headers(),
+  });
+}
+
+export async function stopImpersonatingAction() {
+  await auth.api.stopImpersonating({
+    headers: await headers(),
+  });
+  redirect(routes.admin.users);
 }

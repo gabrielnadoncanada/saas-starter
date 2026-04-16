@@ -1,4 +1,5 @@
 export * from "@/features/marketing/components/announcement-pill";
+export * from "@/features/marketing/components/check-list";
 export * from "@/features/marketing/components/faq-section";
 export * from "@/features/marketing/components/feature-card";
 export * from "@/features/marketing/components/feature-grid";
@@ -12,4 +13,3 @@ export * from "@/features/marketing/components/pricing-section";
 export * from "@/features/marketing/components/section";
 export * from "@/features/marketing/components/section-heading";
 export * from "@/features/marketing/components/split-showcase";
-export * from "@/features/marketing/components/check-list";

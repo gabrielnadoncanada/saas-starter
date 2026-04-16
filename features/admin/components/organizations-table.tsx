@@ -133,7 +133,6 @@ export function AdminOrganizationsTable({
 
   const columns = useMemo(
     () => getAdminOrganizationsColumns({ currentUserId, onDelete: confirmDelete }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUserId],
   );
 

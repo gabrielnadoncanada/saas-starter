@@ -1,0 +1,31 @@
+---
+title: Introducing SaaS Starter
+description: A Next.js boilerplate where billing actually controls your product — auth, Stripe, plan gating, and a polished admin in one repo you own.
+date: 2026-04-01
+author:
+  name: Gabriel Nadon
+tags:
+  - launch
+  - product
+---
+
+Most "SaaS starters" give you auth and a pricing page, then leave the hard part — enforcing plans across your product — as an exercise for the reader. SaaS Starter takes the opposite approach. Plan gating is a first-class concern, wired from Stripe all the way into your server actions and UI.
+
+## What's in the box
+
+- **Auth**: email/password, magic links, OAuth, passkeys, 2FA. All built on better-auth.
+- **Billing**: Stripe subscriptions with webhook-synced plan state, usage tracking, and customer portal.
+- **Plan gating**: server-side capability checks, client-side conditional UI, upgrade prompts.
+- **Multi-tenant organizations**: invitations, roles, per-org billing.
+- **Admin panel**: user management, impersonation, role changes, session revocation.
+- **AI assistant**: streaming chat with tool use, conversation history, per-plan model access.
+
+## Why another starter?
+
+Because the existing ones stop at "logged-in user can see a dashboard." That's the easy part. The hard part is answering: *when a user's subscription lapses, which features stop working, and where in the code do I enforce that?*
+
+SaaS Starter answers that question with a single capability system used across the entire app. Check `user.can("ai.pro")` on the server, render `<Gated capability="ai.pro">` on the client, and forget the rest.
+
+## Get started
+
+Clone the repo, run `pnpm install`, fill in your Stripe keys, and `pnpm dev`. The docs walk you through the first hour. You own the code — fork it, customize it, ship it.

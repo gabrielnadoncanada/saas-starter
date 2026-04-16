@@ -8,6 +8,9 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { Providers } from "@/components/providers/providers";
 
 export const metadata: Metadata = {
+  metadataBase: process.env.BASE_URL
+    ? new URL(process.env.BASE_URL)
+    : undefined,
   title: {
     default: "SaaS Starter — Auth, Billing, and Plan Gating Built In",
     template: "%s | SaaS Starter",
@@ -17,6 +20,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "SaaS Starter",
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 

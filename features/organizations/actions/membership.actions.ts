@@ -28,6 +28,7 @@ import { logActivity } from "@/lib/activity/log-activity";
 import { auth } from "@/lib/auth/auth-config";
 import { validatedAuthenticatedAction } from "@/lib/auth/authenticated-action";
 import { isInvitationPending } from "@/lib/db/enums";
+import { enforceActionRateLimit } from "@/lib/rate-limit";
 import type { FormActionState } from "@/types/form-action-state";
 
 type RefreshableActionState<
@@ -79,6 +80,9 @@ export const inviteOrganizationMemberAction = validatedAuthenticatedAction(
     { user },
   ): Promise<InviteOrganizationMemberActionState> => {
     try {
+      const limited = await enforceActionRateLimit("action");
+      if (limited) return limited;
+
       const membership = await requireActiveOrganizationRole(["owner"]);
       const organizationId = membership.organizationId;
       const entitlements = await getCurrentEntitlements();
@@ -177,6 +181,9 @@ export const resendOrganizationInvitationAction = validatedAuthenticatedAction(
     { user },
   ): Promise<ResendOrganizationInvitationActionState> => {
     try {
+      const limited = await enforceActionRateLimit("action");
+      if (limited) return limited;
+
       const membership = await requireActiveOrganizationRole(["owner"]);
       const organizationId = membership.organizationId;
       const result = await resendOrganizationInvitation({

@@ -18,6 +18,32 @@ Ship the starter without carrying local assumptions into production.
 - Configure email credentials for auth flows
 - Confirm OAuth callback URLs
 - Run migrations against the production database
+- Provision `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting
+- Provision `NEXT_PUBLIC_SENTRY_DSN` (and `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT` for source maps)
+
+## Rate limiting
+
+Rate limiting uses Upstash Redis via `@upstash/ratelimit`. It is applied to:
+
+- the AI assistant route (20 req / min per user)
+- public asset routes like avatars and files (60 req / min per identity)
+- sensitive server actions: checkout, invitations, account deletion
+
+better-auth already rate-limits its own endpoints under `/api/auth/*`, so those are not double-throttled.
+
+When the Upstash env vars are unset the limiter short-circuits to allow the request. This is fine for local dev but will log a warning in production — always set both in production.
+
+## Error tracking (Sentry)
+
+The starter ships with `@sentry/nextjs` pre-wired:
+
+- server, edge, and client init via `sentry.server.config.ts`, `sentry.edge.config.ts`, and `instrumentation-client.ts`
+- `instrumentation.ts` registers the runtime-appropriate config and forwards `onRequestError`
+- `app/global-error.tsx` captures root render errors; the per-section `error.tsx` files report via `Sentry.captureException`
+- `identifySentryUser()` is called from the authenticated `(app)` layout, so breadcrumbs and issues are tied to the signed-in user
+- `next.config.mjs` applies `withSentryConfig` only when both `NEXT_PUBLIC_SENTRY_DSN` and `SENTRY_AUTH_TOKEN` are set, so local builds stay fast
+
+Without `NEXT_PUBLIC_SENTRY_DSN`, Sentry is a no-op — no network calls, no warnings.
 
 ## Environment review
 

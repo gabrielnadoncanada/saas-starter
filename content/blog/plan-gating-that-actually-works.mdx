@@ -1,0 +1,56 @@
+---
+title: Plan gating that actually works
+description: A short walkthrough of the capability system — how plan checks flow from Stripe webhooks into your server actions and React components without duplicating logic.
+date: 2026-04-10
+author:
+  name: Gabriel Nadon
+tags:
+  - billing
+  - architecture
+---
+
+Plan gating is the part of every SaaS that silently rots. You ship a feature, guard it behind a capability, then six months later someone bypasses the check because the new page forgot to call `assertCan()`. SaaS Starter treats this as a type-safe concern, not a convention.
+
+## One source of truth
+
+Capabilities are declared once in `config/plans.ts`:
+
+```ts
+export const plans = {
+  free: { ai: { messagesPerDay: 20 } },
+  pro:  { ai: { messagesPerDay: 1000 } },
+};
+```
+
+Stripe is the authority on which plan a user is on. The webhook handler syncs plan state into Prisma, and `getCurrentUser()` exposes it as a typed capability map.
+
+## Server side
+
+In server actions or route handlers, ask the user object:
+
+```ts
+const user = await getCurrentUser();
+if (!user.can("ai.send")) {
+  throw new ForbiddenError("Upgrade to Pro");
+}
+```
+
+The `can()` method is generated from the plan config, so typos are compile errors.
+
+## Client side
+
+React components use the same capability names:
+
+```tsx
+<Gated capability="ai.send" fallback={<UpgradePrompt />}>
+  <AIInput />
+</Gated>
+```
+
+The `<Gated>` component reads from session context — no new fetches.
+
+## Usage limits
+
+For metered features (AI messages, tasks, seats), the `usage` table tracks consumption per billing period. A single `enforceUsageLimit()` helper checks the limit, increments the counter, and returns an upgrade URL when the quota is hit.
+
+That's it. No per-route middleware, no scattered `if (plan === "pro")` checks, no desync between what the UI shows and what the server enforces.

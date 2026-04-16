@@ -22,6 +22,10 @@ vi.mock("@/lib/auth/auth-config", () => ({
   },
 }));
 
+vi.mock("@/lib/rate-limit", () => ({
+  enforceActionRateLimit: vi.fn().mockResolvedValue(null),
+}));
+
 vi.mock("@/lib/auth/authenticated-action", () => ({
   validatedAuthenticatedAction: (_schema: unknown, action: unknown) => {
     const fn = action as (

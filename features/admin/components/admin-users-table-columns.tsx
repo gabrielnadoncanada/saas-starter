@@ -24,6 +24,7 @@ export type AdminUsersRowHandlers = {
   onBan: (userId: string) => void;
   onUnban: (userId: string) => void;
   onRemove: (userId: string) => void;
+  onImpersonate: (userId: string) => void;
 };
 
 function UserCell({
@@ -156,6 +157,7 @@ export function getAdminUsersColumns(
               onBan={handlers.onBan}
               onUnban={handlers.onUnban}
               onRemove={handlers.onRemove}
+              onImpersonate={handlers.onImpersonate}
             />
           </div>
         ) : null,
