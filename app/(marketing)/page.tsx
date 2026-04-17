@@ -437,60 +437,55 @@ export default function MarketingPage() {
                 height: 1000,
               },
             },
-            {
-              id: "team-structure",
-              title: "Built for real SaaS usage",
-              description:
-                "Members, roles, and invitations — not just solo demo flows.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/team.png",
-                alt: "Built for real SaaS usage, not just solo demo flows",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "launch-ready",
-              title: "Launch-ready settings",
-              description:
-                "Account, security, and workspace surfaces that feel complete.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/settings.png",
-                alt: "Launch-ready settings that make the product feel complete",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "core-app",
-              title: "A real app foundation",
-              description:
-                "Core product surfaces, not just infrastructure screens.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/tasks.png",
-                alt: "A real app foundation, not just infrastructure screens",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "customization",
-              title: "Built to be modified",
-              description:
-                "Documented setup and customization paths — not a codebase to decode.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/docs.png",
-                alt: "Built to be modified quickly, not decoded slowly",
-                width: 1600,
-                height: 1000,
-              },
-            },
           ]}
         />
+        <div className="mt-px">
+          <SplitShowcase
+            reverse
+            defaultItemId="team-structure"
+            items={[
+              {
+                id: "team-structure",
+                title: "Built for real SaaS usage",
+                description:
+                  "Members, roles, and invitations — not just solo demo flows.",
+                media: {
+                  type: "image",
+                  src: "/marketing/screenshots/team.png",
+                  alt: "Built for real SaaS usage, not just solo demo flows",
+                  width: 1600,
+                  height: 1000,
+                },
+              },
+              {
+                id: "launch-ready",
+                title: "Launch-ready settings",
+                description:
+                  "Account, security, and workspace surfaces that feel complete.",
+                media: {
+                  type: "image",
+                  src: "/marketing/screenshots/settings.png",
+                  alt: "Launch-ready settings that make the product feel complete",
+                  width: 1600,
+                  height: 1000,
+                },
+              },
+              {
+                id: "core-app",
+                title: "A real app foundation",
+                description:
+                  "Core product surfaces, not just infrastructure screens.",
+                media: {
+                  type: "image",
+                  src: "/marketing/screenshots/tasks.png",
+                  alt: "A real app foundation, not just infrastructure screens",
+                  width: 1600,
+                  height: 1000,
+                },
+              },
+            ]}
+          />
+        </div>
       </Section>
 
       <Section id="features">
