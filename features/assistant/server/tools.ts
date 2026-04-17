@@ -141,11 +141,10 @@ export const assistantTools = {
     }),
     execute: async (input): Promise<GetTasksToolResult> => {
       try {
-        const membership = await requireActiveOrganizationMembership();
-        const organizationId = membership.organizationId;
+        await requireActiveOrganizationMembership();
         const limit = input.limit ?? 20;
 
-        const where: Record<string, unknown> = { organizationId };
+        const where: Record<string, unknown> = {};
 
         if (input.q) {
           where.OR = [
@@ -209,11 +208,10 @@ export const assistantTools = {
     }),
     execute: async (input): Promise<UpdateTaskToolResult> => {
       try {
-        const membership = await requireActiveOrganizationMembership();
-        const organizationId = membership.organizationId;
+        await requireActiveOrganizationMembership();
 
         const task = await db.task.findFirst({
-          where: { code: input.code, organizationId },
+          where: { code: input.code },
         });
 
         if (!task) {

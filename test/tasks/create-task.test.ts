@@ -5,8 +5,6 @@ import {
   UpgradeRequiredError,
 } from "@/features/billing/entitlements";
 
-vi.mock("server-only", () => ({}));
-
 vi.mock("@/lib/db/prisma", () => ({
   db: {
     task: {

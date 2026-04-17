@@ -10,11 +10,9 @@ import { db } from "@/lib/db/prisma";
 const DEFAULT_LIMIT = 50;
 
 export async function listOrganizationActivity(
-  organizationId: string,
   limit: number = DEFAULT_LIMIT,
 ): Promise<ActivityFeedItem[]> {
   const events = await db.activityEvent.findMany({
-    where: { organizationId },
     orderBy: { createdAt: "desc" },
     take: limit,
     include: {

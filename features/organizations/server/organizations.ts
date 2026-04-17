@@ -21,6 +21,7 @@ import {
   type OrgRole,
   parseOrgRoles,
 } from "@/lib/db/enums";
+import { setTenantContext } from "@/lib/db/tenant-scope";
 
 // --- Active membership (session / guards) ---
 
@@ -91,6 +92,8 @@ export async function getActiveOrganizationMembership(): Promise<ActiveOrganizat
     return null;
   }
 
+  setTenantContext(member.organizationId);
+
   return {
     organizationId: member.organizationId,
     roles,
@@ -107,6 +110,11 @@ export async function requireActiveOrganizationMembership() {
       "User is not part of an organization",
     );
   }
+
+  // Propagates the tenant id to the Prisma tenant-scope middleware so any
+  // subsequent query on org-scoped models (Task, AiConversation, UsageCounter,
+  // ActivityEvent) is fail-closed against cross-tenant leaks.
+  setTenantContext(membership.organizationId);
 
   return membership;
 }
@@ -206,6 +214,8 @@ export const getCurrentOrganization = cache(
     if (!orgId) {
       return null;
     }
+
+    setTenantContext(orgId);
 
     const reqHeaders = await headers();
     const [organization, subscription] = await Promise.all([

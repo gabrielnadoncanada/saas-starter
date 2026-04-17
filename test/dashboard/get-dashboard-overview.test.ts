@@ -1,7 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => ({}));
-
 vi.mock("@/features/organizations/server/organizations", () => ({
   getCurrentOrganization: vi.fn(),
 }));
@@ -94,16 +92,11 @@ describe("getDashboardOverview", () => {
   it("uses count plus scoped recent-task queries instead of loading every task", async () => {
     const overview = await getDashboardOverview();
 
-    expect(db.task.count).toHaveBeenCalledWith({
-      where: { organizationId: "org_123" },
-    });
-    expect(db.aiConversation.count).toHaveBeenCalledWith({
-      where: { organizationId: "org_123" },
-    });
+    expect(db.task.count).toHaveBeenCalledWith();
+    expect(db.aiConversation.count).toHaveBeenCalledWith();
     expect(db.task.findMany).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
-        where: { organizationId: "org_123" },
         orderBy: { createdAt: "desc" },
         take: 5,
       }),
@@ -112,7 +105,6 @@ describe("getDashboardOverview", () => {
       2,
       expect.objectContaining({
         where: expect.objectContaining({
-          organizationId: "org_123",
           createdAt: expect.any(Object),
         }),
         select: { createdAt: true },

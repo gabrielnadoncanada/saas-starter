@@ -15,7 +15,7 @@ export default async function ActivityPage() {
     return null;
   }
 
-  const events = await listOrganizationActivity(context.organization.id);
+  const events = await listOrganizationActivity();
 
   return (
     <Page>

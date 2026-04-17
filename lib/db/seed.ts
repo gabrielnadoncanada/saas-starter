@@ -2,6 +2,8 @@ import "dotenv/config";
 
 import { execSync } from "node:child_process";
 
+import { runAsAdmin } from "./tenant-scope";
+
 function ensureFreshPrismaClient() {
   execSync("pnpm exec prisma generate", { stdio: "inherit" });
 }
@@ -16,9 +18,11 @@ async function seed() {
       import("./seeds/stripe-products-seed"),
     ]);
 
-  await seedAdminWorkspace();
-  await seedDemoWorkspace();
-  await seedStripeProducts();
+  await runAsAdmin(async () => {
+    await seedAdminWorkspace();
+    await seedDemoWorkspace();
+    await seedStripeProducts();
+  });
 }
 
 seed()

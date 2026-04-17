@@ -23,12 +23,9 @@ function getTaskOrderBy(
 }
 
 export async function getTasksPage(params: TaskTableSearchParams) {
-  const membership = await requireActiveOrganizationMembership();
-  const organizationId = membership.organizationId;
+  await requireActiveOrganizationMembership();
 
-  const where: Prisma.TaskWhereInput = {
-    organizationId,
-  };
+  const where: Prisma.TaskWhereInput = {};
 
   if (params.q) {
     where.OR = [

@@ -43,7 +43,6 @@ export async function consumeMonthlyUsage(params: {
 
   const result = await usageDb.usageCounter.updateMany({
     where: {
-      organizationId: params.organizationId,
       limitKey: params.limitKey,
       periodStart,
       count: {

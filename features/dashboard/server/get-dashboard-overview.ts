@@ -102,21 +102,20 @@ export async function getDashboardOverview() {
     feedMembers,
   ] = organizationId
     ? await Promise.all([
-        db.task.count({ where: { organizationId } }),
+        db.task.count(),
         db.task.findMany({
-          where: { organizationId },
           orderBy: { createdAt: "desc" },
           take: 5,
         }),
         getMonthlyUsage(organizationId, "tasksPerMonth"),
         getMonthlyUsage(organizationId, "aiCredits"),
-        db.aiConversation.count({ where: { organizationId } }),
+        db.aiConversation.count(),
         db.task.findMany({
-          where: { organizationId, createdAt: { gte: since } },
+          where: { createdAt: { gte: since } },
           select: { createdAt: true },
         }),
         db.aiConversation.findMany({
-          where: { organizationId, createdAt: { gte: since } },
+          where: { createdAt: { gte: since } },
           select: { createdAt: true },
         }),
         db.member.findMany({
@@ -124,13 +123,13 @@ export async function getDashboardOverview() {
           select: { createdAt: true },
         }),
         db.task.findMany({
-          where: { organizationId, createdAt: { gte: since } },
+          where: { createdAt: { gte: since } },
           orderBy: { createdAt: "desc" },
           take: ACTIVITY_FEED_LIMIT,
           select: { id: true, code: true, title: true, status: true, createdAt: true },
         }),
         db.aiConversation.findMany({
-          where: { organizationId, createdAt: { gte: since } },
+          where: { createdAt: { gte: since } },
           orderBy: { createdAt: "desc" },
           take: ACTIVITY_FEED_LIMIT,
           select: { id: true, title: true, surface: true, createdAt: true },

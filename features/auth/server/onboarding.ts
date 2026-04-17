@@ -2,6 +2,8 @@ import { headers } from "next/headers";
 
 import { accountFlags } from "@/config/account.config";
 import { auth } from "@/lib/auth/auth-config";
+import { db } from "@/lib/db/prisma";
+import { runAsAdmin } from "@/lib/db/tenant-scope";
 
 export async function ensureUserWorkspace(email: string) {
   const reqHeaders = await headers();
@@ -17,9 +19,8 @@ export async function ensureUserWorkspace(email: string) {
     return existingOrganizations[0].id;
   }
 
-  const orgName = accountFlags.enableTeamFeatures
-    ? `${email}'s Team`
-    : `Personal`;
+  const isPersonal = !accountFlags.enableTeamFeatures;
+  const orgName = isPersonal ? `Personal` : `${email}'s Team`;
 
   const organization = await auth.api.createOrganization({
     headers: reqHeaders,
@@ -28,6 +29,13 @@ export async function ensureUserWorkspace(email: string) {
       slug: crypto.randomUUID(),
     },
   });
+
+  await runAsAdmin(() =>
+    db.organization.update({
+      where: { id: organization.id },
+      data: { type: isPersonal ? "PERSONAL" : "TEAM" },
+    }),
+  );
 
   await auth.api.setActiveOrganization({
     headers: reqHeaders,

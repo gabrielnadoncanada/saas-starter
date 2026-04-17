@@ -17,6 +17,8 @@ import { db } from "@/lib/db/prisma";
 
 const MAX_TASK_CODE_ATTEMPTS = 10;
 
+type TxClient = Parameters<Parameters<typeof db.$transaction>[0]>[0];
+
 function isUniqueConstraintError(error: unknown) {
   return (
     error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -24,17 +26,8 @@ function isUniqueConstraintError(error: unknown) {
   );
 }
 
-async function getOrganizationId() {
-  const membership = await requireActiveOrganizationMembership();
-  return membership.organizationId;
-}
-
-async function generateNextTaskCode(
-  tx: Prisma.TransactionClient,
-  organizationId: string,
-): Promise<string> {
+async function generateNextTaskCode(tx: TxClient): Promise<string> {
   const latestTask = await tx.task.findFirst({
-    where: { organizationId },
     orderBy: { id: "desc" },
     select: { code: true },
   });
@@ -61,7 +54,7 @@ export async function createTask(input: CreateTaskValues): Promise<Task> {
     });
 
     for (let attempt = 0; attempt < MAX_TASK_CODE_ATTEMPTS; attempt += 1) {
-      const code = await generateNextTaskCode(tx, entitlements.organizationId);
+      const code = await generateNextTaskCode(tx);
 
       try {
         return await tx.task.create({
@@ -87,22 +80,18 @@ export async function createTask(input: CreateTaskValues): Promise<Task> {
 }
 
 export async function listTasks() {
-  const organizationId = await getOrganizationId();
+  await requireActiveOrganizationMembership();
 
   return db.task.findMany({
-    where: { organizationId },
     orderBy: { createdAt: "desc" },
   });
 }
 
 export async function updateTask(input: UpdateTaskValues) {
-  const organizationId = await getOrganizationId();
+  await requireActiveOrganizationMembership();
 
   const { count } = await db.task.updateMany({
-    where: {
-      id: input.taskId,
-      organizationId,
-    },
+    where: { id: input.taskId },
     data: {
       title: input.title,
       description: input.description ?? null,
@@ -121,13 +110,10 @@ export async function updateTaskStatus(input: {
   taskId: number;
   status: TaskStatus;
 }) {
-  const organizationId = await getOrganizationId();
+  await requireActiveOrganizationMembership();
 
   const { count } = await db.task.updateMany({
-    where: {
-      id: input.taskId,
-      organizationId,
-    },
+    where: { id: input.taskId },
     data: {
       status: input.status,
     },
@@ -139,13 +125,10 @@ export async function updateTaskStatus(input: {
 }
 
 export async function deleteTask(taskId: number) {
-  const organizationId = await getOrganizationId();
+  await requireActiveOrganizationMembership();
 
   const { count } = await db.task.deleteMany({
-    where: {
-      id: taskId,
-      organizationId,
-    },
+    where: { id: taskId },
   });
 
   if (count === 0) {
@@ -154,18 +137,11 @@ export async function deleteTask(taskId: number) {
 }
 
 export async function bulkUpdateTaskStatus(input: BulkUpdateTaskStatusValues) {
-  const organizationId = await getOrganizationId();
+  await requireActiveOrganizationMembership();
 
   const { count } = await db.task.updateMany({
-    where: {
-      id: {
-        in: input.taskIds,
-      },
-      organizationId,
-    },
-    data: {
-      status: input.status,
-    },
+    where: { id: { in: input.taskIds } },
+    data: { status: input.status },
   });
 
   if (count === 0) {
@@ -178,15 +154,10 @@ export async function bulkUpdateTaskStatus(input: BulkUpdateTaskStatusValues) {
 export async function bulkDeleteTasks(
   taskIds: BulkDeleteTasksValues["taskIds"],
 ) {
-  const organizationId = await getOrganizationId();
+  await requireActiveOrganizationMembership();
 
   const { count } = await db.task.deleteMany({
-    where: {
-      id: {
-        in: taskIds,
-      },
-      organizationId,
-    },
+    where: { id: { in: taskIds } },
   });
 
   if (count === 0) {

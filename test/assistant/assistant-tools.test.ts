@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CreateTaskToolResult } from "@/features/assistant/types";
 
-vi.mock("server-only", () => ({}));
-
 vi.mock("ai", () => ({
   tool: <T>(definition: T) => definition,
 }));

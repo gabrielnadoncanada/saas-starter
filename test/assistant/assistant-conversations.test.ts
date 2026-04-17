@@ -1,7 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => ({}));
-
 vi.mock("@/lib/auth/get-current-user", () => ({
   getCurrentUser: vi.fn(),
 }));
@@ -114,7 +112,6 @@ describe("ai conversations", () => {
     expect(db.aiConversation.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          organizationId: "19",
           createdByUserId: "7",
           surface: assistantConversationSurface,
         },
@@ -140,7 +137,6 @@ describe("ai conversations", () => {
     expect(db.aiConversation.deleteMany).toHaveBeenCalledWith({
       where: {
         id: "conv_1",
-        organizationId: "19",
         createdByUserId: "7",
         surface: assistantConversationSurface,
       },

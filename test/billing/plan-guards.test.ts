@@ -15,8 +15,6 @@ import {
 } from "@/features/billing/entitlements";
 import { getPlan, isPlanId } from "@/features/billing/plans";
 
-vi.mock("server-only", () => ({}));
-
 function createEntitlements(planId: PlanId): OrganizationEntitlements {
   const plan = getPlan(planId);
 

@@ -11,25 +11,32 @@ export type AuthenticatedActionContext = {
   user: CurrentUser;
 };
 
-function buildValidationErrorState<Schema extends z.ZodTypeAny>(
+type ValidateResult<Schema extends z.ZodTypeAny> =
+  | { success: true; data: z.infer<Schema> }
+  | { success: false; error: FormActionState<z.infer<Schema>> };
+
+function validateFormData<Schema extends z.ZodTypeAny>(
   schema: Schema,
   formData: FormData,
-): FormActionState<z.infer<Schema>> | null {
+): ValidateResult<Schema> {
   const rawValues = Object.fromEntries(formData) as Record<string, unknown>;
   const parsed = schema.safeParse(rawValues);
 
   if (parsed.success) {
-    return null;
+    return { success: true, data: parsed.data };
   }
 
   const flat = parsed.error.flatten();
 
   return {
-    error: "Please fix the highlighted fields.",
-    values: rawValues as Partial<z.infer<Schema>>,
-    fieldErrors: flat.fieldErrors as FormActionState<
-      z.infer<Schema>
-    >["fieldErrors"],
+    success: false,
+    error: {
+      error: "Please fix the highlighted fields.",
+      values: rawValues as Partial<z.infer<Schema>>,
+      fieldErrors: flat.fieldErrors as FormActionState<
+        z.infer<Schema>
+      >["fieldErrors"],
+    },
   };
 }
 
@@ -47,14 +54,11 @@ export function validatedPublicAction<
     _prevState: FormActionState<z.infer<Schema>>,
     formData: FormData,
   ): Promise<State> => {
-    const validationError = buildValidationErrorState(schema, formData);
-
-    if (validationError) {
-      return validationError as State;
+    const result = validateFormData(schema, formData);
+    if (!result.success) {
+      return result.error as State;
     }
-
-    const data = schema.parse(Object.fromEntries(formData));
-    return handler(data, { formData });
+    return handler(result.data, { formData });
   };
 }
 
@@ -77,18 +81,14 @@ export function validatedAuthenticatedAction<
     formData: FormData,
   ): Promise<State> => {
     const user = await getCurrentUser();
-
     if (!user) {
       return { error: "You are not signed in." } as State;
     }
 
-    const validationError = buildValidationErrorState(schema, formData);
-
-    if (validationError) {
-      return validationError as State;
+    const result = validateFormData(schema, formData);
+    if (!result.success) {
+      return result.error as State;
     }
-
-    const data = schema.parse(Object.fromEntries(formData));
-    return handler(data, { formData, user });
+    return handler(result.data, { formData, user });
   };
 }

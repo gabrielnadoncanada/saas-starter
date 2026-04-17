@@ -128,108 +128,94 @@ export async function resolveAssistantConversationScope(): Promise<AssistantConv
   return { kind: "ok", organizationId: organization.id, userId: user.id };
 }
 
-function getConversationWhere(
-  scope: Extract<AssistantConversationScope, { kind: "ok" }>,
-  conversationId?: string,
-) {
+type OkScope = Extract<AssistantConversationScope, { kind: "ok" }>;
+
+async function withAssistantScope<T>(
+  fn: (scope: OkScope) => Promise<T>,
+): Promise<T | null> {
+  const scope = await resolveAssistantConversationScope();
+  return scope.kind === "ok" ? fn(scope) : null;
+}
+
+function getConversationWhere(scope: OkScope, conversationId?: string) {
   return {
     ...(conversationId ? { id: conversationId } : {}),
-    organizationId: scope.organizationId,
     createdByUserId: scope.userId,
     surface: assistantConversationSurface,
   };
 }
 
 export async function listAssistantConversations() {
-  const scope = await resolveAssistantConversationScope();
-  if (scope.kind !== "ok") {
-    return [];
-  }
-
-  const records = await db.aiConversation.findMany({
-    where: getConversationWhere(scope),
-    orderBy: { lastMessageAt: "desc" },
-    select: assistantConversationSelect,
+  const result = await withAssistantScope(async (scope) => {
+    const records = await db.aiConversation.findMany({
+      where: getConversationWhere(scope),
+      orderBy: { lastMessageAt: "desc" },
+      select: assistantConversationSelect,
+    });
+    return Promise.all(records.map(toConversationListItem));
   });
-
-  return Promise.all(records.map(toConversationListItem));
+  return result ?? [];
 }
 
-export async function getAssistantConversation(conversationId: string) {
-  const scope = await resolveAssistantConversationScope();
-  if (scope.kind !== "ok") {
-    return null;
-  }
-
-  const record = await db.aiConversation.findFirst({
-    where: getConversationWhere(scope, conversationId),
-    select: assistantConversationSelect,
+export function getAssistantConversation(conversationId: string) {
+  return withAssistantScope(async (scope) => {
+    const record = await db.aiConversation.findFirst({
+      where: getConversationWhere(scope, conversationId),
+      select: assistantConversationSelect,
+    });
+    return record ? toConversation(record) : null;
   });
-
-  return record ? toConversation(record) : null;
 }
 
-export async function createAssistantConversation(messages: UIMessage[]) {
-  const scope = await resolveAssistantConversationScope();
-  if (scope.kind !== "ok") {
-    return null;
-  }
-
-  const record = await db.aiConversation.create({
-    data: {
-      organizationId: scope.organizationId,
-      createdByUserId: scope.userId,
-      surface: assistantConversationSurface,
-      title: getConversationTitle(messages),
-      messagesJson: serializeMessages(messages),
-      lastMessageAt: new Date(),
-    },
-    select: assistantConversationSelect,
+export function createAssistantConversation(messages: UIMessage[]) {
+  return withAssistantScope(async (scope) => {
+    const record = await db.aiConversation.create({
+      data: {
+        organizationId: scope.organizationId,
+        createdByUserId: scope.userId,
+        surface: assistantConversationSurface,
+        title: getConversationTitle(messages),
+        messagesJson: serializeMessages(messages),
+        lastMessageAt: new Date(),
+      },
+      select: assistantConversationSelect,
+    });
+    return toConversation(record);
   });
-
-  return toConversation(record);
 }
 
-export async function replaceAssistantConversation(
+export function replaceAssistantConversation(
   conversationId: string,
   messages: UIMessage[],
 ) {
-  const scope = await resolveAssistantConversationScope();
-  if (scope.kind !== "ok") {
-    return null;
-  }
+  return withAssistantScope(async (scope) => {
+    const existing = await db.aiConversation.findFirst({
+      where: getConversationWhere(scope, conversationId),
+      select: { id: true },
+    });
+    if (!existing) {
+      return null;
+    }
 
-  const existing = await db.aiConversation.findFirst({
-    where: getConversationWhere(scope, conversationId),
-    select: { id: true },
+    const record = await db.aiConversation.update({
+      where: { id: conversationId },
+      data: {
+        title: getConversationTitle(messages),
+        messagesJson: serializeMessages(messages),
+        lastMessageAt: new Date(),
+      },
+      select: assistantConversationSelect,
+    });
+    return toConversation(record);
   });
-
-  if (!existing) {
-    return null;
-  }
-
-  const record = await db.aiConversation.update({
-    where: { id: conversationId },
-    data: {
-      title: getConversationTitle(messages),
-      messagesJson: serializeMessages(messages),
-      lastMessageAt: new Date(),
-    },
-    select: assistantConversationSelect,
-  });
-
-  return toConversation(record);
 }
 
 export async function deleteAssistantConversation(conversationId: string) {
-  const scope = await resolveAssistantConversationScope();
-  if (scope.kind !== "ok") {
-    return false;
-  }
-
-  const result = await db.aiConversation.deleteMany({
-    where: getConversationWhere(scope, conversationId),
+  const result = await withAssistantScope(async (scope) => {
+    const { count } = await db.aiConversation.deleteMany({
+      where: getConversationWhere(scope, conversationId),
+    });
+    return count > 0;
   });
-
-  return result.count > 0;
+  return result ?? false;
 }

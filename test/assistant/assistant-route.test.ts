@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { UpgradeRequiredError } from "@/features/billing/entitlements";
 
-vi.mock("server-only", () => ({}));
-
 vi.mock("ai", () => ({
   convertToModelMessages: vi.fn(async (messages) => messages),
   isTextUIPart: vi.fn(

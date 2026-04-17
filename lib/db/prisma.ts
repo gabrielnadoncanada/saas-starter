@@ -1,6 +1,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
+import { tenantScopeExtension } from "./tenant-scope-extension";
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
@@ -9,7 +11,7 @@ const adapter = new PrismaPg({
   connectionString: process.env.POSTGRES_URL ?? process.env.DATABASE_URL,
 });
 
-export const db =
+const baseClient =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
@@ -17,5 +19,7 @@ export const db =
   });
 
 if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = db;
+  globalForPrisma.prisma = baseClient;
 }
+
+export const db = baseClient.$extends(tenantScopeExtension);

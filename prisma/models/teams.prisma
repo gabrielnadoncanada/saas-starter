@@ -1,10 +1,16 @@
+enum OrganizationType {
+  PERSONAL
+  TEAM
+}
+
 model Organization {
-  id        String   @id
-  name      String   @db.VarChar(100)
-  slug      String?  @unique
+  id        String           @id
+  name      String           @db.VarChar(100)
+  slug      String?          @unique
   logo      String?
-  metadata  String?  @db.Text
-  createdAt DateTime @default(now())
+  metadata  String?          @db.Text
+  type      OrganizationType @default(TEAM)
+  createdAt DateTime         @default(now())
 
   // Billing fields
   stripeCustomerId String? @unique
