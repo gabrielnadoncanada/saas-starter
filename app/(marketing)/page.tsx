@@ -441,7 +441,6 @@ export default function MarketingPage() {
         />
         <div className="mt-px">
           <SplitShowcase
-            reverse
             defaultItemId="team-structure"
             items={[
               {

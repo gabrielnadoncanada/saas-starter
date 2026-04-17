@@ -67,8 +67,10 @@ function TabbedSplitShowcase({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-px border border-border bg-border md:grid-cols-[minmax(280px,1fr)_2fr]",
-        reverse && "md:[&>*:first-child]:order-2",
+        "grid grid-cols-1 gap-px border border-border bg-border",
+        reverse
+          ? "md:grid-cols-[2fr_minmax(280px,1fr)] md:[&>*:first-child]:order-2"
+          : "md:grid-cols-[minmax(280px,1fr)_2fr]",
       )}
     >
       <div className="flex flex-col bg-background">

@@ -57,10 +57,7 @@ export function Hero({
               {stack.map((item, i) => (
                 <li key={item} className="flex items-center gap-5">
                   {i > 0 ? (
-                    <span
-                      aria-hidden
-                      className="size-1 bg-border"
-                    />
+                    <span aria-hidden className="size-1 bg-border" />
                   ) : null}
                   <span>{item}</span>
                 </li>
@@ -81,9 +78,7 @@ export function Hero({
               <span className="size-2.5 rounded-full bg-destructive/70" />
               <span className="size-2.5 rounded-full bg-muted-foreground/40" />
               <span className="size-2.5 rounded-full bg-muted-foreground/40" />
-              <span className="ml-3 label-mono">
-                app.yourdomain.com
-              </span>
+              <span className="ml-3 label-mono">app.yourdomain.com</span>
             </div>
             <Image
               priority
@@ -96,7 +91,7 @@ export function Hero({
           </div>
           <div
             aria-hidden
-            className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background to-transparent"
+            className="absolute inset-x-0 bottom-0 h-48 dark:bg-gradient-to-t dark:from-background dark:to-transparent"
           />
         </div>
       ) : null}
