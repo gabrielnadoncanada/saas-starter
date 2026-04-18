@@ -3,8 +3,6 @@ import "server-only";
 import { tool } from "ai";
 import { z } from "zod";
 
-import { retrieveRelevantChunks } from "@/features/knowledge/server/retrieve";
-import { createLeadFromConversation } from "@/features/leads/server/lead-mutations";
 import { setPublicConversationStatus } from "@/features/agents/server/public-conversations";
 import type {
   AgentToolName,
@@ -14,6 +12,8 @@ import type {
   RequestHumanToolResult,
   ScheduleCallbackToolResult,
 } from "@/features/agents/types";
+import { retrieveRelevantChunks } from "@/features/knowledge/server/retrieve";
+import { createLeadFromConversation } from "@/features/leads/server/lead-mutations";
 
 export type PublicChatToolContext = {
   organizationId: string;

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ALL_AGENT_TOOL_NAMES, type AgentToolName } from "@/features/agents/types";
+import { type AgentToolName,ALL_AGENT_TOOL_NAMES } from "@/features/agents/types";
 
 const slugSchema = z
   .string()

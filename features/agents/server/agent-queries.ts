@@ -27,6 +27,7 @@ export async function getAgentById(agentId: string) {
     where: { id: agentId },
     include: {
       versions: { orderBy: { version: "desc" } },
+      organization: { select: { slug: true } },
       _count: { select: { publicConversations: true, knowledgeDocuments: true } },
     },
   });

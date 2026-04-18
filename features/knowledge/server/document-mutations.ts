@@ -1,12 +1,12 @@
 import "server-only";
 
 import { requireActiveOrganizationMembership } from "@/features/organizations/server/organizations";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { db } from "@/lib/db/prisma";
 import {
   deleteStoredFile,
   saveStoredFile,
 } from "@/lib/storage/storage-service";
-import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export async function createKnowledgeDocument(params: {
   agentId: string | null;

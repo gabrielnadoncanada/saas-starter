@@ -1,5 +1,7 @@
 import "server-only";
 
+import { google } from "@ai-sdk/google";
+import { groq } from "@ai-sdk/groq";
 import {
   convertToModelMessages,
   safeValidateUIMessages,
@@ -8,9 +10,10 @@ import {
   type UIMessage,
 } from "ai";
 
+import { publicChatRequestSchema } from "@/features/agents/schemas/public-chat.schema";
 import {
-  resolvePublicAgent,
   type ResolvedAgent,
+  resolvePublicAgent,
 } from "@/features/agents/server/agents-registry";
 import { corsHeaders, resolveAllowedOrigin } from "@/features/agents/server/cors";
 import {
@@ -25,10 +28,7 @@ import {
   readVisitorIdFromCookieHeader,
   VISITOR_COOKIE_NAME,
 } from "@/features/agents/server/visitor";
-import { publicChatRequestSchema } from "@/features/agents/schemas/public-chat.schema";
 import { retrieveSimilarCorrections } from "@/features/knowledge/server/retrieve";
-import { google } from "@ai-sdk/google";
-import { groq } from "@ai-sdk/groq";
 import { hasOpenAi } from "@/lib/ai/providers/openai";
 import { getClientIp, rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
