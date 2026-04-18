@@ -9,6 +9,13 @@ export const TENANT_SCOPED_MODELS = [
   "AiConversation",
   "UsageCounter",
   "ActivityEvent",
+  "Agent",
+  "PublicConversation",
+  "Lead",
+  "Correction",
+  "KnowledgeDocument",
+  "EvalCase",
+  "EvalRun",
 ] as const;
 
 export type ScopedModel = (typeof TENANT_SCOPED_MODELS)[number];

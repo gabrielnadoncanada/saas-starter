@@ -5,6 +5,10 @@ export {
   TaskLabel,
   TaskPriority,
   TaskStatus,
+  PublicConversationStatus,
+  LeadStatus,
+  KnowledgeDocumentStatus,
+  EvalRunStatus,
 } from "@prisma/client";
 
 export const ORG_ROLES = ["owner", "admin", "member"] as const;
