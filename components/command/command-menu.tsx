@@ -6,7 +6,10 @@ import { useTheme } from "next-themes";
 import React from "react";
 
 import { useSearch } from "@/components/command/search-provider";
-import type { SidebarNavGroup } from "@/components/navigation/sidebar-types";
+import type {
+  SidebarData,
+  SidebarNavGroup,
+} from "@/components/navigation/sidebar-types";
 import {
   CommandDialog,
   CommandEmpty,
@@ -17,9 +20,12 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
 
-export function CommandMenu() {
+type CommandMenuProps = {
+  sidebarData: SidebarData;
+};
+
+export function CommandMenu({ sidebarData }: CommandMenuProps) {
   const router = useRouter();
   const { setTheme } = useTheme();
   const { open, setOpen } = useSearch();
@@ -38,7 +44,7 @@ export function CommandMenu() {
       <CommandList>
         <ScrollArea type="hover" className="h-72 pe-1">
           <CommandEmpty>No results found.</CommandEmpty>
-          {dashboardSidebarData.navGroups.map((group: SidebarNavGroup) => (
+          {sidebarData.navGroups.map((group: SidebarNavGroup) => (
             <CommandGroup key={group.title} heading={group.title}>
               {group.items.map((navItem, i) => {
                 if (navItem.url)

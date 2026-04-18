@@ -23,8 +23,19 @@ import {
 } from "@/components/ui/sidebar";
 import { routes } from "@/constants/routes";
 import { AssistantSidebarNav } from "@/features/assistant/components/assistant-sidebar-nav";
+import { useAssistantConversations } from "@/features/assistant/hooks/use-assistant-conversations";
 
 export function AssistantSidebar() {
+  const pathname = usePathname();
+  const {
+    conversations,
+    activeConversationId,
+    deletingConversationId,
+    deleteConversation,
+  } = useAssistantConversations();
+
+  const hasConversations = conversations.length > 0;
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -49,24 +60,31 @@ export function AssistantSidebar() {
                 url: routes.app.assistant,
                 icon: MessageSquarePlus,
               }}
-              pathname={usePathname()}
+              pathname={pathname}
             />
           </SidebarGroup>
-          <SidebarGroup>
-            <Collapsible defaultOpen>
-              <SidebarGroupLabel>
-                <CollapsibleTrigger className="group/collapsible flex w-full items-center">
-                  History
-                  <ChevronRight className="size-4 ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                </CollapsibleTrigger>
-              </SidebarGroupLabel>
-              <CollapsibleContent>
-                <SidebarMenu>
-                  <AssistantSidebarNav />
-                </SidebarMenu>
-              </CollapsibleContent>
-            </Collapsible>
-          </SidebarGroup>
+          {hasConversations ? (
+            <SidebarGroup>
+              <Collapsible defaultOpen>
+                <SidebarGroupLabel>
+                  <CollapsibleTrigger className="group/collapsible flex w-full items-center">
+                    History
+                    <ChevronRight className="size-4 ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarMenu>
+                    <AssistantSidebarNav
+                      conversations={conversations}
+                      activeConversationId={activeConversationId}
+                      deletingConversationId={deletingConversationId}
+                      onDelete={(id) => void deleteConversation(id)}
+                    />
+                  </SidebarMenu>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarGroup>
+          ) : null}
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>

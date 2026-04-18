@@ -85,8 +85,8 @@
   background: var(--brand);
 }
 
-#nd-tocnav [data-active="true"] {
-  color: var(--brand);
+#nd-toc [data-active="true"] {
+  color: var(--color-fd-primary);
 }
 
 #nd-nav {
@@ -141,8 +141,8 @@
 }
 
 #nd-page .prose a {
-  text-decoration-color: hsl(var(--brand-hsl) / 0.5);
-  text-underline-offset: 2px;
+  text-decoration: none;
+  color: var(--foreground);
 }
 
 #nd-page .prose a:hover {

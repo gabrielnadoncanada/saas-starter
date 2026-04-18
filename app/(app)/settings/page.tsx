@@ -128,23 +128,25 @@ export default async function SettingsPage({ searchParams }: PageProps) {
           </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Link2 className="size-4" />
-            Linked Accounts
-          </CardTitle>
-          <CardDescription>
-            Connect your account with external providers for easier sign-in
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <LinkedAccountsCard
-            providers={linkedAccounts.providers}
-            feedback={feedback}
-          />
-        </CardContent>
-      </Card>
+      {oauthProviders.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Link2 className="size-4" />
+              Linked Accounts
+            </CardTitle>
+            <CardDescription>
+              Connect your account with external providers for easier sign-in
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LinkedAccountsCard
+              providers={linkedAccounts.providers}
+              feedback={feedback}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

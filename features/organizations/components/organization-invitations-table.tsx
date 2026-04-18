@@ -93,6 +93,14 @@ function InvitationActions({
     return null;
   }
 
+  const submitInvitationAction = (
+    dispatch: (formData: FormData) => void,
+  ) => {
+    const formData = new FormData();
+    formData.set("invitationId", invitation.id);
+    dispatch(formData);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -102,31 +110,19 @@ function InvitationActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem asChild>
-          <form action={resendAction} className="w-full">
-            <input type="hidden" name="invitationId" value={invitation.id} />
-            <button
-              type="submit"
-              className="flex w-full items-center gap-2 text-left"
-              disabled={isResending}
-            >
-              <Mail className="size-4" />
-              {isResending ? "Resending..." : "Resend invite"}
-            </button>
-          </form>
+        <DropdownMenuItem
+          disabled={isResending}
+          onSelect={() => submitInvitationAction(resendAction)}
+        >
+          <Mail className="size-4" />
+          {isResending ? "Resending..." : "Resend invite"}
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <form action={cancelAction} className="w-full">
-            <input type="hidden" name="invitationId" value={invitation.id} />
-            <button
-              type="submit"
-              className="flex w-full items-center gap-2 text-left"
-              disabled={isCanceling}
-            >
-              <X className="size-4" />
-              {isCanceling ? "Canceling..." : "Cancel invite"}
-            </button>
-          </form>
+        <DropdownMenuItem
+          disabled={isCanceling}
+          onSelect={() => submitInvitationAction(cancelAction)}
+        >
+          <X className="size-4" />
+          {isCanceling ? "Canceling..." : "Cancel invite"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

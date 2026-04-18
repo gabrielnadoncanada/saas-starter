@@ -5,11 +5,18 @@ import { MarketingHeader } from "@/features/marketing/components/marketing-heade
 const navigationLinks = [
   { href: "/#features", label: "Features" },
   { href: "/#pricing", label: "Pricing" },
+  { href: "/docs", label: "Docs" },
   { href: "/contact", label: "Contact" },
 ];
 
 const footerSections = [
-  { title: "Resources", links: [{ href: "/blog", label: "Blog" }] },
+  {
+    title: "Resources",
+    links: [
+      { href: "/docs", label: "Docs" },
+      { href: "/blog", label: "Blog" },
+    ],
+  },
   {
     title: "Legal",
     links: [

@@ -7,16 +7,26 @@ import { runAsAdmin } from "@/lib/db/tenant-scope";
 
 export async function ensureUserOrganization(email: string) {
   const reqHeaders = await headers();
-  const existingOrganizations = await auth.api.listOrganizations({
-    headers: reqHeaders,
-  });
+  const [session, existingOrganizations] = await Promise.all([
+    auth.api.getSession({ headers: reqHeaders }),
+    auth.api.listOrganizations({ headers: reqHeaders }),
+  ]);
 
   if (existingOrganizations?.[0]?.id) {
-    await auth.api.setActiveOrganization({
-      headers: reqHeaders,
-      body: { organizationId: existingOrganizations[0].id },
-    });
-    return existingOrganizations[0].id;
+    const activeId = session?.session?.activeOrganizationId ?? null;
+    const isActiveValid =
+      activeId !== null &&
+      existingOrganizations.some((org) => org.id === activeId);
+
+    if (!isActiveValid) {
+      await auth.api.setActiveOrganization({
+        headers: reqHeaders,
+        body: { organizationId: existingOrganizations[0].id },
+      });
+      return existingOrganizations[0].id;
+    }
+
+    return activeId;
   }
 
   const isPersonal = !accountFlags.enableTeamFeatures;

@@ -9,11 +9,15 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import type { SidebarData } from "@/components/navigation/sidebar-types";
 import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
-import { dashboardSidebarData } from "@/features/dashboard/config/dashboard-navigation";
 
-export function DashboardSidebar() {
-  const { navGroups } = dashboardSidebarData;
+type DashboardSidebarProps = {
+  sidebarData: SidebarData;
+};
+
+export function DashboardSidebar({ sidebarData }: DashboardSidebarProps) {
+  const { navGroups } = sidebarData;
 
   return (
     <Sidebar collapsible="icon">

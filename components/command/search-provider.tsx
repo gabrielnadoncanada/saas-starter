@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { CommandMenu } from "@/components/command/command-menu";
+import type { SidebarData } from "@/components/navigation/sidebar-types";
 
 type SearchContextValue = {
   open: boolean;
@@ -13,9 +14,10 @@ const SearchContext = createContext<SearchContextValue | null>(null);
 
 type SearchProviderProps = {
   children: React.ReactNode;
+  sidebarData: SidebarData;
 };
 
-export function SearchProvider({ children }: SearchProviderProps) {
+export function SearchProvider({ children, sidebarData }: SearchProviderProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
   return (
     <SearchContext.Provider value={{ open, setOpen }}>
       {children}
-      <CommandMenu />
+      <CommandMenu sidebarData={sidebarData} />
     </SearchContext.Provider>
   );
 }

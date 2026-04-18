@@ -1,5 +1,6 @@
 import { Code2, LayoutDashboard, Rocket, Shield } from "lucide-react";
 
+import { routes } from "@/constants/routes";
 import {
   AnnouncementPill,
   FaqSection,
@@ -288,7 +289,7 @@ export default function MarketingPage() {
               <AnnouncementPill
                 label="v1.0"
                 text="A boring SaaS starter that stays fast to edit"
-                href="/auth/sign-up"
+                href={routes.auth.login}
               />
             }
             title={
