@@ -15,13 +15,17 @@ model Organization {
   // Billing fields
   stripeCustomerId String? @unique
 
-  members         Member[]
-  invitations     Invitation[]
-  tasks           Task[]
-  usageCounters   UsageCounter[]
-  aiConversations AiConversation[]
-  storedFiles     StoredFile[]
-  activityEvents  ActivityEvent[]
+  members             Member[]
+  invitations         Invitation[]
+  tasks               Task[]
+  usageCounters       UsageCounter[]
+  aiConversations     AiConversation[]
+  storedFiles         StoredFile[]
+  activityEvents      ActivityEvent[]
+  agents              Agent[]
+  publicConversations PublicConversation[]
+  leads               Lead[]
+  knowledgeDocuments  KnowledgeDocument[]
 }
 
 model Member {

@@ -1,0 +1,111 @@
+enum KnowledgeDocumentStatus {
+  PROCESSING
+  READY
+  ERROR
+}
+
+enum EvalRunStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model KnowledgeDocument {
+  id              String                  @id @default(cuid())
+  organizationId  String
+  agentId         String?
+  storedFileId    String?                 @unique
+  title           String                  @db.VarChar(255)
+  sourceUrl       String?                 @db.Text
+  status          KnowledgeDocumentStatus @default(PROCESSING)
+  errorMessage    String?                 @db.Text
+  tokenCount      Int                     @default(0)
+  chunkCount      Int                     @default(0)
+  createdByUserId String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  agent        Agent?           @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  storedFile   StoredFile?      @relation(fields: [storedFileId], references: [id], onDelete: SetNull)
+  chunks       KnowledgeChunk[]
+
+  @@index([organizationId, agentId, status])
+  @@index([agentId])
+}
+
+model KnowledgeChunk {
+  id         String                       @id @default(cuid())
+  documentId String
+  chunkIndex Int
+  content    String                       @db.Text
+  embedding  Unsupported("vector(1536)")?
+  metadata   Json?
+  tokenCount Int                          @default(0)
+  createdAt  DateTime                     @default(now())
+
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}
+
+model EvalCase {
+  id              String   @id @default(cuid())
+  organizationId  String
+  agentId         String
+  name            String   @db.VarChar(255)
+  input           String   @db.Text
+  expectedOutput  String?  @db.Text
+  criteria        String?  @db.Text
+  tags            String[]
+  enabled         Boolean  @default(true)
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  agent   Agent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  results EvalResult[]
+
+  @@index([agentId, enabled])
+}
+
+model EvalRun {
+  id                String        @id @default(cuid())
+  organizationId    String
+  agentId           String
+  agentVersionId    String?
+  status            EvalRunStatus @default(PENDING)
+  totalCases        Int           @default(0)
+  passedCases       Int           @default(0)
+  averageScore      Float?
+  errorMessage      String?       @db.Text
+  startedAt         DateTime      @default(now())
+  completedAt       DateTime?
+  triggeredByUserId String?
+
+  agent        Agent         @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentVersion AgentVersion? @relation(fields: [agentVersionId], references: [id], onDelete: SetNull)
+  results      EvalResult[]
+
+  @@index([agentId, startedAt(sort: Desc)])
+}
+
+model EvalResult {
+  id         String   @id @default(cuid())
+  runId      String
+  caseId     String
+  output     String   @db.Text
+  score      Float
+  passed     Boolean
+  reasoning  String?  @db.Text
+  latencyMs  Int?
+  tokensUsed Int?
+  createdAt  DateTime @default(now())
+
+  run  EvalRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  case EvalCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([caseId])
+}

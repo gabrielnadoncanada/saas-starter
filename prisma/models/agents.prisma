@@ -1,0 +1,151 @@
+enum PublicConversationStatus {
+  BOT
+  WAITING_HUMAN
+  HUMAN
+  RESOLVED
+  ABANDONED
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  CONTACTED
+  WON
+  LOST
+}
+
+model Agent {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  slug                String   @db.VarChar(80)
+  name                String   @db.VarChar(120)
+  description         String?  @db.Text
+  locale              String   @default("en") @db.VarChar(5)
+  modelId             String   @default("gemini-2.5-flash") @db.VarChar(80)
+  toolsEnabled        String[]
+  qualificationSchema Json?
+  welcomeMessage      String?  @db.Text
+  active              Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  versions            AgentVersion[]
+  publicConversations PublicConversation[]
+  knowledgeDocuments  KnowledgeDocument[]
+  evalCases           EvalCase[]
+  evalRuns            EvalRun[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+}
+
+model AgentVersion {
+  id              String   @id @default(cuid())
+  agentId         String
+  version         Int
+  systemPrompt    String   @db.Text
+  notes           String?  @db.Text
+  evalScore       Float?
+  active          Boolean  @default(false)
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+
+  agent         Agent                @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  conversations PublicConversation[]
+  evalRuns      EvalRun[]
+
+  @@unique([agentId, version])
+  @@index([agentId, active])
+}
+
+model PublicConversation {
+  id               String                   @id @default(cuid())
+  organizationId   String
+  agentId          String
+  agentVersionId   String?
+  visitorId        String                   @db.VarChar(120)
+  status           PublicConversationStatus @default(BOT)
+  assignedUserId   String?
+  leadId           String?                  @unique
+  messagesJson     Json
+  contextJson      Json?
+  lastMessageAt    DateTime                 @default(now())
+  takenOverAt      DateTime?
+  resolvedAt       DateTime?
+  visitorIp        String?                  @db.VarChar(64)
+  visitorUserAgent String?                  @db.Text
+  pageUrl          String?                  @db.Text
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  agent        Agent             @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentVersion AgentVersion?     @relation(fields: [agentVersionId], references: [id], onDelete: SetNull)
+  assignedUser User?             @relation("PublicConversationAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  lead         Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  feedback     MessageFeedback[]
+  corrections  Correction[]
+
+  @@index([organizationId, status, lastMessageAt(sort: Desc)])
+  @@index([agentId, status])
+  @@index([visitorId])
+  @@index([assignedUserId])
+}
+
+model Lead {
+  id             String     @id @default(cuid())
+  organizationId String
+  data           Json
+  score          Int?
+  status         LeadStatus @default(NEW)
+  assignedUserId String?
+  contactEmail   String?    @db.VarChar(255)
+  contactName    String?    @db.VarChar(120)
+  contactPhone   String?    @db.VarChar(40)
+  notes          String?    @db.Text
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  assignedUser User?               @relation("LeadAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  conversation PublicConversation?
+
+  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@index([assignedUserId])
+}
+
+model MessageFeedback {
+  id             String   @id @default(cuid())
+  conversationId String
+  messageId      String   @db.VarChar(120)
+  rating         Int
+  reason         String?  @db.Text
+  createdAt      DateTime @default(now())
+
+  conversation PublicConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, messageId])
+  @@index([conversationId])
+}
+
+model Correction {
+  id                   String                       @id @default(cuid())
+  organizationId       String
+  agentId              String
+  conversationId       String
+  messageId            String                       @db.VarChar(120)
+  userMessage          String                       @db.Text
+  originalMessage      String                       @db.Text
+  correctedMessage     String                       @db.Text
+  userMessageEmbedding Unsupported("vector(1536)")?
+  useAsExample         Boolean                      @default(true)
+  createdByUserId      String
+  createdAt            DateTime                     @default(now())
+
+  conversation PublicConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdBy    User               @relation("CorrectionAuthor", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, agentId, useAsExample])
+  @@index([conversationId])
+}

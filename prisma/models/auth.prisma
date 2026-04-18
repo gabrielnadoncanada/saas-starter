@@ -21,14 +21,17 @@ model User {
   updatedAt        DateTime     @updatedAt
   deletedAt        DateTime?
 
-  accounts            Account[]
-  sessions            Session[]
-  members             Member[]
-  invitationsSent     Invitation[]     @relation("InvitationSender")
-  aiConversations     AiConversation[] @relation("AiConversationToUser")
-  storedFilesUploaded StoredFile[]
-  twoFactor           TwoFactor?
-  activityEvents      ActivityEvent[]  @relation("ActivityActor")
+  accounts                    Account[]
+  sessions                    Session[]
+  members                     Member[]
+  invitationsSent             Invitation[]         @relation("InvitationSender")
+  aiConversations             AiConversation[]     @relation("AiConversationToUser")
+  storedFilesUploaded         StoredFile[]
+  twoFactor                   TwoFactor?
+  activityEvents              ActivityEvent[]      @relation("ActivityActor")
+  assignedPublicConversations PublicConversation[] @relation("PublicConversationAssignee")
+  assignedLeads               Lead[]               @relation("LeadAssignee")
+  corrections                 Correction[]         @relation("CorrectionAuthor")
 }
 
 model Account {

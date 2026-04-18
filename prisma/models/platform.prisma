@@ -8,8 +8,9 @@ model StoredFile {
   sizeBytes        Int
   createdAt        DateTime @default(now())
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  uploadedBy   User         @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  uploadedBy        User               @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  knowledgeDocument KnowledgeDocument?
 
   @@index([organizationId, createdAt(sort: Desc)])
 }
