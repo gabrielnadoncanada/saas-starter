@@ -1,5 +1,3 @@
-import { LayoutDashboard, ListTodo, MessageSquarePlus } from "lucide-react";
-
 import type { SidebarData } from "@/components/navigation/sidebar-types";
 import { routes } from "@/constants/routes";
 
@@ -18,15 +16,15 @@ export function getDashboardSidebarData({
           {
             title: "Dashboard",
             url: routes.app.dashboard,
-            icon: LayoutDashboard,
+            icon: "layout-dashboard",
           },
-          { title: "Tasks", url: routes.app.tasks, icon: ListTodo },
+          { title: "Tasks", url: routes.app.tasks, icon: "list-todo" },
           ...(assistantEnabled
             ? [
                 {
                   title: "Assistant",
                   url: routes.app.assistant,
-                  icon: MessageSquarePlus,
+                  icon: "message-square-plus" as const,
                 },
               ]
             : []),

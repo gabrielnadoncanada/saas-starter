@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Activity,
-  ArrowLeftIcon,
-  Building2,
-  CreditCard,
-  Palette,
-  ShieldCheck,
-  User,
-  Users,
-} from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 
 import { NavGroup } from "@/components/navigation/nav-group";
@@ -33,24 +24,24 @@ const organizationItems: SidebarNavLink[] = [
         {
           title: "Organization",
           url: routes.settings.organization,
-          icon: Building2,
-        },
+          icon: "building",
+        } as const,
         {
           title: "Members",
           url: routes.settings.members,
-          icon: Users,
-        },
+          icon: "users",
+        } as const,
         {
           title: "Activity",
           url: routes.settings.activity,
-          icon: Activity,
-        },
+          icon: "activity",
+        } as const,
       ]
     : []),
   {
     title: "Billing",
     url: routes.settings.billing,
-    icon: CreditCard,
+    icon: "credit-card",
   },
 ];
 
@@ -62,17 +53,17 @@ const settingsSidebarData: SidebarData = {
         {
           title: "Profile",
           url: routes.settings.profile,
-          icon: User,
+          icon: "user",
         },
         {
           title: "Preferences",
           url: routes.settings.preferences,
-          icon: Palette,
+          icon: "palette",
         },
         {
           title: "Security",
           url: routes.settings.security,
-          icon: ShieldCheck,
+          icon: "shield-check",
         },
       ],
     },

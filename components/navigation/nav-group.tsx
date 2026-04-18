@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
 
+import { SidebarIcon } from "@/components/navigation/sidebar-icon";
 import {
   type SidebarNavCollapsible,
   type SidebarNavGroup,
@@ -101,7 +102,7 @@ export function SidebarMenuLink({
         tooltip={item.title}
       >
         <Link href={item.url} onClick={() => setOpenMobile(false)}>
-          {item.icon && <item.icon />}
+          {item.icon && <SidebarIcon name={item.icon} />}
           <span>{item.title}</span>
           {item.badge && <NavBadge>{item.badge}</NavBadge>}
         </Link>
@@ -128,7 +129,7 @@ function SidebarMenuCollapsible({
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton tooltip={item.title}>
-            {item.icon && <item.icon />}
+            {item.icon && <SidebarIcon name={item.icon} />}
             <span>{item.title}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
             <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 rtl:rotate-180" />
@@ -144,7 +145,7 @@ function SidebarMenuCollapsible({
                   isActive={isItemActive(pathname, subItem)}
                 >
                   <Link href={subItem.url} onClick={() => setOpenMobile(false)}>
-                    {subItem.icon && <subItem.icon />}
+                    {subItem.icon && <SidebarIcon name={subItem.icon} />}
                     <span>{subItem.title}</span>
                     {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
                   </Link>
@@ -175,7 +176,7 @@ function SidebarMenuCollapsedDropdown({
             tooltip={item.title}
             isActive={isItemActive(pathname, item)}
           >
-            {item.icon && <item.icon />}
+            {item.icon && <SidebarIcon name={item.icon} />}
             <span>{item.title}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
             <ChevronRight className="ms-auto transition-transform duration-200" />
@@ -198,7 +199,7 @@ function SidebarMenuCollapsedDropdown({
                   isItemActive(pathname, subItem) ? "bg-secondary" : undefined
                 }
               >
-                {subItem.icon && <subItem.icon />}
+                {subItem.icon && <SidebarIcon name={subItem.icon} />}
                 <span className="max-w-52 text-wrap">{subItem.title}</span>
                 {subItem.badge && (
                   <span className="ms-auto text-xs">{subItem.badge}</span>

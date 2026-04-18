@@ -1,7 +1,9 @@
+import type { SidebarIconName } from "@/components/navigation/sidebar-icon";
+
 type SidebarBaseItem = {
   title: string;
   badge?: string;
-  icon?: React.ElementType;
+  icon?: SidebarIconName;
 };
 
 export type SidebarNavLink = SidebarBaseItem & {

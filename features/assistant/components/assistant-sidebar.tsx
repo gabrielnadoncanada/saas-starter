@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftIcon, MessageSquarePlus } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,7 +58,7 @@ export function AssistantSidebar() {
               item={{
                 title: "New Conversation",
                 url: routes.app.assistant,
-                icon: MessageSquarePlus,
+                icon: "message-square-plus",
               }}
               pathname={pathname}
             />

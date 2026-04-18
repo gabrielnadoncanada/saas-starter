@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftIcon, Building2, LayoutDashboard, Users } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 
 import { NavGroup } from "@/components/navigation/nav-group";
@@ -22,13 +22,13 @@ const adminSidebarData: SidebarData = {
         {
           title: "Overview",
           url: routes.admin.dashboard,
-          icon: LayoutDashboard,
+          icon: "layout-dashboard",
         },
-        { title: "Users", url: routes.admin.users, icon: Users },
+        { title: "Users", url: routes.admin.users, icon: "users" },
         {
           title: "Organizations",
           url: routes.admin.organizations,
-          icon: Building2,
+          icon: "building",
         },
       ],
     },
