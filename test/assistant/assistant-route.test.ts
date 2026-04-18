@@ -113,7 +113,7 @@ describe("POST /api/assistant", () => {
     expect(streamText).not.toHaveBeenCalled();
   });
 
-  it("returns 403 when the workspace does not include ai.assistant", async () => {
+  it("returns 403 when the organization does not include ai.assistant", async () => {
     vi.mocked(assertOrganizationAiAccess).mockRejectedValue(
       new UpgradeRequiredError("ai.assistant", "Free"),
     );

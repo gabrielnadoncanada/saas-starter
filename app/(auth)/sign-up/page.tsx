@@ -29,7 +29,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
     <AuthShell
       eyebrow="Sign up · New account"
       title="Start shipping today"
-      description="Spin up a workspace — invite teammates, configure billing, go live."
+      description="Spin up an organization — invite teammates, configure billing, go live."
       footer={
         <p className="text-center text-xs text-muted-foreground">
           Already signed up?{" "}

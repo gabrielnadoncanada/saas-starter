@@ -9,17 +9,17 @@ import { getDashboardOverview } from "@/features/dashboard/server/get-dashboard-
 
 export default async function DashboardPage() {
   const overview = await getDashboardOverview();
-  const workspaceName = overview.organization?.name;
+  const organizationName = overview.organization?.name;
 
   return (
     <Page>
-      <PageHeader eyebrow="Workspace">
+      <PageHeader eyebrow="Organization">
         <div className="space-y-1">
           <PageTitle>Overview</PageTitle>
           <PageDescription>
-            {workspaceName
-              ? `A live pulse of ${workspaceName}.`
-              : "A live pulse of your workspace."}
+            {organizationName
+              ? `A live pulse of ${organizationName}.`
+              : "A live pulse of your organization."}
           </PageDescription>
         </div>
       </PageHeader>

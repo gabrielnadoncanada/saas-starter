@@ -1,4 +1,4 @@
-import { getTenantContext, TenantScopeError } from "./tenant-scope";
+import { TenantScopeError } from "./tenant-scope";
 
 // Models that carry `organizationId` and must be tenant-scoped on every query.
 // Member and Invitation are intentionally excluded — they are owned by
@@ -74,25 +74,15 @@ function mergeCreateManyData(data: unknown, orgId: string): unknown {
   return mergeDataOrg(data, orgId);
 }
 
+// Pure: inject the given orgId into args. Does not touch AsyncLocalStorage.
+// The extension (or caller) decides where orgId comes from — ALS context,
+// session lookup, or elsewhere — and passes it in.
 export function applyTenantScope(
-  model: ScopedModel,
+  _model: ScopedModel,
   operation: string,
   rawArgs: unknown,
+  orgId: string,
 ): unknown {
-  const ctx = getTenantContext();
-
-  if (!ctx) {
-    throw new TenantScopeError(
-      `${model}.${operation} requires tenant context. ` +
-        `Call requireActiveOrganizationMembership() or wrap system code in runAsAdmin().`,
-    );
-  }
-
-  if (ctx.kind === "admin") {
-    return rawArgs;
-  }
-
-  const orgId = ctx.organizationId;
   const args = { ...((rawArgs as AnyRecord | null | undefined) ?? {}) };
 
   if (READ_OPS.has(operation) || WHERE_WRITE_OPS.has(operation)) {

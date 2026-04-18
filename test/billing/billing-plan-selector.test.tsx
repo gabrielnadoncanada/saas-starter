@@ -111,7 +111,7 @@ describe("BillingPlanSelector", () => {
     ).toBeTruthy();
     expect(
       screen.getByText(
-        "This workspace already has an active subscription. The Stripe portal is not available until the Stripe customer is synced.",
+        "This organization already has an active subscription. The Stripe portal is not available until the Stripe customer is synced.",
       ),
     ).toBeTruthy();
   });

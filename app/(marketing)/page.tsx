@@ -70,7 +70,7 @@ const featureColumns = [
     title: "SaaS structure",
     items: [
       "Dashboard shell",
-      "Team and workspace support",
+      "Team and organization support",
       "Navigation foundations",
       "Extendable product architecture",
       "Real app starting point",
@@ -108,7 +108,7 @@ const workflows = [
     label: "Tune",
     title: "Customize settings",
     description:
-      "Edit account and workspace flows where you expect them, with direct ownership and fewer jumps.",
+      "Edit account and organization flows where you expect them, with direct ownership and fewer jumps.",
     steps: ["Edit section", "Save flow", "Validate UI", "Done"],
   },
 ];
@@ -334,7 +334,7 @@ export default function MarketingPage() {
           logos={[
             "Production auth",
             "Subscription billing",
-            "Team workspaces",
+            "Team organizations",
             "Dashboard & settings",
             "Clear conventions",
             "Real product surfaces",
@@ -460,7 +460,7 @@ export default function MarketingPage() {
                 id: "launch-ready",
                 title: "Launch-ready settings",
                 description:
-                  "Account, security, and workspace surfaces that feel complete.",
+                  "Account, security, and organization surfaces that feel complete.",
                 media: {
                   type: "image",
                   src: "/marketing/screenshots/settings.png",

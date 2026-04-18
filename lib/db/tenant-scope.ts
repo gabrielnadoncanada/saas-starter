@@ -17,21 +17,10 @@ export function getTenantContext(): TenantContext | undefined {
   return store.getStore();
 }
 
-// Sets tenant context for the current async task tree. Idempotent across the
-// same request when the orgId matches; conflicts throw to surface bugs.
-export function setTenantContext(organizationId: string): void {
-  const current = store.getStore();
-  if (current?.kind === "tenant" && current.organizationId !== organizationId) {
-    throw new TenantScopeError(
-      `Cannot switch tenant context from ${current.organizationId} to ${organizationId} within the same request.`,
-    );
-  }
-  if (current?.kind === "admin") {
-    return;
-  }
-  store.enterWith({ kind: "tenant", organizationId });
-}
-
+// Explicit tenant scope — for code that knows the org id but runs outside a
+// user request (Stripe webhooks, cron jobs, queue workers). Inside a normal
+// user request, the Prisma extension resolves the active org from the session
+// on its own; you do not need this.
 export function runInTenantScope<T>(
   organizationId: string,
   fn: () => Promise<T>,
@@ -39,8 +28,9 @@ export function runInTenantScope<T>(
   return store.run({ kind: "tenant", organizationId }, fn);
 }
 
-// Escape hatch for system-level code (Stripe webhooks, admin dashboards,
-// cross-tenant reporting). Every use is an explicit audit point.
+// System-level escape hatch: bypasses tenant scoping entirely. Every use is an
+// explicit audit point — reserve for admin dashboards, cross-tenant reporting,
+// migrations, and seeds.
 export function runAsAdmin<T>(fn: () => Promise<T>): Promise<T> {
   return store.run({ kind: "admin" }, fn);
 }

@@ -46,7 +46,7 @@ const DEMO_TASK_TEMPLATES: Array<{
   { title: "Audit accessibility on marketing CTAs", description: "Verify focus states and contrast across the landing page.", status: TaskStatus.TODO, label: TaskLabel.BUG, priority: TaskPriority.MEDIUM, daysAgo: 10, hourOffset: 11 },
   { title: "Plan multi-tenant data isolation tests", description: "Confirm cross-org reads are blocked at every entry point.", status: TaskStatus.IN_PROGRESS, label: TaskLabel.BUG, priority: TaskPriority.HIGH, daysAgo: 11, hourOffset: 8 },
   { title: "Set up Vitest CI workflow", description: "Run the test suite on every push to main.", status: TaskStatus.DONE, label: TaskLabel.FEATURE, priority: TaskPriority.MEDIUM, daysAgo: 12, hourOffset: 5 },
-  { title: "Bootstrap the dashboard overview", description: "Wire the first version of the workspace dashboard.", status: TaskStatus.DONE, label: TaskLabel.FEATURE, priority: TaskPriority.HIGH, daysAgo: 13, hourOffset: 9 },
+  { title: "Bootstrap the dashboard overview", description: "Wire the first version of the organization dashboard.", status: TaskStatus.DONE, label: TaskLabel.FEATURE, priority: TaskPriority.HIGH, daysAgo: 13, hourOffset: 9 },
 ];
 
 const DEMO_TASKS: DemoTaskSeed[] = DEMO_TASK_TEMPLATES.map((template, index) => ({
@@ -154,7 +154,7 @@ async function seedAiConversations(input: {
           {
             role: "assistant",
             content:
-              "Here is a quick summary based on the workspace data available right now.",
+              "Here is a quick summary based on the organization data available right now.",
           },
         ],
         lastMessageAt: createdAt,
@@ -197,7 +197,7 @@ async function seedSubscription(organizationId: string) {
   });
 }
 
-export async function seedDemoWorkspaceContent(input: {
+export async function seedDemoOrganizationContent(input: {
   organizationId: string;
   ownerUserId: string;
 }) {

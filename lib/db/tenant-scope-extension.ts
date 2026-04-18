@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 
+import { resolveActiveOrganizationIdFromSession } from "./resolve-tenant";
+import { getTenantContext, TenantScopeError } from "./tenant-scope";
 import {
   applyTenantScope,
   type ScopedModel,
@@ -10,7 +12,7 @@ export { TENANT_SCOPED_MODELS } from "./tenant-scope-guard";
 
 export const tenantScopeExtension = Prisma.defineExtension((client) => {
   const guard = (model: ScopedModel) => ({
-    $allOperations: ({
+    $allOperations: async ({
       operation,
       args,
       query,
@@ -19,7 +21,26 @@ export const tenantScopeExtension = Prisma.defineExtension((client) => {
       args: unknown;
       query: (a: unknown) => Promise<unknown>;
     }) => {
-      return query(applyTenantScope(model, operation, args));
+      const ctx = getTenantContext();
+
+      if (ctx?.kind === "admin") {
+        return query(args);
+      }
+
+      const orgId =
+        ctx?.kind === "tenant"
+          ? ctx.organizationId
+          : await resolveActiveOrganizationIdFromSession();
+
+      if (!orgId) {
+        throw new TenantScopeError(
+          `${model}.${operation} requires tenant context. ` +
+            `No active organization in the current session. ` +
+            `Wrap system code in runAsAdmin() or caller in runInTenantScope().`,
+        );
+      }
+
+      return query(applyTenantScope(model, operation, args, orgId));
     },
   });
 

@@ -27,7 +27,7 @@ import {
 import { accountFlags } from "@/config/account.config";
 import { routes } from "@/constants/routes";
 
-const workspaceItems: SidebarNavLink[] = [
+const organizationItems: SidebarNavLink[] = [
   ...(accountFlags.enableTeamFeatures
     ? [
         {
@@ -77,8 +77,8 @@ const settingsSidebarData: SidebarData = {
       ],
     },
     {
-      title: accountFlags.enableTeamFeatures ? "Workspace" : "Billing",
-      items: workspaceItems,
+      title: accountFlags.enableTeamFeatures ? "Organization" : "Billing",
+      items: organizationItems,
     },
   ],
 };

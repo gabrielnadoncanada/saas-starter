@@ -15,7 +15,7 @@ type PostSignInCallbackParams = {
 export function buildPostSignInCallbackURL(
   input: PostSignInCallbackParams = {},
 ) {
-  // Preserve checkout intent across auth so post-sign-in can finish workspace
+  // Preserve checkout intent across auth so post-sign-in can finish organization
   // provisioning first, then resume Stripe with the same plan selection.
   const searchParams = new URLSearchParams();
 

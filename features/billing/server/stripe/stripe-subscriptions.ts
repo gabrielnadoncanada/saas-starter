@@ -77,7 +77,7 @@ export async function changeSubscription(params: {
 
   if (!subscriptionRecord?.stripeSubscriptionId) {
     throw new Error(
-      "No synced Stripe subscription was found for this workspace.",
+      "No synced Stripe subscription was found for this organization.",
     );
   }
 

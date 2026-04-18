@@ -39,7 +39,7 @@ export default async function AdminDashboardPage() {
     {
       title: "Organizations",
       value: stats.totalOrganizations,
-      hint: "Workspaces",
+      hint: "Active tenants",
       icon: Building2,
     },
   ];

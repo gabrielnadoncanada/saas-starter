@@ -24,7 +24,7 @@ export default async function CheckEmailPage({
     <AuthShell
       eyebrow="Magic link · Sent"
       title="Check your inbox"
-      description="We sent a one-time sign-in link. Open it to continue to your workspace."
+      description="We sent a one-time sign-in link. Open it to continue to your organization."
       footer={
         <p className="text-center text-xs text-muted-foreground">
           Wrong address?{" "}

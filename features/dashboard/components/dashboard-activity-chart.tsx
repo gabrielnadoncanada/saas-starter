@@ -40,7 +40,7 @@ export function DashboardActivityChart({ data }: { data: Series[] }) {
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="label-mono">Workspace activity · Last 14 days</p>
+          <p className="label-mono">Organization activity · Last 14 days</p>
           <div className="mt-2 flex items-baseline gap-6">
             <Metric
               active={metric === "tasks" || metric === "both"}

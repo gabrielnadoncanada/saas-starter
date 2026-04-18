@@ -53,7 +53,7 @@ export function AssistantChatEmptyState({ onPromptClick }: EmptyStateProps) {
             </h3>
             <p className="max-w-md text-sm text-muted-foreground">
               Ask in plain language — I can create tasks, group your backlog,
-              and chart workspace activity.
+              and chart organization activity.
             </p>
           </div>
         </div>

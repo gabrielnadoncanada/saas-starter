@@ -3,13 +3,13 @@ import { subDays } from "date-fns";
 
 import { db } from "@/lib/db/prisma";
 
-import { seedDemoWorkspaceContent } from "./demo-workspace-content-seed";
+import { seedDemoOrganizationContent } from "./demo-organization-content-seed";
 
 const DEMO_EMAIL = "demo@starter.local";
 const DEMO_PASSWORD = "demo123";
 const DEMO_NAME = "Demo Owner";
 const DEMO_ORGANIZATION_ID = "seed-demo-org";
-const DEMO_ORGANIZATION_SLUG = "demo-workspace";
+const DEMO_ORGANIZATION_SLUG = "demo-organization";
 
 const TEAMMATE_EMAIL = "teammate@starter.local";
 const TEAMMATE_NAME = "Taylor Demo";
@@ -69,13 +69,13 @@ async function ensureDemoOrganization() {
   return db.organization.upsert({
     where: { id: DEMO_ORGANIZATION_ID },
     update: {
-      name: "Demo Workspace",
+      name: "Demo Organization",
       slug: DEMO_ORGANIZATION_SLUG,
       stripeCustomerId: null,
     },
     create: {
       id: DEMO_ORGANIZATION_ID,
-      name: "Demo Workspace",
+      name: "Demo Organization",
       slug: DEMO_ORGANIZATION_SLUG,
     },
   });
@@ -108,7 +108,7 @@ async function ensureMembership(input: {
   });
 }
 
-export async function seedDemoWorkspace() {
+export async function seedDemoOrganization() {
   const [owner, teammate, organization] = await Promise.all([
     ensureUser({
       email: DEMO_EMAIL,
@@ -135,10 +135,10 @@ export async function seedDemoWorkspace() {
     createdAt: subDays(new Date(), 4),
   });
 
-  await seedDemoWorkspaceContent({
+  await seedDemoOrganizationContent({
     organizationId: organization.id,
     ownerUserId: owner.id,
   });
 
-  console.log(`Demo workspace ready: ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);
+  console.log(`Demo organization ready: ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);
 }

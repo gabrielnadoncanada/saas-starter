@@ -7,7 +7,7 @@ import { DashboardActivityFeed } from "@/features/dashboard/components/dashboard
 import { DashboardKpiCard } from "@/features/dashboard/components/dashboard-kpi-card";
 import { DashboardPlanCard } from "@/features/dashboard/components/dashboard-plan-card";
 import { DashboardSparkline } from "@/features/dashboard/components/dashboard-sparkline";
-import { DashboardWorkspaceCard } from "@/features/dashboard/components/dashboard-workspace-card";
+import { DashboardOrganizationCard } from "@/features/dashboard/components/dashboard-organization-card";
 import type { DashboardOverviewData } from "@/features/dashboard/server/get-dashboard-overview";
 
 type DashboardOverviewProps = {
@@ -31,7 +31,7 @@ export function DashboardOverview({ overview }: DashboardOverviewProps) {
     checklist,
   } = overview;
 
-  const workspaceName = organization?.name ?? "your workspace";
+  const organizationName = organization?.name ?? "your organization";
   const tasksSpark = activitySeries.map((s) => ({ value: s.tasks }));
   const aiSpark = activitySeries.map((s) => ({ value: s.ai }));
   const membersSpark = activitySeries.map(() => ({ value: 0 }));
@@ -119,8 +119,8 @@ export function DashboardOverview({ overview }: DashboardOverviewProps) {
           <DashboardActivityFeed items={activityFeed} />
         </div>
         <div className="col-span-12 xl:col-span-4">
-          <DashboardWorkspaceCard
-            workspaceName={workspaceName}
+          <DashboardOrganizationCard
+            organizationName={organizationName}
             members={organization?.members ?? []}
           />
         </div>

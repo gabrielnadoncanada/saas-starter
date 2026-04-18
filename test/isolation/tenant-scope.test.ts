@@ -4,8 +4,6 @@ import {
   getTenantContext,
   runAsAdmin,
   runInTenantScope,
-  setTenantContext,
-  TenantScopeError,
 } from "@/lib/db/tenant-scope";
 
 describe("tenant-scope context", () => {
@@ -41,27 +39,20 @@ describe("tenant-scope context", () => {
     });
   });
 
-  it("setTenantContext establishes a tenant context for the current task", async () => {
-    await runInTenantScope("isolated", async () => {
-      // Inside an isolated store. setTenantContext with the same id is a no-op.
-      setTenantContext("isolated");
-      expect(getTenantContext()).toEqual({
-        kind: "tenant",
-        organizationId: "isolated",
+  it("two concurrent scopes never see each other's context", async () => {
+    const seen: string[] = [];
+    async function work(orgId: string) {
+      await runInTenantScope(orgId, async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        const ctx = getTenantContext();
+        if (ctx?.kind === "tenant") {
+          seen.push(`${orgId}:${ctx.organizationId}`);
+        }
       });
-    });
-  });
+    }
 
-  it("setTenantContext throws when switching tenants within the same request", async () => {
-    await runInTenantScope("org-a", async () => {
-      expect(() => setTenantContext("org-b")).toThrow(TenantScopeError);
-    });
-  });
+    await Promise.all([work("org-a"), work("org-b")]);
 
-  it("setTenantContext is a no-op under admin context", async () => {
-    await runAsAdmin(async () => {
-      expect(() => setTenantContext("anything")).not.toThrow();
-      expect(getTenantContext()).toEqual({ kind: "admin" });
-    });
+    expect(seen.sort()).toEqual(["org-a:org-a", "org-b:org-b"]);
   });
 });

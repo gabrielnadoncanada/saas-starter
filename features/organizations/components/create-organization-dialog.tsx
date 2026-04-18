@@ -84,10 +84,10 @@ export function CreateOrganizationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create workspace</DialogTitle>
+          <DialogTitle>Create organization</DialogTitle>
           <DialogDescription>
-            Create a new workspace for your team. You can invite members after
-            creation.
+            Create a new organization for your team. You can invite members
+            after creation.
           </DialogDescription>
         </DialogHeader>
 

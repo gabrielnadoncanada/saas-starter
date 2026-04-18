@@ -201,7 +201,7 @@ export function BillingPlanSelector({
 
           {hasCurrentSubscription && !canUpdateSubscription ? (
             <p className="text-sm text-muted-foreground">
-              This workspace already has an active subscription. The Stripe
+              This organization already has an active subscription. The Stripe
               portal is not available until the Stripe customer is synced.
             </p>
           ) : null}

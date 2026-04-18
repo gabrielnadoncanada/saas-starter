@@ -7,15 +7,15 @@ import { routes } from "@/constants/routes";
 import type { OrganizationMemberView } from "@/features/organizations/types";
 import { getInitials } from "@/lib/user/get-initials";
 
-type DashboardWorkspaceCardProps = {
-  workspaceName: string;
+type DashboardOrganizationCardProps = {
+  organizationName: string;
   members: OrganizationMemberView[];
 };
 
-export function DashboardWorkspaceCard({
-  workspaceName,
+export function DashboardOrganizationCard({
+  organizationName,
   members,
-}: DashboardWorkspaceCardProps) {
+}: DashboardOrganizationCardProps) {
   const shown = members.slice(0, 4);
   const extra = Math.max(0, members.length - shown.length);
 
@@ -23,10 +23,10 @@ export function DashboardWorkspaceCard({
     <div className="flex h-full flex-col border border-border bg-card">
       <div className="border-b border-border p-5">
         <p className="label-mono">
-          Workspace
+          Organization
         </p>
         <p className="mt-2 truncate text-lg font-semibold tracking-[-0.01em]">
-          {workspaceName}
+          {organizationName}
         </p>
         <p className="mt-1 font-mono text-[11px] tabular-nums text-muted-foreground">
           {members.length} {members.length === 1 ? "member" : "members"}

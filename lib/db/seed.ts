@@ -11,16 +11,19 @@ function ensureFreshPrismaClient() {
 async function seed() {
   ensureFreshPrismaClient();
 
-  const [{ seedAdminWorkspace }, { seedDemoWorkspace }, { seedStripeProducts }] =
-    await Promise.all([
-      import("./seeds/admin-seed"),
-      import("./seeds/demo-workspace-seed"),
-      import("./seeds/stripe-products-seed"),
-    ]);
+  const [
+    { seedAdminOrganization },
+    { seedDemoOrganization },
+    { seedStripeProducts },
+  ] = await Promise.all([
+    import("./seeds/admin-seed"),
+    import("./seeds/demo-organization-seed"),
+    import("./seeds/stripe-products-seed"),
+  ]);
 
   await runAsAdmin(async () => {
-    await seedAdminWorkspace();
-    await seedDemoWorkspace();
+    await seedAdminOrganization();
+    await seedDemoOrganization();
     await seedStripeProducts();
   });
 }

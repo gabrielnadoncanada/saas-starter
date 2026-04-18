@@ -8,11 +8,7 @@ import type {
   ActivityEventMetadata,
 } from "@/lib/activity/activity.types";
 import { db } from "@/lib/db/prisma";
-import {
-  getTenantContext,
-  runAsAdmin,
-  runInTenantScope,
-} from "@/lib/db/tenant-scope";
+import { runAsAdmin, runInTenantScope } from "@/lib/db/tenant-scope";
 
 type LogActivityInput = {
   action: ActivityAction;
@@ -41,17 +37,8 @@ export async function logActivity(input: LogActivityInput): Promise<void> {
   };
 
   try {
-    // Platform-wide events (no org) must bypass tenant scope. Tenant events
-    // use the ambient context if already set (e.g. inside a user request) or
-    // set it on the fly (e.g. inside a Stripe webhook that resolved an org).
     if (!input.organizationId) {
       await runAsAdmin(write);
-      return;
-    }
-
-    const ctx = getTenantContext();
-    if (ctx) {
-      await write();
       return;
     }
 

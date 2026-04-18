@@ -33,7 +33,7 @@ export const limitKeys = [
 ] as const;
 ```
 
-Each plan declares which capabilities it grants and the numeric limits it allows. Stripe is the authority on which plan a workspace is on — the webhook handler syncs plan state into Prisma, and the entitlements loader projects it into an `OrganizationEntitlements` object.
+Each plan declares which capabilities it grants and the numeric limits it allows. Stripe is the authority on which plan an organization is on — the webhook handler syncs plan state into Prisma, and the entitlements loader projects it into an `OrganizationEntitlements` object.
 
 ## Guarding a feature
 

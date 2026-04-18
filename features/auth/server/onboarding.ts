@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth/auth-config";
 import { db } from "@/lib/db/prisma";
 import { runAsAdmin } from "@/lib/db/tenant-scope";
 
-export async function ensureUserWorkspace(email: string) {
+export async function ensureUserOrganization(email: string) {
   const reqHeaders = await headers();
   const existingOrganizations = await auth.api.listOrganizations({
     headers: reqHeaders,

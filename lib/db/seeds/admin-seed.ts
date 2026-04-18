@@ -176,7 +176,7 @@ async function ensureAdminTasks(organizationId: string) {
   console.log(`Seeded ${missingTaskCount} admin tasks.`);
 }
 
-export async function seedAdminWorkspace() {
+export async function seedAdminOrganization() {
   const admin = await ensureAdminUser();
   const organization = await ensureAdminOrganization();
 

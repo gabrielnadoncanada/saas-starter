@@ -101,7 +101,7 @@ export function DashboardSidebarUser() {
               {accountFlags.showOrgSwitcher && (
                 <>
                   <OrganizationSwitcher
-                    onCreateWorkspace={() => setShowCreateOrg(true)}
+                    onCreateOrganization={() => setShowCreateOrg(true)}
                   />
                   <DropdownMenuSeparator />
                 </>

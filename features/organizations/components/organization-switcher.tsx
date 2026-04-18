@@ -17,11 +17,11 @@ import {
 import { authClient } from "@/lib/auth/auth-client";
 
 type OrganizationSwitcherProps = {
-  onCreateWorkspace: () => void;
+  onCreateOrganization: () => void;
 };
 
 export function OrganizationSwitcher({
-  onCreateWorkspace,
+  onCreateOrganization,
 }: OrganizationSwitcherProps) {
   const router = useRouter();
   const [isSwitching, setIsSwitching] = useState(false);
@@ -56,7 +56,7 @@ export function OrganizationSwitcher({
       router.refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to switch workspace",
+        error instanceof Error ? error.message : "Failed to switch organization",
       );
     } finally {
       setIsSwitching(false);
@@ -72,7 +72,7 @@ export function OrganizationSwitcher({
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
           <Building2 className="size-4" />
-          <span>Switch workspace</span>
+          <span>Switch organization</span>
         </DropdownMenuSubTrigger>
 
         <DropdownMenuPortal>
@@ -100,9 +100,9 @@ export function OrganizationSwitcher({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={onCreateWorkspace}>
+            <DropdownMenuItem onClick={onCreateOrganization}>
               <Plus className="size-4" />
-              Create workspace
+              Create organization
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuPortal>

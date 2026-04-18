@@ -38,7 +38,7 @@ export default async function DashboardTasksPage({
 
   return (
     <Page>
-      <PageHeader eyebrow="Workspace · Tasks">
+      <PageHeader eyebrow="Organization · Tasks">
         <PageTitle>Tasks</PageTitle>
         <PageDescription>
           Here&apos;s a list of your tasks for this month!

@@ -29,7 +29,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     <AuthShell
       eyebrow="Sign in · Returning"
       title="Welcome back"
-      description="Continue where you left off. One click to your workspace."
+      description="Continue where you left off. One click to your organization."
       footer={
         <p className="text-center text-xs text-muted-foreground">
           New here?{" "}

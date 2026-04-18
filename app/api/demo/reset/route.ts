@@ -36,13 +36,14 @@ export async function POST(request: Request) {
       db.user.deleteMany(),
     ]);
 
-    const [{ seedAdminWorkspace }, { seedDemoWorkspace }] = await Promise.all([
-      import("@/lib/db/seeds/admin-seed"),
-      import("@/lib/db/seeds/demo-workspace-seed"),
-    ]);
+    const [{ seedAdminOrganization }, { seedDemoOrganization }] =
+      await Promise.all([
+        import("@/lib/db/seeds/admin-seed"),
+        import("@/lib/db/seeds/demo-organization-seed"),
+      ]);
 
-    await seedAdminWorkspace();
-    await seedDemoWorkspace();
+    await seedAdminOrganization();
+    await seedDemoOrganization();
   });
 
   return NextResponse.json({ ok: true, resetAt: new Date().toISOString() });
