@@ -15,16 +15,19 @@ async function seed() {
     { seedAdminOrganization },
     { seedDemoOrganization },
     { seedStripeProducts },
+    { seedDilamcoAgent },
   ] = await Promise.all([
     import("./seeds/admin-seed"),
     import("./seeds/demo-organization-seed"),
     import("./seeds/stripe-products-seed"),
+    import("./seeds/dilamco-agent-seed"),
   ]);
 
   await runAsAdmin(async () => {
     await seedAdminOrganization();
     await seedDemoOrganization();
     await seedStripeProducts();
+    await seedDilamcoAgent();
   });
 }
 
