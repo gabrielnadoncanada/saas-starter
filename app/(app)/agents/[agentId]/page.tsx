@@ -9,6 +9,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AgentCorrectionsPanel } from "@/features/agents/components/agent-corrections-panel";
 import { AgentEmbedSnippet } from "@/features/agents/components/agent-embed-snippet";
+import { AgentEvalsPanel } from "@/features/agents/components/agent-evals-panel";
 import { AgentInboxPanel } from "@/features/agents/components/agent-inbox-panel";
 import { AgentKnowledgePanel } from "@/features/agents/components/agent-knowledge-panel";
 import { AgentSettingsForm } from "@/features/agents/components/agent-settings-form";
@@ -19,6 +20,10 @@ import {
   listAgentLeads,
 } from "@/features/agents/server/conversation-queries";
 import { listCorrections } from "@/features/agents/server/correction-mutations";
+import {
+  listEvalCases,
+  listEvalRuns,
+} from "@/features/agents/server/evals/eval-queries";
 import { listKnowledgeDocuments } from "@/features/knowledge/server/document-mutations";
 
 type PageProps = {
@@ -27,14 +32,23 @@ type PageProps = {
 
 export default async function AgentDetailPage({ params }: PageProps) {
   const { agentId } = await params;
-  const [agent, conversations, leads, documents, corrections] =
-    await Promise.all([
-      getAgentById(agentId),
-      listAgentConversations(agentId),
-      listAgentLeads(agentId),
-      listKnowledgeDocuments(agentId),
-      listCorrections(agentId),
-    ]);
+  const [
+    agent,
+    conversations,
+    leads,
+    documents,
+    corrections,
+    evalCases,
+    evalRuns,
+  ] = await Promise.all([
+    getAgentById(agentId),
+    listAgentConversations(agentId),
+    listAgentLeads(agentId),
+    listKnowledgeDocuments(agentId),
+    listCorrections(agentId),
+    listEvalCases(agentId),
+    listEvalRuns(agentId),
+  ]);
 
   if (!agent) {
     notFound();
@@ -65,6 +79,7 @@ export default async function AgentDetailPage({ params }: PageProps) {
           <TabsTrigger value="corrections">
             Corrections ({corrections.length})
           </TabsTrigger>
+          <TabsTrigger value="evals">Evals ({evalCases.length})</TabsTrigger>
           <TabsTrigger value="embed">Embed</TabsTrigger>
         </TabsList>
 
@@ -158,6 +173,14 @@ export default async function AgentDetailPage({ params }: PageProps) {
               createdAt: c.createdAt.toISOString(),
               createdBy: c.createdBy,
             }))}
+          />
+        </TabsContent>
+
+        <TabsContent value="evals">
+          <AgentEvalsPanel
+            agentId={agent.id}
+            cases={evalCases}
+            runs={evalRuns}
           />
         </TabsContent>
 
