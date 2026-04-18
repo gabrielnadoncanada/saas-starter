@@ -47,6 +47,21 @@ const optionalFeatureGroups = [
     vars: ["NEXT_PUBLIC_SENTRY_DSN"],
     hint: "Errors will not be reported. Set NEXT_PUBLIC_SENTRY_DSN to enable.",
   },
+  {
+    name: "AI chat providers",
+    vars: ["GOOGLE_GENERATIVE_AI_API_KEY"],
+    hint: "AI assistant + public chat bot are disabled without at least one provider (GOOGLE_GENERATIVE_AI_API_KEY or GROQ_API_KEY).",
+  },
+  {
+    name: "Embeddings / RAG (OpenAI)",
+    vars: ["OPENAI_API_KEY"],
+    hint: "Knowledge base RAG, correction few-shot retrieval, and eval scoring require OpenAI embeddings.",
+  },
+  {
+    name: "Reranker (Cohere)",
+    vars: ["COHERE_API_KEY"],
+    hint: "Optional — improves RAG quality. Falls back to vector similarity order when unset.",
+  },
 ] as const;
 
 function validateEnv() {
