@@ -1,17 +1,13 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import * as React from "react";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 export type GalleryShot = {
@@ -19,9 +15,16 @@ export type GalleryShot = {
   caption: string;
   alt: string;
   src: string;
+  srcLight?: string;
   width?: number;
   height?: number;
 };
+
+function useShotSrc(shot: GalleryShot) {
+  const { resolvedTheme } = useTheme();
+  if (resolvedTheme === "light" && shot.srcLight) return shot.srcLight;
+  return shot.src;
+}
 
 export type GalleryCategory = {
   id: string;
@@ -99,7 +102,7 @@ export function ScreenshotGallery({
               Screenshots
             </span>
 
-            <ScrollArea className="flex-1">
+            <div className="flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <TabsList
                 variant="line"
                 className="h-14 gap-0 border-none bg-transparent px-0"
@@ -108,7 +111,7 @@ export function ScreenshotGallery({
                   <TabsTrigger
                     key={c.id}
                     value={c.id}
-                    className="h-14 rounded-none px-5 text-[13px] font-medium tracking-tight"
+                    className="h-full rounded-none px-5 text-[13px] font-medium tracking-tight"
                   >
                     {c.label}
                     <span
@@ -120,16 +123,11 @@ export function ScreenshotGallery({
                   </TabsTrigger>
                 ))}
               </TabsList>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            </div>
           </div>
         </div>
 
-        <div
-          ref={scrollAnchorRef}
-          aria-hidden
-          className="scroll-mt-[120px]"
-        />
+        <div ref={scrollAnchorRef} aria-hidden className="scroll-mt-[120px]" />
 
         {categories.map((category) => (
           <TabsContent
@@ -148,7 +146,7 @@ export function ScreenshotGallery({
                 </p>
               ) : null}
 
-              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 xl:grid-cols-3">
                 {category.shots.map((shot, index) => (
                   <GalleryShotCard
                     key={shot.id}
@@ -187,6 +185,62 @@ export function ScreenshotGallery({
   );
 }
 
+function LightboxFigure({ shot }: { shot: GalleryShot }) {
+  const resolvedSrc = useShotSrc(shot);
+  return (
+    <figure className="relative flex h-full w-full max-w-[1400px] flex-col items-center justify-center">
+      <div className="relative w-full max-h-full overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10">
+        <Image
+          key={shot.id}
+          src={resolvedSrc}
+          alt={shot.alt}
+          width={shot.width ?? 2400}
+          height={shot.height ?? 1500}
+          className="h-auto w-full object-contain"
+          priority
+        />
+      </div>
+      <figcaption className="mt-4 text-center text-sm text-white/70">
+        {shot.caption}
+      </figcaption>
+    </figure>
+  );
+}
+
+function LightboxThumb({
+  shot,
+  selected,
+  onClick,
+}: {
+  shot: GalleryShot;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const resolvedSrc = useShotSrc(shot);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Go to ${shot.caption}`}
+      aria-current={selected ? "true" : undefined}
+      className={cn(
+        "relative h-14 w-24 shrink-0 overflow-hidden rounded-md border transition",
+        selected
+          ? "border-brand ring-2 ring-brand/60 ring-offset-2 ring-offset-black"
+          : "border-white/10 opacity-60 hover:opacity-100",
+      )}
+    >
+      <Image
+        src={resolvedSrc}
+        alt=""
+        fill
+        sizes="96px"
+        className="object-cover object-top"
+      />
+    </button>
+  );
+}
+
 function GalleryShotCard({
   shot,
   onOpen,
@@ -194,6 +248,7 @@ function GalleryShotCard({
   shot: GalleryShot;
   onOpen: () => void;
 }) {
+  const resolvedSrc = useShotSrc(shot);
   return (
     <button
       type="button"
@@ -209,7 +264,7 @@ function GalleryShotCard({
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted/40">
         <Image
-          src={shot.src}
+          src={resolvedSrc}
           alt={shot.alt}
           fill
           sizes="(min-width: 1280px) 28vw, (min-width: 768px) 45vw, 92vw"
@@ -354,22 +409,7 @@ function GalleryLightbox({
             ) : null}
 
             {shot ? (
-              <figure className="relative flex h-full w-full max-w-[1400px] flex-col items-center justify-center">
-                <div className="relative w-full max-h-full overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10">
-                  <Image
-                    key={shot.id}
-                    src={shot.src}
-                    alt={shot.alt}
-                    width={shot.width ?? 2400}
-                    height={shot.height ?? 1500}
-                    className="h-auto w-full object-contain"
-                    priority
-                  />
-                </div>
-                <figcaption className="mt-4 text-center text-sm text-white/70">
-                  {shot.caption}
-                </figcaption>
-              </figure>
+              <LightboxFigure shot={shot} />
             ) : null}
 
             {total > 1 ? (
@@ -391,27 +431,12 @@ function GalleryLightbox({
                   {shots.map((s, i) => {
                     const selected = i === index;
                     return (
-                      <button
+                      <LightboxThumb
                         key={s.id}
-                        type="button"
+                        shot={s}
+                        selected={selected}
                         onClick={() => onIndexChange(i)}
-                        aria-label={`Go to ${s.caption}`}
-                        aria-current={selected ? "true" : undefined}
-                        className={cn(
-                          "relative h-14 w-24 shrink-0 overflow-hidden rounded-md border transition",
-                          selected
-                            ? "border-brand ring-2 ring-brand/60 ring-offset-2 ring-offset-black"
-                            : "border-white/10 opacity-60 hover:opacity-100",
-                        )}
-                      >
-                        <Image
-                          src={s.src}
-                          alt=""
-                          fill
-                          sizes="96px"
-                          className="object-cover object-top"
-                        />
-                      </button>
+                      />
                     );
                   })}
                 </div>

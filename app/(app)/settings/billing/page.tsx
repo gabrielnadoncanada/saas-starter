@@ -7,6 +7,7 @@ import {
   PageTitle,
 } from "@/components/layout/page-layout";
 import { routes } from "@/constants/routes";
+import { BillingCheckoutSuccessToast } from "@/features/billing/components/billing-checkout-success-toast";
 import { BillingPlanSelector } from "@/features/billing/components/billing-plan-selector";
 import { isTrialingSubscription } from "@/features/billing/plans";
 import { getBillingPageData } from "@/features/billing/server/get-billing-page-data";
@@ -33,6 +34,7 @@ export default async function SettingsBillingPage() {
 
   return (
     <Page>
+      <BillingCheckoutSuccessToast planName={entitlements.planName} />
       <PageHeader eyebrow="Settings · Billing">
         <PageTitle>Billing</PageTitle>
         <PageDescription>

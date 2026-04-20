@@ -11,6 +11,10 @@ import {
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { type PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import type {
+  BillingInterval,
+  PlanId,
+} from "@/config/billing.config";
 import {
   createAssistantConversationRequest,
   replaceAssistantConversationRequest,
@@ -18,17 +22,22 @@ import {
 import { AssistantChatComposer } from "@/features/assistant/components/assistant-chat-composer";
 import { AssistantChatErrorState } from "@/features/assistant/components/assistant-chat-error-state";
 import { AssistantChatMessageList } from "@/features/assistant/components/assistant-chat-message-list";
+import { LimitReachedDialog } from "@/features/assistant/components/limit-reached-dialog";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
 import type { AiModelDefinition, AiModelId } from "@/lib/ai/models";
 
 type AssistantChatProps = {
   conversationId: string | null;
+  currentPlanName: string;
   defaultModelId: AiModelId;
   initialMessages: UIMessage[];
   modelOptions: AiModelDefinition[];
   onConversationCreated: (conversation: AssistantConversation) => void;
   onConversationUpdated: (conversation: AssistantConversation) => void;
   resetKey: number;
+  upgradeBillingInterval: BillingInterval;
+  upgradePlanId: PlanId | null;
+  upgradePlanName: string | null;
 };
 
 type AssistantChatState = {
@@ -40,12 +49,16 @@ type AssistantChatState = {
 
 export function AssistantChat({
   conversationId,
+  currentPlanName,
   defaultModelId,
   initialMessages,
   modelOptions,
   onConversationCreated,
   onConversationUpdated,
   resetKey,
+  upgradeBillingInterval,
+  upgradePlanId,
+  upgradePlanName,
 }: AssistantChatProps) {
   const [modelId, setModelId] = useState<AiModelId>(defaultModelId);
   const selectedModelId =
@@ -206,6 +219,14 @@ export function AssistantChat({
           </p>
         </div>
       </div>
+
+      <LimitReachedDialog
+        currentPlanName={currentPlanName}
+        messages={messages}
+        upgradeBillingInterval={upgradeBillingInterval}
+        upgradePlanId={upgradePlanId}
+        upgradePlanName={upgradePlanName}
+      />
     </div>
   );
 }

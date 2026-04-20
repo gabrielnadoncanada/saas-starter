@@ -65,10 +65,7 @@ function getPeriodStart(date = new Date()) {
 
 async function seedTasks(organizationId: string) {
   await db.task.deleteMany({
-    where: {
-      organizationId,
-      code: { in: DEMO_TASKS.map((task) => task.code) },
-    },
+    where: { organizationId },
   });
 
   await db.task.createMany({
@@ -82,7 +79,7 @@ async function seedTasks(organizationId: string) {
 async function seedUsageCounters(organizationId: string) {
   const periodStart = getPeriodStart();
   const usageRows = [
-    { limitKey: "tasksPerMonth", count: DEMO_TASKS.length },
+    { limitKey: "tasksPerMonth", count: 997 },
     { limitKey: "aiCredits", count: 312 },
   ] as const;
 

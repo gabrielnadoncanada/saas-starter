@@ -13,7 +13,10 @@ import {
   Section,
   SectionHeading,
 } from "@/features/marketing/components";
-import type { GalleryCategory } from "@/features/marketing/components/screenshot-gallery";
+import type {
+  GalleryCategory,
+  GalleryShot,
+} from "@/features/marketing/components/screenshot-gallery";
 import { cn } from "@/lib/utils";
 
 const featureItems = [
@@ -154,199 +157,90 @@ const comparisonColumns = [
   },
 ];
 
+const SHOT_BASE = "/marketing/screenshots";
+
+function shot(
+  id: string,
+  caption: string,
+  alt: string,
+  filename: string,
+): GalleryShot {
+  return {
+    id,
+    caption,
+    alt,
+    src: `${SHOT_BASE}/dark/${filename}.png`,
+    srcLight: `${SHOT_BASE}/light/${filename}.png`,
+  };
+}
+
 const galleryCategories: GalleryCategory[] = [
   {
-    id: "marketing",
-    label: "Marketing",
+    id: "organization",
+    label: "Organization",
+    note: "Multi-tenant workspace with the AI surfaces you will actually ship.",
     shots: [
-      {
-        id: "marketing-home",
-        caption: "Marketing / Home",
-        alt: "Marketing homepage with hero, features, and pricing",
-        src: "/marketing/screenshots/docs.png",
-      },
-      {
-        id: "marketing-docs",
-        caption: "Marketing / Docs",
-        alt: "Documentation layout",
-        src: "/marketing/screenshots/docs.png",
-      },
-      {
-        id: "marketing-plan-gate",
-        caption: "Marketing / Plan gate",
-        alt: "Plan gate paywall surface",
-        src: "/marketing/screenshots/plan-gate.png",
-      },
-      {
-        id: "marketing-placeholder",
-        caption: "Marketing / Changelog",
-        alt: "Changelog page",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-    ],
-  },
-  {
-    id: "auth",
-    label: "Auth",
-    shots: [
-      {
-        id: "auth-sign-in",
-        caption: "Auth / Sign in",
-        alt: "Sign-in page",
-        src: "/marketing/screenshots/login.png",
-      },
-      {
-        id: "auth-sign-up",
-        caption: "Auth / Sign up",
-        alt: "Sign-up page",
-        src: "/marketing/screenshots/login.png",
-      },
-      {
-        id: "auth-forgot",
-        caption: "Auth / Forgot password",
-        alt: "Forgot password flow",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "auth-magic-link",
-        caption: "Auth / Magic link",
-        alt: "Magic link request screen",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
+      shot("org-dashboard", "Organization / Dashboard", "Organization dashboard with KPIs", "dashboard"),
+      shot("org-tasks", "Organization / Tasks", "Tasks table with labels, priorities and statuses", "tasks"),
+      shot("org-assistant-home", "Assistant / Home", "AI assistant empty state with suggested prompts", "assistant-home"),
+      shot("org-assistant-chat", "Assistant / Conversation", "AI assistant mid-conversation with tool calls", "assistant"),
+      shot("org-assistant-chart", "Assistant / Chart artifact", "AI assistant rendering a bar chart artifact", "assistant-chart"),
+      shot("org-members", "Organization / Members", "Team members and invitations", "settings-members"),
+      shot("org-settings", "Organization / Settings", "Rename or delete the current organization", "settings-organization"),
+      shot("org-activity", "Organization / Activity", "Per-tenant audit log of user actions", "settings-activity"),
     ],
   },
   {
     id: "account",
     label: "Personal account",
     shots: [
-      {
-        id: "account-profile",
-        caption: "Account / Profile",
-        alt: "Profile settings",
-        src: "/marketing/screenshots/settings.png",
-      },
-      {
-        id: "account-billing",
-        caption: "Account / Billing",
-        alt: "Billing settings",
-        src: "/marketing/screenshots/billing.png",
-      },
-      {
-        id: "account-security",
-        caption: "Account / Security",
-        alt: "Security settings with sessions",
-        src: "/marketing/screenshots/settings.png",
-      },
-      {
-        id: "account-notifications",
-        caption: "Account / Notifications",
-        alt: "Notification preferences",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-    ],
-  },
-  {
-    id: "organization",
-    label: "Organization",
-    note: "Multi-tenant, with the AI surfaces you will actually ship.",
-    shots: [
-      {
-        id: "org-dashboard",
-        caption: "Organization / Dashboard",
-        alt: "Organization dashboard",
-        src: "/marketing/screenshots/dashboard.png",
-      },
-      {
-        id: "org-tasks",
-        caption: "Organization / Tasks",
-        alt: "Tasks feature",
-        src: "/marketing/screenshots/tasks.png",
-      },
-      {
-        id: "org-team",
-        caption: "Organization / Team",
-        alt: "Team members and roles",
-        src: "/marketing/screenshots/team.png",
-      },
-      {
-        id: "org-billing",
-        caption: "Organization / Billing",
-        alt: "Organization billing",
-        src: "/marketing/screenshots/billing.png",
-      },
-      {
-        id: "org-ai-chat",
-        caption: "Organization / AI assistant",
-        alt: "Organization-scoped AI assistant",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "org-public-chat",
-        caption: "Organization / Public chat inbox",
-        alt: "Public chat inbox with human handoff",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
+      shot("account-profile", "Account / Profile", "Profile settings", "settings"),
+      shot("account-billing", "Account / Billing", "Subscription and plan controls", "settings-billing"),
+      shot("account-security", "Account / Security", "Sessions, password, and two-factor authentication", "settings-security"),
+      shot("account-preferences", "Account / Preferences", "Notification and UI preferences", "settings-preferences"),
     ],
   },
   {
     id: "admin",
     label: "Admin panel",
+    note: "Role-gated operations dashboard for the platform owner.",
     shots: [
-      {
-        id: "admin-users",
-        caption: "Admin / Users",
-        alt: "Admin users directory",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "admin-organizations",
-        caption: "Admin / Organizations",
-        alt: "Admin organizations directory",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "admin-activity",
-        caption: "Admin / Activity",
-        alt: "Admin activity log",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "admin-billing",
-        caption: "Admin / Billing overview",
-        alt: "Admin billing overview",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
+      shot("admin-dashboard", "Admin / Dashboard", "Admin overview with KPIs, signups chart and plan breakdown", "admin"),
+      shot("admin-users", "Admin / Users", "Admin users directory with ban and impersonate", "admin-users"),
+      shot("admin-user-detail", "Admin / User detail", "User detail drawer with sessions and role controls", "admin-user-detail"),
+      shot("admin-organizations", "Admin / Organizations", "Organizations directory with plan and seat info", "admin-organizations"),
+      shot("admin-organization-detail", "Admin / Organization detail", "Organization detail drawer with members and subscription", "admin-organization-detail"),
+    ],
+  },
+  {
+    id: "auth",
+    label: "Auth",
+    shots: [
+      shot("auth-sign-in", "Auth / Sign in", "Sign-in page with email, password and OAuth", "sign-in"),
+      shot("auth-sign-up", "Auth / Sign up", "Sign-up page", "sign-up"),
+      shot("auth-forgot", "Auth / Forgot password", "Forgot password request screen", "forgot-password"),
+    ],
+  },
+  {
+    id: "marketing",
+    label: "Marketing",
+    shots: [
+      shot("marketing-home", "Marketing / Home", "Marketing homepage", "marketing-home"),
+      shot("marketing-pricing", "Marketing / Pricing", "Pricing page with plan comparison", "pricing"),
+      shot("marketing-blog", "Marketing / Blog", "Blog index", "blog"),
+      shot("marketing-contact", "Marketing / Contact", "Contact form", "contact"),
     ],
   },
   {
     id: "emails",
     label: "Emails",
-    footer: "+ 4 more transactional email templates ready to use.",
     shots: [
-      {
-        id: "email-welcome",
-        caption: "Email / Welcome",
-        alt: "Welcome email template",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "email-magic-link",
-        caption: "Email / Magic link",
-        alt: "Magic link email",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "email-invoice",
-        caption: "Email / Invoice",
-        alt: "Invoice email",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
-      {
-        id: "email-invite",
-        caption: "Email / Team invite",
-        alt: "Team invite email",
-        src: "/marketing/screenshots/placeholder.webp",
-      },
+      shot("email-magic-link", "Email / Magic link", "Magic link sign-in email", "email-magic-link"),
+      shot("email-team-invitation", "Email / Team invite", "Team invitation email", "email-team-invitation"),
+      shot("email-reset-password", "Email / Reset password", "Reset password email", "email-reset-password"),
+      shot("email-verify-email", "Email / Verify email", "Email verification template", "email-verify-email"),
+      shot("email-password-changed", "Email / Password changed", "Password changed notification", "email-password-changed"),
+      shot("email-contact-message", "Email / Contact message", "Contact form message email", "email-contact-message"),
     ],
   },
 ];

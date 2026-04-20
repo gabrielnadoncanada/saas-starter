@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 
-import { resolveActiveOrganizationIdFromSession } from "./resolve-tenant";
 import { getTenantContext, TenantScopeError } from "./tenant-scope";
 import {
   applyTenantScope,
@@ -9,6 +8,11 @@ import {
 } from "./tenant-scope-guard";
 
 export { TENANT_SCOPED_MODELS } from "./tenant-scope-guard";
+
+async function resolveActiveOrganizationIdFromSession(): Promise<string | null> {
+  const mod = await import("./resolve-tenant");
+  return mod.resolveActiveOrganizationIdFromSession();
+}
 
 export const tenantScopeExtension = Prisma.defineExtension((client) => {
   const guard = (model: ScopedModel) => ({

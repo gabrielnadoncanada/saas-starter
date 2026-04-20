@@ -64,6 +64,7 @@ describe("AssistantWorkspace", () => {
 
     const view = render(
       React.createElement(AssistantWorkspace, {
+        currentPlanName: "Pro",
         initialConversation: null,
         initialConversationId: null,
         initialDefaultModelId: "gemini-2.5-flash",
@@ -75,6 +76,9 @@ describe("AssistantWorkspace", () => {
             providerLabel: "Google",
           },
         ],
+        upgradeBillingInterval: "month",
+        upgradePlanId: "team",
+        upgradePlanName: "Team",
       }),
     );
 
@@ -96,6 +100,7 @@ describe("AssistantWorkspace", () => {
 
     view.rerender(
       React.createElement(AssistantWorkspace, {
+        currentPlanName: "Pro",
         initialConversation: {
           id: "conv_1",
           lastMessageAt: "2026-04-06T12:00:00.000Z",
@@ -119,6 +124,9 @@ describe("AssistantWorkspace", () => {
             providerLabel: "Google",
           },
         ],
+        upgradeBillingInterval: "month",
+        upgradePlanId: "team",
+        upgradePlanName: "Team",
       }),
     );
 

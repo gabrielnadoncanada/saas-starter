@@ -3,16 +3,24 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import type {
+  BillingInterval,
+  PlanId,
+} from "@/config/billing.config";
 import { routes } from "@/constants/routes";
 import { AssistantChat } from "@/features/assistant/components/assistant-chat";
 import type { AssistantConversation } from "@/features/assistant/schemas/conversation-api.schema";
 import type { AiModelDefinition, AiModelId } from "@/lib/ai/models";
 
 type AssistantWorkspaceProps = {
+  currentPlanName: string;
   initialConversation: AssistantConversation | null;
   initialConversationId: string | null;
   initialDefaultModelId: AiModelId;
   initialModelOptions: AiModelDefinition[];
+  upgradeBillingInterval: BillingInterval;
+  upgradePlanId: PlanId | null;
+  upgradePlanName: string | null;
 };
 
 function buildConversationUrl(conversationId: string | null) {
@@ -24,10 +32,14 @@ function buildConversationUrl(conversationId: string | null) {
 }
 
 export function AssistantWorkspace({
+  currentPlanName,
   initialConversation,
   initialConversationId,
   initialDefaultModelId,
   initialModelOptions,
+  upgradeBillingInterval,
+  upgradePlanId,
+  upgradePlanName,
 }: AssistantWorkspaceProps) {
   const router = useRouter();
   const pendingConversationIdRef = useRef<string | null>(null);
@@ -73,6 +85,7 @@ export function AssistantWorkspace({
   return (
     <AssistantChat
       conversationId={selectedConversationId}
+      currentPlanName={currentPlanName}
       defaultModelId={initialDefaultModelId}
       initialMessages={selectedConversation?.messages ?? []}
       modelOptions={initialModelOptions}
@@ -87,6 +100,9 @@ export function AssistantWorkspace({
         );
       }}
       resetKey={chatResetKey}
+      upgradeBillingInterval={upgradeBillingInterval}
+      upgradePlanId={upgradePlanId}
+      upgradePlanName={upgradePlanName}
     />
   );
 }
