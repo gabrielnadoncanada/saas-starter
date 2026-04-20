@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 
-import { resolveActiveOrganizationIdFromSession } from "./resolve-tenant";
 import { getTenantContext, TenantScopeError } from "./tenant-scope";
 import {
   applyTenantScope,
@@ -9,6 +8,15 @@ import {
 } from "./tenant-scope-guard";
 
 export { TENANT_SCOPED_MODELS } from "./tenant-scope-guard";
+
+// Lazy import so `server-only` (pulled in by resolve-tenant) does not fire at
+// module-load time. Seeds/crons/workers wrap calls in runAsAdmin and never
+// reach this branch, so they can import `db` from Node contexts without
+// server-only throwing.
+async function resolveActiveOrganizationIdFromSession(): Promise<string | null> {
+  const mod = await import("./resolve-tenant");
+  return mod.resolveActiveOrganizationIdFromSession();
+}
 
 export const tenantScopeExtension = Prisma.defineExtension((client) => {
   const guard = (model: ScopedModel) => ({
