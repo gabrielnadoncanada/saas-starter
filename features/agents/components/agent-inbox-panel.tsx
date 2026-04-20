@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -149,22 +150,47 @@ export function AgentInboxPanel({
   }
 
   function saveCorrection() {
-    if (!selectedId || !editingId || !editedText.trim()) return;
+    console.log("[correction] click", {
+      selectedId,
+      editingId,
+      editedText: editedText.slice(0, 40),
+    });
+    if (!selectedId) {
+      toast.error("No conversation selected");
+      return;
+    }
+    if (!editingId) {
+      toast.error("No message selected for correction");
+      return;
+    }
+    if (!editedText.trim()) {
+      toast.error("Correction text is empty");
+      return;
+    }
     const messageId = editingId;
     const corrected = editedText.trim();
+    const toastId = toast.loading("Saving correction…");
     startTransition(async () => {
       try {
-        await createCorrectionAction({
+        const res = await createCorrectionAction({
           conversationId: selectedId,
           messageId,
           correctedMessage: corrected,
           useAsExample: true,
         });
+        console.log("[correction] saved", res);
         setEditingId(null);
         setEditedText("");
+        toast.success("Correction saved — check Corrections tab.", {
+          id: toastId,
+        });
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to save correction");
+        console.error("[correction] save failed", e);
+        const msg =
+          e instanceof Error ? e.message : "Failed to save correction";
+        setError(msg);
+        toast.error(msg, { id: toastId });
       }
     });
   }

@@ -1,11 +1,14 @@
+import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import {
   Page,
   PageDescription,
   PageHeader,
+  PageHeaderActions,
   PageTitle,
 } from "@/components/layout/page-layout";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AgentCorrectionsPanel } from "@/features/agents/components/agent-corrections-panel";
 import { AgentEmbedSnippet } from "@/features/agents/components/agent-embed-snippet";
@@ -14,6 +17,7 @@ import { AgentInboxPanel } from "@/features/agents/components/agent-inbox-panel"
 import { AgentKnowledgePanel } from "@/features/agents/components/agent-knowledge-panel";
 import { AgentSettingsForm } from "@/features/agents/components/agent-settings-form";
 import { AgentVersionsPanel } from "@/features/agents/components/agent-versions-panel";
+import { AgentCoachPanel } from "@/features/coach/components/agent-coach-panel";
 import { getAgentById } from "@/features/agents/server/agent-queries";
 import {
   listAgentConversations,
@@ -61,6 +65,20 @@ export default async function AgentDetailPage({ params }: PageProps) {
         <PageDescription>
           {agent.description ?? "Configure this public chat agent."}
         </PageDescription>
+        {agent.organization?.slug ? (
+          <PageHeaderActions>
+            <Button asChild variant="outline" size="sm">
+              <a
+                href={`/embed/${agent.organization.slug}/${agent.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="size-4" />
+                Preview chat
+              </a>
+            </Button>
+          </PageHeaderActions>
+        ) : null}
       </PageHeader>
 
       <Tabs defaultValue="settings" className="w-full">
@@ -80,6 +98,7 @@ export default async function AgentDetailPage({ params }: PageProps) {
             Corrections ({corrections.length})
           </TabsTrigger>
           <TabsTrigger value="evals">Evals ({evalCases.length})</TabsTrigger>
+          <TabsTrigger value="coach">Coach</TabsTrigger>
           <TabsTrigger value="embed">Embed</TabsTrigger>
         </TabsList>
 
@@ -182,6 +201,10 @@ export default async function AgentDetailPage({ params }: PageProps) {
             cases={evalCases}
             runs={evalRuns}
           />
+        </TabsContent>
+
+        <TabsContent value="coach">
+          <AgentCoachPanel agentId={agent.id} />
         </TabsContent>
 
         <TabsContent value="embed">

@@ -81,7 +81,7 @@ export function PublicChat({ orgSlug, agentSlug, agent }: PublicChatProps) {
     } as UIMessage;
   }, [agent.welcomeMessage]);
 
-  const { messages, sendMessage, status, error } = useChat<UIMessage>({
+  const { messages, sendMessage, setMessages, status, error } = useChat<UIMessage>({
     transport,
     onFinish: (payload) => {
       const res = payload as { response?: Response };
@@ -105,6 +105,70 @@ export function PublicChat({ orgSlug, agentSlug, agent }: PublicChatProps) {
   });
 
   const [input, setInput] = useState("");
+  const [convoStatus, setConvoStatus] = useState<string | null>(null);
+
+  const messagesRef = useRef<UIMessage[]>(messages);
+  messagesRef.current = messages;
+
+  // Poll the conversation so messages written server-side (human takeover
+  // replies) show up without requiring the visitor to send a new message.
+  // Uses lightweight indexing by message count; slows down while the tab is
+  // hidden to save bandwidth.
+  useEffect(() => {
+    if (!conversationId) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const poll = async () => {
+      if (cancelled) return;
+      if (typeof document !== "undefined" && document.hidden) {
+        timer = setTimeout(poll, 5000);
+        return;
+      }
+      try {
+        const currentCount = messagesRef.current.length;
+        const res = await fetch(
+          `/api/public-chat/${encodeURIComponent(orgSlug)}/${encodeURIComponent(agentSlug)}/poll?conversationId=${encodeURIComponent(conversationId)}&since=${currentCount}`,
+          { credentials: "include", cache: "no-store" },
+        );
+        if (!cancelled && res.ok) {
+          const data = (await res.json()) as {
+            status: string;
+            messages: UIMessage[];
+            totalCount: number;
+          };
+          setConvoStatus(data.status);
+          if (data.messages.length > 0) {
+            setMessages((prev) => {
+              const seen = new Set(prev.map((m) => m.id));
+              const additions = data.messages.filter((m) => !seen.has(m.id));
+              return additions.length > 0 ? [...prev, ...additions] : prev;
+            });
+          }
+        }
+      } catch {
+        // best-effort
+      }
+      if (!cancelled) {
+        timer = setTimeout(poll, 3000);
+      }
+    };
+
+    timer = setTimeout(poll, 500);
+    const onVisible = () => {
+      if (!document.hidden && !cancelled) {
+        if (timer) clearTimeout(timer);
+        poll();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [conversationId, orgSlug, agentSlug, setMessages]);
 
   const combined = useMemo<UIMessage[]>(() => {
     if (!welcomeMessage || messages.length > 0) return messages;
@@ -167,6 +231,22 @@ export function PublicChat({ orgSlug, agentSlug, agent }: PublicChatProps) {
         {agent.description ? (
           <div style={{ fontWeight: 400, fontSize: 12, color: "#6b7280" }}>
             {agent.description}
+          </div>
+        ) : null}
+        {convoStatus === "HUMAN" ? (
+          <div
+            style={{
+              marginTop: 6,
+              display: "inline-block",
+              padding: "2px 8px",
+              borderRadius: 999,
+              background: "#ecfeff",
+              color: "#0e7490",
+              fontSize: 11,
+              fontWeight: 500,
+            }}
+          >
+            A human agent has joined the conversation
           </div>
         ) : null}
       </header>

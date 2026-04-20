@@ -3,6 +3,7 @@ import { db } from "@/lib/db/prisma";
 const DILAMCO_ORG_ID = "seed-dilamco-org";
 const DILAMCO_ORG_SLUG = "dilamco";
 const DILAMCO_AGENT_SLUG = "contreplaque";
+const ADMIN_EMAIL = "admin@admin.com";
 
 const DILAMCO_SYSTEM_PROMPT = `Tu es l'assistant commercial de Dilamco, un fabricant québécois de contreplaqué sur mesure.
 
@@ -106,6 +107,25 @@ export async function seedDilamcoAgent() {
       data: {
         systemPrompt: DILAMCO_SYSTEM_PROMPT,
         active: true,
+      },
+    });
+  }
+
+  const admin = await db.user.findUnique({ where: { email: ADMIN_EMAIL } });
+  if (admin) {
+    await db.member.upsert({
+      where: {
+        organizationId_userId: {
+          organizationId: org.id,
+          userId: admin.id,
+        },
+      },
+      update: { role: "owner" },
+      create: {
+        id: crypto.randomUUID(),
+        organizationId: org.id,
+        userId: admin.id,
+        role: "owner",
       },
     });
   }

@@ -115,3 +115,30 @@ export async function getPublicConversationForVisitor(
     }),
   );
 }
+
+/**
+ * When a request arrives without a conversationId but with a known visitor,
+ * find the most recent still-open conversation for that visitor+agent so we
+ * can resume instead of spawning a duplicate. Only BOT/WAITING_HUMAN qualify
+ * — RESOLVED/ABANDONED/HUMAN should start a new conversation.
+ */
+export async function findLatestOpenConversationForVisitor(params: {
+  visitorId: string;
+  agentId: string;
+  maxAgeMs?: number;
+}) {
+  const maxAgeMs = params.maxAgeMs ?? 1000 * 60 * 60 * 24; // 24h
+  const cutoff = new Date(Date.now() - maxAgeMs);
+  return runAsAdmin(() =>
+    db.publicConversation.findFirst({
+      where: {
+        visitorId: params.visitorId,
+        agentId: params.agentId,
+        status: { in: ["BOT", "WAITING_HUMAN"] },
+        lastMessageAt: { gte: cutoff },
+      },
+      orderBy: { lastMessageAt: "desc" },
+      select: { id: true, status: true, agentId: true },
+    }),
+  );
+}

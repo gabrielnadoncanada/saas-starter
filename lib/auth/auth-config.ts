@@ -15,6 +15,20 @@ import { MagicLinkEmail } from "@/lib/email/templates/magic-link";
 import { ResetPasswordTemplate } from "@/lib/email/templates/reset-password";
 import { VerifyEmailTemplate } from "@/lib/email/templates/verify-email";
 
+const trustedOrigins = (process.env.AUTH_TRUSTED_ORIGINS ?? "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+if (process.env.NODE_ENV !== "production") {
+  for (const dev of [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+  ]) {
+    if (!trustedOrigins.includes(dev)) trustedOrigins.push(dev);
+  }
+}
+
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
@@ -22,6 +36,7 @@ export const auth = betterAuth({
   secret: process.env.AUTH_SECRET,
   baseURL: process.env.BASE_URL,
   basePath: "/api/auth",
+  trustedOrigins,
   user: {
     additionalFields: {
       role: {

@@ -11,18 +11,24 @@ export function generateVisitorId(): string {
 
 /**
  * Build the Set-Cookie header string for the visitor cookie. SameSite=None +
- * Secure is required because the widget lives on third-party sites and sends
- * the cookie cross-site to our endpoint.
+ * Secure is required in production because the widget lives on third-party
+ * sites and sends the cookie cross-site. On http://localhost the browser
+ * rejects Secure cookies, so we fall back to Lax in development.
  */
 export function buildVisitorCookieHeader(visitorId: string): string {
-  return [
+  const isProd = process.env.NODE_ENV === "production";
+  const parts = [
     `${VISITOR_COOKIE_NAME}=${visitorId}`,
     "Path=/",
     `Max-Age=${VISITOR_COOKIE_MAX_AGE_SECONDS}`,
     "HttpOnly",
-    "Secure",
-    "SameSite=None",
-  ].join("; ");
+  ];
+  if (isProd) {
+    parts.push("Secure", "SameSite=None");
+  } else {
+    parts.push("SameSite=Lax");
+  }
+  return parts.join("; ");
 }
 
 export function readVisitorIdFromCookieHeader(

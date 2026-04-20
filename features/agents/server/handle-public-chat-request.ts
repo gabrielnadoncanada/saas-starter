@@ -4,6 +4,8 @@ import { google } from "@ai-sdk/google";
 import { groq } from "@ai-sdk/groq";
 import {
   convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
   safeValidateUIMessages,
   stepCountIs,
   streamText,
@@ -19,6 +21,8 @@ import { corsHeaders, resolveAllowedOrigin } from "@/features/agents/server/cors
 import {
   appendPublicConversationMessages,
   createPublicConversation,
+  findLatestOpenConversationForVisitor,
+  getPublicConversation,
   getPublicConversationForVisitor,
 } from "@/features/agents/server/public-conversations";
 import { buildPublicChatTools } from "@/features/agents/server/tools";
@@ -210,18 +214,28 @@ export async function handlePublicChatRequest(
   const shouldSetCookie = !readVisitorIdFromCookieHeader(cookieHeader);
 
   let conversationId = parsedBody.data.conversationId ?? null;
+  let humanTakeoverActive = false;
   if (conversationId) {
     const convo = await getPublicConversationForVisitor(conversationId, visitorId);
     if (!convo || convo.agentId !== agent.id) {
       conversationId = null;
     } else if (convo.status === "HUMAN") {
-      return respond(
-        JSON.stringify({
-          error: "A human has taken over this conversation.",
-          code: "HUMAN_TAKEOVER",
-        }),
-        { status: 409, headers: { "Content-Type": "application/json" } },
-      );
+      humanTakeoverActive = true;
+    }
+  }
+
+  // If the client didn't send a conversationId (e.g., localStorage blocked or
+  // cookie/header round-trip failed), reuse the visitor's latest open
+  // conversation instead of spawning a duplicate inbox entry.
+  let reusedExisting = false;
+  if (!conversationId && existingVisitorId) {
+    const existing = await findLatestOpenConversationForVisitor({
+      visitorId,
+      agentId: agent.id,
+    });
+    if (existing) {
+      conversationId = existing.id;
+      reusedExisting = true;
     }
   }
 
@@ -233,13 +247,30 @@ export async function handlePublicChatRequest(
     visitorUserAgent: req.headers.get("user-agent") ?? undefined,
   };
 
+  // When reusing an existing conversation from a client that lost its local
+  // state, the client may only send the new user message. Merge with the
+  // server-side history (by message id) so we don't truncate the thread.
+  let threadMessages: UIMessage[] = messages;
+  if (reusedExisting && conversationId) {
+    const existingConvo = await getPublicConversation(
+      agent.organizationId,
+      conversationId,
+    );
+    const serverMsgs = Array.isArray(existingConvo?.messagesJson)
+      ? (existingConvo!.messagesJson as unknown as UIMessage[])
+      : [];
+    const seen = new Set(serverMsgs.map((m) => m.id));
+    const additions = messages.filter((m) => !seen.has(m.id));
+    threadMessages = [...serverMsgs, ...additions];
+  }
+
   if (!conversationId) {
     const created = await createPublicConversation({
       organizationId: agent.organizationId,
       agentId: agent.id,
       agentVersionId: agent.activeVersion?.id ?? null,
       visitorId,
-      messages,
+      messages: threadMessages,
       context,
     });
     conversationId = created.id;
@@ -247,11 +278,34 @@ export async function handlePublicChatRequest(
     await appendPublicConversationMessages({
       organizationId: agent.organizationId,
       conversationId,
-      messages,
+      messages: threadMessages,
     });
   }
 
-  const latestUserText = getLatestUserText(messages);
+  // Human takeover: the message is saved so the human agent sees it in the
+  // inbox, but the bot does NOT reply. Return an empty UI message stream so
+  // useChat completes the turn cleanly; the human's reply will reach the
+  // visitor via the polling endpoint.
+  if (humanTakeoverActive) {
+    const extraHeaders: Record<string, string> = {
+      "x-conversation-id": conversationId,
+      "x-visitor-id": visitorId,
+    };
+    if (shouldSetCookie) {
+      extraHeaders["Set-Cookie"] = buildVisitorCookieHeader(visitorId);
+    }
+    const emptyStream = createUIMessageStream({
+      execute: async () => {
+        // no assistant content; human replies asynchronously via the inbox
+      },
+    });
+    return createUIMessageStreamResponse({
+      stream: emptyStream,
+      headers: mergeHeaders(cors, extraHeaders),
+    });
+  }
+
+  const latestUserText = getLatestUserText(threadMessages);
   const systemPrompt = await buildSystemPrompt(agent, latestUserText);
   const model = getAgentModel(agent.modelId);
   const tools = buildPublicChatTools(
@@ -263,7 +317,7 @@ export async function handlePublicChatRequest(
     agent.toolsEnabled,
   );
 
-  const modelMessages = await convertToModelMessages(messages);
+  const modelMessages = await convertToModelMessages(threadMessages);
 
   const result = streamText({
     model,
@@ -291,7 +345,7 @@ export async function handlePublicChatRequest(
         await appendPublicConversationMessages({
           organizationId: capturedOrgId,
           conversationId: capturedConversationId,
-          messages: [...messages, ...finalMessages] as UIMessage[],
+          messages: [...threadMessages, ...finalMessages] as UIMessage[],
         });
       } catch (error) {
         console.error("[public-chat] failed to persist final messages", error);
