@@ -178,6 +178,11 @@ function TabbedSplitShowcase({
 
 function ShowcaseMedia({ item }: { item: SplitShowcaseItem }) {
   if (item.media.type === "video") {
+    const mime = item.media.src.endsWith(".webm")
+      ? "video/webm"
+      : item.media.src.endsWith(".mov")
+        ? "video/quicktime"
+        : "video/mp4";
     return (
       <video
         key={item.media.src}
@@ -191,7 +196,7 @@ function ShowcaseMedia({ item }: { item: SplitShowcaseItem }) {
         preload="auto"
         poster={item.media.poster}
       >
-        <source src={item.media.src} type="video/mp4" />
+        <source src={item.media.src} type={mime} />
       </video>
     );
   }
