@@ -7,11 +7,13 @@ import {
   FinalCtaSection,
   Hero,
   HeroActions,
+  LogoCloud,
   PricingSection,
+  ScreenshotGallery,
   Section,
   SectionHeading,
-  SplitShowcase,
 } from "@/features/marketing/components";
+import type { GalleryCategory } from "@/features/marketing/components/screenshot-gallery";
 import { cn } from "@/lib/utils";
 
 const featureItems = [
@@ -149,6 +151,203 @@ const comparisonColumns = [
       "Built for real buyer needs",
     ],
     tone: "brand" as const,
+  },
+];
+
+const galleryCategories: GalleryCategory[] = [
+  {
+    id: "marketing",
+    label: "Marketing",
+    shots: [
+      {
+        id: "marketing-home",
+        caption: "Marketing / Home",
+        alt: "Marketing homepage with hero, features, and pricing",
+        src: "/marketing/screenshots/docs.png",
+      },
+      {
+        id: "marketing-docs",
+        caption: "Marketing / Docs",
+        alt: "Documentation layout",
+        src: "/marketing/screenshots/docs.png",
+      },
+      {
+        id: "marketing-plan-gate",
+        caption: "Marketing / Plan gate",
+        alt: "Plan gate paywall surface",
+        src: "/marketing/screenshots/plan-gate.png",
+      },
+      {
+        id: "marketing-placeholder",
+        caption: "Marketing / Changelog",
+        alt: "Changelog page",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+    ],
+  },
+  {
+    id: "auth",
+    label: "Auth",
+    shots: [
+      {
+        id: "auth-sign-in",
+        caption: "Auth / Sign in",
+        alt: "Sign-in page",
+        src: "/marketing/screenshots/login.png",
+      },
+      {
+        id: "auth-sign-up",
+        caption: "Auth / Sign up",
+        alt: "Sign-up page",
+        src: "/marketing/screenshots/login.png",
+      },
+      {
+        id: "auth-forgot",
+        caption: "Auth / Forgot password",
+        alt: "Forgot password flow",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "auth-magic-link",
+        caption: "Auth / Magic link",
+        alt: "Magic link request screen",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+    ],
+  },
+  {
+    id: "account",
+    label: "Personal account",
+    shots: [
+      {
+        id: "account-profile",
+        caption: "Account / Profile",
+        alt: "Profile settings",
+        src: "/marketing/screenshots/settings.png",
+      },
+      {
+        id: "account-billing",
+        caption: "Account / Billing",
+        alt: "Billing settings",
+        src: "/marketing/screenshots/billing.png",
+      },
+      {
+        id: "account-security",
+        caption: "Account / Security",
+        alt: "Security settings with sessions",
+        src: "/marketing/screenshots/settings.png",
+      },
+      {
+        id: "account-notifications",
+        caption: "Account / Notifications",
+        alt: "Notification preferences",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+    ],
+  },
+  {
+    id: "organization",
+    label: "Organization",
+    note: "Multi-tenant, with the AI surfaces you will actually ship.",
+    shots: [
+      {
+        id: "org-dashboard",
+        caption: "Organization / Dashboard",
+        alt: "Organization dashboard",
+        src: "/marketing/screenshots/dashboard.png",
+      },
+      {
+        id: "org-tasks",
+        caption: "Organization / Tasks",
+        alt: "Tasks feature",
+        src: "/marketing/screenshots/tasks.png",
+      },
+      {
+        id: "org-team",
+        caption: "Organization / Team",
+        alt: "Team members and roles",
+        src: "/marketing/screenshots/team.png",
+      },
+      {
+        id: "org-billing",
+        caption: "Organization / Billing",
+        alt: "Organization billing",
+        src: "/marketing/screenshots/billing.png",
+      },
+      {
+        id: "org-ai-chat",
+        caption: "Organization / AI assistant",
+        alt: "Organization-scoped AI assistant",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "org-public-chat",
+        caption: "Organization / Public chat inbox",
+        alt: "Public chat inbox with human handoff",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+    ],
+  },
+  {
+    id: "admin",
+    label: "Admin panel",
+    shots: [
+      {
+        id: "admin-users",
+        caption: "Admin / Users",
+        alt: "Admin users directory",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "admin-organizations",
+        caption: "Admin / Organizations",
+        alt: "Admin organizations directory",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "admin-activity",
+        caption: "Admin / Activity",
+        alt: "Admin activity log",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "admin-billing",
+        caption: "Admin / Billing overview",
+        alt: "Admin billing overview",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+    ],
+  },
+  {
+    id: "emails",
+    label: "Emails",
+    footer: "+ 4 more transactional email templates ready to use.",
+    shots: [
+      {
+        id: "email-welcome",
+        caption: "Email / Welcome",
+        alt: "Welcome email template",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "email-magic-link",
+        caption: "Email / Magic link",
+        alt: "Magic link email",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "email-invoice",
+        caption: "Email / Invoice",
+        alt: "Invoice email",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+      {
+        id: "email-invite",
+        caption: "Email / Team invite",
+        alt: "Team invite email",
+        src: "/marketing/screenshots/placeholder.webp",
+      },
+    ],
   },
 ];
 
@@ -332,10 +531,45 @@ export default function MarketingPage() {
         </div>
       </section>
 
+      <Section containerClassName="py-14 md:py-16">
+        <LogoCloud
+          title="Everything you need to launch with confidence"
+          logos={[
+            "Production auth",
+            "Subscription billing",
+            "Team organizations",
+            "Dashboard & settings",
+            "Clear conventions",
+            "Real product surfaces",
+          ]}
+        />
+      </Section>
+
+      <Section id="gallery" containerClassName="py-20 md:py-24">
+        <SectionHeading
+          index="01"
+          eyebrow="Full tour"
+          align="center"
+          title={
+            <>
+              Every surface you get, on <BrandItalic>day one</BrandItalic>.
+            </>
+          }
+          description="Browse the full product by category. Not three cherry-picked screens — the actual shell your users will see before you write a single line of custom code."
+          className="mb-14"
+        />
+
+        <ScreenshotGallery
+          categories={galleryCategories}
+          defaultCategoryId="organization"
+          stickyTop="top-16"
+        />
+      </Section>
+
       <Section id="positioning">
         <div className="grid gap-16 lg:grid-cols-[1.1fr_1fr] lg:items-start">
           <SectionHeading
-            index="01"
+            index="02"
             eyebrow="Positioning"
             title={
               <>
@@ -371,214 +605,9 @@ export default function MarketingPage() {
         </div>
       </Section>
 
-      <Section id="showcase-foundations">
-        <SectionHeading
-          index="02"
-          eyebrow="Foundations"
-          align="center"
-          title={
-            <>
-              Infrastructure that already{" "}
-              <BrandItalic>feels finished</BrandItalic>.
-            </>
-          }
-          description="Auth, billing, and dashboard — the expensive plumbing every SaaS has to build. Shipped, wired, and ready to extend."
-          className="mb-14"
-        />
-        <SplitShowcase
-          defaultItemId="dashboard-overview"
-          items={[
-            {
-              id: "dashboard-overview",
-              title: "Dashboard that feels real",
-              description:
-                "Product-ready layout with stats, activity, and navigation.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/dashboard.png",
-                alt: "Launch from a product that already feels real",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "production-auth",
-              title: "Production-ready auth",
-              description:
-                "Email, password, OAuth, and magic links — not demo-level auth.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/login.png",
-                alt: "Production-ready authentication, not demo-level auth",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "billing-foundations",
-              title: "Real monetization",
-              description:
-                "Plans, subscriptions, and feature gating that work from day one.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/billing.png",
-                alt: "Real monetization foundations from day one",
-                width: 1600,
-                height: 1000,
-              },
-            },
-          ]}
-        />
-      </Section>
-
-      <Section id="showcase-product">
-        <SectionHeading
-          index="03"
-          eyebrow="Product surfaces"
-          align="center"
-          title={
-            <>
-              A real app, not just <BrandItalic>infra screens</BrandItalic>.
-            </>
-          }
-          description="Teams, settings, and core product flows — the surfaces your buyers actually touch, built to look launched from day one."
-          className="mb-14"
-        />
-        <SplitShowcase
-          defaultItemId="team-structure"
-          items={[
-            {
-              id: "team-structure",
-              title: "Built for real SaaS usage",
-              description:
-                "Members, roles, and invitations — not just solo demo flows.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/team.png",
-                alt: "Built for real SaaS usage, not just solo demo flows",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "launch-ready",
-              title: "Launch-ready settings",
-              description:
-                "Account, security, and organization surfaces that feel complete.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/settings.png",
-                alt: "Launch-ready settings that make the product feel complete",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "core-app",
-              title: "A real app foundation",
-              description:
-                "Core product surfaces, not just infrastructure screens.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/tasks.png",
-                alt: "A real app foundation, not just infrastructure screens",
-                width: 1600,
-                height: 1000,
-              },
-            },
-          ]}
-        />
-      </Section>
-
-      <Section id="showcase-power">
-        <SectionHeading
-          index="04"
-          eyebrow="Power features"
-          align="center"
-          title={
-            <>
-              The parts most starters{" "}
-              <BrandItalic>quietly skip</BrandItalic>.
-            </>
-          }
-          description="An AI assistant with chart artifacts, an admin panel with impersonation, plan-gated features, and a real audit log — all wired in, not left as an exercise."
-          className="mb-14"
-        />
-        <SplitShowcase
-          defaultItemId="ai-assistant"
-          items={[
-            {
-              id: "ai-assistant",
-              title: "AI assistant with artifacts",
-              description:
-                "Streaming chat across Google, OpenAI & Groq — with chart and document artifacts that render inline.",
-              media: {
-                type: "video",
-                src: "/marketing/videos/chart-artifact.webm",
-                poster: "/marketing/screenshots/assistant.png",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "admin-panel",
-              title: "Admin panel, not a debug view",
-              description:
-                "User & org management, impersonation, ban / unban, and a signups + plan-breakdown dashboard.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/admin-dashboard.png",
-                alt: "Admin dashboard with signups chart and plan distribution",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "plan-gating",
-              title: "Plan gating that actually blocks",
-              description:
-                "Features and usage limits enforced on both the server and the UI — not just a pricing table.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/plan-gate.png",
-                alt: "Feature blocked by plan gate prompting upgrade",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "activity-log",
-              title: "Audit-ready activity log",
-              description:
-                "Every member, invite, and billing change recorded per organization — the thing enterprise buyers ask for first.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/activity.png",
-                alt: "Activity log listing member, invite and billing events",
-                width: 1600,
-                height: 1000,
-              },
-            },
-            {
-              id: "docs",
-              title: "Docs your buyers can read too",
-              description:
-                "A built-in documentation surface — ship setup, usage, and architecture notes from day one.",
-              media: {
-                type: "image",
-                src: "/marketing/screenshots/docs.png",
-                alt: "In-app documentation page",
-                width: 1600,
-                height: 1000,
-              },
-            },
-          ]}
-        />
-      </Section>
-
       <Section id="features">
         <SectionHeading
-          index="05"
+          index="03"
           eyebrow="What's included"
           align="center"
           title={
@@ -622,7 +651,7 @@ export default function MarketingPage() {
       <Section id="comparison">
         <SectionHeading
           align="center"
-          index="06"
+          index="04"
           eyebrow="Comparison"
           title={
             <>
@@ -698,7 +727,7 @@ export default function MarketingPage() {
       <Section id="use-cases">
         <SectionHeading
           align="center"
-          index="07"
+          index="05"
           eyebrow="Use cases"
           title={
             <>
@@ -739,7 +768,7 @@ export default function MarketingPage() {
       <Section id="value">
         <SectionHeading
           align="center"
-          index="08"
+          index="06"
           eyebrow="What you're actually buying"
           title={
             <>
@@ -830,7 +859,7 @@ export default function MarketingPage() {
       <Section id="pricing">
         <SectionHeading
           align="center"
-          index="09"
+          index="07"
           eyebrow="Pricing"
           title={
             <>
@@ -847,7 +876,7 @@ export default function MarketingPage() {
 
       <Section id="faq">
         <SectionHeading
-          index="10"
+          index="08"
           eyebrow="FAQ"
           align="center"
           title={

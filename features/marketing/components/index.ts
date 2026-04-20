@@ -10,6 +10,7 @@ export * from "@/features/marketing/components/logo-cloud";
 export * from "@/features/marketing/components/marketing-footer";
 export * from "@/features/marketing/components/marketing-header";
 export * from "@/features/marketing/components/pricing-section";
+export * from "@/features/marketing/components/screenshot-gallery";
 export * from "@/features/marketing/components/section";
 export * from "@/features/marketing/components/section-heading";
 export * from "@/features/marketing/components/split-showcase";
