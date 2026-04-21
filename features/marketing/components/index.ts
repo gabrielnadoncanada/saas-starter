@@ -6,6 +6,7 @@ export * from "@/features/marketing/components/feature-grid";
 export * from "@/features/marketing/components/final-cta-section";
 export * from "@/features/marketing/components/hero";
 export * from "@/features/marketing/components/hero-actions";
+export * from "@/features/marketing/components/legal-page";
 export * from "@/features/marketing/components/logo-cloud";
 export * from "@/features/marketing/components/marketing-footer";
 export * from "@/features/marketing/components/marketing-header";

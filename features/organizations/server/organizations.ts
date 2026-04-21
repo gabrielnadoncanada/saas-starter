@@ -37,39 +37,6 @@ export class OrganizationMembershipError extends Error {
   }
 }
 
-/**
- * Returns the active organization id from the session, auto-selecting the
- * user's first org if none is set. Used internally by `getCurrentOrganization`.
- */
-async function resolveActiveOrganizationId(): Promise<string | null> {
-  const session = await getAuthSession();
-
-  if (!session?.user) {
-    return null;
-  }
-
-  if (session.session.activeOrganizationId) {
-    return session.session.activeOrganizationId;
-  }
-
-  const reqHeaders = await headers();
-  const organizations = await auth.api.listOrganizations({
-    headers: reqHeaders,
-  });
-  const organizationId = organizations?.[0]?.id ?? null;
-
-  if (!organizationId) {
-    return null;
-  }
-
-  await auth.api.setActiveOrganization({
-    headers: reqHeaders,
-    body: { organizationId },
-  });
-
-  return organizationId;
-}
-
 export async function getActiveOrganizationMembership(): Promise<ActiveOrganizationMembership | null> {
   const user = await getCurrentUser();
 
@@ -201,13 +168,33 @@ function mapCurrentOrganization(
  */
 export const getCurrentOrganization = cache(
   async (): Promise<CurrentOrganizationView | null> => {
-    const orgId = await resolveActiveOrganizationId();
+    const session = await getAuthSession();
 
-    if (!orgId) {
+    if (!session?.user) {
       return null;
     }
 
     const reqHeaders = await headers();
+    let orgId = session.session.activeOrganizationId ?? null;
+
+    // Auto-select the user's first org when the session has none set, so
+    // layouts and pages always render a valid tenant.
+    if (!orgId) {
+      const organizations = await auth.api.listOrganizations({
+        headers: reqHeaders,
+      });
+      orgId = organizations?.[0]?.id ?? null;
+
+      if (!orgId) {
+        return null;
+      }
+
+      await auth.api.setActiveOrganization({
+        headers: reqHeaders,
+        body: { organizationId: orgId },
+      });
+    }
+
     const [organization, subscription] = await Promise.all([
       auth.api.getFullOrganization({
         query: { organizationId: orgId },

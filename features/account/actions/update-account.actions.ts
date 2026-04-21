@@ -24,53 +24,32 @@ export const updateAccountAction = validatedAuthenticatedAction(
         : null;
 
     try {
-      if (avatar) {
-        const image = await saveUserAvatar({
-          userId: user.id,
-          file: avatar,
-        });
+      const body: { name: string; image?: string | null } = { name };
 
-        await auth.api.updateUser({
-          headers: await headers(),
-          body: {
-            name,
-            image,
-          },
-        });
+      if (avatar) {
+        body.image = await saveUserAvatar({ userId: user.id, file: avatar });
       } else if (removeAvatar) {
         await deleteUserAvatar(user.id);
-
-        await auth.api.updateUser({
-          headers: await headers(),
-          body: {
-            name,
-            image: null,
-          },
-        });
-      } else {
-        await auth.api.updateUser({
-          headers: await headers(),
-          body: {
-            name,
-          },
-        });
+        body.image = null;
       }
 
+      await auth.api.updateUser({
+        headers: await headers(),
+        body,
+      });
+
       revalidatePath(routes.settings.profile);
+      revalidatePath("/", "layout");
 
       return {
         success: "Account updated successfully.",
-        values: {
-          name,
-        },
+        values: { name },
       };
     } catch (error) {
       return {
         error:
           error instanceof Error ? error.message : "Unable to update account.",
-        values: {
-          name,
-        },
+        values: { name },
       };
     }
   },

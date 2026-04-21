@@ -1,9 +1,9 @@
-# SaaS Starter Commercial License
+# Tenviq Commercial License
 
 **Version 1.0 — Effective 2026-04-16**
 
 This is a legal agreement between you (the "Licensee") and Tenviq (the
-"Licensor") regarding your use of the SaaS Starter codebase (the "Product").
+"Licensor") regarding your use of the Tenviq starter codebase (the "Product").
 By purchasing, downloading, cloning, or otherwise accessing the Product, you
 agree to the terms below.
 

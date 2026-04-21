@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "SaaS Starter — Auth, Billing, and Plan Gating Built In";
+export const alt = "Tenviq — Auth, Billing, and Plan Gating Built In";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -41,7 +41,7 @@ export default async function OpenGraphImage() {
               display: "flex",
             }}
           />
-          SaaS Starter
+          Tenviq
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -85,7 +85,7 @@ export default async function OpenGraphImage() {
             <span>Better Auth</span>
             <span>Prisma</span>
           </div>
-          <div>saas-starter.dev</div>
+          <div>tenviq.com</div>
         </div>
       </div>
     ),

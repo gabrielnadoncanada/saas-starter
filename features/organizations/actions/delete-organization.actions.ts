@@ -49,9 +49,16 @@ export const deleteOrganizationAction = validatedAuthenticatedAction(
         }
       }
 
-      await db.organization.delete({ where: { id: organizationId } });
-
       const reqHeaders = await headers();
+
+      // better-auth handles the cascade delete, permission re-check (owner),
+      // and clears the active organization on the session.
+      await auth.api.deleteOrganization({
+        headers: reqHeaders,
+        body: { organizationId },
+      });
+
+      // Auto-select a remaining org so the user lands on a valid tenant.
       const remainingOrgs = await auth.api.listOrganizations({
         headers: reqHeaders,
       });

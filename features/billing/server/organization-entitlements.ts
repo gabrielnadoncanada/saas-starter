@@ -1,15 +1,12 @@
 import "server-only";
 
-import type {
-  OrganizationEntitlements,
-  PlanId,
-} from "@/config/billing.config";
+import type { OrganizationEntitlements } from "@/config/billing.config";
 import { getDefaultEntitlements } from "@/features/billing/entitlements";
 import {
   getPlan,
-  hasPlanAccess,
   isPlanId,
   normalizeBillingInterval,
+  PLAN_ACCESS_STATUSES,
 } from "@/features/billing/plans";
 import { getCurrentOrganization } from "@/features/organizations/server/organizations";
 import { db } from "@/lib/db/prisma";
@@ -18,15 +15,14 @@ export async function resolveEntitlements(
   organizationId: string,
 ): Promise<OrganizationEntitlements> {
   const subscription = await db.subscription.findFirst({
-    where: { referenceId: organizationId },
+    where: {
+      referenceId: organizationId,
+      status: { in: [...PLAN_ACCESS_STATUSES] },
+    },
     orderBy: { updatedAt: "desc" },
   });
 
-  if (
-    !subscription ||
-    !hasPlanAccess(subscription.status) ||
-    !isPlanId(subscription.plan)
-  ) {
+  if (!subscription || !isPlanId(subscription.plan)) {
     return getDefaultEntitlements({ organizationId });
   }
 
@@ -37,11 +33,11 @@ export async function resolveEntitlements(
     capabilities: [...plan.capabilities],
     limits: { ...plan.limits },
     organizationId,
-    planId: plan.id as PlanId,
+    planId: subscription.plan,
     planName: plan.name,
     stripeCustomerId: subscription.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription.stripeSubscriptionId ?? null,
-    subscriptionStatus: subscription.status ?? null,
+    subscriptionStatus: subscription.status,
     trialEnd: subscription.trialEnd ?? null,
   };
 }

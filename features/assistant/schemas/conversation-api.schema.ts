@@ -1,3 +1,4 @@
+import type { UIMessage } from "ai";
 import { z } from "zod";
 
 export const assistantConversationListItemSchema = z.object({
@@ -15,14 +16,13 @@ export const assistantConversationListSchema = z.array(
   assistantConversationListItemSchema,
 );
 
-export const assistantConversationSchema =
-  assistantConversationListItemSchema.extend({
-    messages: z.array(z.unknown()),
-  });
+// Only validates the conversation envelope. Messages are validated separately
+// with `safeValidateUIMessages` from the AI SDK (see
+// `features/assistant/client/assistant-conversations-api.ts` and
+// `features/assistant/server/handle-assistant-request.ts`).
+export const assistantConversationEnvelopeSchema =
+  assistantConversationListItemSchema;
 
-export type AssistantConversation = Omit<
-  z.infer<typeof assistantConversationSchema>,
-  "messages"
-> & {
-  messages: import("ai").UIMessage[];
+export type AssistantConversation = AssistantConversationListItem & {
+  messages: UIMessage[];
 };

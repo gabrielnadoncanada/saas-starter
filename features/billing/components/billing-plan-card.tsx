@@ -17,18 +17,10 @@ import {
   formatPriceAmount,
   getBillingIntervalSuffix,
 } from "@/features/billing/format-price";
-
-export type BillingPlanOption = {
-  id: string;
-  name: string;
-  description: string;
-  features: string[];
-  monthly: BillingPrice | null;
-  yearly: BillingPrice | null;
-};
+import type { PricingPlanView } from "@/features/billing/types";
 
 export function getPlanPrice(
-  plan: BillingPlanOption,
+  plan: PricingPlanView,
   interval: BillingInterval,
 ) {
   return interval === "year" ? plan.yearly : plan.monthly;
@@ -64,7 +56,7 @@ export function BillingPlanCard({
   currentPlanId,
   interval,
 }: {
-  plan: BillingPlanOption;
+  plan: PricingPlanView;
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   interval: BillingInterval;

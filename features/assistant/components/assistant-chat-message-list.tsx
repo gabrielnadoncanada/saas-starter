@@ -10,31 +10,27 @@ import {
 import { AssistantChatEmptyState } from "@/features/assistant/components/assistant-chat-empty-state";
 import { AssistantToolResult } from "@/features/assistant/components/assistant-tool-result";
 import { AssistantChartArtifact } from "@/features/assistant/components/chart-artifact";
-import type {
-  ChartSpec,
-  GenerateChartToolResult,
-} from "@/features/assistant/types";
+import type { GenerateChartToolResult } from "@/features/assistant/types";
 import {
   getToolName,
   isToolPart,
 } from "@/features/assistant/utils/message-parts";
 
 function getChartArtifact(part: UIMessage["parts"][number]) {
-  if (!isToolPart(part)) {
+  if (!isToolPart(part) || !("output" in part)) {
     return null;
   }
 
-  const toolName = getToolName(part);
-  if (toolName !== "generateChart" || !("output" in part)) {
+  if (getToolName(part) !== "generateChart") {
     return null;
   }
 
   const output = part.output as GenerateChartToolResult | undefined;
-  if (!output || !output.success) {
+  if (!output?.success) {
     return null;
   }
 
-  return output.chart as ChartSpec;
+  return output.chart;
 }
 
 function renderInlinePart(

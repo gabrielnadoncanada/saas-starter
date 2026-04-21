@@ -76,7 +76,7 @@ export async function resendOrganizationInvitation(input: {
     headers: requestHeaders,
   });
   const invitation = (invitations ?? []).find(
-    (item: OrganizationInvitationRow) =>
+    (item) =>
       item.id === input.invitationId && isInvitationPending(item.status),
   );
 

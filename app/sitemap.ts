@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { comparisons } from "@/app/(marketing)/compare/_data/comparisons";
 import { routes } from "@/constants/routes";
 import { blogSource } from "@/lib/blog/source";
 import { docsSource } from "@/lib/docs/source";
@@ -17,6 +18,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}${routes.marketing.license}`, lastModified, changeFrequency: "yearly" as const, priority: 0.5 },
     { url: `${base}${routes.marketing.privacy}`, lastModified, changeFrequency: "yearly" as const, priority: 0.3 },
     { url: `${base}${routes.marketing.terms}`, lastModified, changeFrequency: "yearly" as const, priority: 0.3 },
+    { url: `${base}/compare`, lastModified, changeFrequency: "monthly" as const, priority: 0.8 },
+    ...comparisons.map((c) => ({
+      url: `${base}/compare/${c.slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    })),
   ];
 
   const docEntries: MetadataRoute.Sitemap = docsSource.getPages().map((page) => ({

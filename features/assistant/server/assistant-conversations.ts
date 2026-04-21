@@ -56,6 +56,8 @@ function getConversationPreview(messages: UIMessage[]) {
 }
 
 function serializeMessages(messages: UIMessage[]): Prisma.InputJsonValue {
+  // UIMessage is JSON-safe but carries branded types that don't satisfy
+  // Prisma.InputJsonValue structurally; cast once here.
   return messages as unknown as Prisma.InputJsonValue;
 }
 
@@ -64,10 +66,7 @@ async function parseMessages(messagesJson: Prisma.JsonValue) {
     return [];
   }
 
-  const result = await safeValidateUIMessages<UIMessage>({
-    messages: messagesJson,
-  });
-
+  const result = await safeValidateUIMessages({ messages: messagesJson });
   return result.success ? result.data : [];
 }
 

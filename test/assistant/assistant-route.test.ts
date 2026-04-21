@@ -30,21 +30,6 @@ vi.mock("@/features/assistant/server/organization-ai-access", () => ({
   assertOrganizationAiAccess: vi.fn(),
 }));
 
-vi.mock("@/features/assistant/server/assistant-model-selection", () => {
-  class MockAssistantModelSelectionError extends Error {
-    code = "UNKNOWN_MODEL" as const;
-
-    constructor(message: string) {
-      super(message);
-    }
-  }
-
-  return {
-    AssistantModelSelectionError: MockAssistantModelSelectionError,
-    selectAssistantModel: vi.fn(),
-  };
-});
-
 vi.mock("@/lib/ai/get-model-instance", () => ({
   getAiModelInstance: vi.fn(() => ({
     definition: { id: "gemini-2.5-flash" },
@@ -64,8 +49,7 @@ const { streamText } = await import("ai");
 const { getCurrentUser } = await import("@/lib/auth/get-current-user");
 const { assertOrganizationAiAccess } =
   await import("@/features/assistant/server/organization-ai-access");
-const { selectAssistantModel } =
-  await import("@/features/assistant/server/assistant-model-selection");
+const { getAiModelInstance } = await import("@/lib/ai/get-model-instance");
 const { getAssistantConversation } =
   await import("@/features/assistant/server/assistant-conversations");
 const { POST } = await import("@/app/api/assistant/route");
@@ -86,16 +70,6 @@ describe("POST /api/assistant", () => {
       stripeSubscriptionId: null,
       subscriptionStatus: "active",
     } as never);
-    vi.mocked(selectAssistantModel).mockResolvedValue({
-      model: {
-        id: "gemini-2.5-flash",
-        name: "Gemini 2.5 Flash",
-        provider: "google",
-        providerLabel: "Google",
-      },
-      defaultModelId: "gemini-2.5-flash",
-      allowedModels: [],
-    });
     vi.mocked(getAssistantConversation).mockResolvedValue(null);
   });
 
@@ -172,9 +146,6 @@ describe("POST /api/assistant", () => {
 
     expect(response.status).toBe(200);
     expect(streamText).toHaveBeenCalled();
-    expect(selectAssistantModel).toHaveBeenCalledWith(
-      "12",
-      undefined,
-    );
+    expect(getAiModelInstance).toHaveBeenCalledWith("gemini-2.5-flash");
   });
 });

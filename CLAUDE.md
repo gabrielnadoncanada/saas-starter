@@ -1,6 +1,6 @@
-# SaaS Starter
+# Tenviq
 
-Next.js SaaS boilerplate with multi-tenant organizations, billing, AI assistant, and admin panel.
+Tenviq is a Next.js SaaS starter with multi-tenant organizations, billing, AI assistant, and admin panel.
 
 ## Tech Stack
 

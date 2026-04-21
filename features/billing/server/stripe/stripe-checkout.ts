@@ -1,4 +1,8 @@
-import type { BillingInterval, PlanId } from "@/config/billing.config";
+import {
+  checkoutSettings,
+  type BillingInterval,
+  type PlanId,
+} from "@/config/billing.config";
 import { routes } from "@/constants/routes";
 import {
   buildPlanCheckoutLineItems,
@@ -9,29 +13,6 @@ import { db } from "@/lib/db/prisma";
 import { stripe } from "@/lib/stripe/client";
 
 import { ensureStripeCustomer } from "./stripe-customers";
-
-function getBooleanEnv(name: string, defaultValue = false) {
-  const value = process.env[name]?.trim().toLowerCase();
-  if (value === "true") return true;
-  if (value === "false") return false;
-  return defaultValue;
-}
-
-function getCheckoutSettings() {
-  const automaticTax = getBooleanEnv("ENABLE_AUTOMATIC_TAX_CALCULATION");
-  const taxIdCollection = getBooleanEnv("ENABLE_TAX_ID_COLLECTION");
-  const billingAddressRequired = getBooleanEnv(
-    "STRIPE_REQUIRE_BILLING_ADDRESS",
-    automaticTax || taxIdCollection,
-  );
-
-  return {
-    automaticTax,
-    billingAddressRequired,
-    taxIdCollection,
-    trialWithoutCard: getBooleanEnv("STRIPE_ENABLE_TRIAL_WITHOUT_CC"),
-  };
-}
 
 async function assertNoActiveSubscription(organizationId: string) {
   const currentSubscription = await db.subscription.findFirst({
@@ -45,7 +26,7 @@ async function assertNoActiveSubscription(organizationId: string) {
 
   if (currentSubscription) {
     throw new Error(
-      "Existing subscriptions must be updated from billing settings.",
+      "Existing subscriptions must be updated from billing checkoutSettings.",
     );
   }
 }
@@ -64,48 +45,43 @@ export async function createSubscriptionCheckout(params: {
 
   await assertNoActiveSubscription(params.organizationId);
 
-  const customerId = await ensureStripeCustomer(
-    params.organizationId,
-  );
-  const settings = getCheckoutSettings();
+  const customerId = await ensureStripeCustomer(params.organizationId);
+  const trialDays =
+    plan.intervalPricing[params.billingInterval]?.lineItems[0]?.price.trialDays;
+  const metadata = {
+    billingInterval: params.billingInterval,
+    checkoutType: "subscription",
+    organizationId: params.organizationId,
+    planId: plan.id,
+  };
+  const billingBase = process.env.BASE_URL;
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
     allow_promotion_codes: true,
-    billing_address_collection: settings.billingAddressRequired
+    billing_address_collection: checkoutSettings.billingAddressRequired
       ? "required"
       : undefined,
-    automatic_tax: settings.automaticTax ? { enabled: true } : undefined,
-    tax_id_collection: settings.taxIdCollection ? { enabled: true } : undefined,
-    payment_method_collection: settings.trialWithoutCard
+    automatic_tax: checkoutSettings.automaticTax ? { enabled: true } : undefined,
+    tax_id_collection: checkoutSettings.taxIdCollection ? { enabled: true } : undefined,
+    payment_method_collection: checkoutSettings.trialWithoutCard
       ? "if_required"
       : undefined,
     client_reference_id: params.organizationId,
     line_items: lineItems,
     success_url: new URL(
       `${routes.settings.billing}?checkout=success`,
-      process.env.BASE_URL,
+      billingBase,
     ).toString(),
     cancel_url: new URL(
       `${routes.settings.billing}?checkout=cancelled`,
-      process.env.BASE_URL,
+      billingBase,
     ).toString(),
-    metadata: {
-      billingInterval: params.billingInterval,
-      checkoutType: "subscription",
-      organizationId: params.organizationId,
-      planId: plan.id,
-    },
+    metadata,
     subscription_data: {
-      metadata: {
-        billingInterval: params.billingInterval,
-        checkoutType: "subscription",
-        organizationId: params.organizationId,
-        planId: plan.id,
-      },
-      trial_period_days: lineItems.length > 0
-        ? plan.intervalPricing[params.billingInterval]?.lineItems[0]?.price.trialDays
-        : undefined,
+      metadata,
+      trial_period_days: trialDays,
     },
   });
 

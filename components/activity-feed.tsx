@@ -46,6 +46,10 @@ const ACTION_DEFINITIONS: Record<
     label: "started a subscription",
     icon: CreditCard,
   },
+  "subscription.updated": {
+    label: "updated a subscription",
+    icon: CreditCard,
+  },
   "subscription.cancelled": {
     label: "cancelled a subscription",
     icon: CreditCard,

@@ -180,3 +180,23 @@ export const billingConfig = {
 
 export type PlanId = (typeof billingConfig.plans)[number]["id"];
 export type PaidPlanId = Exclude<PlanId, "free">;
+
+function parseBooleanEnv(name: string, defaultValue = false) {
+  const value = process.env[name]?.trim().toLowerCase();
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return defaultValue;
+}
+
+const automaticTaxEnabled = parseBooleanEnv("ENABLE_AUTOMATIC_TAX_CALCULATION");
+const taxIdCollectionEnabled = parseBooleanEnv("ENABLE_TAX_ID_COLLECTION");
+
+export const checkoutSettings = {
+  automaticTax: automaticTaxEnabled,
+  taxIdCollection: taxIdCollectionEnabled,
+  billingAddressRequired: parseBooleanEnv(
+    "STRIPE_REQUIRE_BILLING_ADDRESS",
+    automaticTaxEnabled || taxIdCollectionEnabled,
+  ),
+  trialWithoutCard: parseBooleanEnv("STRIPE_ENABLE_TRIAL_WITHOUT_CC"),
+} as const;

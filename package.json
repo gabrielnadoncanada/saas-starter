@@ -27,7 +27,8 @@
     "db:seed": "pnpm exec prisma db seed",
     "db:reset": "pnpm exec prisma migrate reset",
     "db:studio": "pnpm exec prisma studio",
-    "marketing:screenshots": "pnpm exec tsx scripts/capture-marketing-screenshots.ts"
+    "marketing:screenshots": "pnpm exec tsx scripts/capture-marketing-screenshots.ts",
+    "release:starter": "pnpm exec tsx scripts/release/index.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.43",

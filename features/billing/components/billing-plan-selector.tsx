@@ -28,12 +28,10 @@ import { changePlanAction } from "@/features/billing/actions/subscription-config
 import { BillingIntervalSelector } from "@/features/billing/components/billing-interval-selector";
 import {
   BillingPlanCard,
-  type BillingPlanOption,
   getPlanPrice,
 } from "@/features/billing/components/billing-plan-card";
 import { hasAnnualPlans } from "@/features/billing/plans";
-
-export type { BillingPlanOption } from "@/features/billing/components/billing-plan-card";
+import type { PricingPlanView } from "@/features/billing/types";
 
 type BillingPlanSelectorProps = {
   canManageBilling: boolean;
@@ -42,7 +40,7 @@ type BillingPlanSelectorProps = {
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   hasCurrentSubscription: boolean;
-  plans: BillingPlanOption[];
+  plans: PricingPlanView[];
 };
 
 function BillingPlanRadioGroup({
@@ -53,7 +51,7 @@ function BillingPlanRadioGroup({
   selectedPlanId,
   onValueChange,
 }: {
-  plans: BillingPlanOption[];
+  plans: PricingPlanView[];
   currentBillingInterval: BillingInterval | null;
   currentPlanId: PlanId;
   interval: BillingInterval;
@@ -66,13 +64,7 @@ function BillingPlanRadioGroup({
 
       <RadioGroup
         value={selectedPlanId}
-        onValueChange={(value) => {
-          const selectedPlan = plans.find((plan) => plan.id === value);
-
-          if (selectedPlan) {
-            onValueChange(selectedPlan.id);
-          }
-        }}
+        onValueChange={onValueChange}
         className="gap-3"
       >
         {plans.map((plan) => (
@@ -137,11 +129,12 @@ export function BillingPlanSelector({
     const currentIndex = plans.findIndex((p) => p.id === currentPlanId);
     const selectedIndex = plans.findIndex((p) => p.id === selectedPlanId);
 
-    if (currentIndex >= 0 && selectedIndex >= 0) {
-      if (selectedIndex > currentIndex) return "Upgrade";
-      if (selectedIndex < currentIndex) return "Downgrade";
+    if (currentIndex < 0 || selectedIndex < 0) {
+      return "Update subscription";
     }
 
+    if (selectedIndex > currentIndex) return "Upgrade";
+    if (selectedIndex < currentIndex) return "Downgrade";
     return "Update subscription";
   }
 

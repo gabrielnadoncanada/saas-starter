@@ -23,25 +23,22 @@ export const SUBSCRIPTION_EXISTS_STATUSES = [
   "paused",
 ] as const;
 
-const PLAN_ACCESS_STATUSES = new Set(["active", "trialing"]);
+export const PLAN_ACCESS_STATUSES = ["active", "trialing"] as const;
+const PLAN_ACCESS_STATUS_SET = new Set<string>(PLAN_ACCESS_STATUSES);
+
+const ONGOING_SUBSCRIPTION_STATUSES = new Set<string>(
+  SUBSCRIPTION_EXISTS_STATUSES,
+);
 
 export function hasPlanAccess(subscriptionStatus: string | null | undefined) {
-  if (!subscriptionStatus) {
-    return false;
-  }
-
-  return PLAN_ACCESS_STATUSES.has(subscriptionStatus);
+  return Boolean(subscriptionStatus && PLAN_ACCESS_STATUS_SET.has(subscriptionStatus));
 }
 
 export function hasOngoingSubscription(
   subscriptionStatus: string | null | undefined,
 ) {
-  if (!subscriptionStatus) {
-    return false;
-  }
-
-  return SUBSCRIPTION_EXISTS_STATUSES.includes(
-    subscriptionStatus as (typeof SUBSCRIPTION_EXISTS_STATUSES)[number],
+  return Boolean(
+    subscriptionStatus && ONGOING_SUBSCRIPTION_STATUSES.has(subscriptionStatus),
   );
 }
 
@@ -56,11 +53,11 @@ export type CatalogPriceMatch = {
   componentKey: string;
   itemKey: string;
   itemType: "plan";
-  plan?: BillingPlan;
+  plan: BillingPlan;
   price: BillingPrice;
 };
 
-export function findCatalogPrice(priceId: string) {
+export function findCatalogPrice(priceId: string): CatalogPriceMatch | null {
   for (const plan of billingConfig.plans) {
     for (const [interval, pricing] of Object.entries(plan.intervalPricing)) {
       for (const lineItem of pricing?.lineItems ?? []) {
@@ -69,7 +66,7 @@ export function findCatalogPrice(priceId: string) {
             billingInterval: interval as BillingInterval,
             componentKey: lineItem.component,
             itemKey: plan.id,
-            itemType: "plan" as const,
+            itemType: "plan",
             plan,
             price: lineItem.price,
           };
@@ -112,9 +109,9 @@ export function normalizeBillingInterval(
 }
 
 export function hasAnnualPlans(
-  plans: readonly { yearly?: unknown }[],
+  plans: readonly { yearly?: unknown | null }[],
 ): boolean {
-  return plans.some((plan) => Boolean(plan.yearly));
+  return plans.some((plan) => plan.yearly != null);
 }
 
 export function getPlanDisplayPrice(
@@ -131,14 +128,15 @@ export function getPlanDisplayPrice(
   );
 }
 
+const BILLING_INTERVALS: readonly BillingInterval[] = ["month", "year"];
+
 export function getPricingPlans(): BillingPlan[] {
   return billingConfig.plans.filter((plan) =>
-    ["month", "year"].some((interval) =>
-      Boolean(
-        getIntervalPricing(plan, interval as BillingInterval)?.lineItems[0]?.price,
-      ),
+    BILLING_INTERVALS.some(
+      (interval) =>
+        getIntervalPricing(plan, interval)?.lineItems[0]?.price !== undefined,
     ),
-  ) as BillingPlan[];
+  );
 }
 
 export function buildPlanCheckoutLineItems(params: {
@@ -158,34 +156,3 @@ export function buildPlanCheckoutLineItems(params: {
   }));
 }
 
-export type SubscriptionFormSelection = {
-  planId: PlanId;
-  billingInterval: BillingInterval;
-};
-
-export function parseSubscriptionForm(
-  formData: FormData,
-): SubscriptionFormSelection {
-  const rawPlanId = formData.get("planId");
-  const rawBillingInterval = formData.get("billingInterval");
-
-  const planId = typeof rawPlanId === "string" ? rawPlanId : null;
-  const billingInterval =
-    typeof rawBillingInterval === "string" ? rawBillingInterval : null;
-
-  if (
-    !planId ||
-    !isPlanId(planId) ||
-    planId === "free" ||
-    !billingInterval ||
-    !isBillingInterval(billingInterval) ||
-    !getPlanDisplayPrice(planId, billingInterval)
-  ) {
-    throw new Error("Invalid billing selection.");
-  }
-
-  return {
-    planId,
-    billingInterval,
-  };
-}

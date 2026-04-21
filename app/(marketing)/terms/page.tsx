@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 
+import {
+  LegalPage,
+  type LegalSection,
+} from "@/features/marketing/components/legal-page";
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Terms of Service · Tenviq",
     description:
-      "Terms governing the license, permitted use, and delivery of the Tenviq SaaS Starter.",
+      "Terms governing the license, permitted use, and delivery of the Tenviq starter.",
   };
 }
 
@@ -12,15 +17,7 @@ const LAST_UPDATED = "April 14, 2026";
 const EFFECTIVE = "April 14, 2026";
 const VERSION = "1.0";
 
-type TermsSection = {
-  id: string;
-  index: string;
-  label: string;
-  title: string;
-  body: React.ReactNode;
-};
-
-const sections: TermsSection[] = [
+const sections: LegalSection[] = [
   {
     id: "agreement",
     index: "01",
@@ -33,7 +30,7 @@ const sections: TermsSection[] = [
           agreement between you (the &ldquo;Licensee&rdquo;, &ldquo;you&rdquo;)
           and Tenviq (&ldquo;Tenviq&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;,
           &ldquo;our&rdquo;) governing your purchase of, access to, and use of
-          the Tenviq SaaS Starter, including its source code, templates,
+          the Tenviq starter, including its source code, templates,
           documentation, updates, marketing assets, and any related materials
           (collectively, the &ldquo;Product&rdquo;).
         </p>
@@ -576,106 +573,23 @@ const sections: TermsSection[] = [
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
-      <header className="border-b border-border pb-10">
-        <div className="flex items-center gap-2">
-          <span aria-hidden className="size-1.5 bg-brand" />
-          <span className="label-mono">Legal · Terms</span>
-        </div>
-        <h1 className="mt-5 text-4xl font-semibold tracking-[-0.025em] md:text-5xl">
-          Terms of Service
-        </h1>
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
-          The license, permitted use, and delivery rules that govern every
-          purchase of the Tenviq SaaS Starter. Read carefully &mdash; these
-          Terms are binding from the moment you access the Product.
-        </p>
-        <dl className="mt-8 grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-3">
-          <MetaItem label="Last updated" value={LAST_UPDATED} />
-          <MetaItem label="Effective" value={EFFECTIVE} />
-          <MetaItem label="Version" value={VERSION} mono />
-        </dl>
-      </header>
-
-      <nav
-        aria-label="Sections"
-        className="mt-10 grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {sections.map((section) => (
-          <a
-            key={section.id}
-            href={`#${section.id}`}
-            className="group flex items-baseline gap-3 bg-card px-4 py-3 transition-colors hover:bg-muted/40"
-          >
-            <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
-              {section.index}
-            </span>
-            <span className="text-sm font-medium group-hover:text-brand">
-              {section.title}
-            </span>
-          </a>
-        ))}
-      </nav>
-
-      <div className="mt-16 space-y-20">
-        {sections.map((section) => (
-          <LegalSection key={section.id} {...section} />
-        ))}
-      </div>
-
-      <footer className="mt-24 border-t border-border pt-10">
-        <p className="label-mono">End · Terms of Service</p>
-        <p className="mt-2 font-mono text-xs tabular-nums text-muted-foreground">
-          Tenviq &middot; v{VERSION} &middot; {EFFECTIVE}
-        </p>
-      </footer>
-    </main>
-  );
-}
-
-function MetaItem({
-  label,
-  value,
-  mono,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-}) {
-  return (
-    <div className="bg-card px-4 py-3">
-      <dt className="label-mono">{label}</dt>
-      <dd
-        className={
-          mono
-            ? "mt-1 font-mono text-sm tabular-nums"
-            : "mt-1 text-sm font-medium"
-        }
-      >
-        {value}
-      </dd>
-    </div>
-  );
-}
-
-function LegalSection({ id, index, label, title, body }: TermsSection) {
-  return (
-    <section id={id} className="scroll-mt-24">
-      <div className="grid gap-6 md:grid-cols-[140px_1fr] md:gap-10">
-        <div className="md:pt-1">
-          <p className="label-mono">
-            {index} &mdash; {label}
-          </p>
-        </div>
-        <div>
-          <h2 className="text-2xl font-semibold tracking-[-0.02em] md:text-[28px]">
-            {title}
-          </h2>
-          <div className="legal-prose mt-5 space-y-4 text-[15px] leading-relaxed text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-brand/40 [&_a]:underline-offset-4 hover:[&_a]:decoration-brand [&_li]:relative [&_li]:pl-5 [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:top-[0.65em] [&_li]:before:size-1 [&_li]:before:bg-brand [&_ul]:space-y-2">
-            {body}
-          </div>
-        </div>
-      </div>
-    </section>
+    <LegalPage
+      sections={sections}
+      meta={{
+        eyebrow: "Legal · Terms",
+        title: "Terms of Service",
+        description: (
+          <>
+            The license, permitted use, and delivery rules that govern every
+            purchase of the Tenviq starter. Read carefully &mdash; these
+            Terms are binding from the moment you access the Product.
+          </>
+        ),
+        lastUpdated: LAST_UPDATED,
+        effective: EFFECTIVE,
+        version: VERSION,
+        footerLabel: "End · Terms of Service",
+      }}
+    />
   );
 }

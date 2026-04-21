@@ -11,10 +11,6 @@ import {
 import { z } from "zod";
 
 import { getAssistantConversation } from "@/features/assistant/server/assistant-conversations";
-import {
-  AssistantModelSelectionError,
-  selectAssistantModel,
-} from "@/features/assistant/server/assistant-model-selection";
 import { assertOrganizationAiAccess } from "@/features/assistant/server/organization-ai-access";
 import { assistantTools } from "@/features/assistant/server/tools";
 import {
@@ -23,14 +19,17 @@ import {
 } from "@/features/billing/entitlements";
 import { consumeMonthlyUsage } from "@/features/billing/server/usage-service";
 import { getAiModelInstance } from "@/lib/ai/get-model-instance";
+import { defaultAiModelId, isAiModelId } from "@/lib/ai/models";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 const MAX_MESSAGES = 100;
 const MAX_MESSAGE_LENGTH = 10_000;
 
-const messagesBodySchema = z.object({
+const assistantRequestSchema = z.object({
   messages: z.array(z.unknown()).min(1),
+  conversationId: z.string().optional(),
+  modelId: z.string().optional(),
 });
 
 export async function parseAssistantMessagesBody(
@@ -38,7 +37,7 @@ export async function parseAssistantMessagesBody(
 ): Promise<
   { ok: true; messages: UIMessage[] } | { ok: false; error: string }
 > {
-  const parsed = messagesBodySchema.safeParse(body);
+  const parsed = assistantRequestSchema.safeParse(body);
   if (!parsed.success) {
     return { ok: false, error: "Conversation messages are required." };
   }
@@ -52,14 +51,6 @@ export async function parseAssistantMessagesBody(
   }
 
   return { ok: true, messages: validated.data };
-}
-
-function optionalStringField(raw: unknown, key: string): string | undefined {
-  if (raw === null || typeof raw !== "object" || !(key in raw)) {
-    return undefined;
-  }
-  const v = (raw as Record<string, unknown>)[key];
-  return typeof v === "string" ? v : undefined;
 }
 
 const SYSTEM_PROMPT = `You are a helpful business assistant integrated into a SaaS application.
@@ -122,9 +113,10 @@ export async function handleAssistantRequest(req: Request) {
     return Response.json({ error: parsedBody.error }, { status: 400 });
   }
 
+  // Envelope is guaranteed to succeed here since parseAssistantMessagesBody passed.
+  const envelope = assistantRequestSchema.parse(raw);
   const messages = parsedBody.messages;
-  const modelId = optionalStringField(raw, "modelId");
-  const conversationId = optionalStringField(raw, "conversationId");
+  const { modelId, conversationId } = envelope;
 
   if (messages.length > MAX_MESSAGES) {
     return Response.json(
@@ -175,30 +167,23 @@ export async function handleAssistantRequest(req: Request) {
 
   const modelMessages = await convertToModelMessages(messages);
 
-  try {
-    const selection = await selectAssistantModel(
-      entitlements.organizationId,
-      modelId,
+  const resolvedModelId = modelId ?? defaultAiModelId;
+  if (!isAiModelId(resolvedModelId)) {
+    return Response.json(
+      { error: `Unknown AI model: ${resolvedModelId}`, code: "UNKNOWN_MODEL" },
+      { status: 400 },
     );
-    const assistantModel = getAiModelInstance(selection.model.id);
-
-    const result = streamText({
-      model: assistantModel.model,
-      system: SYSTEM_PROMPT,
-      messages: modelMessages,
-      tools: assistantTools,
-      stopWhen: stepCountIs(5),
-    });
-
-    return result.toUIMessageStreamResponse();
-  } catch (error) {
-    if (error instanceof AssistantModelSelectionError) {
-      return Response.json(
-        { error: error.message, code: error.code },
-        { status: 400 },
-      );
-    }
-
-    throw error;
   }
+
+  const assistantModel = getAiModelInstance(resolvedModelId);
+
+  const result = streamText({
+    model: assistantModel.model,
+    system: SYSTEM_PROMPT,
+    messages: modelMessages,
+    tools: assistantTools,
+    stopWhen: stepCountIs(5),
+  });
+
+  return result.toUIMessageStreamResponse();
 }

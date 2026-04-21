@@ -1,6 +1,6 @@
-# SaaS Starter
+# Tenviq
 
-A production-ready Next.js SaaS starter for technical founders building real B2B or AI SaaS products. Auth, Stripe billing, organizations, admin surfaces, and an AI assistant are already wired together in a codebase built to be read, not decoded.
+Tenviq is a production-ready Next.js SaaS starter for technical founders building real B2B or AI SaaS products. Auth, Stripe billing, organizations, admin surfaces, and an AI assistant are already wired together in a codebase built to be read, not decoded.
 
 ## Who This Is For
 

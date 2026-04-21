@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 
 import type { PasswordFormValues } from "@/features/auth/password-change.schema";
 import { auth } from "@/lib/auth/auth-config";
+import { getAuthErrorCode, getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import type { FormActionState } from "@/types/form-action-state";
 
 type SavePasswordParams = Pick<
@@ -40,13 +41,9 @@ export async function savePasswordServer({
         : "Password created successfully.",
     };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Unable to update password.";
+    const code = getAuthErrorCode(error);
 
-    if (
-      message.toLowerCase().includes("incorrect") ||
-      message.toLowerCase().includes("invalid")
-    ) {
+    if (code === "INVALID_PASSWORD" || code === "INCORRECT_PASSWORD") {
       return {
         error: "Please fix the highlighted fields.",
         fieldErrors: {
@@ -55,6 +52,6 @@ export async function savePasswordServer({
       };
     }
 
-    return { error: message };
+    return { error: getAuthErrorMessage(error, "Unable to update password.") };
   }
 }

@@ -1,5 +1,5 @@
 ---
-title: Introducing SaaS Starter
+title: Introducing Tenviq
 description: A Next.js boilerplate where billing actually controls your product — auth, Stripe, plan gating, and a polished admin in one repo you own.
 date: 2026-04-01
 author:
@@ -9,7 +9,7 @@ tags:
   - product
 ---
 
-Most "SaaS starters" give you auth and a pricing page, then leave the hard part — enforcing plans across your product — as an exercise for the reader. SaaS Starter takes the opposite approach. Plan gating is a first-class concern, wired from Stripe all the way into your server actions.
+Most "SaaS starters" give you auth and a pricing page, then leave the hard part — enforcing plans across your product — as an exercise for the reader. Tenviq takes the opposite approach. Plan gating is a first-class concern, wired from Stripe all the way into your server actions.
 
 ## What's in the box
 
@@ -24,7 +24,7 @@ Most "SaaS starters" give you auth and a pricing page, then leave the hard part 
 
 Because the existing ones stop at "logged-in user can see a dashboard." That's the easy part. The hard part is answering: *when a user's subscription lapses, which features stop working, and where in the code do I enforce that?*
 
-SaaS Starter answers that question with a single capability system used across the entire app. Capabilities and limits are declared once in `config/billing.config.ts`. Server actions call `assertCapability(entitlements, "ai.assistant")` or `consumeMonthlyUsage({ limitKey: "tasksPerMonth", ... })`. Everything reads from the same typed source of truth, so adding a capability makes TypeScript point at every callsite that needs updating.
+Tenviq answers that question with a single capability system used across the entire app. Capabilities and limits are declared once in `config/billing.config.ts`. Server actions call `assertCapability(entitlements, "ai.assistant")` or `consumeMonthlyUsage({ limitKey: "tasksPerMonth", ... })`. Everything reads from the same typed source of truth, so adding a capability makes TypeScript point at every callsite that needs updating.
 
 ## Get started
 

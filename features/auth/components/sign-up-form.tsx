@@ -2,13 +2,13 @@
 
 import { useSearchParams } from "next/navigation";
 import { useActionState, useRef, useState } from "react";
-import { toast } from "sonner";
 
 import { PasswordInput } from "@/components/forms/password-input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { FormAlert } from "@/components/ui/form-alert";
 import { Input } from "@/components/ui/input";
+import { routes } from "@/constants/routes";
 import {
   signUpAction,
   type SignUpActionState,
@@ -16,9 +16,8 @@ import {
 import { emailSchema } from "@/features/auth/auth-forms.schema";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
 import { useAuthRedirect } from "@/features/auth/hooks/use-auth-redirect";
+import { useAuthSocialActions } from "@/features/auth/hooks/use-auth-social-actions";
 import { useToastMessage } from "@/hooks/use-toast-message";
-import { authClient } from "@/lib/auth/auth-client";
-import { buildCheckEmailHref } from "@/lib/auth/callback-url";
 import type { OAuthProviderId } from "@/lib/auth/oauth-config";
 import { getFieldState } from "@/lib/get-field-state";
 
@@ -28,38 +27,49 @@ type SignUpFormProps = {
   callbackUrl?: string | null;
 };
 
+function getOAuthErrorMessage(error: string | null): string | null {
+  if (!error) {
+    return null;
+  }
+
+  if (error === "OAuthAccountNotLinked") {
+    return "Unable to continue with this provider. Try a different sign-up method.";
+  }
+
+  return "Unable to continue. Please try again.";
+}
+
 export function SignUpForm({
   oauthProviders = [],
   allowMagicLink = false,
-  callbackUrl = "/post-sign-in",
+  callbackUrl = routes.auth.postSignIn,
 }: SignUpFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-  const [pendingProvider, setPendingProvider] =
-    useState<OAuthProviderId | null>(null);
-  const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
   const [emailClientError, setEmailClientError] = useState<string>();
   const [state, formAction, isPending] = useActionState<
     SignUpActionState,
     FormData
   >(signUpAction, {});
-  const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
+  const nextCallbackUrl = callbackUrl ?? routes.auth.postSignIn;
 
   const emailField = getFieldState(state, "email");
   const passwordField = getFieldState(state, "password");
   const confirmPasswordField = getFieldState(state, "confirmPassword");
-  const oauthErrorMessage = error
-    ? error === "OAuthAccountNotLinked"
-      ? "Unable to continue with this provider. Try a different sign-up method."
-      : "Unable to continue. Please try again."
-    : null;
+  const oauthErrorMessage = getOAuthErrorMessage(error);
   const formError = state.error && !state.fieldErrors ? state.error : null;
+
+  const { magicLink, oauth } = useAuthSocialActions({
+    callbackUrl: nextCallbackUrl,
+    magicLinkErrorMessage: "Unable to send the sign-up link. Please try again.",
+    oauthErrorMessage: "Unable to continue. Please try again.",
+  });
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });
   useAuthRedirect(state.redirectTo);
 
-  async function handleMagicLink() {
+  function handleMagicLink(): void {
     if (!formRef.current) {
       return;
     }
@@ -73,48 +83,8 @@ export function SignUpForm({
       return;
     }
 
-    const email = parsed.data.email.trim().toLowerCase();
-
     setEmailClientError(undefined);
-    setIsSendingMagicLink(true);
-
-    try {
-      const { error: authError } = await authClient.signIn.magicLink({
-        email,
-        callbackURL: nextCallbackUrl,
-      });
-
-      if (authError) {
-        throw new Error(
-          authError.message || "Unable to send the sign-up link.",
-        );
-      }
-
-      window.location.assign(buildCheckEmailHref(email, nextCallbackUrl));
-    } catch {
-      toast.error("Unable to send the sign-up link. Please try again.");
-    } finally {
-      setIsSendingMagicLink(false);
-    }
-  }
-
-  async function handleOAuthSignIn(provider: OAuthProviderId) {
-    try {
-      setPendingProvider(provider);
-
-      const { error: authError } = await authClient.signIn.social({
-        provider,
-        callbackURL: nextCallbackUrl,
-      });
-
-      if (authError) {
-        throw new Error(authError.message || "Unable to continue.");
-      }
-    } catch {
-      toast.error("Unable to continue. Please try again.");
-    } finally {
-      setPendingProvider(null);
-    }
+    magicLink.submit(parsed.data.email.trim().toLowerCase());
   }
 
   return (
@@ -173,11 +143,11 @@ export function SignUpForm({
 
       <AuthSecondaryActions
         allowMagicLink={allowMagicLink}
-        isSendingMagicLink={isSendingMagicLink}
+        isSendingMagicLink={magicLink.isPending}
         providers={oauthProviders}
-        pendingProvider={pendingProvider}
-        onMagicLink={() => void handleMagicLink()}
-        onProviderClick={(provider) => void handleOAuthSignIn(provider)}
+        pendingProvider={oauth.pendingProvider}
+        onMagicLink={handleMagicLink}
+        onProviderClick={oauth.submit}
       />
     </div>
   );

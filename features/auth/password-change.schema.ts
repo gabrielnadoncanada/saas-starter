@@ -31,7 +31,14 @@ function applyPasswordConfirmation(
   values: ResetPasswordValues,
   ctx: z.RefinementCtx,
 ) {
-  if (values.confirmPassword && values.newPassword !== values.confirmPassword) {
+  // `confirmPassword` is guaranteed non-empty by `confirmPasswordField`; the
+  // truthy guard here prevents a duplicate "do not match" error when that
+  // first-level check has already produced a field error.
+  if (!values.confirmPassword) {
+    return;
+  }
+
+  if (values.newPassword !== values.confirmPassword) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["confirmPassword"],

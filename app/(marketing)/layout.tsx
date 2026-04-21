@@ -5,6 +5,7 @@ import { MarketingHeader } from "@/features/marketing/components/marketing-heade
 const navigationLinks = [
   { href: "/#features", label: "Features" },
   { href: "/#pricing", label: "Pricing" },
+  { href: "/compare", label: "Compare" },
   { href: "/docs", label: "Docs" },
   { href: "/contact", label: "Contact" },
 ];
@@ -15,7 +16,7 @@ const footerSections = [
     links: [
       { href: "/docs", label: "Docs" },
       { href: "/blog", label: "Blog" },
-      { href: "/blog/tenviq-vs-shipfast", label: "Vs ShipFast" },
+      { href: "/compare", label: "Compare" },
     ],
   },
   {

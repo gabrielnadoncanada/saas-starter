@@ -1,40 +1,45 @@
-import type { UIMessage } from "ai";
-import { z } from "zod";
+import { safeValidateUIMessages, type UIMessage } from "ai";
 
 import {
   type AssistantConversation,
   type AssistantConversationListItem,
+  assistantConversationEnvelopeSchema,
   assistantConversationListSchema,
-  assistantConversationSchema,
 } from "@/features/assistant/schemas/conversation-api.schema";
 
-async function parseConversationResponse<T>(
+async function readConversationResponse(
   response: Response,
-  schema: z.ZodType<T>,
-): Promise<T> {
+): Promise<AssistantConversation> {
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || "Unable to load conversation");
   }
 
-  const raw: unknown = await response.json();
-  const parsed = schema.safeParse(raw);
-  if (!parsed.success) {
+  const payload = await response.json();
+  const envelope = assistantConversationEnvelopeSchema.safeParse(payload);
+  if (!envelope.success) {
     throw new Error("Invalid response");
   }
 
-  return parsed.data;
+  const rawMessages = (payload as { messages?: unknown }).messages;
+  const validated = await safeValidateUIMessages({
+    messages: Array.isArray(rawMessages) ? rawMessages : [],
+  });
+  if (!validated.success) {
+    throw new Error("Invalid response");
+  }
+
+  return { ...envelope.data, messages: validated.data };
 }
 
 export async function listAssistantConversationsRequest() {
   const response = await fetch("/api/assistant/conversations");
   if (!response.ok) return [];
-  const raw: unknown = await response.json();
-  const parsed = assistantConversationListSchema.safeParse(raw);
-  if (!parsed.success) {
-    return [];
-  }
-  return parsed.data;
+
+  const parsed = assistantConversationListSchema.safeParse(
+    await response.json(),
+  );
+  return parsed.success ? parsed.data : [];
 }
 
 export async function createAssistantConversationRequest(
@@ -46,10 +51,7 @@ export async function createAssistantConversationRequest(
     body: JSON.stringify({ messages }),
   });
 
-  return await parseConversationResponse(
-    response,
-    assistantConversationSchema,
-  ) as AssistantConversation;
+  return readConversationResponse(response);
 }
 
 export async function replaceAssistantConversationRequest(
@@ -65,10 +67,7 @@ export async function replaceAssistantConversationRequest(
     },
   );
 
-  return await parseConversationResponse(
-    response,
-    assistantConversationSchema,
-  ) as AssistantConversation;
+  return readConversationResponse(response);
 }
 
 export async function deleteAssistantConversationRequest(

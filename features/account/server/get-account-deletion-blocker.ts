@@ -44,14 +44,13 @@ export async function getAccountDeletionBlocker(userId: string) {
 
     const members = fullOrganization.members ?? [];
     const currentUserMembership = members.find(
-      (member: { userId: string }) => member.userId === userId,
+      (member) => member.userId === userId,
     );
 
     if (!hasOrgRole(currentUserMembership?.role, "owner")) return [];
 
     const otherOwnerCount = members.filter(
-      (member: { userId: string; role: string }) =>
-        hasOrgRole(member.role, "owner") && member.userId !== userId,
+      (member) => hasOrgRole(member.role, "owner") && member.userId !== userId,
     ).length;
 
     return [{ fullOrganization, members, otherOwnerCount }];
@@ -63,19 +62,20 @@ export async function getAccountDeletionBlocker(userId: string) {
     }
   }
 
+  const orgsWithActiveSubscription = ownedOrganizations.filter(
+    ({ otherOwnerCount }) => otherOwnerCount === 0,
+  );
+
   const subscriptions = await Promise.all(
-    ownedOrganizations.map(({ fullOrganization }) =>
+    orgsWithActiveSubscription.map(({ fullOrganization }) =>
       getSubscriptionSnapshot(fullOrganization.id),
     ),
   );
 
-  for (const [index, { fullOrganization, otherOwnerCount }] of ownedOrganizations.entries()) {
+  for (const [index, { fullOrganization }] of orgsWithActiveSubscription.entries()) {
     const subscription = subscriptions[index];
 
-    if (
-      otherOwnerCount !== 0 ||
-      !isActiveSubscription(subscription.subscriptionStatus)
-    ) {
+    if (!isActiveSubscription(subscription.subscriptionStatus)) {
       continue;
     }
 

@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 
+import {
+  LegalPage,
+  type LegalSection,
+} from "@/features/marketing/components/legal-page";
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "License · Tenviq",
     description:
-      "Commercial license for the Tenviq SaaS Starter — tiers, permitted use, restrictions, and delivery terms.",
+      "Commercial license for the Tenviq starter — tiers, permitted use, restrictions, and delivery terms.",
   };
 }
 
@@ -12,15 +17,7 @@ const LAST_UPDATED = "April 16, 2026";
 const EFFECTIVE = "April 16, 2026";
 const VERSION = "1.0";
 
-type LicenseSection = {
-  id: string;
-  index: string;
-  label: string;
-  title: string;
-  body: React.ReactNode;
-};
-
-const sections: LicenseSection[] = [
+const sections: LegalSection[] = [
   {
     id: "tiers",
     index: "01",
@@ -317,106 +314,18 @@ const sections: LicenseSection[] = [
 
 export default function LicensePage() {
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
-      <header className="border-b border-border pb-10">
-        <div className="flex items-center gap-2">
-          <span aria-hidden className="size-1.5 bg-brand" />
-          <span className="label-mono">Legal · License</span>
-        </div>
-        <h1 className="mt-5 text-4xl font-semibold tracking-[-0.025em] md:text-5xl">
-          Commercial License
-        </h1>
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
-          The legal agreement between you and Tenviq for using the SaaS
-          Starter codebase. By purchasing, downloading, or accessing the
-          Product, you agree to these terms.
-        </p>
-        <dl className="mt-8 grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-3">
-          <MetaItem label="Last updated" value={LAST_UPDATED} />
-          <MetaItem label="Effective" value={EFFECTIVE} />
-          <MetaItem label="Version" value={VERSION} mono />
-        </dl>
-      </header>
-
-      <nav
-        aria-label="Sections"
-        className="mt-10 grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {sections.map((section) => (
-          <a
-            key={section.id}
-            href={`#${section.id}`}
-            className="group flex items-baseline gap-3 bg-card px-4 py-3 transition-colors hover:bg-muted/40"
-          >
-            <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
-              {section.index}
-            </span>
-            <span className="text-sm font-medium group-hover:text-brand">
-              {section.title}
-            </span>
-          </a>
-        ))}
-      </nav>
-
-      <div className="mt-16 space-y-20">
-        {sections.map((section) => (
-          <LegalSection key={section.id} {...section} />
-        ))}
-      </div>
-
-      <footer className="mt-24 border-t border-border pt-10">
-        <p className="label-mono">End · License</p>
-        <p className="mt-2 font-mono text-xs tabular-nums text-muted-foreground">
-          Tenviq &middot; v{VERSION} &middot; {EFFECTIVE}
-        </p>
-      </footer>
-    </main>
-  );
-}
-
-function MetaItem({
-  label,
-  value,
-  mono,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-}) {
-  return (
-    <div className="bg-card px-4 py-3">
-      <dt className="label-mono">{label}</dt>
-      <dd
-        className={
-          mono
-            ? "mt-1 font-mono text-sm tabular-nums"
-            : "mt-1 text-sm font-medium"
-        }
-      >
-        {value}
-      </dd>
-    </div>
-  );
-}
-
-function LegalSection({ id, index, label, title, body }: LicenseSection) {
-  return (
-    <section id={id} className="scroll-mt-24">
-      <div className="grid gap-6 md:grid-cols-[140px_1fr] md:gap-10">
-        <div className="md:pt-1">
-          <p className="label-mono">
-            {index} &mdash; {label}
-          </p>
-        </div>
-        <div>
-          <h2 className="text-2xl font-semibold tracking-[-0.02em] md:text-[28px]">
-            {title}
-          </h2>
-          <div className="legal-prose mt-5 space-y-4 text-[15px] leading-relaxed text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-brand/40 [&_a]:underline-offset-4 hover:[&_a]:decoration-brand [&_li]:relative [&_li]:pl-5 [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:top-[0.65em] [&_li]:before:size-1 [&_li]:before:bg-brand [&_ul]:space-y-2">
-            {body}
-          </div>
-        </div>
-      </div>
-    </section>
+    <LegalPage
+      sections={sections}
+      meta={{
+        eyebrow: "Legal · License",
+        title: "Commercial License",
+        description:
+          "The legal agreement between you and Tenviq for using the SaaS Starter codebase. By purchasing, downloading, or accessing the Product, you agree to these terms.",
+        lastUpdated: LAST_UPDATED,
+        effective: EFFECTIVE,
+        version: VERSION,
+        footerLabel: "End · License",
+      }}
+    />
   );
 }

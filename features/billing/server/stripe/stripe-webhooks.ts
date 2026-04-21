@@ -24,10 +24,6 @@ function toBillingInterval(
   return interval === "month" || interval === "year" ? interval : null;
 }
 
-function getPrimarySubscriptionItem(subscription: Stripe.Subscription) {
-  return subscription.items.data[0] ?? null;
-}
-
 function resolvePlanId(subscription: Stripe.Subscription) {
   if (isPlanId(subscription.metadata.planId)) {
     return subscription.metadata.planId;
@@ -66,17 +62,15 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     return;
   }
 
-  await syncStripeCustomer({
-    organizationId,
-    customerId,
-  });
-  const primaryItem = getPrimarySubscriptionItem(subscription);
+  await syncStripeCustomer({ organizationId, customerId });
+
+  const primaryItem = subscription.items.data[0] ?? null;
   const existing = await db.subscription.findFirst({
     where: { stripeSubscriptionId: subscription.id },
     select: { id: true },
   });
   const subscriptionId = existing?.id ?? subscription.id;
-  const subscriptionRecord = {
+  const record = {
     billingInterval: toBillingInterval(primaryItem?.price?.recurring?.interval),
     cancelAt: toDate(subscription.cancel_at),
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
@@ -97,8 +91,8 @@ async function syncSubscription(subscription: Stripe.Subscription) {
 
   await db.subscription.upsert({
     where: { id: subscriptionId },
-    update: subscriptionRecord,
-    create: { id: subscriptionId, ...subscriptionRecord },
+    update: record,
+    create: { id: subscriptionId, ...record },
   });
 }
 
@@ -120,46 +114,52 @@ async function handleCustomerDeleted(customer: Stripe.Customer) {
 }
 
 async function logSubscriptionActivity(
-  event: Stripe.Event,
+  action:
+    | "subscription.created"
+    | "subscription.updated"
+    | "subscription.cancelled",
   subscription: Stripe.Subscription,
 ) {
   const organizationId = await resolveOrganizationId(subscription);
   if (!organizationId) return;
-
-  const planId = resolvePlanId(subscription);
-  const action =
-    event.type === "customer.subscription.created"
-      ? "subscription.created"
-      : "subscription.cancelled";
 
   await logActivity({
     action,
     organizationId,
     targetType: "subscription",
     targetId: subscription.id,
-    metadata: { planId, status: subscription.status },
+    metadata: {
+      planId: resolvePlanId(subscription),
+      status: subscription.status,
+    },
   });
 }
 
 export async function handleStripeWebhookEvent(event: Stripe.Event) {
   switch (event.type) {
     case "checkout.session.completed":
-      await handleCheckoutCompleted(
-        event.data.object as Stripe.Checkout.Session,
-      );
+      await handleCheckoutCompleted(event.data.object);
       return;
     case "customer.deleted":
-      await handleCustomerDeleted(event.data.object as Stripe.Customer);
+      await handleCustomerDeleted(event.data.object);
       return;
     case "customer.subscription.created":
-    case "customer.subscription.deleted": {
-      const subscription = event.data.object as Stripe.Subscription;
-      await syncSubscription(subscription);
-      await logSubscriptionActivity(event, subscription);
+      await syncSubscription(event.data.object);
+      await logSubscriptionActivity(
+        "subscription.created",
+        event.data.object,
+      );
       return;
-    }
+    case "customer.subscription.deleted":
+      await syncSubscription(event.data.object);
+      await logSubscriptionActivity(
+        "subscription.cancelled",
+        event.data.object,
+      );
+      return;
     case "customer.subscription.updated":
-      await syncSubscription(event.data.object as Stripe.Subscription);
+      await syncSubscription(event.data.object);
+      await logSubscriptionActivity("subscription.updated", event.data.object);
       return;
     default:
       return;

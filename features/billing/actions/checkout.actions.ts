@@ -5,7 +5,10 @@ import { redirect } from "next/navigation";
 import { routes } from "@/constants/routes";
 import { buildPostSignInCallbackURL } from "@/features/auth/utils/post-sign-in";
 import { subscriptionCheckoutSchema } from "@/features/billing/checkout.schema";
-import { isBillingInterval, isPlanId } from "@/features/billing/plans";
+import {
+  isBillingInterval,
+  isPlanId,
+} from "@/features/billing/plans";
 import { applyDemoSubscriptionChange } from "@/features/billing/server/demo-subscription";
 import { createSubscriptionCheckout } from "@/features/billing/server/stripe/stripe-checkout";
 import {
@@ -17,29 +20,26 @@ import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { isDemoMode } from "@/lib/demo";
 import { enforceActionRateLimit } from "@/lib/rate-limit";
 
+function readPaidPlanId(raw: FormDataEntryValue | null) {
+  return typeof raw === "string" && isPlanId(raw) && raw !== "free"
+    ? raw
+    : null;
+}
+
+function readBillingInterval(raw: FormDataEntryValue | null) {
+  return typeof raw === "string" && isBillingInterval(raw) ? raw : null;
+}
+
 export async function startSubscriptionCheckoutAction(formData: FormData) {
-  const rawValues = Object.fromEntries(formData);
   const user = await getCurrentUser();
 
   if (!user) {
-    const planId =
-      typeof rawValues.planId === "string" &&
-      isPlanId(rawValues.planId) &&
-      rawValues.planId !== "free"
-        ? rawValues.planId
-        : null;
-    const billingInterval =
-      typeof rawValues.billingInterval === "string" &&
-      isBillingInterval(rawValues.billingInterval)
-        ? rawValues.billingInterval
-        : null;
-
     redirect(
       buildCallbackURL(
         routes.auth.login,
         buildPostSignInCallbackURL({
-          billingInterval,
-          planId,
+          billingInterval: readBillingInterval(formData.get("billingInterval")),
+          planId: readPaidPlanId(formData.get("planId")),
           redirect: "checkout",
         }),
       ),
@@ -55,8 +55,9 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
     throw new Error(limited.error);
   }
 
-  const { billingInterval, planId } =
-    subscriptionCheckoutSchema.parse(rawValues);
+  const { billingInterval, planId } = subscriptionCheckoutSchema.parse(
+    Object.fromEntries(formData),
+  );
   const organization = await getCurrentOrganization();
 
   if (!organization) {

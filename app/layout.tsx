@@ -13,14 +13,14 @@ export const metadata: Metadata = {
     ? new URL(process.env.BASE_URL)
     : undefined,
   title: {
-    default: "Tenviq SaaS Starter — Real B2B Foundations Without the Heavy Starter Kit",
-    template: "%s | Tenviq SaaS Starter",
+    default: "Tenviq — Next.js SaaS Starter for Real B2B Foundations",
+    template: "%s | Tenviq",
   },
   description:
-    "A production-ready Next.js SaaS starter for technical founders building real B2B or AI SaaS products. Auth, Stripe billing, organizations, admin, and AI are already wired together in a codebase built to be read, not decoded.",
+    "Tenviq is a production-ready Next.js SaaS starter for technical founders building real B2B or AI SaaS products. Auth, Stripe billing, organizations, admin, and AI are already wired together in a codebase built to be read, not decoded.",
   openGraph: {
     type: "website",
-    siteName: "Tenviq SaaS Starter",
+    siteName: "Tenviq",
   },
   twitter: {
     card: "summary_large_image",

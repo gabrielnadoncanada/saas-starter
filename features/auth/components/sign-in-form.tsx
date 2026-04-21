@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useRef, useState } from "react";
-import { toast } from "sonner";
 
 import { PasswordInput } from "@/components/forms/password-input";
 import { Button } from "@/components/ui/button";
@@ -19,9 +18,8 @@ import { emailSchema } from "@/features/auth/auth-forms.schema";
 import { AuthSecondaryActions } from "@/features/auth/components/auth-secondary-actions";
 import { ResendVerificationForm } from "@/features/auth/components/oauth/resend-verification-form";
 import { useAuthRedirect } from "@/features/auth/hooks/use-auth-redirect";
+import { useAuthSocialActions } from "@/features/auth/hooks/use-auth-social-actions";
 import { useToastMessage } from "@/hooks/use-toast-message";
-import { authClient } from "@/lib/auth/auth-client";
-import { buildCheckEmailHref } from "@/lib/auth/callback-url";
 import type { OAuthProviderId } from "@/lib/auth/oauth-config";
 import { getFieldState } from "@/lib/get-field-state";
 
@@ -31,6 +29,18 @@ type SignInFormProps = {
   callbackUrl?: string | null;
 };
 
+function getOAuthErrorMessage(error: string | null): string | null {
+  if (!error) {
+    return null;
+  }
+
+  if (error === "OAuthAccountNotLinked") {
+    return "Unable to sign in with this provider. Try a different sign-in method.";
+  }
+
+  return "Unable to sign in. Please try again.";
+}
+
 export function SignInForm({
   oauthProviders = [],
   allowMagicLink = false,
@@ -39,9 +49,6 @@ export function SignInForm({
   const formRef = useRef<HTMLFormElement>(null);
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-  const [pendingProvider, setPendingProvider] =
-    useState<OAuthProviderId | null>(null);
-  const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
   const [emailClientError, setEmailClientError] = useState<string>();
   const [state, formAction, isPending] = useActionState<
     SignInActionState,
@@ -51,18 +58,19 @@ export function SignInForm({
 
   const emailField = getFieldState(state, "email");
   const passwordField = getFieldState(state, "password");
-  const oauthErrorMessage = error
-    ? error === "OAuthAccountNotLinked"
-      ? "Unable to sign in with this provider. Try a different sign-in method."
-      : "Unable to sign in. Please try again."
-    : null;
-  const emailValue = emailField.value;
+  const oauthErrorMessage = getOAuthErrorMessage(error);
   const formError = state.error && !state.fieldErrors ? state.error : null;
+
+  const { magicLink, oauth } = useAuthSocialActions({
+    callbackUrl: nextCallbackUrl,
+    magicLinkErrorMessage: "Unable to send the sign-in link. Please try again.",
+    oauthErrorMessage: "Unable to sign in. Please try again.",
+  });
 
   useToastMessage(oauthErrorMessage, { kind: "error", trigger: error });
   useAuthRedirect(state.redirectTo);
 
-  async function handleMagicLink() {
+  function handleMagicLink(): void {
     if (!formRef.current) {
       return;
     }
@@ -76,48 +84,8 @@ export function SignInForm({
       return;
     }
 
-    const email = parsed.data.email.trim().toLowerCase();
-
     setEmailClientError(undefined);
-    setIsSendingMagicLink(true);
-
-    try {
-      const { error: authError } = await authClient.signIn.magicLink({
-        email,
-        callbackURL: nextCallbackUrl,
-      });
-
-      if (authError) {
-        throw new Error(
-          authError.message || "Unable to send the sign-in link.",
-        );
-      }
-
-      window.location.assign(buildCheckEmailHref(email, nextCallbackUrl));
-    } catch {
-      toast.error("Unable to send the sign-in link. Please try again.");
-    } finally {
-      setIsSendingMagicLink(false);
-    }
-  }
-
-  async function handleOAuthSignIn(provider: OAuthProviderId) {
-    try {
-      setPendingProvider(provider);
-
-      const { error: authError } = await authClient.signIn.social({
-        provider,
-        callbackURL: nextCallbackUrl,
-      });
-
-      if (authError) {
-        throw new Error(authError.message || "Unable to sign in.");
-      }
-    } catch {
-      toast.error("Unable to sign in. Please try again.");
-    } finally {
-      setPendingProvider(null);
-    }
+    magicLink.submit(parsed.data.email.trim().toLowerCase());
   }
 
   return (
@@ -133,7 +101,7 @@ export function SignInForm({
             type="email"
             autoComplete="email"
             placeholder={"Enter your email address..."}
-            defaultValue={emailValue}
+            defaultValue={emailField.value}
             aria-invalid={Boolean(emailClientError) || emailField.invalid}
             onChange={() => setEmailClientError(undefined)}
             required
@@ -170,11 +138,11 @@ export function SignInForm({
 
       <AuthSecondaryActions
         allowMagicLink={allowMagicLink}
-        isSendingMagicLink={isSendingMagicLink}
+        isSendingMagicLink={magicLink.isPending}
         providers={oauthProviders}
-        pendingProvider={pendingProvider}
-        onMagicLink={() => void handleMagicLink()}
-        onProviderClick={(provider) => void handleOAuthSignIn(provider)}
+        pendingProvider={oauth.pendingProvider}
+        onMagicLink={handleMagicLink}
+        onProviderClick={oauth.submit}
       />
 
       {state.requiresVerification && state.values?.email ? (

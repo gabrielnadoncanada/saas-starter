@@ -18,6 +18,7 @@ import {
   type ResetPasswordValues,
 } from "@/features/auth/password-change.schema";
 import { auth } from "@/lib/auth/auth-config";
+import { getAuthErrorCode, getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { validatedPublicAction } from "@/lib/auth/authenticated-action";
 import { buildCallbackURL } from "@/lib/auth/callback-url";
 import type { FormActionState } from "@/types/form-action-state";
@@ -38,42 +39,8 @@ export type RequestPasswordResetActionState =
   FormActionState<RequestPasswordResetValues>;
 export type ResetPasswordActionState = FormActionState<ResetPasswordValues>;
 
-type BetterAuthErrorLike = {
-  body?: {
-    code?: string;
-    message?: string;
-  };
-  code?: string;
-  message?: string;
-  status?: number;
-};
-
 function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
-}
-
-function getAuthErrorCode(error: unknown) {
-  const authError = error as BetterAuthErrorLike | null | undefined;
-
-  if (typeof authError?.body?.code === "string") {
-    return authError.body.code;
-  }
-
-  return typeof authError?.code === "string" ? authError.code : null;
-}
-
-function getAuthErrorMessage(error: unknown, fallback: string) {
-  const authError = error as BetterAuthErrorLike | null | undefined;
-
-  if (typeof authError?.body?.message === "string") {
-    return authError.body.message;
-  }
-
-  if (typeof authError?.message === "string") {
-    return authError.message;
-  }
-
-  return fallback;
 }
 
 export const signInAction = validatedPublicAction(

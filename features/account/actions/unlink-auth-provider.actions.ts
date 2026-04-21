@@ -10,25 +10,25 @@ import { validatedAuthenticatedAction } from "@/lib/auth/authenticated-action";
 export const unlinkAuthProviderAction = validatedAuthenticatedAction(
   unlinkAuthProviderSchema,
   async ({ provider }) => {
-  const result = await unlinkOAuthAccountForUser({ provider });
+    const result = await unlinkOAuthAccountForUser({ provider });
 
-  if (result.status === "blocked") {
-    return {
-      error:
-        "You must keep at least one sign-in method linked to your account.",
-      values: { provider },
-    };
-  }
+    if (result.status === "blocked") {
+      return {
+        error:
+          "You must keep at least one sign-in method linked to your account.",
+        values: { provider },
+      };
+    }
 
-  if (result.status === "not-found") {
-    return {
-      error: "This provider is not linked to your account.",
-      values: { provider },
-    };
-  }
+    if (result.status === "not-found") {
+      return {
+        error: "This provider is not linked to your account.",
+        values: { provider },
+      };
+    }
 
-  return redirect(
-    `${routes.settings.profile}?provider=${provider}&success=unlinked`,
-  );
-},
+    return redirect(
+      `${routes.settings.profile}?provider=${provider}&success=unlinked`,
+    );
+  },
 );

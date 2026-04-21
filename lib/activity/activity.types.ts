@@ -4,6 +4,7 @@ export const ACTIVITY_ACTIONS = [
   "invitation.cancelled",
   "invitation.resent",
   "subscription.created",
+  "subscription.updated",
   "subscription.cancelled",
   "organization.deleted",
   "user.deleted",

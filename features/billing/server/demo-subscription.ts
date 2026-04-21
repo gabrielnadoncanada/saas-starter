@@ -5,7 +5,8 @@ import { getPlanDisplayPrice } from "@/features/billing/plans";
 import { db } from "@/lib/db/prisma";
 
 const DEMO_STRIPE_CUSTOMER_ID = "cus_demo";
-const DEMO_PERIOD_DAYS = 30;
+const DEMO_PERIOD_DAYS_MONTH = 30;
+const DEMO_PERIOD_DAYS_YEAR = 365;
 
 export async function applyDemoSubscriptionChange(params: {
   billingInterval: BillingInterval;
@@ -18,10 +19,11 @@ export async function applyDemoSubscriptionChange(params: {
   }
 
   const now = new Date();
-  const periodEnd = addDays(
-    now,
-    params.billingInterval === "year" ? 365 : DEMO_PERIOD_DAYS,
-  );
+  const periodDays =
+    params.billingInterval === "year"
+      ? DEMO_PERIOD_DAYS_YEAR
+      : DEMO_PERIOD_DAYS_MONTH;
+  const demoId = `sub_demo_${params.organizationId}`;
 
   const existing = await db.subscription.findFirst({
     where: { referenceId: params.organizationId },
@@ -35,11 +37,11 @@ export async function applyDemoSubscriptionChange(params: {
     status: "active",
     billingInterval: params.billingInterval,
     stripeCustomerId: DEMO_STRIPE_CUSTOMER_ID,
-    stripeSubscriptionId: `sub_demo_${params.organizationId}`,
+    stripeSubscriptionId: demoId,
     stripePriceId: price.priceId || `price_demo_${params.planId}`,
     stripeSubscriptionItemId: `si_demo_${params.organizationId}`,
     periodStart: now,
-    periodEnd,
+    periodEnd: addDays(now, periodDays),
     trialStart: null,
     trialEnd: null,
     cancelAtPeriodEnd: false,
@@ -48,18 +50,9 @@ export async function applyDemoSubscriptionChange(params: {
     endedAt: null,
   };
 
-  if (existing) {
-    await db.subscription.update({
-      where: { id: existing.id },
-      data,
-    });
-    return;
-  }
-
-  await db.subscription.create({
-    data: {
-      id: `sub_demo_${params.organizationId}`,
-      ...data,
-    },
+  await db.subscription.upsert({
+    where: { id: existing?.id ?? demoId },
+    update: data,
+    create: { id: demoId, ...data },
   });
 }

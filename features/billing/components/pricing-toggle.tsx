@@ -4,29 +4,18 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import type { BillingInterval, PlanId } from "@/config/billing.config";
+import type { BillingInterval } from "@/config/billing.config";
 import { startSubscriptionCheckoutAction } from "@/features/billing/actions/checkout.actions";
 import {
   formatPriceAmount,
   getBillingIntervalSuffix,
 } from "@/features/billing/format-price";
 import { hasAnnualPlans } from "@/features/billing/plans";
+import type { PricingPlanView } from "@/features/billing/types";
 import { cn } from "@/lib/utils";
 
-type PriceSchedule = { unitAmount: number; trialDays?: number };
-
-type PricePlan = {
-  planId: PlanId;
-  productName: string;
-  description: string | null;
-  features: string[];
-  highlighted: boolean;
-  monthly: PriceSchedule | null;
-  yearly: PriceSchedule | null;
-};
-
 type PricingToggleProps = {
-  plans: PricePlan[];
+  plans: PricingPlanView[];
 };
 
 const recurringGridCols: Record<number, string> = {
@@ -76,7 +65,7 @@ function PricingCard({
   plan,
 }: {
   interval: BillingInterval;
-  plan: PricePlan;
+  plan: PricingPlanView;
 }) {
   const schedule = interval === "year" ? plan.yearly : plan.monthly;
 
@@ -111,7 +100,7 @@ function PricingCard({
       </div>
 
       <h3 className="text-xl font-semibold tracking-[-0.015em]">
-        {plan.productName}
+        {plan.name}
       </h3>
 
       {plan.description ? (
@@ -154,7 +143,7 @@ function PricingCard({
       </ul>
 
       <form action={startSubscriptionCheckoutAction} className="mt-auto pt-8">
-        <input type="hidden" name="planId" value={plan.planId} />
+        <input type="hidden" name="planId" value={plan.id} />
         <input type="hidden" name="billingInterval" value={interval} />
         <SubmitPricingButton highlighted={isBrand} />
       </form>
@@ -207,7 +196,7 @@ export function PricingToggle({ plans }: PricingToggleProps) {
       <div className={`grid gap-px border border-border bg-border ${gridClass}`}>
         {visiblePlans.map((plan) => (
           <PricingCard
-            key={`${plan.planId}-${interval}`}
+            key={`${plan.id}-${interval}`}
             interval={interval}
             plan={plan}
           />

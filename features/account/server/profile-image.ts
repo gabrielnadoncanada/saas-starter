@@ -14,6 +14,13 @@ const avatarTypes = {
 
 const avatarExtensions = Object.values(avatarTypes);
 
+const avatarContentTypeByExtension = Object.fromEntries(
+  Object.entries(avatarTypes).map(([contentType, extension]) => [
+    extension,
+    contentType,
+  ]),
+) as Record<string, string>;
+
 function normalizeStorageBody(body: unknown) {
   if (body instanceof Uint8Array) {
     return body;
@@ -35,15 +42,10 @@ function getAvatarContentType(storageKey: string) {
     storageKey.endsWith(value),
   );
 
-  if (!extension) {
-    return "application/octet-stream";
-  }
-
-  const matchedType = Object.entries(avatarTypes).find(
-    ([, value]) => value === extension,
+  return (
+    (extension && avatarContentTypeByExtension[extension]) ??
+    "application/octet-stream"
   );
-
-  return matchedType?.[0] ?? "application/octet-stream";
 }
 
 function getAvatarExtension(file: File) {
@@ -134,6 +136,7 @@ export async function canViewUserAvatar(input: {
     where: {
       userId: input.viewerId,
       organization: {
+        type: { not: "PERSONAL" },
         members: {
           some: {
             userId: input.targetUserId,

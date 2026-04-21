@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { routes } from "@/constants/routes";
 import { authClient } from "@/lib/auth/auth-client";
 
 type ResendMagicLinkButtonProps = {
@@ -14,10 +15,10 @@ type ResendMagicLinkButtonProps = {
 
 export function ResendMagicLinkButton({
   email,
-  callbackUrl = "/post-sign-in",
+  callbackUrl,
 }: ResendMagicLinkButtonProps) {
   const [isPending, setIsPending] = useState(false);
-  const nextCallbackUrl = callbackUrl ?? "/post-sign-in";
+  const nextCallbackUrl = callbackUrl ?? routes.auth.postSignIn;
 
   async function handleResend() {
     try {

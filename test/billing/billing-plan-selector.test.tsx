@@ -27,6 +27,7 @@ const plans = [
     name: "Pro",
     description: "For shipping.",
     features: ["Feature A"],
+    highlighted: true,
     monthly: {
       priceId: "price_pro_month",
       unitAmount: 2900,
@@ -39,6 +40,7 @@ const plans = [
     name: "Team",
     description: "For teams.",
     features: ["Analytics"],
+    highlighted: false,
     monthly: {
       priceId: "price_team_month",
       unitAmount: 4900,

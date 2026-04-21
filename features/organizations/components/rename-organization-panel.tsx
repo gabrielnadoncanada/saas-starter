@@ -16,12 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { renameOrganizationAction } from "@/features/organizations/actions/rename-organization.actions";
+import type { FormActionState } from "@/types/form-action-state";
 
-type ActionState = {
-  error?: string;
-  success?: string;
+type ActionState = FormActionState<{ name: string }> & {
   refreshKey?: number;
-  fieldErrors?: Record<string, string[] | undefined>;
 };
 
 type RenameOrganizationPanelProps = {

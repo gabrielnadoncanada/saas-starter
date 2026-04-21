@@ -8,7 +8,7 @@ import { blogSource } from "@/lib/blog/source";
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Writing from the SaaS Starter team — product updates, architecture notes, and lessons from shipping the boilerplate.",
+    "Writing from the Tenviq team — product updates, architecture notes, and lessons from shipping the starter.",
   alternates: {
     types: {
       "application/rss+xml": "/feed.xml",
@@ -38,8 +38,8 @@ export default function BlogIndexPage() {
     <Section>
       <SectionHeading
         eyebrow="Blog"
-        title="Notes from building SaaS Starter"
-        description="Short pieces on what we're shipping, how the pieces fit together, and the decisions behind the boilerplate."
+        title="Notes from building Tenviq"
+        description="Short pieces on what we're shipping, how the pieces fit together, and the decisions behind the starter."
       />
 
       <ul className="mt-16 divide-y divide-border/60 border-y border-border/60">

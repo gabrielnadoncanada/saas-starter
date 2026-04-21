@@ -1,8 +1,8 @@
 import { blogSource } from "@/lib/blog/source";
 
-const FEED_TITLE = "SaaS Starter Blog";
+const FEED_TITLE = "Tenviq Blog";
 const FEED_DESCRIPTION =
-  "Writing from the SaaS Starter team — product updates, architecture notes, and lessons from shipping the boilerplate.";
+  "Writing from the Tenviq team — product updates, architecture notes, and lessons from shipping the starter.";
 
 function escapeXml(value: string) {
   return value

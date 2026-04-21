@@ -40,7 +40,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification:
-      process.env.SKIP_EMAIL_VERIFICATION === "false",
+      process.env.ENFORCE_EMAIL_VERIFICATION === "true",
     minPasswordLength: 8,
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
@@ -54,7 +54,7 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
-    sendOnSignUp: process.env.SKIP_EMAIL_VERIFICATION === "false",
+    sendOnSignUp: process.env.ENFORCE_EMAIL_VERIFICATION === "true",
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
@@ -133,7 +133,7 @@ export const auth = betterAuth({
       },
     }),
     twoFactor({
-      issuer: "SaaS Starter",
+      issuer: "Tenviq",
     }),
     nextCookies(),
   ],

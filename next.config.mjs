@@ -9,6 +9,15 @@ const nextConfig = {
       { hostname: 'avatars.githubusercontent.com' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/blog/tenviq-vs-shipfast',
+        destination: '/compare/tenviq-vs-shipfast',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX();

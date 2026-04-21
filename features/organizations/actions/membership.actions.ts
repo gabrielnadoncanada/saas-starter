@@ -106,8 +106,8 @@ export const inviteOrganizationMemberAction = validatedAuthenticatedAction(
       ]);
 
       const memberCount = members?.members.length ?? 0;
-      const pendingCount = (invitations ?? []).filter(
-        (invitation: { status: string }) => isInvitationPending(invitation.status),
+      const pendingCount = (invitations ?? []).filter((invitation) =>
+        isInvitationPending(invitation.status),
       ).length;
 
       assertLimit(entitlements, "teamMembers", memberCount + pendingCount);
