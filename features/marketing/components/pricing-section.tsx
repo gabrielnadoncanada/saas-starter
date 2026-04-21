@@ -22,10 +22,18 @@ export type PricingSectionProps = {
 };
 
 export function PricingSection({ plans, className }: PricingSectionProps) {
+  const layoutClassName =
+    plans.length === 1
+      ? "mx-auto max-w-xl"
+      : plans.length === 2
+        ? "lg:grid-cols-2"
+        : "lg:grid-cols-3";
+
   return (
     <div
       className={cn(
-        "grid gap-px border border-border bg-border lg:grid-cols-3",
+        "grid gap-px border border-border bg-border",
+        layoutClassName,
         className,
       )}
     >

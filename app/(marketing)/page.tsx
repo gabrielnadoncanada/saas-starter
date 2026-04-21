@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Code2, LayoutDashboard, Rocket, Shield } from "lucide-react";
 
 import {
@@ -19,29 +20,35 @@ import type {
 } from "@/features/marketing/components/screenshot-gallery";
 import { cn } from "@/lib/utils";
 
+export const metadata: Metadata = {
+  title: "Next.js SaaS Starter for Real B2B Foundations",
+  description:
+    "A production-ready Next.js SaaS starter for technical founders who need auth, Stripe billing, organizations, admin, and AI without buying a heavy starter kit.",
+};
+
 const featureItems = [
   {
     title: "Ship faster",
     description:
-      "Skip weeks of repetitive setup work and start from a real SaaS foundation.",
+      "Skip weeks of setup and start from a SaaS foundation that already feels sellable.",
     icon: Rocket,
   },
   {
     title: "Understand faster",
     description:
-      "Open the project and quickly see where things live, how flows work, and where to make changes.",
+      "Open the repo and quickly see where things live, how the flow works, and what to change next.",
     icon: Code2,
   },
   {
     title: "Modify safely",
     description:
-      "Add features, edit flows, and extend the product without fighting hidden conventions.",
+      "Add features and change core flows without first decoding someone else's framework.",
     icon: Shield,
   },
   {
-    title: "Launch with credibility",
+    title: "Sell with credibility",
     description:
-      "Start from product surfaces that already feel real to users, customers, and buyers.",
+      "Start from product surfaces that already look like a real B2B SaaS, not a weekend demo.",
     icon: LayoutDashboard,
   },
 ];
@@ -49,109 +56,109 @@ const featureItems = [
 const featureColumns = [
   {
     label: "Auth",
-    title: "Production auth",
+    title: "Auth that already feels done",
     items: [
-      "Email + password + OAuth",
-      "Magic links",
+      "Email + password, OAuth, and magic links",
       "Two-factor authentication",
-      "Password reset & email verification",
-      "Session & device management",
+      "Password reset and email verification",
+      "Session and device management",
+      "Account linking and soft delete",
     ],
   },
   {
     label: "Billing",
-    title: "Stripe billing",
+    title: "Billing that controls the product",
     items: [
-      "Subscription checkout & portal",
-      "Plan gating on features",
-      "Usage metering with limits",
-      "Webhook-synced state",
-      "Multi-plan pricing surface",
+      "Stripe checkout and customer portal",
+      "Capabilities and usage limits",
+      "Webhook-synced billing state",
+      "Config-driven plan gating",
+      "Ready for monthly and yearly plans",
     ],
   },
   {
     label: "Teams",
-    title: "Multi-tenant orgs",
+    title: "Real team workspaces",
     items: [
-      "Organization creation & switching",
-      "Member invites & role checks",
-      "Per-tenant scoping on all queries",
+      "Organizations, invites, and switching",
+      "Owner, Admin, and Member roles",
+      "Tenant-scoped queries and mutations",
       "Seat-aware permissions",
-      "Activity audit log",
+      "Per-organization activity history",
     ],
   },
   {
     label: "Admin",
-    title: "Admin panel",
+    title: "Admin surfaces buyers expect",
     items: [
-      "User & organization tables",
-      "Ban / unban / impersonation",
-      "Signups chart & plan breakdown",
+      "User and organization directories",
+      "Ban, unban, and impersonation",
+      "Plan and signup visibility",
       "Recent activity stream",
-      "Role-gated routes",
+      "Role-gated admin routes",
     ],
   },
   {
     label: "AI",
-    title: "AI assistant",
+    title: "AI included in the product",
     items: [
-      "Google, OpenAI & Groq providers",
+      "Org-scoped assistant experience",
       "Streaming chat with tool calls",
-      "Chart & document artifacts",
-      "Conversation persistence",
-      "Usage-limit aware",
+      "Chart and document artifacts",
+      "Saved conversations",
+      "Usage-aware access",
     ],
   },
   {
     label: "DX",
-    title: "Developer experience",
+    title: "A codebase you can still read later",
     items: [
-      "Feature-based structure",
-      "Server actions + Zod schemas",
-      "Prisma multi-file schema",
-      "Resend email templates",
-      "Built-in docs page",
+      "Feature-first structure",
+      "Thin routes, server actions, and Zod",
+      "Prisma schema and seed data included",
+      "Email templates and local docs",
+      "Built to customize without unlearning it first",
     ],
   },
 ];
 
 const comparisonColumns = [
   {
-    label: "Other boilerplates",
+    label: "Thin starters",
     description:
-      "Often save too little time and still need lots of rebuilding.",
+      "Fast to buy, but still leave the expensive B2B parts for you to rebuild.",
     items: [
-      "Save too little time",
-      "Look unfinished",
-      "Need lots of rebuilding",
-      "Weak monetization foundations",
-      "Poor launch credibility",
+      "Good for basic MVPs",
+      "Weak team and admin foundations",
+      "More product plumbing left to build",
+      "Less credible out of the box",
+      "Often become a rewrite later",
     ],
     tone: "weak" as const,
   },
   {
     label: "Heavy starters",
     description:
-      "Look complete, but cost more time to understand and customize.",
+      "Complete on paper, but harder to understand when you need to move fast.",
     items: [
-      "Harder to understand",
-      "Too much ceremony",
-      "Too many internal patterns",
-      "Slower to customize",
-      "Higher cognitive load",
+      "More architecture to absorb",
+      "More ceremony around simple changes",
+      "More patterns to learn first",
+      "Slower first customization pass",
+      "Higher cognitive load for small teams",
     ],
     tone: "weak" as const,
   },
   {
-    label: "This starter",
+    label: "Tenviq",
     description:
-      "Built for real buyer needs, with a stronger launch-ready base.",
+      "A launch-ready B2B base with less code archaeology before you can ship.",
     items: [
-      "Strong launch-ready base",
-      "Clear product foundations",
-      "Faster time to understand",
-      "Faster time to modify",
-      "Built for real buyer needs",
+      "Teams, billing, admin, and AI already wired",
+      "Readable feature-first codebase",
+      "Faster time to first real feature",
+      "Safer changes without hidden architecture",
+      "Built for technical founders, not framework tourists",
     ],
     tone: "brand" as const,
   },
@@ -246,22 +253,19 @@ const galleryCategories: GalleryCategory[] = [
 ];
 
 const useCases = [
-  "B2B SaaS products",
-  "Client portals",
-  "AI-powered SaaS tools",
-  "Internal business software",
-  "Niche vertical products",
-  "Paid MVPs with real monetization foundations",
+  "B2B SaaS with team workspaces and invitations",
+  "AI SaaS products with gated plans and usage limits",
+  "Vertical SaaS that needs admin and account surfaces on day one",
+  "Paid MVPs that need to look credible in demos and sales calls",
+  "Products that must grow from first user to first team account without a rewrite",
 ];
 
-const soloPurchaseHref =
+const starterPurchaseHref =
   process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL_SOLO || "#pricing";
-const teamPurchaseHref =
-  process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL_TEAM || "#pricing";
-const agencyPurchaseHref =
-  process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL_AGENCY || "#pricing";
 
 const commonPlanFeatures = [
+  "Auth, billing, teams, admin, AI, and docs included",
+  "1 developer seat",
   "Unlimited end products",
   "Commercial usage",
   "Lifetime updates",
@@ -271,44 +275,16 @@ const commonPlanFeatures = [
 
 const pricingPlans = [
   {
-    name: "Solo",
-    description: "For one developer shipping unlimited projects.",
+    name: "Starter",
+    description:
+      "For technical founders who want one clear purchase and a serious B2B base.",
     price: "$249",
     period: "one-time",
-    href: soloPurchaseHref,
-    ctaLabel: "Get Solo — $249",
-    features: ["1 developer seat", ...commonPlanFeatures],
-    badge: "Individual",
-  },
-  {
-    name: "Team",
-    description:
-      "For small teams and consultants building client-facing products.",
-    price: "$599",
-    period: "one-time",
-    href: teamPurchaseHref,
-    ctaLabel: "Get Team — $599",
-    features: [
-      "Up to 5 developer seats",
-      ...commonPlanFeatures,
-      "Priority email support",
-    ],
-    badge: "Save $646 vs 5× Solo",
+    href: starterPurchaseHref,
+    ctaLabel: "Buy the starter — $249",
+    features: commonPlanFeatures,
+    badge: "Everything you need",
     highlighted: true,
-  },
-  {
-    name: "Agency",
-    description: "For agencies delivering client projects at scale.",
-    price: "$1,299",
-    period: "one-time",
-    href: agencyPurchaseHref,
-    ctaLabel: "Get Agency — $1,299",
-    features: [
-      "Up to 10 developer seats",
-      ...commonPlanFeatures,
-      "Priority support",
-    ],
-    badge: "Save $1,191 vs 10× Solo",
   },
 ];
 
@@ -331,32 +307,32 @@ const faqItems = [
   {
     question: "Who is this for?",
     answer:
-      "Solo founders, consultants, freelancers, indie hackers, and small technical teams who want a fast path to a launchable SaaS without rebuilding auth, billing, and plan gating from scratch.",
+      "Technical founders building a real B2B or AI SaaS who want auth, billing, organizations, admin, and product-ready surfaces without buying a heavy starter they will spend weeks decoding.",
   },
   {
     question: "What do I get when I buy?",
     answer:
-      "Immediate access to a private GitHub repository with the full source code, plus all future updates for the lifetime of the product. You own your copy of the code and can ship it to production the same day.",
+      "Immediate access to a private GitHub repository with the full source code, the same product surfaces you can inspect in the live demo, and all future updates for the lifetime of the product. You own your copy and can start shipping from it the same day.",
   },
   {
     question: "Can I use it for client projects or multiple products?",
     answer:
-      "Yes. Every tier includes unlimited end products and full commercial usage. Build for yourself, for your startup, or for clients — no per-project fees, ever.",
+      "Yes. The starter includes unlimited end products and full commercial usage. Build for yourself, for your startup, or for client work without per-project fees.",
   },
   {
-    question: "What's the difference between Solo, Team, and Agency?",
+    question: "Who is this not for?",
     answer:
-      "Tiers are based on seats. Solo is for one developer. Team covers up to 5 developers in one company. Agency covers up to 10 developers and adds white-label rights for client delivery at scale. All tiers include unlimited projects.",
+      "If you only need a basic login, a landing page, and a Stripe button for a simple solo MVP, this is probably more foundation than you need. It is best for products that actually need teams, billing rules, admin visibility, and room to grow.",
   },
   {
     question: "Do I get future updates?",
     answer:
-      "Yes. Every tier includes lifetime updates. When we ship new features, upgrades, or framework bumps, you get them in your private repo at no extra cost.",
+      "Yes. The starter includes lifetime updates. When we ship new features, upgrades, or framework bumps, you get them in your private repo at no extra cost.",
   },
   {
     question: "What's NOT allowed under the license?",
     answer:
-      "You cannot resell or redistribute the starter codebase itself, sublicense it, or use it to build a competing starter kit or template product. Seats are per developer and cannot be shared. Full terms at /license.",
+      "You cannot resell or redistribute the starter codebase itself, sublicense it, or use it to build a competing starter kit or template product. The seat is per developer and cannot be shared. Full terms at /license.",
   },
   {
     question: "Do you offer refunds?",
@@ -366,7 +342,7 @@ const faqItems = [
   {
     question: "Is this just a boilerplate?",
     answer:
-      "No. It is a product-ready SaaS foundation with real auth, Stripe billing with enforced plan gating, teams, admin panel, and an AI assistant — the things most starters leave as an exercise for the reader.",
+      "No. It is a product-ready B2B SaaS foundation with real auth, enforced billing logic, teams, admin surfaces, and an AI assistant already wired together. The point is not just faster setup. The point is starting from a product that already feels real.",
   },
 ];
 
@@ -385,30 +361,30 @@ export default function MarketingPage() {
             pill={
               <AnnouncementPill
                 label="v1.0"
-                text="A boring SaaS starter that stays fast to edit"
+                text="For technical founders building real B2B SaaS"
               />
             }
             title={
               <>
-                Auth, billing, teams, admin —{" "}
-                <BrandItalic>already shipped</BrandItalic>. Build the product
-                that&apos;s <BrandItalic>actually yours</BrandItalic>.
+                The Next.js SaaS starter for builders who want{" "}
+                <BrandItalic>real B2B foundations</BrandItalic>, without the
+                heavy starter kit.
               </>
             }
             description={
               <>
-                Stripe billing, multi-tenant organizations, production auth, an
-                admin panel, and an AI assistant — wired together in a codebase
-                built to be read, not decoded.
+                Auth, Stripe billing, organizations, admin, and AI are already
+                wired together in a codebase you can understand in an afternoon
+                and extend without fighting hidden architecture.
               </>
             }
             actions={
               <HeroActions
-                primaryLabel="Get the starter — $249"
+                primaryLabel="Buy the starter — $249"
                 primaryHref="#pricing"
                 secondaryLabel="Try the live demo"
                 secondaryHref={process.env.NEXT_PUBLIC_DEMO_URL ?? "/sign-in"}
-                note="One-time · Lifetime updates"
+                note="One-time · Unlimited projects · Lifetime updates"
               />
             }
             stack={[
@@ -427,7 +403,7 @@ export default function MarketingPage() {
 
       <Section containerClassName="py-14 md:py-16">
         <LogoCloud
-          title="Everything you need to launch with confidence"
+          title="A stronger B2B starting point without the usual starter-kit baggage"
           logos={[
             "Production auth",
             "Subscription billing",
@@ -444,14 +420,15 @@ export default function MarketingPage() {
           index="01"
           eyebrow="Full tour"
           align="center"
-          title={
-            <>
-              Every surface you get, on <BrandItalic>day one</BrandItalic>.
-            </>
-          }
-          description="Browse the full product by category. Not three cherry-picked screens — the actual shell your users will see before you write a single line of custom code."
-          className="mb-14"
-        />
+            title={
+              <>
+                The surfaces your buyers expect, on{" "}
+                <BrandItalic>day one</BrandItalic>.
+              </>
+            }
+            description="Browse the product by category. Not three curated screenshots: the actual shell your users, admins, and teammates will interact with before you write your first custom feature."
+            className="mb-14"
+          />
 
         <ScreenshotGallery
           categories={galleryCategories}
@@ -467,26 +444,26 @@ export default function MarketingPage() {
             eyebrow="Positioning"
             title={
               <>
-                Most SaaS starters are either{" "}
-                <BrandItalic>too bare</BrandItalic> or{" "}
-                <BrandItalic>too heavy</BrandItalic>.
+                Most SaaS starters force the{" "}
+                <BrandItalic>wrong tradeoff</BrandItalic>.
               </>
             }
           >
             <div className="max-w-xl space-y-4 text-base leading-relaxed text-muted-foreground">
               <p>
-                Some starters save too little time. Others come with so much
-                abstraction that modifying simple product flows becomes slower
-                than it should be.
+                The lightweight ones get you to a login screen quickly, then
+                leave teams, admin, billing depth, and product credibility for
+                later. The heavy ones ship more architecture than you actually
+                want to carry.
               </p>
               <p>
-                This starter is built for a different outcome: helping technical
-                builders launch faster with a codebase that feels obvious,
-                credible, and safe to extend.
+                This starter is built for technical founders who need a real
+                B2B base now, but still want to move fast when the first custom
+                features and rewrites start.
               </p>
               <p className="border-l-2 border-brand pl-4 text-foreground">
-                No framework-within-a-framework. No unnecessary ceremony. Just a
-                strong foundation you can actually build on.
+                Readable code. Product-ready foundations. No
+                framework-within-a-framework.
               </p>
             </div>
           </SectionHeading>
@@ -502,15 +479,15 @@ export default function MarketingPage() {
       <Section id="features">
         <SectionHeading
           index="03"
-          eyebrow="What's included"
+          eyebrow="What ships"
           align="center"
           title={
             <>
-              Everything you need to stop rebuilding the{" "}
-              <BrandItalic>same SaaS basics</BrandItalic>.
+              The B2B core most starters leave{" "}
+              <BrandItalic>for later</BrandItalic>.
             </>
           }
-          description="Auth, billing, dashboards, teams, and the product surfaces your buyers expect — all designed to be extended, not fought."
+          description="Not just auth and payments. The account, team, admin, and monetization surfaces that make a starter feel usable to a real customer."
           className="mb-14"
         />
 
@@ -547,12 +524,12 @@ export default function MarketingPage() {
           align="center"
           index="04"
           eyebrow="Comparison"
-          title={
-            <>
-              Why this starter feels <BrandItalic>different</BrandItalic>.
-            </>
-          }
-          description="A stronger base without the usual tradeoff of extra complexity."
+            title={
+              <>
+                Why this starter feels <BrandItalic>different</BrandItalic>.
+              </>
+            }
+          description="You get the serious B2B pieces up front, without buying months of extra cognitive load."
           className="mb-14"
         />
         <div className="grid grid-cols-1 gap-px border border-border bg-border lg:grid-cols-3">
@@ -622,25 +599,26 @@ export default function MarketingPage() {
         <SectionHeading
           align="center"
           index="05"
-          eyebrow="Use cases"
+          eyebrow="Good fit"
           title={
             <>
-              More than a <BrandItalic>nicer boilerplate</BrandItalic>.
+              Best when your product needs to look{" "}
+              <BrandItalic>real early</BrandItalic>.
             </>
           }
-          description="Meant to help technical buyers ship real products faster, not just browse prettier screenshots."
+          description="The fit is narrow on purpose: products that need credibility and flexibility at the same time."
           className="mb-14"
         />
 
         <div className="border border-border bg-card p-8 md:p-10">
           <div className="mb-8 flex items-center gap-3">
             <span aria-hidden className="size-1.5 bg-brand" />
-            <span className="label-mono">Use it to build</span>
+            <span className="label-mono">Best for</span>
           </div>
 
           <p className="mb-10 max-w-md text-base leading-relaxed text-muted-foreground">
-            Start from a foundation that already solves the expensive,
-            repetitive parts.
+            Start from a codebase that already handles the expensive product
+            work founders usually postpone until it becomes painful.
           </p>
 
           <ul className="grid grid-cols-1 gap-px border-t border-border bg-border md:grid-cols-2">
@@ -667,10 +645,10 @@ export default function MarketingPage() {
           title={
             <>
               Roughly <BrandItalic>{totalHoursSaved} hours</BrandItalic> of
-              engineering, already done.
+              product foundation, already done.
             </>
           }
-          description="The parts every SaaS rebuilds from scratch — shipped, wired together, and ready to extend."
+          description="You are not buying components. You are buying the slow B2B plumbing most serious SaaS products end up needing anyway."
           className="mb-14"
         />
 
@@ -715,7 +693,7 @@ export default function MarketingPage() {
 
             <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
               At a ${contractorRate}/hour contractor rate, rebuilding this
-              yourself runs around:
+              foundation yourself runs around:
             </p>
 
             <div className="mb-8 border-y border-border py-6">
@@ -742,9 +720,9 @@ export default function MarketingPage() {
             </div>
 
             <p className="mt-auto pt-8 text-sm leading-relaxed text-muted-foreground">
-              Every hour you don&apos;t rebuild auth, billing, and org plumbing
-              is an hour on the thing that actually makes your product
-              different.
+              Every hour you do not spend rebuilding auth, billing rules,
+              organizations, and admin is an hour you can spend on the thing
+              customers will actually pay for.
             </p>
           </div>
         </div>
@@ -755,13 +733,13 @@ export default function MarketingPage() {
           align="center"
           index="07"
           eyebrow="Pricing"
-          title={
-            <>
-              One-time payment. <BrandItalic>No subscription.</BrandItalic>{" "}
-              Lifetime updates.
-            </>
-          }
-          description="Pick your seat count. Every tier ships the same code, unlimited projects, and full commercial usage."
+            title={
+              <>
+                One-time payment. <BrandItalic>No subscription.</BrandItalic>{" "}
+                Lifetime updates.
+              </>
+            }
+          description="One clear offer. Full source code, unlimited end products, and the same starter you can inspect in the live demo."
           className="mb-14"
         />
 
@@ -787,14 +765,14 @@ export default function MarketingPage() {
       <Section>
         <FinalCtaSection
           badge="Ready to launch"
-          title={
-            <>
-              Stop rebuilding the{" "}
-              <BrandItalic>same SaaS foundation</BrandItalic>.
-            </>
-          }
-          description="Launch faster with a starter built to help you understand quickly, customize safely, and ship with confidence."
-          primaryLabel="Get the starter"
+            title={
+              <>
+                Buy the starter, then build the part that&apos;s{" "}
+                <BrandItalic>actually yours</BrandItalic>.
+              </>
+            }
+          description="Skip the weeks of auth, billing, orgs, admin, and AI plumbing. Start from a base you can actually understand and sell from."
+          primaryLabel="Buy the starter"
           primaryHref="#pricing"
           secondaryLabel="Read docs"
           secondaryHref="/docs"

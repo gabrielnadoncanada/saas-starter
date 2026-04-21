@@ -7,7 +7,7 @@ const create = browser<typeof Config, import("fumadocs-mdx/runtime/types").Inter
   }
 }>();
 const browserCollections = {
-  blog: create.doc("blog", {"introducing-saas-starter.mdx": () => import("../content/blog/introducing-saas-starter.mdx?collection=blog"), "plan-gating-that-actually-works.mdx": () => import("../content/blog/plan-gating-that-actually-works.mdx?collection=blog"), }),
+  blog: create.doc("blog", {"introducing-saas-starter.mdx": () => import("../content/blog/introducing-saas-starter.mdx?collection=blog"), "plan-gating-that-actually-works.mdx": () => import("../content/blog/plan-gating-that-actually-works.mdx?collection=blog"), "tenviq-vs-shipfast.mdx": () => import("../content/blog/tenviq-vs-shipfast.mdx?collection=blog"), }),
   docs: create.doc("docs", {"accounts-and-auth.mdx": () => import("../content/docs/accounts-and-auth.mdx?collection=docs"), "customization.mdx": () => import("../content/docs/customization.mdx?collection=docs"), "deployment.mdx": () => import("../content/docs/deployment.mdx?collection=docs"), "development.mdx": () => import("../content/docs/development.mdx?collection=docs"), "getting-started.mdx": () => import("../content/docs/getting-started.mdx?collection=docs"), "index.mdx": () => import("../content/docs/index.mdx?collection=docs"), "plans-and-billing.mdx": () => import("../content/docs/plans-and-billing.mdx?collection=docs"), "reference.mdx": () => import("../content/docs/reference.mdx?collection=docs"), }),
 };
 export default browserCollections;

@@ -15,6 +15,7 @@ const footerSections = [
     links: [
       { href: "/docs", label: "Docs" },
       { href: "/blog", label: "Blog" },
+      { href: "/blog/tenviq-vs-shipfast", label: "Vs ShipFast" },
     ],
   },
   {
@@ -41,12 +42,12 @@ export default function MarketingLayout({
           label: "Demo",
           href: process.env.NEXT_PUBLIC_DEMO_URL ?? "/sign-in",
         }}
-        primaryAction={{ label: "Get the starter", href: "/#pricing" }}
+        primaryAction={{ label: "Buy the starter", href: "/#pricing" }}
       />
       <div className="flex-1">{children}</div>
       <MarketingFooter
         logo={<LogoPeriod />}
-        description="Built for solo founders, consultants, indie hackers, and small technical teams who want to ship quickly without rebuilding the same product foundation again."
+        description="Built for technical founders who want real B2B SaaS foundations without buying a heavy starter kit they will spend weeks decoding."
         copyright="© 2026 Tenviq. All rights reserved."
         sections={footerSections}
       />

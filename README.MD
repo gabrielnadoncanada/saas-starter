@@ -1,24 +1,30 @@
 # SaaS Starter
 
-A production-ready Next.js SaaS starter with authentication, Stripe billing, plan gating, organization management, and a polished dashboard built for technical founders and small teams who want to ship fast.
+A production-ready Next.js SaaS starter for technical founders building real B2B or AI SaaS products. Auth, Stripe billing, organizations, admin surfaces, and an AI assistant are already wired together in a codebase built to be read, not decoded.
 
-## Who is this for
+## Who This Is For
 
-- Solo founders launching a SaaS product
-- Small technical teams who don't want to rebuild auth + billing + organizations from scratch
-- Freelancers and agencies starting client projects from a strong base
+- Technical founders who want a serious B2B foundation without a heavy starter kit
+- Small product teams that need billing, teams, admin, and account surfaces on day one
+- Builders who care as much about time-to-understand as time-to-launch
 
-## What's included
+## Not The Right Fit If
 
-- **Authentication** - Better Auth with database sessions, email/password, magic link, Google, and GitHub OAuth. Account linking, session management, and soft delete built in.
-- **Stripe billing** - Flat-rate subscriptions (monthly and yearly), checkout, customer portal, and webhook handling.
-- **Plan gating** - Capability-based feature flags and usage limits (monthly quotas, team member caps). Single source of truth in one config file.
-- **Organization management** - Multi-organization support with roles (Owner, Admin, Member), invitations, and active organization switching.
-- **Dashboard shell** - Sidebar navigation, command menu, theme switching, responsive layout, and settings pages.
-- **AI assistant** - Org-scoped chat with tool calling (e.g. task creation), model selection, and conversations stored in the database.
-- **Tasks CRUD example** - Full working feature with TanStack Table (sort, filter, paginate, bulk actions), server actions, Zod validation, and plan-gated creation.
+- You only need a basic landing page, login, and Stripe button for a very simple solo MVP
+- You want a massive framework with layers of abstraction, plugins, and enterprise ceremony
+- You are optimizing for the cheapest starter possible instead of the clearest one to extend
+
+## What Ships
+
+- **Authentication** - Better Auth with database sessions, email/password, magic link, Google, and GitHub OAuth. Account linking, session management, email verification, and soft delete are already in place.
+- **Stripe billing** - Checkout, customer portal, webhook handling, and billing state wired into the app instead of bolted on later.
+- **Plan gating** - Capability-based feature flags and usage limits with a single source of truth in one config file.
+- **Organizations** - Multi-organization support with invites, active organization switching, and role-aware access.
+- **Account and admin surfaces** - Dashboard shell, settings, organization management, and admin flows that already feel like a real product.
+- **AI assistant** - Org-scoped chat with tool calling, model selection, and persisted conversations in the database.
+- **Tasks example feature** - A full CRUD feature with TanStack Table, filters, bulk actions, server actions, and Zod validation to show how new features should fit into the app.
 - **Email** - Resend integration with React Email templates for auth emails and team invitations.
-- **Starter docs** - Local guides for environment setup, adding a feature, testing, and extending assistant tools.
+- **Docs** - Local guides for setup, billing, deployment, feature extension, and assistant integration.
 
 ## Tech stack
 
@@ -146,13 +152,13 @@ prisma/             -> Schema, migrations, seed
 content/docs/       -> Full documentation (Fumadocs MDX)
 ```
 
-## Why this starter
+## Why This Starter
 
-- **Launch faster** - Auth, billing, organizations, and a dashboard shell are already wired together. Start building your product features on day one.
-- **Understand quickly** - Feature-organized code, thin routes, and short files. No custom frameworks to learn.
-- **Modify safely** - Plan gating and usage limits are centralized. Adding a new gated feature is a two-line change.
-- **Customize freely** - The repo includes focused docs for setup, customization, billing, deployment, and feature extension.
-- **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, Server Actions.
+- **A real B2B base, not just scaffolding** - Teams, billing, admin, and account flows are already there, so you are not stuck rebuilding the serious parts after launch.
+- **Readable by design** - Feature-organized code, thin routes, and clear boundaries. You can understand the app quickly and keep understanding it after customization.
+- **Built for modification** - Billing rules, plan limits, and product structure are explicit. You can add product logic without fighting a hidden internal framework.
+- **Credible from day one** - The starter already looks and behaves like a product you can demo, sell, and ship.
+- **Modern defaults** - Next.js 16, React 19, Tailwind v4, TypeScript strict, Server Components, and Server Actions.
 
 ## Documentation
 
