@@ -55,6 +55,7 @@ export const tenantScopeExtension = Prisma.defineExtension((client) => {
       aiConversation: guard("AiConversation"),
       usageCounter: guard("UsageCounter"),
       activityEvent: guard("ActivityEvent"),
+      storedFile: guard("StoredFile"),
     },
   });
 });
