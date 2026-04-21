@@ -1,6 +1,7 @@
 import "@/lib/env";
 import "./globals.css";
 
+import { Analytics } from "@vercel/analytics/next";
 import { GeistPixelSquare } from "geist/font/pixel";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
@@ -59,6 +60,7 @@ export default async function RootLayout({
         suppressHydrationWarning
       >
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );

@@ -1,7 +1,10 @@
+"use client";
+
 import { Check } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
+import { trackEvent } from "@/lib/analytics/posthog-client";
 import { cn } from "@/lib/utils";
 
 export type PricingPlan = {
@@ -9,11 +12,13 @@ export type PricingPlan = {
   description: string;
   price: string;
   period?: string;
+  priceNote?: string;
   href: string;
   ctaLabel: string;
   features: string[];
   badge?: string;
   highlighted?: boolean;
+  disabled?: boolean;
 };
 
 export type PricingSectionProps = {
@@ -45,7 +50,7 @@ export function PricingSection({ plans, className }: PricingSectionProps) {
 }
 
 function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
-  const { highlighted } = plan;
+  const { highlighted, disabled } = plan;
   const isExternal = /^https?:\/\//.test(plan.href);
 
   return (
@@ -54,6 +59,7 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         "group relative flex flex-col bg-background p-8 transition-colors",
         highlighted &&
           "lg:-my-4 lg:z-10 bg-background shadow-[0_40px_80px_-30px_hsl(var(--brand-hsl)/0.35)] ring-1 ring-brand",
+        disabled && "opacity-70",
       )}
     >
       {highlighted ? (
@@ -88,7 +94,7 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         {plan.description}
       </p>
 
-      <div className="relative mt-8 flex items-end gap-2 border-b border-border pb-8">
+      <div className="relative mt-8 flex items-end gap-2 pb-4">
         <span
           className={cn(
             "text-5xl font-semibold tracking-[-0.03em] tabular-nums",
@@ -103,6 +109,19 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
           </span>
         ) : null}
       </div>
+
+      {plan.priceNote ? (
+        <p
+          className={cn(
+            "relative pb-4 font-mono text-[11px] uppercase tracking-[0.18em]",
+            highlighted ? "text-brand" : "text-muted-foreground",
+          )}
+        >
+          {plan.priceNote}
+        </p>
+      ) : null}
+
+      <div className="relative border-b border-border" aria-hidden />
 
       <ul className="relative mt-8 flex-1 space-y-3">
         {plan.features.map((feature) => (
@@ -131,28 +150,45 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         ))}
       </ul>
 
-      <Link
-        href={plan.href}
-        {...(isExternal
-          ? { target: "_blank", rel: "noreferrer" }
-          : {})}
-        className={cn(
-          "relative mt-10 group/cta inline-flex items-center justify-between gap-2 border px-5 py-3.5 text-sm font-medium transition-all",
-          highlighted
-            ? "border-transparent bg-brand text-brand-foreground shadow-[0_20px_40px_-15px_hsl(var(--brand-hsl)/0.8)] hover:-translate-y-0.5 hover:shadow-[0_30px_60px_-15px_hsl(var(--brand-hsl)/0.9)]"
-            : "border-border bg-background hover:border-foreground",
-        )}
-      >
-        <span>{plan.ctaLabel}</span>
-        <span
+      {disabled ? (
+        <div
+          aria-disabled
           className={cn(
-            "transition-transform group-hover/cta:translate-x-0.5",
-            highlighted ? "text-brand-foreground" : "text-brand",
+            "relative mt-10 inline-flex cursor-not-allowed items-center justify-between gap-2 border border-dashed border-border bg-muted/30 px-5 py-3.5 text-sm font-medium text-muted-foreground",
           )}
         >
-          →
-        </span>
-      </Link>
+          <span>{plan.ctaLabel}</span>
+          <span aria-hidden>—</span>
+        </div>
+      ) : (
+        <Link
+          href={plan.href}
+          onClick={() =>
+            trackEvent("cta_click_buy", {
+              location: "pricing",
+              tier: plan.name,
+              price: plan.price,
+            })
+          }
+          {...(isExternal ? { target: "_blank", rel: "noreferrer" } : {})}
+          className={cn(
+            "relative mt-10 group/cta inline-flex items-center justify-between gap-2 border px-5 py-3.5 text-sm font-medium transition-all",
+            highlighted
+              ? "border-transparent bg-brand text-brand-foreground shadow-[0_20px_40px_-15px_hsl(var(--brand-hsl)/0.8)] hover:-translate-y-0.5 hover:shadow-[0_30px_60px_-15px_hsl(var(--brand-hsl)/0.9)]"
+              : "border-border bg-background hover:border-foreground",
+          )}
+        >
+          <span>{plan.ctaLabel}</span>
+          <span
+            className={cn(
+              "transition-transform group-hover/cta:translate-x-0.5",
+              highlighted ? "text-brand-foreground" : "text-brand",
+            )}
+          >
+            →
+          </span>
+        </Link>
+      )}
     </div>
   );
 }

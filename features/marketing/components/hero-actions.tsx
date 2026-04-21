@@ -1,7 +1,10 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
+import { trackEvent } from "@/lib/analytics/posthog-client";
 import { cn } from "@/lib/utils";
 
 export type HeroActionsProps = {
@@ -30,6 +33,12 @@ export function HeroActions({
     >
       <Link
         href={primaryHref}
+        onClick={() =>
+          trackEvent("cta_click_buy", {
+            location: "hero",
+            label: primaryLabel,
+          })
+        }
         className="group relative inline-flex items-center gap-3 bg-brand px-6 py-3.5 text-sm font-medium text-brand-foreground shadow-[0_20px_60px_-20px_hsl(var(--brand-hsl)/0.8)] transition-all hover:shadow-[0_30px_80px_-20px_hsl(var(--brand-hsl)/0.9)] hover:-translate-y-0.5"
       >
         <span className="relative z-10">{primaryLabel}</span>
@@ -43,6 +52,12 @@ export function HeroActions({
       {secondaryLabel && secondaryHref ? (
         <Link
           href={secondaryHref}
+          onClick={() =>
+            trackEvent("cta_click_demo", {
+              location: "hero",
+              label: secondaryLabel,
+            })
+          }
           className="group inline-flex items-center gap-2 border border-border bg-background/60 px-6 py-3.5 text-sm font-medium backdrop-blur transition-colors hover:border-foreground/60 hover:bg-background"
         >
           {secondaryLabel}

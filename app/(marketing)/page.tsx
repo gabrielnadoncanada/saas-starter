@@ -18,6 +18,7 @@ import type {
   GalleryCategory,
   GalleryShot,
 } from "@/features/marketing/components/screenshot-gallery";
+import { getStarterPricingStatus } from "@/config/pricing.config";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -260,8 +261,7 @@ const useCases = [
   "Products that must grow from first user to first team account without a rewrite",
 ];
 
-const starterPurchaseHref =
-  process.env.NEXT_PUBLIC_STARTER_PURCHASE_URL_SOLO || "#pricing";
+const pricingStatus = getStarterPricingStatus();
 
 const commonPlanFeatures = [
   "Auth, billing, teams, admin, AI, and docs included",
@@ -273,18 +273,69 @@ const commonPlanFeatures = [
   "Live demo access before you buy",
 ];
 
+const foundingSeatsRemainingLabel = `${pricingStatus.founding.remaining} of ${pricingStatus.founding.total} founding seats left`;
+
 const pricingPlans = [
   {
-    name: "Starter",
+    name: "Founding",
     description:
-      "For technical founders who want one clear purchase and a serious B2B base.",
-    price: "$249",
+      "For the first 20 builders who want the sharpest price and a direct line on what ships next.",
+    price: `$${pricingStatus.tiers.founding.price}`,
     period: "one-time",
-    href: starterPurchaseHref,
-    ctaLabel: "Buy the starter — $249",
+    priceNote: pricingStatus.founding.active
+      ? foundingSeatsRemainingLabel
+      : "Sold out",
+    href: pricingStatus.tiers.founding.href,
+    ctaLabel: pricingStatus.founding.active
+      ? `Claim a founding seat — $${pricingStatus.tiers.founding.price}`
+      : "Founding seats sold out",
+    features: [
+      "Direct input on what ships next",
+      ...commonPlanFeatures,
+    ],
+    badge: pricingStatus.founding.active ? "Only 20 seats" : "Sold out",
+    highlighted: pricingStatus.founding.active,
+    disabled: !pricingStatus.founding.active,
+  },
+  {
+    name: "Early access",
+    description:
+      "For the next 80 builders. Locked-in price before the permanent tier kicks in.",
+    price: `$${pricingStatus.tiers.early.price}`,
+    period: "one-time",
+    priceNote: pricingStatus.founding.active
+      ? "Unlocks once founding is sold"
+      : pricingStatus.early.active
+        ? `${pricingStatus.early.remaining} early seats left`
+        : "Sold out",
+    href: pricingStatus.tiers.early.href,
+    ctaLabel: pricingStatus.early.active
+      ? `Get early access — $${pricingStatus.tiers.early.price}`
+      : pricingStatus.founding.active
+        ? "Unlocks after founding"
+        : "Early access sold out",
     features: commonPlanFeatures,
-    badge: "Everything you need",
-    highlighted: true,
+    badge: pricingStatus.early.active ? "Limited to 100 total" : "Next tier",
+    highlighted: pricingStatus.early.active,
+    disabled: !pricingStatus.early.active,
+  },
+  {
+    name: "Standard",
+    description:
+      "The permanent price once early-access seats are filled.",
+    price: `$${pricingStatus.tiers.standard.price}`,
+    period: "one-time",
+    priceNote: pricingStatus.activeTier.id === "standard"
+      ? "Available now"
+      : "Permanent price",
+    href: pricingStatus.tiers.standard.href,
+    ctaLabel: pricingStatus.activeTier.id === "standard"
+      ? `Buy Tenviq — $${pricingStatus.tiers.standard.price}`
+      : "Available after early access",
+    features: commonPlanFeatures,
+    badge: "Permanent",
+    highlighted: pricingStatus.activeTier.id === "standard",
+    disabled: pricingStatus.activeTier.id !== "standard",
   },
 ];
 
@@ -304,6 +355,11 @@ const contractorRate = 75;
 const totalDevCost = totalHoursSaved * contractorRate;
 
 const faqItems = [
+  {
+    question: "Why is the price so low right now?",
+    answer:
+      "Tenviq is production-ready today. The founding price exists because we are trading price for two things: direct feedback from the first 20 builders using it in anger, and permission to quote them when we move to the standard price. You get the same codebase, the same private GitHub access, and the same lifetime updates as someone paying $249 later. Once the 20 founding seats are gone, the price moves to $149, then $249 permanently.",
+  },
   {
     question: "Who is this for?",
     answer:
@@ -360,8 +416,17 @@ export default function MarketingPage() {
           <Hero
             pill={
               <AnnouncementPill
-                label="v1.0"
-                text="For technical founders building real B2B SaaS"
+                label={
+                  pricingStatus.founding.active
+                    ? `${pricingStatus.founding.remaining} / ${pricingStatus.founding.total} left`
+                    : "v1.0"
+                }
+                text={
+                  pricingStatus.founding.active
+                    ? `Founding seats at $${pricingStatus.tiers.founding.price} — grab one before the price moves to $${pricingStatus.tiers.early.price}`
+                    : "For technical founders building real B2B SaaS"
+                }
+                href="#pricing"
               />
             }
             title={
@@ -380,7 +445,13 @@ export default function MarketingPage() {
             }
             actions={
               <HeroActions
-                primaryLabel="Buy the starter — $249"
+                primaryLabel={
+                  pricingStatus.founding.active
+                    ? `Claim a founding seat — $${pricingStatus.tiers.founding.price}`
+                    : pricingStatus.early.active
+                      ? `Get early access — $${pricingStatus.tiers.early.price}`
+                      : `Buy Tenviq — $${pricingStatus.tiers.standard.price}`
+                }
                 primaryHref="#pricing"
                 secondaryLabel="Try the live demo"
                 secondaryHref={process.env.NEXT_PUBLIC_DEMO_URL ?? "/sign-in"}
@@ -707,16 +778,23 @@ export default function MarketingPage() {
 
             <div className="mb-2">
               <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand">
-                You pay
+                You pay today
               </div>
               <div className="mt-2 flex items-baseline gap-3">
                 <span className="text-4xl font-semibold tracking-[-0.03em] tabular-nums text-brand md:text-5xl">
-                  $249
+                  ${pricingStatus.activeTier.price}
                 </span>
                 <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                   one-time
                 </span>
               </div>
+              {pricingStatus.activeTier.id !== "standard" ? (
+                <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  {pricingStatus.founding.active
+                    ? `Next: $${pricingStatus.tiers.early.price} · Permanent: $${pricingStatus.tiers.standard.price}`
+                    : `Permanent: $${pricingStatus.tiers.standard.price}`}
+                </p>
+              ) : null}
             </div>
 
             <p className="mt-auto pt-8 text-sm leading-relaxed text-muted-foreground">
@@ -739,11 +817,19 @@ export default function MarketingPage() {
                 Lifetime updates.
               </>
             }
-          description="One clear offer. Full source code, unlimited end products, and the same starter you can inspect in the live demo."
+          description="The product is production-ready. The price is early because you are. Full source code, unlimited end products, and the same starter you can inspect in the live demo."
           className="mb-14"
         />
 
         <PricingSection plans={pricingPlans} />
+
+        <p className="mx-auto mt-10 max-w-2xl text-center font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          {pricingStatus.founding.active
+            ? `Price ladder — once the ${pricingStatus.founding.total} founding seats are gone, the next price is $${pricingStatus.tiers.early.price}, then $${pricingStatus.tiers.standard.price}. This is the sharpest price Tenviq will ever sell at.`
+            : pricingStatus.early.active
+              ? `Early access — ${pricingStatus.early.remaining} seats left before the permanent $${pricingStatus.tiers.standard.price} price.`
+              : `Standard pricing is now permanent.`}
+        </p>
       </Section>
 
       <Section id="faq">

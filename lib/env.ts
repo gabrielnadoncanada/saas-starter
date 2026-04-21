@@ -47,6 +47,11 @@ const optionalFeatureGroups = [
     vars: ["NEXT_PUBLIC_SENTRY_DSN"],
     hint: "Errors will not be reported. Set NEXT_PUBLIC_SENTRY_DSN to enable.",
   },
+  {
+    name: "Product analytics (PostHog)",
+    vars: ["NEXT_PUBLIC_POSTHOG_KEY"],
+    hint: "PostHog events (pageviews, CTA clicks, funnels) are disabled. Set NEXT_PUBLIC_POSTHOG_KEY to enable.",
+  },
 ] as const;
 
 function validateEnv() {
