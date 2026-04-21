@@ -3,28 +3,22 @@
 import { SearchIcon } from "lucide-react";
 
 import { useSearch } from "@/components/command/search-provider";
-import { cn } from "@/lib/utils";
-
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "../ui/sidebar";
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 type SearchProps = {
   className?: string;
-  type?: React.HTMLInputTypeAttribute;
   placeholder?: string;
 };
-<SidebarMenuButton
-  variant="ghost"
-  asChild
-  tooltip="Search"
-></SidebarMenuButton>;
+
 export function SidebarGroupSearch({
-  className = "",
+  className,
   placeholder = "Search",
 }: SearchProps) {
   const { setOpen } = useSearch();

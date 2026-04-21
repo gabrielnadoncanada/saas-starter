@@ -24,21 +24,19 @@ function sumLastN(
   buckets: DailyBucket<BucketField>[],
   days: number,
   field: BucketField,
-) {
+): number {
   return buckets.slice(-days).reduce((acc, b) => acc + b[field], 0);
 }
 
-function computeDelta(current: number, previous: number) {
+function computeDelta(current: number, previous: number): DashboardDelta {
   if (previous === 0) {
-    return current === 0
-      ? { direction: "flat" as const, percent: 0 }
-      : { direction: "up" as const, percent: 100 };
+    if (current === 0) return { direction: "flat", percent: 0 };
+    return { direction: "up", percent: 100 };
   }
   const ratio = ((current - previous) / previous) * 100;
-  if (Math.abs(ratio) < 0.5) return { direction: "flat" as const, percent: 0 };
-  return ratio >= 0
-    ? { direction: "up" as const, percent: Math.round(ratio) }
-    : { direction: "down" as const, percent: Math.round(Math.abs(ratio)) };
+  if (Math.abs(ratio) < 0.5) return { direction: "flat", percent: 0 };
+  if (ratio >= 0) return { direction: "up", percent: Math.round(ratio) };
+  return { direction: "down", percent: Math.round(Math.abs(ratio)) };
 }
 
 export type ActivityFeedItem =
@@ -160,14 +158,11 @@ export async function getDashboardOverview() {
   fillDailyBucket(buckets.byKey, taskHistory, "tasks");
   fillDailyBucket(buckets.byKey, aiHistory, "ai");
 
+  const previousWindow = buckets.list.slice(0, ACTIVITY_DAYS - 7);
   const tasksLast7 = sumLastN(buckets.list, 7, "tasks");
-  const tasksPrev7 = sumLastN(
-    buckets.list.slice(0, ACTIVITY_DAYS - 7),
-    7,
-    "tasks",
-  );
+  const tasksPrev7 = sumLastN(previousWindow, 7, "tasks");
   const aiLast7 = sumLastN(buckets.list, 7, "ai");
-  const aiPrev7 = sumLastN(buckets.list.slice(0, ACTIVITY_DAYS - 7), 7, "ai");
+  const aiPrev7 = sumLastN(previousWindow, 7, "ai");
 
   const tasksDelta = computeDelta(tasksLast7, tasksPrev7);
   const aiDelta = computeDelta(aiLast7, aiPrev7);

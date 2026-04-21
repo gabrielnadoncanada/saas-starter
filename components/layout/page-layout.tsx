@@ -12,8 +12,8 @@ function Page({ fixed, className, fluid, ...props }: PageProps) {
       data-layout={fixed ? "fixed" : undefined}
       className={cn(
         "p-6 flex flex-1 flex-col gap-6 sm:gap-8",
-        fixed && "flex grow flex-col overflow-hidden max-h-dvh",
-        !fluid && "flex min-w-0 flex-1 flex-col",
+        fixed && "grow overflow-hidden max-h-dvh",
+        !fluid && "min-w-0",
         className,
       )}
       {...props}

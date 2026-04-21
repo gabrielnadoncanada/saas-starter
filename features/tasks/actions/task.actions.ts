@@ -45,13 +45,18 @@ export type BulkUpdateTaskStatusActionState =
     taskIds?: number[];
   };
 
-function taskActionError(error: unknown) {
+type TaskActionErrorState = {
+  error: string;
+  errorCode?: "UPGRADE_REQUIRED" | "LIMIT_REACHED";
+};
+
+function taskActionError(error: unknown): TaskActionErrorState | null {
   if (error instanceof UpgradeRequiredError) {
-    return { error: error.message, errorCode: "UPGRADE_REQUIRED" as const };
+    return { error: error.message, errorCode: "UPGRADE_REQUIRED" };
   }
 
   if (error instanceof LimitReachedError) {
-    return { error: error.message, errorCode: "LIMIT_REACHED" as const };
+    return { error: error.message, errorCode: "LIMIT_REACHED" };
   }
 
   if (error instanceof Error && error.message === "Organization not found") {
@@ -61,80 +66,74 @@ function taskActionError(error: unknown) {
   return null;
 }
 
+function revalidateTasks(): void {
+  revalidatePath(routes.app.tasks);
+}
+
+/**
+ * Wraps a task action handler so that known billing/organization errors are
+ * returned as action state while unknown errors re-throw.
+ */
+async function runTaskAction<State extends FormActionState<Record<string, unknown>>>(
+  handler: () => Promise<State>,
+): Promise<State> {
+  try {
+    return await handler();
+  } catch (error) {
+    const mapped = taskActionError(error);
+    if (mapped) {
+      return mapped as State;
+    }
+    throw error;
+  }
+}
+
 export const createTaskAction = validatedAuthenticatedAction(
   createTaskSchema,
-  async (data): Promise<CreateTaskActionState> => {
-    try {
+  (data): Promise<CreateTaskActionState> =>
+    runTaskAction(async () => {
       const task = await createTask(data);
-      revalidatePath(routes.app.tasks);
+      revalidateTasks();
       return { success: "Task created", task };
-    } catch (error) {
-      const mapped = taskActionError(error);
-      if (mapped) {
-        return mapped;
-      }
-      throw error;
-    }
-  },
+    }),
 );
 
 export const updateTaskAction = validatedAuthenticatedAction(
   updateTaskSchema,
-  async (data) => {
-    try {
+  (data) =>
+    runTaskAction(async () => {
       await updateTask(data);
-      revalidatePath(routes.app.tasks);
+      revalidateTasks();
       return { success: "Task updated" };
-    } catch (error) {
-      const mapped = taskActionError(error);
-      if (mapped) {
-        return mapped;
-      }
-      throw error;
-    }
-  },
+    }),
 );
 
 export const deleteTaskAction = validatedAuthenticatedAction(
   deleteTaskSchema,
-  async ({ taskId }) => {
-    try {
+  ({ taskId }) =>
+    runTaskAction(async () => {
       await deleteTask(taskId);
-      revalidatePath(routes.app.tasks);
+      revalidateTasks();
       return { success: "Task deleted" };
-    } catch (error) {
-      const mapped = taskActionError(error);
-      if (mapped) {
-        return mapped;
-      }
-      throw error;
-    }
-  },
+    }),
 );
 
 export const updateTaskStatusAction = validatedAuthenticatedAction(
   updateTaskStatusSchema,
-  async (data) => {
-    try {
+  (data) =>
+    runTaskAction(async () => {
       await updateTaskStatus(data);
-      revalidatePath(routes.app.tasks);
+      revalidateTasks();
       return { success: "Task updated", refreshKey: Date.now() };
-    } catch (error) {
-      const mapped = taskActionError(error);
-      if (mapped) {
-        return mapped;
-      }
-      throw error;
-    }
-  },
+    }),
 );
 
 export const bulkDeleteTasksAction = validatedAuthenticatedAction(
   bulkDeleteTasksSchema,
-  async ({ taskIds }): Promise<BulkDeleteTasksActionState> => {
-    try {
+  ({ taskIds }): Promise<BulkDeleteTasksActionState> =>
+    runTaskAction(async () => {
       const deletedCount = await bulkDeleteTasks(taskIds);
-      revalidatePath(routes.app.tasks);
+      revalidateTasks();
       return {
         success:
           deletedCount === 1
@@ -142,22 +141,15 @@ export const bulkDeleteTasksAction = validatedAuthenticatedAction(
             : `${deletedCount} tasks deleted`,
         taskIds,
       };
-    } catch (error) {
-      const mapped = taskActionError(error);
-      if (mapped) {
-        return mapped;
-      }
-      throw error;
-    }
-  },
+    }),
 );
 
 export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction(
   bulkUpdateTaskStatusSchema,
-  async (data): Promise<BulkUpdateTaskStatusActionState> => {
-    try {
+  (data): Promise<BulkUpdateTaskStatusActionState> =>
+    runTaskAction(async () => {
       const updatedCount = await bulkUpdateTaskStatus(data);
-      revalidatePath(routes.app.tasks);
+      revalidateTasks();
       return {
         success:
           updatedCount === 1
@@ -166,12 +158,5 @@ export const bulkUpdateTaskStatusAction = validatedAuthenticatedAction(
         status: data.status,
         taskIds: data.taskIds,
       };
-    } catch (error) {
-      const mapped = taskActionError(error);
-      if (mapped) {
-        return mapped;
-      }
-      throw error;
-    }
-  },
+    }),
 );

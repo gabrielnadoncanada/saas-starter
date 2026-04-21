@@ -56,20 +56,14 @@ export function DashboardKpiCard({
   );
 }
 
-function DeltaBadge({ delta }: { delta: DashboardDelta }) {
-  const Icon =
-    delta.direction === "up"
-      ? ArrowUpRight
-      : delta.direction === "down"
-        ? ArrowDownRight
-        : Minus;
+const DELTA_STYLES = {
+  up: { Icon: ArrowUpRight, colorClass: "text-brand" },
+  down: { Icon: ArrowDownRight, colorClass: "text-destructive" },
+  flat: { Icon: Minus, colorClass: "text-muted-foreground" },
+} as const;
 
-  const colorClass =
-    delta.direction === "up"
-      ? "text-brand"
-      : delta.direction === "down"
-        ? "text-destructive"
-        : "text-muted-foreground";
+function DeltaBadge({ delta }: { delta: DashboardDelta }) {
+  const { Icon, colorClass } = DELTA_STYLES[delta.direction];
 
   return (
     <span

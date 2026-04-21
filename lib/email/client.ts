@@ -5,10 +5,9 @@ import type { EmailPayload, SendEmailOptions } from "@/lib/email/types";
 
 let resendClient: Resend | null = null;
 
-function getResendClient() {
+function getResendClient(apiKey: string) {
   if (!resendClient) {
-    const config = getEmailConfig();
-    resendClient = new Resend(config.apiKey);
+    resendClient = new Resend(apiKey);
   }
   return resendClient;
 }
@@ -18,12 +17,11 @@ export async function sendEmail(
   options: SendEmailOptions = {},
 ) {
   const config = getEmailConfig();
-  const resend = getResendClient();
+  const resend = getResendClient(config.apiKey);
 
-  const headers: Record<string, string> = {};
-  if (options.idempotencyKey) {
-    headers["X-Idempotency-Key"] = options.idempotencyKey;
-  }
+  const headers = options.idempotencyKey
+    ? { "X-Idempotency-Key": options.idempotencyKey }
+    : undefined;
 
   const { data, error } = await resend.emails.send({
     from: config.from,
@@ -40,5 +38,9 @@ export async function sendEmail(
     throw new Error(`Resend send failed: ${error.name} - ${error.message}`);
   }
 
-  return { id: data!.id };
+  if (!data) {
+    throw new Error("Resend send failed: no response data returned.");
+  }
+
+  return { id: data.id };
 }

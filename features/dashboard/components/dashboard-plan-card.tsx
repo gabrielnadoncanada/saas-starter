@@ -31,6 +31,18 @@ type DashboardPlanCardProps = {
   aiCreditsLimit: number;
 };
 
+function resolveActiveInterval(
+  planId: string,
+  billingInterval: BillingInterval | null,
+): BillingInterval | null {
+  if (billingInterval && getPlanDisplayPrice(planId, billingInterval)) {
+    return billingInterval;
+  }
+  if (getPlanDisplayPrice(planId, "month")) return "month";
+  if (getPlanDisplayPrice(planId, "year")) return "year";
+  return null;
+}
+
 function getStatus(planId: string, subscriptionStatus: string | null) {
   if (isTrialingSubscription(subscriptionStatus))
     return { label: "Trial", tone: "live" as const };
@@ -74,14 +86,7 @@ export function DashboardPlanCard({
   aiCreditsUsage,
   aiCreditsLimit,
 }: DashboardPlanCardProps) {
-  const activeInterval =
-    billingInterval && getPlanDisplayPrice(planId, billingInterval)
-      ? billingInterval
-      : getPlanDisplayPrice(planId, "month")
-        ? "month"
-        : getPlanDisplayPrice(planId, "year")
-          ? "year"
-          : null;
+  const activeInterval = resolveActiveInterval(planId, billingInterval);
   const activePrice = activeInterval
     ? getPlanDisplayPrice(planId, activeInterval)
     : null;

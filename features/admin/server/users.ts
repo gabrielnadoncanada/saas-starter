@@ -1,10 +1,7 @@
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth/auth-config";
-import type {
-  ListUserSessionsResult,
-  ListUsersQueryInput,
-} from "@/lib/auth/better-auth-inferred-types";
+import type { ListUsersQueryInput } from "@/lib/auth/better-auth-inferred-types";
 import { db } from "@/lib/db/prisma";
 
 export async function listAdminUsers(query: Partial<ListUsersQueryInput>) {
@@ -26,17 +23,6 @@ export async function listAdminUsers(query: Partial<ListUsersQueryInput>) {
   });
 }
 
-function sessionsFromListResult(
-  value: ListUserSessionsResult,
-): ListUserSessionsResult["sessions"] {
-  if (value && typeof value === "object" && "sessions" in value) {
-    const { sessions } = value;
-    return Array.isArray(sessions) ? sessions : [];
-  }
-
-  return [];
-}
-
 export async function getAdminUserDetail(userId: string) {
   const requestHeaders = await headers();
 
@@ -53,7 +39,7 @@ export async function getAdminUserDetail(userId: string) {
 
   return {
     user,
-    sessions: sessionsFromListResult(sessionsResult),
+    sessions: sessionsResult?.sessions ?? [],
   };
 }
 

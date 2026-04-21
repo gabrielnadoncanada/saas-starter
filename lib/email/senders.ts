@@ -3,13 +3,27 @@ import {
   buildContactMessageEmail,
   buildTeamInvitationEmail,
 } from "@/lib/email/templates";
+import type { EmailPayload, SendEmailOptions } from "@/lib/email/types";
 
-function logEmailResult(event: string, details: Record<string, unknown>) {
-  console.info(`[email:${event}]`, details);
-}
-
-function logEmailError(event: string, details: Record<string, unknown>) {
-  console.error(`[email:${event}]`, details);
+// Thin wrapper around sendEmail that emits structured logs for each send,
+// so callers don't have to hand-roll try/catch + log scaffolding per template.
+// Rethrows on failure — callers decide whether a send failure is fatal.
+async function sendAndLog(
+  event: string,
+  payload: EmailPayload,
+  context: Record<string, unknown>,
+  options?: SendEmailOptions,
+): Promise<void> {
+  try {
+    const result = await sendEmail(payload, options);
+    console.info(`[email:${event}.sent]`, { ...context, resendEmailId: result.id });
+  } catch (error) {
+    console.error(`[email:${event}.failed]`, {
+      ...context,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    throw error;
+  }
 }
 
 export async function sendTeamInvitationEmail(input: {
@@ -19,26 +33,12 @@ export async function sendTeamInvitationEmail(input: {
   organizationName: string;
   invitationToken: string;
 }) {
-  const payload = buildTeamInvitationEmail(input);
-
-  try {
-    const result = await sendEmail(payload, {
-      idempotencyKey: `team-invitation/${input.invitationToken}`,
-    });
-
-    logEmailResult("team-invitation.sent", {
-      email: input.email,
-      invitationToken: input.invitationToken,
-      resendEmailId: result.id,
-    });
-  } catch (error) {
-    logEmailError("team-invitation.failed", {
-      email: input.email,
-      invitationToken: input.invitationToken,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-    throw error;
-  }
+  await sendAndLog(
+    "team-invitation",
+    buildTeamInvitationEmail(input),
+    { email: input.email, invitationToken: input.invitationToken },
+    { idempotencyKey: `team-invitation/${input.invitationToken}` },
+  );
 }
 
 export async function sendContactMessageEmail(input: {
@@ -48,22 +48,9 @@ export async function sendContactMessageEmail(input: {
   subject: string;
   message: string;
 }) {
-  const payload = buildContactMessageEmail(input);
-
-  try {
-    const result = await sendEmail(payload);
-
-    logEmailResult("contact-message.sent", {
-      from: input.email,
-      subject: input.subject,
-      resendEmailId: result.id,
-    });
-  } catch (error) {
-    logEmailError("contact-message.failed", {
-      from: input.email,
-      subject: input.subject,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-    throw error;
-  }
+  await sendAndLog(
+    "contact-message",
+    buildContactMessageEmail(input),
+    { from: input.email, subject: input.subject },
+  );
 }

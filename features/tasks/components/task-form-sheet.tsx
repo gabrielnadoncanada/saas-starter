@@ -43,6 +43,7 @@ import {
   taskStatuses,
 } from "@/features/tasks/task-display";
 import { useToastMessage } from "@/hooks/use-toast-message";
+import { TaskLabel, TaskPriority, TaskStatus } from "@/lib/db/enums";
 import type { FormActionState } from "@/types/form-action-state";
 
 type TaskFormSheetProps = {
@@ -94,11 +95,15 @@ export function TaskFormSheet({
   const descriptionValue = String(
     state.values?.description ?? task?.description ?? "",
   );
-  const labelValue = String(state.values?.label ?? task?.label ?? "FEATURE");
-  const priorityValue = String(
-    state.values?.priority ?? task?.priority ?? "MEDIUM",
+  const labelValue = String(
+    state.values?.label ?? task?.label ?? TaskLabel.FEATURE,
   );
-  const statusValue = String(state.values?.status ?? task?.status ?? "TODO");
+  const priorityValue = String(
+    state.values?.priority ?? task?.priority ?? TaskPriority.MEDIUM,
+  );
+  const statusValue = String(
+    state.values?.status ?? task?.status ?? TaskStatus.TODO,
+  );
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

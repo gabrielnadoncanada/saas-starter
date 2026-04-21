@@ -1,7 +1,6 @@
 import "server-only";
 
-import type { Prisma } from "@prisma/client";
-import { InputJsonValue } from "@prisma/client/runtime/client";
+import { Prisma } from "@prisma/client";
 
 import type {
   ActivityAction,
@@ -31,18 +30,17 @@ export async function logActivity(input: LogActivityInput): Promise<void> {
         actorUserId: input.actorUserId ?? null,
         targetType: input.targetType ?? null,
         targetId: input.targetId ?? null,
-        metadata: (input.metadata ?? null) as Prisma.NullableJsonNullValueInput | InputJsonValue | undefined,
+        metadata: (input.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
       },
     });
   };
 
   try {
-    if (!input.organizationId) {
+    if (input.organizationId) {
+      await runInTenantScope(input.organizationId, write);
+    } else {
       await runAsAdmin(write);
-      return;
     }
-
-    await runInTenantScope(input.organizationId, write);
   } catch (error) {
     console.error("[activity] failed to record event", input.action, error);
   }

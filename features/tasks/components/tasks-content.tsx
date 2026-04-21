@@ -1,7 +1,7 @@
 "use client";
 
 import type { Task } from "@prisma/client";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { TaskDeleteDialog } from "@/features/tasks/components/task-delete-dialog";
 import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
@@ -22,27 +22,17 @@ export function TasksContent({ tasksPage }: TasksContentProps) {
   const [dialog, setDialog] = useState<TasksDialog>(null);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
 
-  const closeDialog = useCallback(() => {
-    setDialog(null);
-    setCurrentTask(null);
-  }, []);
+  function openDialog(nextDialog: TasksDialog, task: Task): void {
+    setCurrentTask(task);
+    setDialog(nextDialog);
+  }
 
-  const openDialog = useCallback(
-    (nextDialog: TasksDialog, task: Task) => {
-      setCurrentTask(task);
-      setDialog(nextDialog);
-    },
-    [],
-  );
-
-  const handleDialogOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        closeDialog();
-      }
-    },
-    [closeDialog],
-  );
+  function handleDialogOpenChange(open: boolean): void {
+    if (!open) {
+      setDialog(null);
+      setCurrentTask(null);
+    }
+  }
 
   return (
     <>

@@ -22,13 +22,20 @@ type DataTableColumnHeaderProps<TData, TValue> =
     title: string;
   };
 
+function SortIcon({ direction }: { direction: false | "asc" | "desc" }) {
+  const className = "ms-2 h-4 w-4";
+  if (direction === "desc") return <ArrowDownIcon className={className} />;
+  if (direction === "asc") return <ArrowUpIcon className={className} />;
+  return <ArrowUpDownIcon className={className} />;
+}
+
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>;
+    return <div className={className}>{title}</div>;
   }
 
   return (
@@ -41,13 +48,7 @@ export function DataTableColumnHeader<TData, TValue>({
             className="h-8 data-[state=open]:bg-accent"
           >
             <span>{title}</span>
-            {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="ms-2 h-4 w-4" />
-            ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="ms-2 h-4 w-4" />
-            ) : (
-              <ArrowUpDownIcon className="ms-2 h-4 w-4" />
-            )}
+            <SortIcon direction={column.getIsSorted()} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">

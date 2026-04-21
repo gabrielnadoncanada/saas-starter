@@ -3,11 +3,12 @@ import { ShieldAlert } from "lucide-react";
 import { stopImpersonatingAction } from "@/features/admin/actions/users.actions";
 import { getAuthSession } from "@/lib/auth/get-session";
 
+type ImpersonatedSession = { impersonatedBy?: string | null };
+
 export async function ImpersonationBanner() {
   const session = await getAuthSession();
-  const impersonatedBy = session?.session
-    ? (session.session as { impersonatedBy?: string | null }).impersonatedBy
-    : null;
+  const impersonatedBy = (session?.session as ImpersonatedSession | undefined)
+    ?.impersonatedBy;
 
   if (!impersonatedBy) return null;
 

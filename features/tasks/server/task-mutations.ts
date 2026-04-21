@@ -10,9 +10,9 @@ import type {
   BulkDeleteTasksValues,
   BulkUpdateTaskStatusValues,
   CreateTaskValues,
+  UpdateTaskStatusValues,
   UpdateTaskValues,
 } from "@/features/tasks/task.schema";
-import type { TaskStatus } from "@/lib/db/enums";
 import { db } from "@/lib/db/prisma";
 
 const MAX_TASK_CODE_ATTEMPTS = 10;
@@ -106,17 +106,12 @@ export async function updateTask(input: UpdateTaskValues) {
   }
 }
 
-export async function updateTaskStatus(input: {
-  taskId: number;
-  status: TaskStatus;
-}) {
+export async function updateTaskStatus(input: UpdateTaskStatusValues) {
   await requireActiveOrganizationMembership();
 
   const { count } = await db.task.updateMany({
     where: { id: input.taskId },
-    data: {
-      status: input.status,
-    },
+    data: { status: input.status },
   });
 
   if (count === 0) {

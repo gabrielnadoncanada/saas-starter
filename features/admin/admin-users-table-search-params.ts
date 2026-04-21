@@ -47,6 +47,12 @@ export type AdminUsersTableSearchParams = Awaited<
   ReturnType<typeof loadAdminUsersTableSearchParams>
 >;
 
+function isAllowedPageSize(
+  value: number,
+): value is (typeof ADMIN_USERS_TABLE_PAGE_SIZES)[number] {
+  return (ADMIN_USERS_TABLE_PAGE_SIZES as readonly number[]).includes(value);
+}
+
 export function parseAdminUsersTableSearchParams(
   input: Record<string, string | string[] | undefined>,
 ): AdminUsersTableSearchParams {
@@ -54,9 +60,7 @@ export function parseAdminUsersTableSearchParams(
   return {
     ...parsed,
     page: Math.max(1, parsed.page),
-    pageSize: ADMIN_USERS_TABLE_PAGE_SIZES.includes(
-      parsed.pageSize as (typeof ADMIN_USERS_TABLE_PAGE_SIZES)[number],
-    )
+    pageSize: isAllowedPageSize(parsed.pageSize)
       ? parsed.pageSize
       : ADMIN_USERS_TABLE_DEFAULTS.pageSize,
   };

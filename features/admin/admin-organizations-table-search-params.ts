@@ -46,6 +46,14 @@ export type AdminOrganizationsTableSearchParams = Awaited<
   ReturnType<typeof loadAdminOrganizationsTableSearchParams>
 >;
 
+function isAllowedPageSize(
+  value: number,
+): value is (typeof ADMIN_ORGANIZATIONS_TABLE_PAGE_SIZES)[number] {
+  return (ADMIN_ORGANIZATIONS_TABLE_PAGE_SIZES as readonly number[]).includes(
+    value,
+  );
+}
+
 export function parseAdminOrganizationsTableSearchParams(
   input: Record<string, string | string[] | undefined>,
 ): AdminOrganizationsTableSearchParams {
@@ -53,9 +61,7 @@ export function parseAdminOrganizationsTableSearchParams(
   return {
     ...parsed,
     page: Math.max(1, parsed.page),
-    pageSize: ADMIN_ORGANIZATIONS_TABLE_PAGE_SIZES.includes(
-      parsed.pageSize as (typeof ADMIN_ORGANIZATIONS_TABLE_PAGE_SIZES)[number],
-    )
+    pageSize: isAllowedPageSize(parsed.pageSize)
       ? parsed.pageSize
       : ADMIN_ORGANIZATIONS_TABLE_DEFAULTS.pageSize,
   };

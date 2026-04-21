@@ -28,6 +28,8 @@ const taskIdsSchema = z
       .min(1, { message: "Select at least one task" }),
   );
 
+const taskIdSchema = z.coerce.number().int().positive();
+
 export const createTaskSchema = z.object({
   title: taskTitleSchema,
   description: taskDescriptionSchema,
@@ -35,21 +37,19 @@ export const createTaskSchema = z.object({
   priority: taskPrioritySchema.default(TaskPriority.MEDIUM),
 });
 
-export const updateTaskSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
-  title: taskTitleSchema,
-  description: taskDescriptionSchema,
+export const updateTaskSchema = createTaskSchema.extend({
+  taskId: taskIdSchema,
   label: taskLabelSchema,
   priority: taskPrioritySchema,
   status: taskStatusSchema,
 });
 
 export const deleteTaskSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
+  taskId: taskIdSchema,
 });
 
 export const updateTaskStatusSchema = z.object({
-  taskId: z.coerce.number().int().positive(),
+  taskId: taskIdSchema,
   status: taskStatusSchema,
 });
 
@@ -64,6 +64,7 @@ export const bulkUpdateTaskStatusSchema = z.object({
 
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;
 export type UpdateTaskValues = z.infer<typeof updateTaskSchema>;
+export type UpdateTaskStatusValues = z.infer<typeof updateTaskStatusSchema>;
 export type BulkDeleteTasksValues = z.infer<typeof bulkDeleteTasksSchema>;
 export type BulkUpdateTaskStatusValues = z.infer<
   typeof bulkUpdateTaskStatusSchema

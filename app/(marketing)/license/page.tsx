@@ -9,66 +9,75 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "License · Tenviq",
     description:
-      "Commercial license for the Tenviq starter — tiers, permitted use, restrictions, and delivery terms.",
+      "Commercial license for the Tenviq starter — what you get, what you can do with it, and what you cannot.",
   };
 }
 
-const LAST_UPDATED = "April 16, 2026";
-const EFFECTIVE = "April 16, 2026";
-const VERSION = "1.0";
+const LAST_UPDATED = "April 20, 2026";
+const EFFECTIVE = "April 20, 2026";
+const VERSION = "1.1";
 
 const sections: LegalSection[] = [
   {
-    id: "tiers",
+    id: "pricing",
     index: "01",
-    label: "Tiers",
-    title: "License tiers",
+    label: "Pricing",
+    title: "One license, three price points",
     body: (
       <>
         <p>
-          The Product is sold under one of three tiers. Your tier is fixed at
-          the time of purchase and determines how many developers may use the
-          Product.
+          Tenviq is sold under a{" "}
+          <span className="font-semibold text-foreground">single license</span>
+          . The three purchase options below are marketing cohort prices — they
+          do not change the permissions granted or the features included. Every
+          buyer receives the same license terms, the same codebase, and the
+          same lifetime updates.
         </p>
         <div className="not-prose my-6 overflow-hidden border border-border">
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-left font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               <tr>
-                <th className="px-4 py-3">Tier</th>
+                <th className="px-4 py-3">Cohort</th>
                 <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3">Seats</th>
-                <th className="px-4 py-3">White-label</th>
+                <th className="px-4 py-3">Availability</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               <tr>
-                <td className="px-4 py-3 font-medium text-foreground">Solo</td>
-                <td className="px-4 py-3 tabular-nums">$249 one-time</td>
-                <td className="px-4 py-3">1 developer</td>
-                <td className="px-4 py-3 text-muted-foreground">No</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-3 font-medium text-foreground">Team</td>
-                <td className="px-4 py-3 tabular-nums">$599 one-time</td>
-                <td className="px-4 py-3">Up to 5 developers</td>
-                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 font-medium text-foreground">
+                  Founding
+                </td>
+                <td className="px-4 py-3 tabular-nums">$69 one-time</td>
+                <td className="px-4 py-3">First 20 buyers</td>
               </tr>
               <tr>
                 <td className="px-4 py-3 font-medium text-foreground">
-                  Agency
+                  Early access
                 </td>
-                <td className="px-4 py-3 tabular-nums">$1,299 one-time</td>
-                <td className="px-4 py-3">Up to 10 developers</td>
-                <td className="px-4 py-3 text-foreground">Yes</td>
+                <td className="px-4 py-3 tabular-nums">$149 one-time</td>
+                <td className="px-4 py-3">Next 80 buyers</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-medium text-foreground">
+                  Standard
+                </td>
+                <td className="px-4 py-3 tabular-nums">$249 one-time</td>
+                <td className="px-4 py-3">All subsequent buyers</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p>
-          A &ldquo;developer&rdquo; means a single natural person who reads,
+          Each purchase grants{" "}
+          <span className="font-semibold text-foreground">
+            one developer seat
+          </span>
+          . A &ldquo;developer&rdquo; means a single natural person who reads,
           writes, compiles, or executes the Product&rsquo;s source code as
-          part of their work. Seats are personal and cannot be shared,
-          pooled, or transferred between individuals.
+          part of their work. Seats are personal and cannot be shared, pooled,
+          or transferred between individuals. If your team needs additional
+          seats, contact us and we will issue them at the cohort price active
+          at the time of request.
         </p>
       </>
     ),
@@ -81,9 +90,8 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          Subject to the terms of this agreement and the tier you purchased,
-          Tenviq grants you a perpetual, worldwide, non-exclusive,
-          non-transferable license to:
+          Subject to the terms of this agreement, Tenviq grants you a
+          perpetual, worldwide, non-exclusive, non-transferable license to:
         </p>
         <ul>
           <li>Use, copy, and modify the Product.</li>
@@ -129,40 +137,27 @@ const sections: LegalSection[] = [
           </li>
           <li>
             Remove, alter, or obscure any copyright, trademark, or
-            attribution notices contained in the Product, except as permitted
-            under the White-Label section if applicable to your tier.
+            attribution notices contained in the Product&rsquo;s source code
+            or documentation. You may freely remove Tenviq branding from the
+            user-facing surfaces of your End Products (logos, copy, marketing
+            pages) — this is expected.
           </li>
           <li>
-            Share your seats, license key, or GitHub access with individuals
-            who are not covered by your tier.
+            Share your seat, license key, or GitHub access with any individual
+            other than the single developer the seat was issued for.
           </li>
           <li>
-            Exceed the seat count of your tier. If your team grows beyond
-            your tier&rsquo;s seat limit, you must upgrade to a higher tier.
+            Exceed the seat count you purchased. If your team grows, contact
+            us to purchase additional seats at the cohort price active at the
+            time of request.
           </li>
         </ul>
       </>
     ),
   },
   {
-    id: "white-label",
-    index: "04",
-    label: "White-label",
-    title: "White-label (Agency tier only)",
-    body: (
-      <>
-        <p>
-          Licensees on the Agency tier may remove or replace Tenviq&rsquo;s
-          branding, copyright notices, and visible attribution in End
-          Products delivered to clients. This right does not extend to Solo
-          or Team tiers.
-        </p>
-      </>
-    ),
-  },
-  {
     id: "end-products",
-    index: "05",
+    index: "04",
     label: "End Products",
     title: "End Products",
     body: (
@@ -180,38 +175,37 @@ const sections: LegalSection[] = [
   },
   {
     id: "delivery",
-    index: "06",
+    index: "05",
     label: "Delivery",
     title: "Delivery",
     body: (
       <>
         <p>
-          After purchase, Tenviq will invite the number of GitHub accounts
-          corresponding to your tier&rsquo;s seat count to a private
-          repository containing the Product. Access to this repository is
-          the sole method of delivery.
+          After purchase, Tenviq invites the GitHub account you provide to a
+          private repository containing the Product. Access to this
+          repository is the sole method of delivery. The Product is available
+          in full immediately after the invitation is sent.
         </p>
       </>
     ),
   },
   {
     id: "updates",
-    index: "07",
+    index: "06",
     label: "Updates",
     title: "Updates and support",
     body: (
       <>
         <ul>
           <li>
-            Lifetime updates are included in every tier. Updates are
+            Lifetime updates are included with every purchase. Updates are
             published to the same private repository you were invited to at
             purchase.
           </li>
           <li>
-            Team and Agency tiers include priority email support for
-            questions directly related to the Product. Support does not
-            include custom development, consulting, or debugging of your End
-            Products.
+            Email support is available for questions directly related to the
+            Product. Support does not include custom development, consulting,
+            or debugging of your End Products.
           </li>
         </ul>
       </>
@@ -219,7 +213,7 @@ const sections: LegalSection[] = [
   },
   {
     id: "refunds",
-    index: "08",
+    index: "07",
     label: "Refunds",
     title: "Refunds",
     body: (
@@ -237,7 +231,7 @@ const sections: LegalSection[] = [
   },
   {
     id: "warranty",
-    index: "09",
+    index: "08",
     label: "Warranty",
     title: "Disclaimer of warranty",
     body: (
@@ -257,7 +251,7 @@ const sections: LegalSection[] = [
   },
   {
     id: "termination",
-    index: "10",
+    index: "09",
     label: "Termination",
     title: "Termination",
     body: (
@@ -276,7 +270,7 @@ const sections: LegalSection[] = [
   },
   {
     id: "governing-law",
-    index: "11",
+    index: "10",
     label: "Governing law",
     title: "Governing law",
     body: (
@@ -292,7 +286,7 @@ const sections: LegalSection[] = [
   },
   {
     id: "contact",
-    index: "12",
+    index: "11",
     label: "Contact",
     title: "Contact",
     body: (
@@ -320,7 +314,7 @@ export default function LicensePage() {
         eyebrow: "Legal · License",
         title: "Commercial License",
         description:
-          "The legal agreement between you and Tenviq for using the SaaS Starter codebase. By purchasing, downloading, or accessing the Product, you agree to these terms.",
+          "The legal agreement between you and Tenviq for using the Tenviq starter codebase. By purchasing, downloading, or accessing the Product, you agree to these terms.",
         lastUpdated: LAST_UPDATED,
         effective: EFFECTIVE,
         version: VERSION,
