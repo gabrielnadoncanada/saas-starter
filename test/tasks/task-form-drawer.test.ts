@@ -36,6 +36,10 @@ vi.mock("@/hooks/use-toast-message", () => ({
   useToastMessage: useToastMessageMock,
 }));
 
+vi.mock("@/hooks/use-is-mobile", () => ({
+  useIsMobile: () => false,
+}));
+
 vi.mock("@/components/ui/drawer", () => ({
   Drawer: ({ children }: { children: React.ReactNode }) =>
     React.createElement("div", null, children),

@@ -42,6 +42,7 @@ import {
   taskPriorities,
   taskStatuses,
 } from "@/features/tasks/task-display";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useToastMessage } from "@/hooks/use-toast-message";
 import { TaskLabel, TaskPriority, TaskStatus } from "@/lib/db/enums";
 import type { FormActionState } from "@/types/form-action-state";
@@ -61,6 +62,7 @@ export function TaskFormDrawer({
 }: TaskFormDrawerProps) {
   const isUpdate = Boolean(task);
   const action = isUpdate ? updateTaskAction : createTaskAction;
+  const isMobile = useIsMobile();
 
   const router = useRouter();
   const lastHandledStateRef = useRef<TaskFormState | null>(null);
@@ -106,8 +108,12 @@ export function TaskFormDrawer({
   );
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} direction="right">
-      <DrawerContent className="flex flex-col sm:max-w-md">
+    <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
+      direction={isMobile ? "bottom" : "right"}
+    >
+      <DrawerContent className="flex flex-col data-[vaul-drawer-direction=right]:sm:max-w-md">
         <DrawerHeader className="text-start">
           <DrawerTitle>{isUpdate ? "Update Task" : "Create Task"}</DrawerTitle>
           <DrawerDescription>
