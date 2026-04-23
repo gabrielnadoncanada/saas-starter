@@ -76,7 +76,10 @@ export function OrganizationSwitcher({
         </DropdownMenuSubTrigger>
 
         <DropdownMenuPortal>
-          <DropdownMenuSubContent>
+          <DropdownMenuSubContent
+            collisionPadding={8}
+            className="max-w-[calc(100vw-1rem)]"
+          >
             {organizations.map((organization) => (
               <DropdownMenuItem
                 key={organization.id}

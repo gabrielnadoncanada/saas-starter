@@ -68,7 +68,7 @@ export function TasksTable({
       )}
     >
       <TasksTableToolbar table={table} />
-      <DataTableContent table={table} tableClassName="min-w-xl" />
+      <DataTableContent table={table} tableClassName="sm:min-w-xl" />
 
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground whitespace-nowrap">

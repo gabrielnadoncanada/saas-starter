@@ -112,16 +112,18 @@ export default async function SettingsPage({ searchParams }: PageProps) {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <Avatar className="size-14">
+            <Avatar className="size-14 shrink-0">
               <AvatarImage src={user.image ?? undefined} alt={user.name} />
               <AvatarFallback className="justify-center text-lg">
                 {(user.name || "?")[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
 
-            <div className="space-y-1">
-              <p className="text-sm font-medium">{user.name}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="truncate text-sm font-medium">{user.name}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {user.email}
+              </p>
             </div>
 
             <EditProfileDialog image={user.image ?? null} name={user.name} />
