@@ -9,10 +9,8 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { DashboardSidebarBrand } from "@/features/dashboard/components/dashboard-sidebar-brand";
-import { DashboardSidebarFooter } from "@/features/dashboard/components/dashboard-sidebar-footer";
 import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
 
 type DashboardSidebarProps = {
@@ -26,8 +24,6 @@ export function DashboardSidebar({ sidebarData }: DashboardSidebarProps) {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <DashboardSidebarBrand />
-        <SidebarSeparator className="my-1" />
-        <DashboardSidebarUser />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroupSearch />
@@ -36,7 +32,7 @@ export function DashboardSidebar({ sidebarData }: DashboardSidebarProps) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <DashboardSidebarFooter />
+        <DashboardSidebarUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

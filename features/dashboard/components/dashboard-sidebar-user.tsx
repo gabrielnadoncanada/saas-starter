@@ -1,20 +1,11 @@
 "use client";
 
-import {
-  ChevronsUpDown,
-  Cog,
-  LogOut,
-  ShieldCheck,
-} from "lucide-react";
+import { ChevronsUpDown, Cog, LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 import { useUser } from "@/components/providers/user-provider";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +30,7 @@ import { authClient } from "@/lib/auth/auth-client";
 import { isPlatformAdmin } from "@/lib/auth/roles";
 
 export function DashboardSidebarUser() {
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
   const [open, setOpen] = useState(false);
   const [showCreateOrg, setShowCreateOrg] = useState(false);
   const user = useUser();
@@ -55,19 +46,29 @@ export function DashboardSidebarUser() {
       .map((chunk) => chunk[0]?.toUpperCase() ?? "")
       .join("") || "U";
 
+  const isCollapsedDesktop = state === "collapsed" && !isMobile;
+
   return (
     <>
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton variant="ghost">
-                <div className="font-semibold flex items-center justify-center w-4 h-4 min-w-4">
-                  {activeOrganization?.name?.charAt(0).toUpperCase() ?? "O"}
-                </div>
-                <div className="grid flex-1 text-start text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {activeOrganization?.name ?? "Organization"}
+              <SidebarMenuButton
+                size="lg"
+                tooltip={user.name}
+                className="data-[state=open]:bg-sidebar-accent"
+              >
+                <Avatar className="size-8 rounded-lg">
+                  <AvatarImage src={user.image ?? undefined} alt={user.name} />
+                  <AvatarFallback className="rounded-lg">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {activeOrganization?.name ?? user.email}
                   </span>
                 </div>
                 <ChevronsUpDown className="ms-auto size-4" />
@@ -75,10 +76,10 @@ export function DashboardSidebarUser() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
-              side={state === "collapsed" ? "right" : "bottom"}
-              align={state === "collapsed" ? "start" : "end"}
-              alignOffset={state === "collapsed" ? -8 : 0}
-              sideOffset={state === "collapsed" ? 12 : 4}
+              side={isCollapsedDesktop ? "right" : "top"}
+              align="end"
+              sideOffset={isCollapsedDesktop ? 12 : 4}
+              alignOffset={isCollapsedDesktop ? -8 : 0}
             >
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
