@@ -78,9 +78,10 @@ export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto">
-          <Pencil className="mr-2 h-3.5 w-3.5" />
-          Edit Profile
+        <Button variant="outline" size="sm" className="ml-auto shrink-0">
+          <Pencil className="h-3.5 w-3.5 sm:mr-2" />
+          <span className="hidden sm:inline">Edit Profile</span>
+          <span className="sr-only sm:hidden">Edit Profile</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

@@ -133,7 +133,7 @@ export function OrganizationMembersTable({
           <TableRow>
             <TableHead className="w-[52%]">Member</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead>Joined</TableHead>
+            <TableHead className="hidden sm:table-cell">Joined</TableHead>
             {showActionsColumn ? (
               <TableHead className="w-16 text-right" />
             ) : null}
@@ -151,14 +151,16 @@ export function OrganizationMembersTable({
                     />
                     <AvatarFallback>{getInitials(member.user)}</AvatarFallback>
                   </Avatar>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium">{getDisplayName(member)}</p>
+                      <p className="truncate font-medium">
+                        {getDisplayName(member)}
+                      </p>
                       {member.user.id === currentUserId ? (
                         <Badge variant="outline">You</Badge>
                       ) : null}
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="truncate text-sm text-muted-foreground">
                       {member.user.email}
                     </p>
                   </div>
@@ -169,7 +171,7 @@ export function OrganizationMembersTable({
                   {member.primaryRole}
                 </Badge>
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="hidden text-muted-foreground sm:table-cell">
                 {formatJoinedAt(member.joinedAt)}
               </TableCell>
               {showActionsColumn ? (

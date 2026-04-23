@@ -8,6 +8,15 @@ import { useActionState, useEffect, useRef } from "react";
 import { UpgradePrompt } from "@/components/billing/upgrade-prompt";
 import { Button } from "@/components/ui/button";
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import {
   Field,
   FieldError,
   FieldGroup,
@@ -21,15 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import {
   createTaskAction,
@@ -42,11 +42,12 @@ import {
   taskPriorities,
   taskStatuses,
 } from "@/features/tasks/task-display";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useToastMessage } from "@/hooks/use-toast-message";
 import { TaskLabel, TaskPriority, TaskStatus } from "@/lib/db/enums";
 import type { FormActionState } from "@/types/form-action-state";
 
-type TaskFormSheetProps = {
+type TaskFormDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   task?: Task | null;
@@ -54,13 +55,14 @@ type TaskFormSheetProps = {
 
 type TaskFormState = CreateTaskActionState & FormActionState<UpdateTaskValues>;
 
-export function TaskFormSheet({
+export function TaskFormDrawer({
   open,
   onOpenChange,
   task,
-}: TaskFormSheetProps) {
+}: TaskFormDrawerProps) {
   const isUpdate = Boolean(task);
   const action = isUpdate ? updateTaskAction : createTaskAction;
+  const isMobile = useIsMobile();
 
   const router = useRouter();
   const lastHandledStateRef = useRef<TaskFormState | null>(null);
@@ -106,16 +108,20 @@ export function TaskFormSheet({
   );
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex flex-col">
-        <SheetHeader className="text-start">
-          <SheetTitle>{isUpdate ? "Update Task" : "Create Task"}</SheetTitle>
-          <SheetDescription>
+    <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
+      direction={isMobile ? "bottom" : "right"}
+    >
+      <DrawerContent className="flex flex-col data-[vaul-drawer-direction=right]:sm:max-w-md">
+        <DrawerHeader className="text-start">
+          <DrawerTitle>{isUpdate ? "Update Task" : "Create Task"}</DrawerTitle>
+          <DrawerDescription>
             {isUpdate
               ? `Edit ${task?.code} for the current organization.`
               : "Add a task for the current organization."}
-          </SheetDescription>
-        </SheetHeader>
+          </DrawerDescription>
+        </DrawerHeader>
 
         <form
           action={formAction}
@@ -219,12 +225,12 @@ export function TaskFormSheet({
             ) : null}
           </FieldGroup>
 
-          <SheetFooter className="mt-auto gap-2 px-0">
-            <SheetClose asChild>
+          <DrawerFooter className="mt-auto flex-row gap-2 px-0">
+            <DrawerClose asChild>
               <Button type="button" variant="outline" disabled={isPending}>
                 Cancel
               </Button>
-            </SheetClose>
+            </DrawerClose>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
@@ -237,9 +243,9 @@ export function TaskFormSheet({
                 "Create Task"
               )}
             </Button>
-          </SheetFooter>
+          </DrawerFooter>
         </form>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 }
