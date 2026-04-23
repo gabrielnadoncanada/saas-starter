@@ -20,47 +20,23 @@ export type SplitShowcaseItem = {
 };
 
 export type SplitShowcaseProps = {
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  imageSrc?: string;
-  imageAlt?: string;
-  imageWidth?: number;
-  imageHeight?: number;
-  reverse?: boolean;
   items?: SplitShowcaseItem[];
   defaultItemId?: string;
+  reverse?: boolean;
 };
 
 export function SplitShowcase({
-  items,
+  items = [],
   defaultItemId,
   reverse = false,
 }: SplitShowcaseProps) {
-  if (!items?.length) return null;
+  const [activeItemId, setActiveItemId] = React.useState(() => {
+    const initial = items.find((item) => item.id === defaultItemId) ?? items[0];
+    return initial?.id ?? "";
+  });
 
-  return (
-    <TabbedSplitShowcase
-      items={items}
-      defaultItemId={defaultItemId}
-      reverse={reverse}
-    />
-  );
-}
+  if (!items.length) return null;
 
-type TabbedSplitShowcaseProps = {
-  items: SplitShowcaseItem[];
-  defaultItemId?: string;
-  reverse?: boolean;
-};
-
-function TabbedSplitShowcase({
-  items,
-  defaultItemId,
-  reverse = false,
-}: TabbedSplitShowcaseProps) {
-  const initialItem =
-    items.find((item) => item.id === defaultItemId) ?? items[0];
-  const [activeItemId, setActiveItemId] = React.useState(initialItem.id);
   const activeItem = items.find((item) => item.id === activeItemId) ?? items[0];
   const activeIndex = items.findIndex((i) => i.id === activeItem.id);
 

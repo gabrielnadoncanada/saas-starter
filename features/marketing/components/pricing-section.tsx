@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
-import { trackEvent } from "@/lib/analytics/posthog-client";
+import { trackEvent } from "@/lib/analytics/track";
 import { cn } from "@/lib/utils";
 
 export type PricingPlan = {

@@ -26,7 +26,7 @@ interface AvatarUploadProps {
   onExistingAvatarClear?: () => void;
 }
 
-export function CFileUpload({
+export function AvatarUpload({
   maxSize = 2 * 1024 * 1024, // 2MB
   className,
   inputName,

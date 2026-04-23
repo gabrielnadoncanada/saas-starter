@@ -1,4 +1,4 @@
-import { LogoPeriod } from "@/features/marketing/components/logo-period";
+import { BrandLogo } from "@/features/marketing/components/brand-logo";
 import { MarketingFooter } from "@/features/marketing/components/marketing-footer";
 import { MarketingHeader } from "@/features/marketing/components/marketing-header";
 
@@ -37,7 +37,7 @@ export default function MarketingLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <MarketingHeader
-        logo={<LogoPeriod />}
+        logo={<BrandLogo />}
         links={navigationLinks}
         secondaryAction={{
           label: "Demo",
@@ -47,7 +47,7 @@ export default function MarketingLayout({
       />
       <div className="flex-1">{children}</div>
       <MarketingFooter
-        logo={<LogoPeriod />}
+        logo={<BrandLogo />}
         description="Built for technical founders who want real B2B SaaS foundations without buying a heavy starter kit they will spend weeks decoding."
         copyright="© 2026 Tenviq. All rights reserved."
         sections={footerSections}

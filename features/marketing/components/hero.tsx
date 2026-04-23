@@ -1,6 +1,7 @@
 import Image from "next/image";
 import * as React from "react";
 
+import { siteConfig } from "@/config/site.config";
 import { cn } from "@/lib/utils";
 
 export type HeroProps = {
@@ -15,6 +16,8 @@ export type HeroProps = {
   className?: string;
   /** Mono-style items displayed under the description (stack/specs). */
   stack?: string[];
+  /** Wrap the hero image in a faux-browser chrome. Defaults to true. */
+  chrome?: boolean;
 };
 
 export function Hero({
@@ -28,6 +31,7 @@ export function Hero({
   imageHeight = 1200,
   className,
   stack,
+  chrome = true,
 }: HeroProps) {
   return (
     <div className={cn("relative", className)}>
@@ -74,12 +78,14 @@ export function Hero({
             className="absolute -inset-x-20 -inset-y-10 -z-10 bg-brand-glow opacity-70 blur-3xl"
           />
           <div className="relative overflow-hidden border border-border bg-background shadow-[0_50px_120px_-40px_hsl(var(--brand-hsl)/0.5)]">
-            <div className="flex items-center gap-1.5 border-b border-border bg-muted/40 px-4 py-2.5">
-              <span className="size-2.5 rounded-full bg-destructive/70" />
-              <span className="size-2.5 rounded-full bg-muted-foreground/40" />
-              <span className="size-2.5 rounded-full bg-muted-foreground/40" />
-              <span className="ml-3 label-mono">app.yourdomain.com</span>
-            </div>
+            {chrome ? (
+              <div className="flex items-center gap-1.5 border-b border-border bg-muted/40 px-4 py-2.5">
+                <span className="size-2.5 rounded-full bg-destructive/70" />
+                <span className="size-2.5 rounded-full bg-muted-foreground/40" />
+                <span className="size-2.5 rounded-full bg-muted-foreground/40" />
+                <span className="ml-3 label-mono">{siteConfig.appDomain}</span>
+              </div>
+            ) : null}
             <Image
               priority
               src={imageSrc}

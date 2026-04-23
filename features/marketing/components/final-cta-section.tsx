@@ -2,6 +2,8 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
+import { siteConfig } from "@/config/site.config";
+
 export type FinalCtaSectionProps = {
   badge?: string;
   title: React.ReactNode;
@@ -80,8 +82,10 @@ export function FinalCtaSection({
       </div>
 
       <div className="flex items-center justify-between border-t border-border px-6 py-4 md:px-16">
-        <span className="label-mono">Tenviq · Edition 2026</span>
-        <span className="label-mono">End · Chapter 09</span>
+        <span className="label-mono">
+          {siteConfig.name} · {siteConfig.ctaEdition}
+        </span>
+        <span className="label-mono">{siteConfig.lastChapter}</span>
       </div>
     </div>
   );

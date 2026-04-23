@@ -1,6 +1,6 @@
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { Section } from "@/features/marketing/components/section";
 
@@ -16,43 +16,55 @@ export const metadata: Metadata = {
 export default function CompareIndexPage() {
   return (
     <main>
-      <Section>
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 py-24 md:py-32">
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-            Compare
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-            How Tenviq compares to every other Next.js SaaS starter
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            We only win when your roadmap actually needs B2B depth. These pages
-            help you pick the right starter — not always Tenviq. Read the one
-            closest to your decision and choose with eyes open.
-          </p>
-        </div>
+      <Section containerClassName="mx-auto max-w-4xl">
+        <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          <span aria-hidden className="size-1.5 bg-brand" />
+          Comparisons · {String(comparisons.length).padStart(2, "0")}
+        </p>
+        <h1 className="mt-8 text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.03em] md:text-6xl lg:text-7xl">
+          We only win when B2B depth{" "}
+          <span className="text-brand">is on your roadmap</span>.
+        </h1>
+        <p className="mt-8 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground md:text-xl">
+          Five honest comparisons with every other serious Next.js SaaS starter.
+          Read the one closest to your decision — we tell you when to pick them.
+        </p>
       </Section>
 
-      <Section variant="muted">
-        <div className="mx-auto grid max-w-5xl gap-4 py-20 md:grid-cols-2">
-          {comparisons.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/compare/${c.slug}`}
-              className="group flex flex-col gap-3 border border-border bg-background p-6 transition hover:border-brand hover:shadow-sm"
-            >
-              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-brand">
-                Tenviq vs {c.competitor}
-              </p>
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                {c.title}
-              </h2>
-              <p className="text-sm text-muted-foreground">{c.tagline}</p>
-              <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand">
-                Read the comparison
-                <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
-              </span>
-            </Link>
-          ))}
+      <Section className="border-t border-border">
+        <div className="mx-auto max-w-4xl">
+          <ul className="divide-y divide-border border-y border-border">
+            {comparisons.map((c, i) => (
+              <li key={c.slug}>
+                <Link
+                  href={`/compare/${c.slug}`}
+                  className="group grid grid-cols-[auto_1fr_auto] items-baseline gap-6 py-10 md:gap-10 md:py-14"
+                >
+                  <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  <div className="flex flex-col gap-3">
+                    <h2 className="text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground transition-colors group-hover:text-brand md:text-5xl">
+                      Tenviq{" "}
+                      <span className="font-mono text-base font-normal uppercase tracking-[0.22em] text-muted-foreground md:text-lg">
+                        vs
+                      </span>{" "}
+                      {c.competitor}
+                    </h2>
+                    <p className="max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+                      {c.tagline}
+                    </p>
+                  </div>
+
+                  <ArrowRight
+                    className="size-5 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-brand md:size-6"
+                    strokeWidth={1.5}
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </Section>
     </main>

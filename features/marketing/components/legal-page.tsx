@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { siteConfig } from "@/config/site.config";
+
 export type LegalSection = {
   id: string;
   index: string;
@@ -73,7 +75,7 @@ export function LegalPage({ sections, meta }: LegalPageProps): ReactNode {
       <footer className="mt-24 border-t border-border pt-10">
         <p className="label-mono">{meta.footerLabel}</p>
         <p className="mt-2 font-mono text-xs tabular-nums text-muted-foreground">
-          Tenviq &middot; v{meta.version} &middot; {meta.effective}
+          {siteConfig.name} &middot; v{meta.version} &middot; {meta.effective}
         </p>
       </footer>
     </main>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { CFileUpload } from "@/components/ui/c-file-upload";
+import { AvatarUpload } from "@/features/account/components/settings/avatar-upload";
 import {
   Dialog,
   DialogClose,
@@ -98,7 +98,7 @@ export function EditProfileDialog({ image, name }: EditProfileDialogProps) {
 
           <Field>
             <FieldLabel>Profile image</FieldLabel>
-            <CFileUpload
+            <AvatarUpload
               inputName="avatar"
               defaultAvatar={image ?? undefined}
               onFileChange={(file) => handleAvatarChange(Boolean(file))}

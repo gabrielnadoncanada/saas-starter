@@ -1,4 +1,4 @@
-import { LogoPeriod } from "@/features/marketing/components/logo-period";
+import { BrandLogo } from "@/features/marketing/components/brand-logo";
 import { MarketingFooter } from "@/features/marketing/components/marketing-footer";
 import { MarketingHeader } from "@/features/marketing/components/marketing-header";
 
@@ -35,7 +35,7 @@ export default function MarketingLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <MarketingHeader
-        logo={<LogoPeriod />}
+        logo={<BrandLogo />}
         links={navigationLinks}
         secondaryAction={{
           label: "Sign in",
@@ -45,7 +45,7 @@ export default function MarketingLayout({
       />
       <div className="flex-1">{children}</div>
       <MarketingFooter
-        logo={<LogoPeriod />}
+        logo={<BrandLogo />}
         description="A Next.js SaaS starter with auth, billing, organizations, and admin — ready to customize."
         copyright={`© ${new Date().getFullYear()} Your Company. All rights reserved.`}
         sections={footerSections}

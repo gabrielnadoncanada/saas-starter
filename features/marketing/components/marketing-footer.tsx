@@ -2,6 +2,7 @@ import Link from "next/link";
 import * as React from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import { siteConfig } from "@/config/site.config";
 import { cn } from "@/lib/utils";
 
 export type FooterSection = {
@@ -76,7 +77,7 @@ export function MarketingFooter({
           <span className="label-mono">{copyright}</span>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <span className="label-mono">Edition · 2026</span>
+            <span className="label-mono">{siteConfig.footerEdition}</span>
           </div>
         </div>
       </div>

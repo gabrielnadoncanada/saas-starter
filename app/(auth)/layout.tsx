@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { routes } from "@/constants/routes";
-import { LogoPeriod } from "@/features/marketing/components/logo-period";
+import { BrandLogo } from "@/features/marketing/components/brand-logo";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 const trustMarkers = [
@@ -29,7 +29,7 @@ export default async function AuthLayout(props: { children: React.ReactNode }) {
               href={routes.marketing.home}
               className="group inline-flex items-center"
             >
-              <LogoPeriod />
+              <BrandLogo />
             </Link>
             <Link
               href={routes.marketing.home}

@@ -104,7 +104,7 @@ export const manifest: ReleaseManifest = {
     "app/opengraph-image.tsx",
     "app/layout.tsx",
     "app/(marketing)/blog/page.tsx",
-    "features/marketing/components/logo-period.tsx",
+    "features/marketing/components/brand-logo.tsx",
     "package.json",
     "app/feed.xml/route.ts",
     "app/(marketing)/terms/page.tsx",

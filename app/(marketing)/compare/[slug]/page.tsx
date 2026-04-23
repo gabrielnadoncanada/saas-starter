@@ -1,10 +1,10 @@
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Section } from "@/features/marketing/components/section";
-import { SectionHeading } from "@/features/marketing/components/section-heading";
 import { cn } from "@/lib/utils";
 
 import { ComparisonTable } from "../_components/comparison-table";
@@ -41,29 +41,42 @@ export default async function ComparisonPage({ params }: Props) {
 
   const {
     competitor,
-    title,
     tagline,
     chooseCompetitorWhen,
     chooseTenviqWhen,
     sideBySide,
     featureTable,
-    tenviqWins,
-    competitorWins,
     verdict,
   } = comparison;
 
+  const others = comparisons.filter((c) => c.slug !== comparison.slug);
+
   return (
     <main>
+      {/* HERO */}
       <Section>
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 py-24 md:py-32">
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-            Compare
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-            {title}
+        <div className="mx-auto max-w-4xl py-24 md:py-32">
+          <Link
+            href="/compare"
+            className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <span aria-hidden>←</span>
+            All comparisons
+          </Link>
+
+          <h1 className="mt-10 text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.03em] md:text-7xl">
+            Tenviq{" "}
+            <span className="font-mono text-2xl font-normal uppercase tracking-[0.22em] text-muted-foreground md:text-3xl">
+              vs
+            </span>{" "}
+            <span className="text-muted-foreground">{competitor}</span>
           </h1>
-          <p className="text-lg text-muted-foreground">{tagline}</p>
-          <div className="flex flex-wrap gap-3 pt-2">
+
+          <p className="mt-8 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground md:text-xl">
+            {tagline}
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
               <Link href="/#pricing">See Tenviq pricing</Link>
             </Button>
@@ -74,68 +87,107 @@ export default async function ComparisonPage({ params }: Props) {
         </div>
       </Section>
 
-      <Section variant="muted">
-        <div className="mx-auto grid max-w-5xl gap-8 py-20 md:grid-cols-2">
-          <div className="flex flex-col gap-4 border border-border bg-background p-6">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-              Choose {competitor} if
-            </p>
-            <ul className="flex flex-col gap-3 text-sm text-foreground">
-              {chooseCompetitorWhen.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <span aria-hidden className="mt-2 size-1.5 shrink-0 bg-muted-foreground" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-col gap-4 border border-brand/40 bg-background p-6 ring-1 ring-brand/20">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-brand">
-              Choose Tenviq if
-            </p>
-            <ul className="flex flex-col gap-3 text-sm text-foreground">
-              {chooseTenviqWhen.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <span aria-hidden className="mt-2 size-1.5 shrink-0 bg-brand" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+      {/* DECISION LANES */}
+      <Section className="border-t border-border">
+        <div className="mx-auto max-w-5xl py-20">
+          <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            <span aria-hidden className="size-1.5 bg-brand" />
+            The decision, in two lists
+          </p>
+          <h2 className="mt-6 max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] md:text-4xl">
+            One of these should describe your project.
+          </h2>
+
+          <div className="mt-14 grid border-y border-border md:grid-cols-2">
+            <div className="flex flex-col gap-6 border-b border-border py-10 pr-0 md:border-b-0 md:border-r md:pr-10">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                Pick {competitor} if
+              </p>
+              <ul className="flex flex-col gap-4">
+                {chooseCompetitorWhen.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground"
+                  >
+                    <span
+                      aria-hidden
+                      className="mt-2 size-1 shrink-0 bg-muted-foreground/60"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex flex-col gap-6 py-10 md:pl-10">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
+                <span aria-hidden className="mr-2 inline-block size-1.5 bg-brand align-middle" />
+                Pick Tenviq if
+              </p>
+              <ul className="flex flex-col gap-4">
+                {chooseTenviqWhen.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 text-sm leading-relaxed text-foreground"
+                  >
+                    <span
+                      aria-hidden
+                      className="mt-2 size-1 shrink-0 bg-brand"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </Section>
 
-      <Section>
-        <div className="mx-auto flex max-w-5xl flex-col gap-10 py-20">
-          <SectionHeading
-            index="01"
-            eyebrow="Side by side"
-            title={`Where Tenviq and ${competitor} differ`}
-            description={`Six angles that usually decide which starter fits your project.`}
-          />
-          <div className="grid gap-0 border border-border">
+      {/* SIDE BY SIDE */}
+      <Section className="border-t border-border">
+        <div className="mx-auto max-w-5xl py-20">
+          <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            <span aria-hidden className="size-1.5 bg-brand" />
+            Six angles that decide it
+          </p>
+          <h2 className="mt-6 max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] md:text-4xl">
+            Where {competitor} and Tenviq actually differ.
+          </h2>
+
+          <div className="mt-14 border-y border-border">
             {sideBySide.map((row, i) => (
               <div
                 key={row.topic}
                 className={cn(
-                  "grid gap-4 p-6 md:grid-cols-[180px_1fr_1fr] md:gap-8",
+                  "grid gap-6 py-8 md:grid-cols-[180px_1fr_1fr] md:gap-10 md:py-10",
                   i > 0 && "border-t border-border",
                 )}
               >
-                <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                  {row.topic}
+                <div className="flex items-baseline gap-4 md:flex-col md:items-start md:gap-2">
+                  <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-lg font-semibold tracking-[-0.01em] text-foreground md:text-xl">
+                    {row.topic}
+                  </span>
                 </div>
-                <div className="text-sm">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+
+                <div className="flex flex-col gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                     {competitor}
+                  </span>
+                  <p className="text-sm leading-relaxed text-foreground/70">
+                    {row.competitor}
                   </p>
-                  <p className="mt-2 text-foreground">{row.competitor}</p>
                 </div>
-                <div className="text-sm">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
+
+                <div className="flex flex-col gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
                     Tenviq
+                  </span>
+                  <p className="text-sm leading-relaxed text-foreground">
+                    {row.tenviq}
                   </p>
-                  <p className="mt-2 text-foreground">{row.tenviq}</p>
                 </div>
               </div>
             ))}
@@ -143,91 +195,85 @@ export default async function ComparisonPage({ params }: Props) {
         </div>
       </Section>
 
-      <Section variant="muted">
-        <div className="mx-auto flex max-w-5xl flex-col gap-10 py-20">
-          <SectionHeading
-            index="02"
-            eyebrow="Feature table"
-            title={`Tenviq vs ${competitor}, feature by feature`}
-            description="Quick reference. A filled dot means the capability ships by default."
-          />
-          <ComparisonTable rows={featureTable} competitor={competitor} />
-        </div>
-      </Section>
+      {/* FEATURE MATRIX */}
+      <Section className="border-t border-border">
+        <div className="mx-auto max-w-5xl py-20">
+          <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            <span aria-hidden className="size-1.5 bg-brand" />
+            Feature matrix
+          </p>
+          <h2 className="mt-6 max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] md:text-4xl">
+            Row by row, what ships by default.
+          </h2>
 
-      <Section>
-        <div className="mx-auto grid max-w-5xl gap-8 py-20 md:grid-cols-2">
-          <div className="flex flex-col gap-4 border border-brand/40 bg-background p-8 ring-1 ring-brand/20">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-brand">
-              What Tenviq wins
-            </p>
-            <ul className="flex flex-col gap-3 text-sm text-foreground">
-              {tenviqWins.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <span aria-hidden className="mt-2 size-1.5 shrink-0 bg-brand" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-col gap-4 border border-border bg-background p-8">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-              What {competitor} wins
-            </p>
-            <ul className="flex flex-col gap-3 text-sm text-foreground">
-              {competitorWins.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <span aria-hidden className="mt-2 size-1.5 shrink-0 bg-muted-foreground" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="mt-14">
+            <ComparisonTable rows={featureTable} competitor={competitor} />
           </div>
         </div>
       </Section>
 
-      <Section variant="inverted">
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 py-24 text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em] opacity-70">
+      {/* VERDICT */}
+      <Section className="border-t border-border">
+        <div className="mx-auto max-w-4xl py-24 md:py-32">
+          <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            <span aria-hidden className="size-1.5 bg-brand" />
             Bottom line
           </p>
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+          <p className="mt-10 border-l-2 border-brand pl-6 text-balance text-3xl font-semibold leading-[1.1] tracking-[-0.02em] md:pl-10 md:text-4xl lg:text-5xl">
             {verdict}
-          </h2>
-          <div className="mt-2 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg" variant="secondary">
+          </p>
+          <div className="mt-12 flex flex-wrap gap-3 md:pl-10">
+            <Button asChild size="lg">
               <Link href="/#pricing">Get Tenviq</Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border-background/30 text-background hover:bg-background/10"
-            >
-              <Link href="/sign-in">Try the live demo first</Link>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/sign-in">Try the live demo</Link>
             </Button>
           </div>
         </div>
       </Section>
 
+      {/* OTHER COMPARISONS */}
       <Section>
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16 text-sm text-muted-foreground">
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em]">
-            Other comparisons
-          </p>
-          <ul className="flex flex-wrap gap-2">
-            {comparisons
-              .filter((c) => c.slug !== comparison.slug)
-              .map((c) => (
-                <li key={c.slug}>
-                  <Link
-                    href={`/compare/${c.slug}`}
-                    className="inline-flex items-center border border-border bg-background px-3 py-1.5 text-xs text-foreground hover:border-brand hover:text-brand"
-                  >
-                    Tenviq vs {c.competitor}
-                  </Link>
-                </li>
-              ))}
+        <div className="mx-auto max-w-5xl py-20">
+          <div className="flex items-end justify-between">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              Keep comparing
+            </p>
+            <Link
+              href="/compare"
+              className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground"
+            >
+              See all →
+            </Link>
+          </div>
+
+          <ul className="mt-8 divide-y divide-border border-y border-border">
+            {others.map((c, i) => (
+              <li key={c.slug}>
+                <Link
+                  href={`/compare/${c.slug}`}
+                  className="group grid grid-cols-[auto_1fr_auto] items-baseline gap-6 py-6"
+                >
+                  <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-lg font-semibold tracking-[-0.01em] text-foreground transition-colors group-hover:text-brand md:text-xl">
+                    Tenviq{" "}
+                    <span className="font-mono text-xs font-normal uppercase tracking-[0.22em] text-muted-foreground">
+                      vs
+                    </span>{" "}
+                    <span className="text-muted-foreground group-hover:text-brand">
+                      {c.competitor}
+                    </span>
+                  </span>
+                  <ArrowRight
+                    className="size-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-brand"
+                    strokeWidth={1.5}
+                  />
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </Section>
