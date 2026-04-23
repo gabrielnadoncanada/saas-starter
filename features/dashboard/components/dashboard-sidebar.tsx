@@ -1,15 +1,18 @@
 "use client";
 
-
 import { NavGroup } from "@/components/navigation/nav-group";
 import { SidebarGroupSearch } from "@/components/navigation/sidebar-group-search";
+import type { SidebarData } from "@/components/navigation/sidebar-types";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
-import type { SidebarData } from "@/components/navigation/sidebar-types";
+import { DashboardSidebarBrand } from "@/features/dashboard/components/dashboard-sidebar-brand";
+import { DashboardSidebarFooter } from "@/features/dashboard/components/dashboard-sidebar-footer";
 import { DashboardSidebarUser } from "@/features/dashboard/components/dashboard-sidebar-user";
 
 type DashboardSidebarProps = {
@@ -22,6 +25,8 @@ export function DashboardSidebar({ sidebarData }: DashboardSidebarProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
+        <DashboardSidebarBrand />
+        <SidebarSeparator className="my-1" />
         <DashboardSidebarUser />
       </SidebarHeader>
       <SidebarContent>
@@ -30,6 +35,9 @@ export function DashboardSidebar({ sidebarData }: DashboardSidebarProps) {
           <NavGroup key={group.title} {...group} />
         ))}
       </SidebarContent>
+      <SidebarFooter>
+        <DashboardSidebarFooter />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
