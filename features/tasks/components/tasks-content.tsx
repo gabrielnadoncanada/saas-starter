@@ -4,7 +4,7 @@ import type { Task } from "@prisma/client";
 import { useState } from "react";
 
 import { TaskDeleteDialog } from "@/features/tasks/components/task-delete-dialog";
-import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
+import { TaskFormDrawer } from "@/features/tasks/components/task-form-drawer";
 import { TasksTable } from "@/features/tasks/components/tasks-table";
 import type { TaskTableSearchParams } from "@/features/tasks/task-table-search-params";
 
@@ -43,7 +43,7 @@ export function TasksContent({ tasksPage }: TasksContentProps) {
       />
 
       {currentTask ? (
-        <TaskFormSheet
+        <TaskFormDrawer
           task={currentTask}
           open={dialog === "update"}
           onOpenChange={handleDialogOpenChange}

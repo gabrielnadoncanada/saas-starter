@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { TaskFormSheet } from "@/features/tasks/components/task-form-sheet";
+import { TaskFormDrawer } from "@/features/tasks/components/task-form-drawer";
 
 export function TasksPageActions() {
   const [open, setOpen] = useState(false);
@@ -16,7 +16,7 @@ export function TasksPageActions() {
         <Plus size={18} />
       </Button>
 
-      <TaskFormSheet open={open} onOpenChange={setOpen} />
+      <TaskFormDrawer open={open} onOpenChange={setOpen} />
     </>
   );
 }
