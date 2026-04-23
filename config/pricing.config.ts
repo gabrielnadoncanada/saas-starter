@@ -14,10 +14,10 @@ export type StarterTier = {
   href: string;
 };
 
-const FOUNDING_CAP = 20;
-const EARLY_CAP = 100;
+const FOUNDING_CAP = 10;
+const EARLY_CAP = 20;
 
-const seatsSold = 12;
+const seatsSold = 8;
 
 const priceUrlEnv = (key: string, fallback = "#pricing") =>
   process.env[key] ?? fallback;
@@ -26,7 +26,7 @@ export const starterTiers: Record<StarterTierId, StarterTier> = {
   founding: {
     id: "founding",
     name: "Founding",
-    price: 69,
+    price: 99,
     seatsCap: FOUNDING_CAP,
     href: priceUrlEnv("NEXT_PUBLIC_STARTER_PURCHASE_URL_FOUNDING"),
   },

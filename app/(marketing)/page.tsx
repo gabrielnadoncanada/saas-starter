@@ -67,7 +67,8 @@ const { tiers, founding, early, activeTier } = pricingStatus;
 const isStandardActive = activeTier.id === "standard";
 
 function primaryCtaLabel(): string {
-  if (founding.active) return `Claim a founding seat — $${tiers.founding.price}`;
+  if (founding.active)
+    return `Claim a founding seat — $${tiers.founding.price}`;
   if (early.active) return `Get early access — $${tiers.early.price}`;
   return `Buy Tenviq — $${tiers.standard.price}`;
 }
@@ -101,7 +102,7 @@ const pricingPlans = [
   {
     name: "Founding",
     description:
-      "For the first 20 builders who want the sharpest price and a direct line on what ships next.",
+      "For the first 10 builders who want the sharpest price and a direct line on what ships next.",
     price: `$${tiers.founding.price}`,
     period: "one-time",
     priceNote: founding.active
@@ -112,21 +113,21 @@ const pricingPlans = [
       ? `Claim a founding seat — $${tiers.founding.price}`
       : "Founding seats sold out",
     features: ["Direct input on what ships next", ...commonPlanFeatures],
-    badge: founding.active ? "Only 20 seats" : "Sold out",
+    badge: founding.active ? "Only 10 seats" : "Sold out",
     highlighted: founding.active,
     disabled: !founding.active,
   },
   {
     name: "Early access",
     description:
-      "For the next 80 builders. Locked-in price before the permanent tier kicks in.",
+      "For the next 20 builders. Locked-in price before the permanent tier kicks in.",
     price: `$${tiers.early.price}`,
     period: "one-time",
     priceNote: earlyPriceNote(),
     href: tiers.early.href,
     ctaLabel: earlyCtaLabel(),
     features: commonPlanFeatures,
-    badge: early.active ? "Limited to 100 total" : "Next tier",
+    badge: early.active ? "Limited to 20 total" : "Next tier",
     highlighted: early.active,
     disabled: !early.active,
   },
@@ -219,7 +220,6 @@ export default function MarketingPage() {
                 primaryHref={primaryCta.href}
                 secondaryLabel="Try the live demo first"
                 secondaryHref={demoHref}
-                note="No refund — the demo is your guarantee. Click every button before you pay."
               />
             }
             stack={[
@@ -230,8 +230,9 @@ export default function MarketingPage() {
               "Resend",
               "Vercel AI",
             ]}
-            imageSrc="/marketing/screenshots/dashboard.png"
             imageAlt="A dashboard that feels like a real product, not a demo"
+            imageSrcDark={`/marketing/screenshots/dark/dashboard.png`}
+            imageSrcLight={`/marketing/screenshots/light/dashboard.png`}
           />
         </div>
       </section>
@@ -376,8 +377,8 @@ export default function MarketingPage() {
                 want to carry.
               </p>
               <p>
-                This starter is built for technical founders who need a real
-                B2B base now, but still want to move fast when the first custom
+                This starter is built for technical founders who need a real B2B
+                base now, but still want to move fast when the first custom
                 features and rewrites start.
               </p>
               <p className="border-l-2 border-brand pl-4 text-foreground">

@@ -17,12 +17,7 @@ export type GalleryGridProps = {
 
 export function GalleryGrid({ shots, onOpen, className }: GalleryGridProps) {
   return (
-    <div
-      className={cn(
-        "grid grid-cols-2 gap-3 sm:gap-6 xl:grid-cols-3",
-        className,
-      )}
-    >
+    <div className={cn("grid grid-cols-2 gap-3 sm:gap-6", className)}>
       {shots.map((shot, index) => (
         <GalleryShotCard
           key={shot.id}
@@ -65,7 +60,7 @@ function GalleryShotCard({
         />
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/0 to-black/0 opacity-90"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/0 to-black/0 opacity-90 hidden dark:block"
         />
         <span
           aria-hidden

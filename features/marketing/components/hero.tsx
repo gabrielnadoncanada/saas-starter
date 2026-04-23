@@ -1,15 +1,18 @@
+"use client";
 import Image from "next/image";
 import * as React from "react";
 
 import { siteConfig } from "@/config/site.config";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 export type HeroProps = {
   pill?: React.ReactNode;
   title: React.ReactNode;
   description: React.ReactNode;
   actions: React.ReactNode;
-  imageSrc?: string;
+  imageSrcDark?: string;
+  imageSrcLight?: string;
   imageAlt?: string;
   imageWidth?: number;
   imageHeight?: number;
@@ -20,12 +23,19 @@ export type HeroProps = {
   chrome?: boolean;
 };
 
+function useResolvedImageSrc(imageSrcDark?: string, imageSrcLight?: string) {
+  const { resolvedTheme } = useTheme();
+  if (resolvedTheme === "light" && imageSrcLight) return imageSrcLight;
+  return imageSrcDark;
+}
+
 export function Hero({
   pill,
   title,
   description,
   actions,
-  imageSrc,
+  imageSrcDark,
+  imageSrcLight,
   imageAlt = "Product preview",
   imageWidth = 1920,
   imageHeight = 1200,
@@ -33,6 +43,7 @@ export function Hero({
   stack,
   chrome = true,
 }: HeroProps) {
+  const resolvedSrc = useResolvedImageSrc(imageSrcDark, imageSrcLight);
   return (
     <div className={cn("relative", className)}>
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
@@ -71,7 +82,7 @@ export function Hero({
         </div>
       </div>
 
-      {imageSrc ? (
+      {imageSrcDark || imageSrcLight ? (
         <div className="relative mx-auto mt-20 max-w-[1280px]">
           <div
             aria-hidden
@@ -88,7 +99,7 @@ export function Hero({
             ) : null}
             <Image
               priority
-              src={imageSrc}
+              src={resolvedSrc ?? ""}
               alt={imageAlt}
               width={imageWidth}
               height={imageHeight}
