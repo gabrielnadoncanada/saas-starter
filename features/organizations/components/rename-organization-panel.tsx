@@ -57,7 +57,10 @@ export function RenameOrganizationPanel({
         <CardTitle>Organization Name</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={action} className="flex items-end gap-3">
+        <form
+          action={action}
+          className="flex flex-col gap-3 sm:flex-row sm:items-end"
+        >
           <div className="flex-1">
             <Label htmlFor="name" className="mb-2">
               Name
@@ -72,7 +75,11 @@ export function RenameOrganizationPanel({
               disabled={!canManage || isPending}
             />
           </div>
-          <Button type="submit" disabled={isPending || !canManage}>
+          <Button
+            type="submit"
+            disabled={isPending || !canManage}
+            className="w-full sm:w-auto"
+          >
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
