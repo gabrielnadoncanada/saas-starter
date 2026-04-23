@@ -8,7 +8,7 @@ Tenviq is a Next.js SaaS starter with multi-tenant organizations, billing, AI as
 - Language: TypeScript (strict)
 - Database: PostgreSQL with Prisma ORM (multi-file schema in `prisma/models/`)
 - Auth: better-auth (config in `lib/auth/`)
-- Payments: Stripe via @better-auth/stripe
+- Payments: Stripe (direct SDK integration)
 - AI: Vercel AI SDK with Google, OpenAI, Groq providers
 - UI: shadcn/ui (Radix), Tailwind CSS v4, ai-elements
 - Forms: useActionState + server actions + zod

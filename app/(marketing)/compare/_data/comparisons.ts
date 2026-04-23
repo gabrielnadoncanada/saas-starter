@@ -179,7 +179,7 @@ export const comparisons: Comparison[] = [
         topic: "Billing",
         competitor: "Stripe integration wired through Supabase patterns.",
         tenviq:
-          "Stripe via @better-auth/stripe with plan-gated product logic.",
+          "Direct Stripe SDK integration with plan-gated product logic.",
       },
       {
         topic: "Admin",
