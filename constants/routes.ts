@@ -22,6 +22,9 @@ export const routes = {
     dashboard: "/dashboard",
     tasks: "/dashboard/tasks",
     assistant: "/assistant",
+    emailAgent: "/email-agent",
+    emailAgentAccounts: "/email-agent/accounts",
+    emailAgentSettings: "/email-agent/settings",
   },
   admin: {
     dashboard: "/admin",

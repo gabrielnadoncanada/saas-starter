@@ -29,6 +29,7 @@ model User {
   storedFilesUploaded StoredFile[]
   twoFactor           TwoFactor?
   activityEvents      ActivityEvent[]  @relation("ActivityActor")
+  emailAccounts       EmailAccount[]   @relation("EmailAccountConnectedBy")
 }
 
 model Account {

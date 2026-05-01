@@ -1,0 +1,126 @@
+enum EmailProvider {
+  GOOGLE
+}
+
+enum EmailAccountStatus {
+  ACTIVE
+  DISCONNECTED
+  ERROR
+}
+
+enum EmailMessageDirection {
+  INCOMING
+  OUTGOING
+}
+
+enum AgentDraftStatus {
+  PENDING
+  APPROVED
+  SENT
+  REJECTED
+  FAILED
+}
+
+model EmailAccount {
+  id                  String             @id @default(cuid())
+  organizationId      String
+  connectedByUserId   String
+  provider            EmailProvider      @default(GOOGLE)
+  email               String             @db.VarChar(255)
+  status              EmailAccountStatus @default(ACTIVE)
+  accessToken         String             @db.Text
+  refreshToken        String             @db.Text
+  tokenExpiresAt      DateTime
+  scope               String?            @db.Text
+  historyId           String?            @db.VarChar(40)
+  lastSyncedAt        DateTime?
+  lastError           String?            @db.Text
+  autoSendEnabled     Boolean            @default(false)
+  agentInstructions   String?            @db.Text
+  signature           String?            @db.Text
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  connectedByUser User           @relation("EmailAccountConnectedBy", fields: [connectedByUserId], references: [id], onDelete: Cascade)
+  threads         EmailThread[]
+  messages        EmailMessage[]
+  drafts          AgentDraft[]
+
+  @@unique([organizationId, email])
+  @@index([organizationId])
+  @@index([connectedByUserId])
+}
+
+model EmailThread {
+  id               String   @id @default(cuid())
+  organizationId   String
+  emailAccountId   String
+  providerThreadId String   @db.VarChar(120)
+  subject          String   @db.VarChar(500)
+  snippet          String?  @db.Text
+  participants     String   @db.Text
+  lastMessageAt    DateTime
+  hasPendingDraft  Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emailAccount EmailAccount   @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  messages     EmailMessage[]
+  drafts       AgentDraft[]
+
+  @@unique([emailAccountId, providerThreadId])
+  @@index([organizationId, lastMessageAt(sort: Desc)])
+  @@index([emailAccountId, lastMessageAt(sort: Desc)])
+}
+
+model EmailMessage {
+  id                String                @id @default(cuid())
+  organizationId    String
+  emailAccountId    String
+  threadId          String
+  providerMessageId String                @db.VarChar(120)
+  direction         EmailMessageDirection
+  fromAddress       String                @db.VarChar(320)
+  toAddresses       String                @db.Text
+  subject           String                @db.VarChar(500)
+  bodyText          String                @db.Text
+  internalDate      DateTime
+  inReplyTo         String?               @db.VarChar(320)
+  createdAt         DateTime              @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emailAccount EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  thread       EmailThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@unique([emailAccountId, providerMessageId])
+  @@index([threadId, internalDate])
+  @@index([organizationId])
+}
+
+model AgentDraft {
+  id                String           @id @default(cuid())
+  organizationId    String
+  emailAccountId    String
+  threadId          String
+  replyToMessageId  String?
+  subject           String           @db.VarChar(500)
+  bodyText          String           @db.Text
+  status            AgentDraftStatus @default(PENDING)
+  modelId           String           @db.VarChar(80)
+  reasoning         String?          @db.Text
+  sentAt            DateTime?
+  sentMessageId     String?          @db.VarChar(120)
+  errorMessage      String?          @db.Text
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emailAccount EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  thread       EmailThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@index([threadId])
+  @@index([emailAccountId, status])
+}

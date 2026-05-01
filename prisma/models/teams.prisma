@@ -22,6 +22,10 @@ model Organization {
   aiConversations AiConversation[]
   storedFiles     StoredFile[]
   activityEvents  ActivityEvent[]
+  emailAccounts   EmailAccount[]
+  emailThreads    EmailThread[]
+  emailMessages   EmailMessage[]
+  agentDrafts     AgentDraft[]
 }
 
 model Member {

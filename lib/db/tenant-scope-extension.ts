@@ -4,7 +4,6 @@ import { getTenantContext, TenantScopeError } from "./tenant-scope";
 import {
   applyTenantScope,
   type ScopedModel,
-  TENANT_SCOPED_MODELS,
 } from "./tenant-scope-guard";
 
 export { TENANT_SCOPED_MODELS } from "./tenant-scope-guard";
@@ -56,6 +55,10 @@ export const tenantScopeExtension = Prisma.defineExtension((client) => {
       usageCounter: guard("UsageCounter"),
       activityEvent: guard("ActivityEvent"),
       storedFile: guard("StoredFile"),
+      emailAccount: guard("EmailAccount"),
+      emailThread: guard("EmailThread"),
+      emailMessage: guard("EmailMessage"),
+      agentDraft: guard("AgentDraft"),
     },
   });
 });

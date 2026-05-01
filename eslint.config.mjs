@@ -12,6 +12,7 @@ const RUN_AS_ADMIN_ALLOWLIST = [
   "lib/db/seeds/**",
   "features/auth/server/onboarding.ts",
   "app/api/demo/reset/route.ts",
+  "app/api/email-agent/sync/route.ts",
 ];
 
 const TENANT_SCOPE_INTERNAL = [

@@ -28,6 +28,11 @@ export function getDashboardSidebarData({
                 },
               ]
             : []),
+          {
+            title: "Email Agent",
+            url: routes.app.emailAgent,
+            icon: "inbox",
+          },
         ],
       },
     ],

@@ -10,6 +10,10 @@ export const TENANT_SCOPED_MODELS = [
   "UsageCounter",
   "ActivityEvent",
   "StoredFile",
+  "EmailAccount",
+  "EmailThread",
+  "EmailMessage",
+  "AgentDraft",
 ] as const;
 
 export type ScopedModel = (typeof TENANT_SCOPED_MODELS)[number];
